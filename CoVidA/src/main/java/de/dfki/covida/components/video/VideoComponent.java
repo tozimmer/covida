@@ -1675,13 +1675,11 @@ public class VideoComponent extends CovidaComponent implements
     protected void dragAction(DragEvent event) {
         if (event.getState().equals(DragEvent.GestureState.GESTURE_UPDATE)
                 && event.getTranslation() != null) {
-
             startDragAnimation();
             move(getNode().getLocalTranslation().getX()
-                    + (event.getTranslation().x * getWidth() / getNode().getLocalScale().x)
+                    + (event.getTranslation().x * getWidth() * getNode().getLocalScale().x)
                     , getNode().getLocalTranslation().getY()
-                    - (event.getTranslation().y * getHeight() / getNode().getLocalScale().y));
-//            log.debug("X: "+event.getTranslation().x+" Y: "+event.getTranslation().y);
+                    - (event.getTranslation().y * getHeight() * getNode().getLocalScale().y));
         } else if (event.getState().equals(DragEvent.GestureState.GESTURE_END)) {
             stopDragAniation();
             getLockState().removeTouchLock(event.getTouchID());
@@ -1714,9 +1712,6 @@ public class VideoComponent extends CovidaComponent implements
 
     @Override
     protected void zoomAction(ZoomEvent event) {
-//        Vector3f scale = getNode().getLocalScale();
-//        float diff = UPSCALE_FACTOR * event.getZoomDistance()
-//                / (getWidth() / scale.x);
         float scale = display.x / ((float) getWidth() * getNode().getLocalScale().x);
         float ratio = ((event.getZoomRatio() - 1) / scale) + 1;
         rescale(getNode().getLocalScale().x * ratio);
