@@ -84,6 +84,7 @@ import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.direct.DirectMediaPlayer;
 import uk.co.caprica.vlcj.player.direct.RenderCallbackAdapter;
 
+
 /**
  * Component to display videos.
  *
@@ -216,6 +217,7 @@ public class VideoComponent extends CovidaComponent implements
     private Node pivot;
     private TouchInputHandler touchInputHandler;
     private VideoSlider videoSlider;
+    private final Dimension scrnsize;
 
     /**
      *
@@ -336,6 +338,8 @@ public class VideoComponent extends CovidaComponent implements
         this.shapes = new ArrayList<Shape>();
         this.penColor = new ArrayList<PenData>();
         this.shapeSpatials = new HashMap<Shape, Spatial>();
+        Toolkit t = Toolkit.getDefaultToolkit();
+        scrnsize = t.getScreenSize();
     }
 
     /**
@@ -1677,9 +1681,9 @@ public class VideoComponent extends CovidaComponent implements
                 && event.getTranslation() != null) {
             startDragAnimation();
             move(getNode().getLocalTranslation().getX()
-                    + (event.getTranslation().x * getWidth() * getNode().getLocalScale().x)
+                    + event.getTranslation().x * scrnsize.width / getNode().getLocalScale().x
                     , getNode().getLocalTranslation().getY()
-                    - (event.getTranslation().y * getHeight() * getNode().getLocalScale().y));
+                    - event.getTranslation().y * scrnsize.height / getNode().getLocalScale().y);
         } else if (event.getState().equals(DragEvent.GestureState.GESTURE_END)) {
             stopDragAniation();
             getLockState().removeTouchLock(event.getTouchID());
@@ -1912,7 +1916,6 @@ public class VideoComponent extends CovidaComponent implements
         }
     }
 }
-
 /**
  * RepeatHandler <p> handles slider updates an video repeating
  *
