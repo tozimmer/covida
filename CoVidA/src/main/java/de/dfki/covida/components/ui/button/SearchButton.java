@@ -45,10 +45,6 @@ import java.util.ArrayList;
  */
 public class SearchButton extends CovidaButton {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 7384780136991918432L;
     private Node fieldNode;
     /**
      * Search Field
@@ -108,12 +104,8 @@ public class SearchButton extends CovidaButton {
     }
 
     @Override
-    protected void touchAction(TouchActionEvent e) {
-        toggle();
-    }
-
-    @Override
     protected void touchDeadAction(TouchActionEvent e) {
+        
     }
 
     @Override
@@ -127,7 +119,7 @@ public class SearchButton extends CovidaButton {
 
     @Override
     protected void touchDeadAction(int touchId) {
-        // TODO Auto-generated method stub
+        toggle();
     }
 
     @Override

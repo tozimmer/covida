@@ -33,30 +33,28 @@ import com.jme.math.Vector3f;
 import com.jme.scene.Node;
 import de.dfki.covida.components.ui.annotation.AnnotationClipboard;
 import de.dfki.covida.components.ui.annotation.Field;
-import de.dfki.covida.components.ui.video.VideoComponent;
 import de.dfki.touchandwrite.action.TouchActionEvent;
-import java.util.ArrayList;
 
 /**
  * Sidebar menu for VideoTouchBoard
- * 
+ *
  * @author Tobias Zimmermann
- * 
+ *
  */
 public class ClipboardButton extends CovidaButton {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 7384780136991918432L;
     private Node fieldNode;
-    /** Search Field */
+    /**
+     * Search Field
+     */
     private AnnotationClipboard clipboard;
-    /** List of VideoComponents on VideoTouchBoard */
 
     /**
+     * List of VideoComponents on VideoTouchBoard
+     */
+    /**
      * Creates a button and a clipboard field for annotations
-     * 
+     *
      * @param width width of the button
      * @param height height of the button
      * @param node the node which the button should be attached
@@ -82,8 +80,8 @@ public class ClipboardButton extends CovidaButton {
         clipboard.initComponent();
         clipboard.close();
     }
-    
-    public AnnotationClipboard getClipboard(){
+
+    public AnnotationClipboard getClipboard() {
         return clipboard;
     }
 
@@ -107,11 +105,6 @@ public class ClipboardButton extends CovidaButton {
             openField();
         }
     }
-    
-    @Override
-    protected void touchAction(TouchActionEvent e){
-        toggle();
-    }
 
     @Override
     protected void touchDeadAction(TouchActionEvent e) {
@@ -130,7 +123,7 @@ public class ClipboardButton extends CovidaButton {
 
     @Override
     protected void touchDeadAction(int touchId) {
-        // TODO Auto-generated method stub
+        toggle();
     }
 
     @Override

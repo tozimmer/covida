@@ -221,6 +221,7 @@ public abstract class CovidaComponent extends TouchComponent {
                 touchAction(e);
             }
             if (e.getTouchState() == TouchState.TOUCH_DEAD) {
+                touchDeadAction(e.getID());
                 getLockState().removeTouchLock(e.getID());
             }
         }

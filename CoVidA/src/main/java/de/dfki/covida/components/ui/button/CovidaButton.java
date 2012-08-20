@@ -138,12 +138,10 @@ public abstract class CovidaButton extends CovidaComponent {
     @Override
     protected void touchAction(TouchActionEvent e) {
         if (getLockState().getTouchLock(e.getID()) == getId()) {
-            if (!(e.getTouchState() == TouchState.TOUCH_DEAD)) {
-                getNode().attachChild(this.overlay.get(0));
-                if (!getNode().hasChild(this.overlay.get(1))) {
-                    getNode().attachChild(this.overlay.get(1));
-                }
+            if((e.getTouchState() == TouchState.TOUCH_BIRTH)){
                 touchAliveAction(e);
+            }else if (!(e.getTouchState() == TouchState.TOUCH_DEAD)) {
+                getNode().attachChild(this.overlay.get(0));
                 if (inArea(e.getX(), e.getY())) {
                     if (!getNode().hasChild(this.overlay.get(1))) {
                         getNode().attachChild(this.overlay.get(1));

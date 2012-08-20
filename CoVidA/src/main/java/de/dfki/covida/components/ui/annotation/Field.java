@@ -182,6 +182,29 @@ public abstract class Field extends CovidaComponent implements
             this.getParent().detachChild(this);
         }
     }
+    
+     /**
+     * Closes the DisplayInfoComponent
+     */
+    @Override
+    public void close() {
+        detach = true;
+        for (int i = 0; i < getNode().getControllerCount(); i++) {
+            getNode().removeController(i);
+        }
+
+        SpatialTransformer st = new SpatialTransformer(1);
+        // Close animation (Info Field)
+        st.setObject(getNode(), 0, -1);
+        st.setPosition(0, 0.f, new Vector3f(getNode().getLocalTranslation()));
+        st.setPosition(0, 0.5f, new Vector3f(-(float) getHeight() / 2.f,
+                -(float) getHeight() / 2.f, 0));
+        st.interpolateMissing();
+        getNode().addController(st);
+        resetHandler = new DetachHandler(this, 500);
+        resetHandlerThread = new Thread(resetHandler);
+        resetHandlerThread.start();
+    }
 
     /**
      * Open animation of the DisplayInfoComponent

@@ -38,9 +38,12 @@ import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
 import com.jmex.angelfont.BitmapFont.Align;
-import de.dfki.covida.ui.components.TextOverlay;
-import de.dfki.covida.data.VideoAnnotationData;
 import de.dfki.covida.components.ui.video.VideoComponent;
+import de.dfki.covida.data.VideoAnnotationData;
+import de.dfki.covida.ui.components.TextOverlay;
+import de.dfki.touchandwrite.action.DrawAction;
+import de.dfki.touchandwrite.action.HWRAction;
+import de.dfki.touchandwrite.action.TouchAction;
 import de.dfki.touchandwrite.action.TouchActionEvent;
 import de.dfki.touchandwrite.input.pen.event.ShapeEvent;
 import de.dfki.touchandwrite.input.pen.hwr.HWRResultSet;
@@ -56,17 +59,17 @@ import org.apache.commons.lang.StringUtils;
 
 /**
  * Component which displays annotation data of VideoComponent.
- * 
+ *
  * @author Tobias Zimmermann
- * 
+ *
  */
 public class AnnotationSearch extends Field {
-    
+
     protected ArrayList<VideoComponent> videos;
 
     /**
      * Search field constructor
-     * 
+     *
      * @param resource
      * @param video
      * @param listField
@@ -75,8 +78,7 @@ public class AnnotationSearch extends Field {
      * @param width
      * @param height
      */
-    public AnnotationSearch(String resource, Node node, int width, int height
-            , ArrayList<VideoComponent> videos) {
+    public AnnotationSearch(String resource, Node node, int width, int height, ArrayList<VideoComponent> videos) {
         super(ComponentType.COMPONENT_2D, "AnnotationSearch", node);
         this.width = width;
         this.height = height;
@@ -93,7 +95,7 @@ public class AnnotationSearch extends Field {
         result = new HashMap<Integer, ArrayList<Integer>>();
         resultString = new HashMap<Integer, ArrayList<String>>();
     }
-    
+
     protected void initTextures() {
         // ---- Background Texture state initialization ----
         ts = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
@@ -118,7 +120,7 @@ public class AnnotationSearch extends Field {
     public void handwritingResult(HandwritingRecognitionEvent event) {
         // TODO pen id!
 //        log.debug("HWR Event: " + event.toString());
-        if(!isOpen()){
+        if (!isOpen()) {
             return;
         }
         if (getLockState().onTop(
@@ -139,6 +141,7 @@ public class AnnotationSearch extends Field {
     public void clearHwrResults() {
         hwrResults.clear();
     }
+
     /**
      *
      * @param x
@@ -217,7 +220,7 @@ public class AnnotationSearch extends Field {
 
         }
     }
-    
+
     @Override
     public void touch(Map<Integer, TouchActionEvent> event) {
         for (TouchActionEvent e : event.values()) {
@@ -281,7 +284,7 @@ public class AnnotationSearch extends Field {
             titles.get(titleID).setColor(activeColor);
         }
     }
-    
+
     @Override
     protected void update() {
         if (this.hwrResults != null) {
@@ -421,7 +424,7 @@ public class AnnotationSearch extends Field {
 
     /**
      * Checks the hwr result and chooses the best result.
-     * 
+     *
      * @param hwrResultSet
      * @return
      */
@@ -431,11 +434,10 @@ public class AnnotationSearch extends Field {
     }
 
     /**
-     * 
+     *
      * @param x
      * @param y
-     * @param angle
-     *            - angle in degree
+     * @param angle - angle in degree
      * @param width
      * @param height
      */
@@ -453,7 +455,9 @@ public class AnnotationSearch extends Field {
 
     @Override
     public void draw(ShapeEvent shape) {
-        /** do nothing */
+        /**
+         * do nothing
+         */
     }
 
     @Override
@@ -486,37 +490,52 @@ public class AnnotationSearch extends Field {
     public void setPenThickness(float thickness) {
         this.penThickness = thickness;
     }
-    
-    /**
-     * Closes the DisplayInfoComponent
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * de.dfki.touchandwrite.visual.components.TouchAndWriteComponent#initComponent
+     * ()
      */
     @Override
-    public void close() {
-        detach = true;
-        for (int i = 0; i < getNode().getControllerCount(); i++) {
-            getNode().removeController(i);
-        }
-
-        SpatialTransformer st = new SpatialTransformer(1);
-        // Close animation (Info Field)
-        st.setObject(getNode(), 0, -1);
-        st.setPosition(0, 0.f, new Vector3f(getNode().getLocalTranslation()));
-        st.setPosition(0, 0.5f, new Vector3f(-(float) getHeight() / 2.f,
-                -(float) getHeight() / 2.f, 0));
-        st.interpolateMissing();
-        getNode().addController(st);
-        resetHandler = new DetachHandler(this, 500);
-        resetHandlerThread = new Thread(resetHandler);
-        resetHandlerThread.start();
+    public void initComponent() {
+        super.initComponent();
+        super.setAlwaysOnTop(true);
+        super.setRootNode(getNode().getParent());
+        getNode().setLocalScale(new Vector3f(1, 1, 1));
+        initTextures();
+        textBeginY = (int) (quad.getHeight() / 2.0f);
+        this.drawAction = new DrawAction(this);
+        this.touchAction = new TouchAction(this);
+        this.hwrAction = new HWRAction(this);
+        int x = (int) (0);
+        Node node = new Node("AnnotationSearch Entry Node");
+        getNode().attachChild(node);
+        node.setLocalTranslation(x, getTextY(0) - FONT_SIZE / 4.f, 0);
+        TextOverlay caption = new TextOverlay(node, this);
+        caption.setSize((int) (FONT_SIZE * 1.5f));
+        caption.setText("Write here for annotation search:");
+        caption.setFont(2);
+        addSpacer(x, (int) (getTextY(0) - FONT_SIZE), 0,
+                (int) (quad.getWidth() / 1.1f), TEXT_SPACER);
+        x = (int) (getWidth() / 9.f);
+        addSpacer(x, 0, 90, (int) (quad.getHeight() / 1.1f), TEXT_SPACER);
+        x = (int) -(getWidth() / 4.f);
+        addSpacer(x, 0, 90, (int) (quad.getHeight() / 1.1f), TEXT_SPACER);
     }
 
     private void search() {
         result = new HashMap<Integer, ArrayList<Integer>>();
         resultString = new HashMap<Integer, ArrayList<String>>();
         if (data != null && hwrResults != null) {
-            /** video index */
+            /**
+             * video index
+             */
             int i;
-            /** annotation index */
+            /**
+             * annotation index
+             */
             int j;
             for (String hwrResult : hwrResults) {
                 // exact search

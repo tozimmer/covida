@@ -44,13 +44,7 @@ public class DetachHandler implements Runnable {
         return obj;
     }
 
-    public DetachHandler(AnnotationClipboard field, int delay) {
-        this.field = field;
-        this.delay = delay;
-        obj = new Object();
-    }
-
-    public DetachHandler(AnnotationSearch field, int delay) {
+    public DetachHandler(Field field, int delay) {
         this.field = field;
         this.delay = delay;
         obj = new Object();

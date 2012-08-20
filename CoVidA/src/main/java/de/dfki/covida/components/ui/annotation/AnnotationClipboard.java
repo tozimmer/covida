@@ -37,9 +37,8 @@ import com.jme.scene.shape.Quad;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
-import de.dfki.covida.ui.components.TextOverlay;
 import de.dfki.covida.data.VideoAnnotationData;
-import de.dfki.covida.components.ui.video.VideoComponent;
+import de.dfki.covida.ui.components.TextOverlay;
 import de.dfki.touchandwrite.action.DrawAction;
 import de.dfki.touchandwrite.action.HWRAction;
 import de.dfki.touchandwrite.action.TouchAction;
@@ -220,28 +219,5 @@ public class AnnotationClipboard extends Field {
         spacerQuad.setLocalTranslation(x, y, 0);
         spacerQuad.setLocalRotation(q);
         getNode().attachChild(spacerQuad);
-    }
-
-    /**
-     * Closes the DisplayInfoComponent
-     */
-    @Override
-    public void close() {
-        detach = true;
-        for (int i = 0; i < getNode().getControllerCount(); i++) {
-            getNode().removeController(i);
-        }
-
-        SpatialTransformer st = new SpatialTransformer(1);
-        // Close animation (Info Field)
-        st.setObject(getNode(), 0, -1);
-        st.setPosition(0, 0.f, new Vector3f(getNode().getLocalTranslation()));
-        st.setPosition(0, 0.5f, new Vector3f(-(float) getHeight() / 2.f,
-                -(float) getHeight() / 2.f, 0));
-        st.interpolateMissing();
-        getNode().addController(st);
-        resetHandler = new DetachHandler(this, 500);
-        resetHandlerThread = new Thread(resetHandler);
-        resetHandlerThread.start();
     }
 }
