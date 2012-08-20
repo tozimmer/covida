@@ -97,7 +97,7 @@ public class CovidaConfiguration implements Serializable {
 //		videoSources.get(videoSources.size()-1).time_end = 0;
         videoSources.add(new VideoMediaData());
         videoSources.get(videoSources.size() - 1).videoName = "T&W Demo";
-        videoSources.get(videoSources.size() - 1).videoSource = "I:\\videos\\test2.mp4";
+        videoSources.get(videoSources.size() - 1).videoSource = "c:\\videos\\test2.mp4";
 //		videoSources.add(new VideoMediaData());
 //		videoSources.get(videoSources.size()-1).videoName = "Urban Planing";
 //		videoSources.get(videoSources.size()-1).videoSource = "C:\\videos\\test3.mp4";
@@ -110,7 +110,7 @@ public class CovidaConfiguration implements Serializable {
 //		videoSources.get(videoSources.size()-1).time_end = 0;
         videoSources.add(new VideoMediaData());
         videoSources.get(videoSources.size() - 1).videoName = "RoboCup";
-        videoSources.get(videoSources.size() - 1).videoSource = "I:\\videos\\test5.mp4";
+        videoSources.get(videoSources.size() - 1).videoSource = "c:\\videos\\test5.mp4";
         videoSources.get(videoSources.size() - 1).time_start = 0;
         videoSources.get(videoSources.size() - 1).time_end = 0;
 //		videoSources.add(new VideoMediaData());

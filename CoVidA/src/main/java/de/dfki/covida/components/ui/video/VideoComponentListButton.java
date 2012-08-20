@@ -70,6 +70,7 @@ public class VideoComponentListButton extends CovidaComponent {
                 new Vector3f((float) video.getWidth() / (10.f * (float) WIDTH),
                 (float) video.getWidth() / (10.f * (float) WIDTH), 1));
         this.video = video;
+        setAlwaysOnTop(true);
     }
 
     @Override
@@ -167,13 +168,16 @@ public class VideoComponentListButton extends CovidaComponent {
                 getNode().detachChild(this.overlayMenu.get(0));
                 getNode().attachChild(this.overlayMenu.get(1));
             }
+        } else {
+            if (getNode().hasChild(this.overlayMenu.get(1))) {
+                getNode().detachChild(this.overlayMenu.get(1));
+                getNode().attachChild(this.overlayMenu.get(0));
+            }
             if (video.hasList()) {
                 video.detachList();
             } else {
                 video.attachList();
             }
-        } else {
-            getLockState().removeTouchLock(e.getID());
         }
     }
 

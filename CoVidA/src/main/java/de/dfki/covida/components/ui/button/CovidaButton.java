@@ -27,9 +27,6 @@
  */
 package de.dfki.covida.components.ui.button;
 
-import java.util.ArrayList;
-import java.util.Map;
-
 import com.jme.animation.SpatialTransformer;
 import com.jme.image.Texture;
 import com.jme.image.Texture.WrapMode;
@@ -40,9 +37,8 @@ import com.jme.scene.state.BlendState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
-
-import de.dfki.covida.ui.components.CovidaComponent;
 import de.dfki.covida.components.ui.annotation.Field;
+import de.dfki.covida.ui.components.CovidaComponent;
 import de.dfki.touchandwrite.action.TouchAction;
 import de.dfki.touchandwrite.action.TouchActionEvent;
 import de.dfki.touchandwrite.analyser.touch.gestures.events.DragEvent;
@@ -51,6 +47,7 @@ import de.dfki.touchandwrite.analyser.touch.gestures.events.ZoomEvent;
 import de.dfki.touchandwrite.input.touch.event.TouchState;
 import de.dfki.touchandwrite.visual.components.ComponentType;
 import de.dfki.touchandwrite.visual.input.TouchInputHandler;
+import java.util.ArrayList;
 
 /**
  * Sidebar menu for VideoTouchBoard
