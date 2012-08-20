@@ -1,5 +1,5 @@
 /*
- * CovidaCMDOptions.java
+ * VideoFormat.java
  * 
  * Copyright (c) 2012, Tobias Zimmermann All rights reserved.
  * 
@@ -25,45 +25,35 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package de.dfki.covida;
+package de.dfki.covida.data;
 
-import org.kohsuke.args4j.Option;
+public class VideoFormat {
 
-/**
- * Options for VideoTouch.
- *
- * @author Tobias Zimmermann
- *
- */
-public class CovidaCMDOptions {
-
-    @Option(name = "-conf", usage = "Location of the log configuration.")
-    private String configuration = "src/main/resources/apps/config.xml";
-    @Option(name = "-d", usage = "Verbose output")
-    private boolean debug;
-    @Option(name = "-log", usage = "Location of the log configuration.")
-    private String logfile = "log4j.xml";
+    private float ratio;
 
     /**
-     * Returns the location of the Touch and Write configuration file.
+     * Constructs video format.
      *
+     * @param ratioToHeight
+     */
+    public VideoFormat(float ratioToHeight) {
+        this.ratio = ratioToHeight;
+    }
+
+    /**
+     * Determine width according to the height.
+     *
+     * @param height
      * @return
      */
-    public String getConfiguration() {
-        return configuration;
+    public int determineWidth(int height) {
+        return (int) (this.ratio * height);
     }
 
     /**
-     * @return the logfile
+     * @return the ratio
      */
-    public String getLogfile() {
-        return logfile;
-    }
-
-    /**
-     * @return the debug
-     */
-    public boolean isDebug() {
-        return debug;
+    public float getRatio() {
+        return ratio;
     }
 }

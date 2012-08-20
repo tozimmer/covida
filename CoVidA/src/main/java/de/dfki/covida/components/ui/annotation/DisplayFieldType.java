@@ -1,5 +1,5 @@
 /*
- * CovidaCMDOptions.java
+ * DisplayFieldType.java
  * 
  * Copyright (c) 2012, Tobias Zimmermann All rights reserved.
  * 
@@ -25,45 +25,14 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package de.dfki.covida;
-
-import org.kohsuke.args4j.Option;
+package de.dfki.covida.components.ui.annotation;
 
 /**
- * Options for VideoTouch.
  *
  * @author Tobias Zimmermann
  *
  */
-public class CovidaCMDOptions {
+public enum DisplayFieldType {
 
-    @Option(name = "-conf", usage = "Location of the log configuration.")
-    private String configuration = "src/main/resources/apps/config.xml";
-    @Option(name = "-d", usage = "Verbose output")
-    private boolean debug;
-    @Option(name = "-log", usage = "Location of the log configuration.")
-    private String logfile = "log4j.xml";
-
-    /**
-     * Returns the location of the Touch and Write configuration file.
-     *
-     * @return
-     */
-    public String getConfiguration() {
-        return configuration;
-    }
-
-    /**
-     * @return the logfile
-     */
-    public String getLogfile() {
-        return logfile;
-    }
-
-    /**
-     * @return the debug
-     */
-    public boolean isDebug() {
-        return debug;
-    }
+    INFO, LIST, EDIT
 }

@@ -1,5 +1,5 @@
 /*
- * CovidaCMDOptions.java
+ * PenData.java
  * 
  * Copyright (c) 2012, Tobias Zimmermann All rights reserved.
  * 
@@ -25,45 +25,29 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package de.dfki.covida;
+package de.dfki.covida.data;
 
-import org.kohsuke.args4j.Option;
+import java.awt.Color;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-/**
- * Options for VideoTouch.
- *
- * @author Tobias Zimmermann
- *
- */
-public class CovidaCMDOptions {
+public class PenData {
 
-    @Option(name = "-conf", usage = "Location of the log configuration.")
-    private String configuration = "src/main/resources/apps/config.xml";
-    @Option(name = "-d", usage = "Verbose output")
-    private boolean debug;
-    @Option(name = "-log", usage = "Location of the log configuration.")
-    private String logfile = "log4j.xml";
+    @XmlJavaTypeAdapter(ColorAdapter.class)
+    @XmlElement(name = "color")
+    public Color penColor;
+    @XmlElement(name = "thickness")
+    public int penThickness;
+}
 
-    /**
-     * Returns the location of the Touch and Write configuration file.
-     *
-     * @return
-     */
-    public String getConfiguration() {
-        return configuration;
+class ColorAdapter extends XmlAdapter<String, Color> {
+
+    public Color unmarshal(String s) {
+        return Color.decode(s);
     }
 
-    /**
-     * @return the logfile
-     */
-    public String getLogfile() {
-        return logfile;
-    }
-
-    /**
-     * @return the debug
-     */
-    public boolean isDebug() {
-        return debug;
+    public String marshal(Color c) {
+        return "#" + Integer.toHexString(c.getRGB());
     }
 }

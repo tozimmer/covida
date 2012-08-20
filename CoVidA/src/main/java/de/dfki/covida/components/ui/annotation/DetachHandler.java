@@ -1,5 +1,5 @@
 /*
- * CovidaCMDOptions.java
+ * AnnotationSearch.java
  * 
  * Copyright (c) 2012, Tobias Zimmermann All rights reserved.
  * 
@@ -25,45 +25,55 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package de.dfki.covida;
+package de.dfki.covida.components.ui.annotation;
 
-import org.kohsuke.args4j.Option;
+import org.apache.log4j.Logger;
 
 /**
- * Options for VideoTouch.
  *
  * @author Tobias Zimmermann
- *
  */
-public class CovidaCMDOptions {
+public class DetachHandler implements Runnable {
 
-    @Option(name = "-conf", usage = "Location of the log configuration.")
-    private String configuration = "src/main/resources/apps/config.xml";
-    @Option(name = "-d", usage = "Verbose output")
-    private boolean debug;
-    @Option(name = "-log", usage = "Location of the log configuration.")
-    private String logfile = "log4j.xml";
+    private Object field;
+    private final Object obj;
+    private int delay;
+    private Logger log = Logger.getLogger(DetachHandler.class);
 
-    /**
-     * Returns the location of the Touch and Write configuration file.
-     *
-     * @return
-     */
-    public String getConfiguration() {
-        return configuration;
+    public Object getObject() {
+        return obj;
     }
 
-    /**
-     * @return the logfile
-     */
-    public String getLogfile() {
-        return logfile;
+    public DetachHandler(AnnotationClipboard field, int delay) {
+        this.field = field;
+        this.delay = delay;
+        obj = new Object();
     }
 
-    /**
-     * @return the debug
-     */
-    public boolean isDebug() {
-        return debug;
+    public DetachHandler(AnnotationSearch field, int delay) {
+        this.field = field;
+        this.delay = delay;
+        obj = new Object();
+    }
+
+    public void run() {
+        synchronized (obj) {
+            try {
+                obj.wait(delay);
+            } catch (InterruptedException e) {
+                log.error(e);
+            }
+            if (field instanceof AnnotationSearch) {
+                AnnotationSearch search = (AnnotationSearch) field;
+                if (search.isClosing()) {
+                    search.detach();
+                }
+            } else if (field instanceof AnnotationClipboard) {
+                AnnotationClipboard clipboard = (AnnotationClipboard) field;
+                if (clipboard.isClosing()) {
+                    clipboard.detach();
+                }
+            }
+        }
     }
 }

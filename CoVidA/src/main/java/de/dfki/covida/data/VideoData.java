@@ -1,5 +1,5 @@
 /*
- * CovidaCMDOptions.java
+ * VideoData.java
  * 
  * Copyright (c) 2012, Tobias Zimmermann All rights reserved.
  * 
@@ -25,45 +25,28 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package de.dfki.covida;
+package de.dfki.covida.data;
 
-import org.kohsuke.args4j.Option;
+import javax.xml.bind.annotation.XmlElement;
 
-/**
- * Options for VideoTouch.
- *
- * @author Tobias Zimmermann
- *
- */
-public class CovidaCMDOptions {
-
-    @Option(name = "-conf", usage = "Location of the log configuration.")
-    private String configuration = "src/main/resources/apps/config.xml";
-    @Option(name = "-d", usage = "Verbose output")
-    private boolean debug;
-    @Option(name = "-log", usage = "Location of the log configuration.")
-    private String logfile = "log4j.xml";
+public class VideoData {
 
     /**
-     * Returns the location of the Touch and Write configuration file.
-     *
-     * @return
+     * Size in percentage of display y-axis
      */
-    public String getConfiguration() {
-        return configuration;
-    }
-
+    @XmlElement(name = "size")
+    public int size;
     /**
-     * @return the logfile
+     * Position in the 3x2 grid (0-5)
      */
-    public String getLogfile() {
-        return logfile;
-    }
-
-    /**
-     * @return the debug
-     */
-    public boolean isDebug() {
-        return debug;
-    }
+    @XmlElement(name = "position")
+    public int position;
+    @XmlElement(name = "repeating")
+    public boolean repeating;
+    @XmlElement(name = "enabled")
+    public boolean enabled;
+    @XmlElement(name = "time_start")
+    public long time_start;
+    @XmlElement(name = "time_end")
+    public long time_end;
 }

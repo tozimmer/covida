@@ -41,11 +41,13 @@ import org.kohsuke.args4j.CmdLineParser;
 
 /**
  * @author Tobias Zimmermann
- * 
+ *
  */
 public class Covida extends StateBasedTouchAndWriteApp {
 
-    /** Logger */
+    /**
+     * Logger
+     */
     private static Logger log;
     protected CovidaState mainScreen;
     private CovidaCMDOptions opt;
@@ -87,7 +89,7 @@ public class Covida extends StateBasedTouchAndWriteApp {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * de.dfki.touchandwrite.visual.StateBasedTouchAndWriteApp#mappingAction2State
      * (java.lang.String)
@@ -99,7 +101,7 @@ public class Covida extends StateBasedTouchAndWriteApp {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see de.dfki.touchandwrite.visual.TouchAndWriteApp#simpleInitGame()
      */
     protected void simpleInitGame() {
@@ -111,7 +113,7 @@ public class Covida extends StateBasedTouchAndWriteApp {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see de.dfki.touchandwrite.TouchAndWriteApplication#getApplicationType()
      */
     public ApplicationType getApplicationType() {
@@ -122,7 +124,7 @@ public class Covida extends StateBasedTouchAndWriteApp {
      * @param args
      */
     public static void main(String[] args) {
-        
+
         Covida app;
         app = new Covida(TouchAndWriteConfiguration.loadSettings(new File(
                 "src/main/resources/touchandwrite.xml")), args);

@@ -1,5 +1,5 @@
 /*
- * CovidaCMDOptions.java
+ * ShapePoints.java
  * 
  * Copyright (c) 2012, Tobias Zimmermann All rights reserved.
  * 
@@ -25,45 +25,59 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package de.dfki.covida;
+package de.dfki.covida.data;
 
-import org.kohsuke.args4j.Option;
+import java.awt.Point;
+import java.util.ArrayList;
+import java.util.List;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+public class ShapePoints {
+
+    List<Point> points = new ArrayList<Point>();
+
+    public ShapePoints() {
+        super();
+    }
+
+    @XmlJavaTypeAdapter(PointAdapter.class)
+    @XmlElement(name = "point")
+    public List<Point> getShapePoints() {
+        return points;
+    }
+
+    public void add(Point point) {
+        this.points.add(point);
+    }
+
+    public int size() {
+        return this.points.size();
+    }
+
+    public Point get(int index) {
+        return this.points.get(index);
+    }
+}
 
 /**
- * Options for VideoTouch.
+ * Adapter for storing the
+ * <code>Point</code>.
  *
- * @author Tobias Zimmermann
+ * @author Markus Weber
  *
  */
-public class CovidaCMDOptions {
+class PointAdapter extends XmlAdapter<String, Point> {
 
-    @Option(name = "-conf", usage = "Location of the log configuration.")
-    private String configuration = "src/main/resources/apps/config.xml";
-    @Option(name = "-d", usage = "Verbose output")
-    private boolean debug;
-    @Option(name = "-log", usage = "Location of the log configuration.")
-    private String logfile = "log4j.xml";
-
-    /**
-     * Returns the location of the Touch and Write configuration file.
-     *
-     * @return
-     */
-    public String getConfiguration() {
-        return configuration;
+    @Override
+    public String marshal(Point point) throws Exception {
+        return point.x + "," + point.y;
     }
 
-    /**
-     * @return the logfile
-     */
-    public String getLogfile() {
-        return logfile;
-    }
-
-    /**
-     * @return the debug
-     */
-    public boolean isDebug() {
-        return debug;
+    @Override
+    public Point unmarshal(String str) throws Exception {
+        String[] res = str.split(",");
+        return new Point(Integer.parseInt(res[0]), Integer.parseInt(res[1]));
     }
 }

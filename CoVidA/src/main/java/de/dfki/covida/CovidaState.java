@@ -27,49 +27,49 @@
  */
 package de.dfki.covida;
 
+import de.dfki.covida.ui.CovidaBoard;
 import com.jme.renderer.Renderer;
 
 import de.dfki.touchandwrite.state.ApplicationState;
 import de.dfki.touchandwrite.visual.StateBasedTouchAndWriteApp;
 
 public class CovidaState extends ApplicationState {
-	
-	protected CovidaBoard videoTouchBoard;
-	private CovidaCMDOptions opt;
-	
-	public CovidaState(StateBasedTouchAndWriteApp app, CovidaCMDOptions opt) {
-		super("MonitorState", app);
-		this.opt = opt;		
-	}
-	
-	@Override
-	protected boolean initState() {
-		this.setStateRenderQueueMode(Renderer.QUEUE_ORTHO);
-		videoTouchBoard = new CovidaBoard(opt);
-		videoTouchBoard.initComponent();
-		videoTouchBoard.setApp(application);
-		return true;
-	}
 
-	@Override
-	protected void activated() {
-		videoTouchBoard.registerWithInputHandler(this.application.getTouchInput());
-		videoTouchBoard.registerWithInputHandler(this.application.getPenInput());
-		addComponent(videoTouchBoard);
-	}
+    protected CovidaBoard videoTouchBoard;
+    private CovidaCMDOptions opt;
 
-	@Override
-	public void deactivated() {
-		videoTouchBoard.unRegisterWithInputHandler(this.application.getTouchInput());
-		videoTouchBoard.unRegisterWithInputHandler(this.application.getPenInput());
-		videoTouchBoard.stopVideos();
-		detachComponent(videoTouchBoard);
+    public CovidaState(StateBasedTouchAndWriteApp app, CovidaCMDOptions opt) {
+        super("MonitorState", app);
+        this.opt = opt;
+    }
 
-	}
+    @Override
+    protected boolean initState() {
+        this.setStateRenderQueueMode(Renderer.QUEUE_ORTHO);
+        videoTouchBoard = new CovidaBoard(opt);
+        videoTouchBoard.initComponent();
+        videoTouchBoard.setApp(application);
+        return true;
+    }
 
-	@Override
-	protected void cleanUpState() {
-		videoTouchBoard.cleanUp();		
-	}
+    @Override
+    protected void activated() {
+        videoTouchBoard.registerWithInputHandler(this.application.getTouchInput());
+        videoTouchBoard.registerWithInputHandler(this.application.getPenInput());
+        addComponent(videoTouchBoard);
+    }
 
+    @Override
+    public void deactivated() {
+        videoTouchBoard.unRegisterWithInputHandler(this.application.getTouchInput());
+        videoTouchBoard.unRegisterWithInputHandler(this.application.getPenInput());
+        videoTouchBoard.stopVideos();
+        detachComponent(videoTouchBoard);
+
+    }
+
+    @Override
+    protected void cleanUpState() {
+        videoTouchBoard.cleanUp();
+    }
 }

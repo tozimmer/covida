@@ -1,5 +1,5 @@
 /*
- * CovidaCMDOptions.java
+ * AnimationHandler.java
  * 
  * Copyright (c) 2012, Tobias Zimmermann All rights reserved.
  * 
@@ -25,45 +25,71 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package de.dfki.covida;
+package de.dfki.covida.ui.components;
 
-import org.kohsuke.args4j.Option;
+import org.apache.log4j.Logger;
+
+import com.jme.scene.Node;
+
+import de.dfki.covida.components.ui.video.VideoComponent;
 
 /**
- * Options for VideoTouch.
  *
  * @author Tobias Zimmermann
  *
  */
-public class CovidaCMDOptions {
+public class AnimationHandler implements Runnable {
 
-    @Option(name = "-conf", usage = "Location of the log configuration.")
-    private String configuration = "src/main/resources/apps/config.xml";
-    @Option(name = "-d", usage = "Verbose output")
-    private boolean debug;
-    @Option(name = "-log", usage = "Location of the log configuration.")
-    private String logfile = "log4j.xml";
-
+    private VideoComponent video;
+    private Object obj;
+    private int delay;
+    private Node node = null;
     /**
-     * Returns the location of the Touch and Write configuration file.
-     *
-     * @return
+     * Logger
      */
-    public String getConfiguration() {
-        return configuration;
+    private Logger log = Logger.getLogger(AnimationHandler.class);
+    protected boolean active;
+
+    public Object getObject() {
+        return obj;
     }
 
-    /**
-     * @return the logfile
-     */
-    public String getLogfile() {
-        return logfile;
+    public AnimationHandler(Node node, int delay) {
+        this.node = node;
+        this.delay = delay;
+        obj = new Object();
     }
 
-    /**
-     * @return the debug
-     */
-    public boolean isDebug() {
-        return debug;
+    public AnimationHandler(VideoComponent video, int delay) {
+        this.video = video;
+        this.delay = delay;
+        obj = new Object();
+    }
+
+    public void run() {
+        while (active) {
+            try {
+                obj.wait(50);
+            } catch (InterruptedException e) {
+                log.error(e);
+            }
+        }
+        synchronized (obj) {
+            this.active = true;
+            try {
+                obj.wait(delay);
+            } catch (InterruptedException e) {
+                log.error(e);
+            }
+            if (video != null) {
+                video.removeAnimation();
+            } else if (node != null) {
+                for (int i = 0; i < node.getControllerCount(); i++) {
+                    node.removeController(i);
+                }
+                node = null;
+            }
+            this.active = false;
+        }
     }
 }

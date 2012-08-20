@@ -1,5 +1,5 @@
 /*
- * CovidaCMDOptions.java
+ * VideoMediaData.java
  * 
  * Copyright (c) 2012, Tobias Zimmermann All rights reserved.
  * 
@@ -25,45 +25,18 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package de.dfki.covida;
+package de.dfki.covida.data;
 
-import org.kohsuke.args4j.Option;
+import javax.xml.bind.annotation.XmlElement;
 
-/**
- * Options for VideoTouch.
- *
- * @author Tobias Zimmermann
- *
- */
-public class CovidaCMDOptions {
+public class VideoMediaData {
 
-    @Option(name = "-conf", usage = "Location of the log configuration.")
-    private String configuration = "src/main/resources/apps/config.xml";
-    @Option(name = "-d", usage = "Verbose output")
-    private boolean debug;
-    @Option(name = "-log", usage = "Location of the log configuration.")
-    private String logfile = "log4j.xml";
-
-    /**
-     * Returns the location of the Touch and Write configuration file.
-     *
-     * @return
-     */
-    public String getConfiguration() {
-        return configuration;
-    }
-
-    /**
-     * @return the logfile
-     */
-    public String getLogfile() {
-        return logfile;
-    }
-
-    /**
-     * @return the debug
-     */
-    public boolean isDebug() {
-        return debug;
-    }
+    @XmlElement(name = "source")
+    public String videoSource;
+    @XmlElement(name = "name")
+    public String videoName;
+    @XmlElement(name = "time_start")
+    public long time_start;
+    @XmlElement(name = "time_end")
+    public long time_end;
 }

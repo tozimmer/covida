@@ -1,5 +1,5 @@
 /*
- * CovidaCMDOptions.java
+ * DataTest.java
  * 
  * Copyright (c) 2012, Tobias Zimmermann All rights reserved.
  * 
@@ -25,45 +25,30 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package de.dfki.covida;
+package de.dfki.covida.data;
 
-import org.kohsuke.args4j.Option;
-
-/**
- * Options for VideoTouch.
- *
- * @author Tobias Zimmermann
- *
- */
-public class CovidaCMDOptions {
-
-    @Option(name = "-conf", usage = "Location of the log configuration.")
-    private String configuration = "src/main/resources/apps/config.xml";
-    @Option(name = "-d", usage = "Verbose output")
-    private boolean debug;
-    @Option(name = "-log", usage = "Location of the log configuration.")
-    private String logfile = "log4j.xml";
+public class DataTest {
 
     /**
-     * Returns the location of the Touch and Write configuration file.
-     *
-     * @return
+     * @param args
      */
-    public String getConfiguration() {
-        return configuration;
-    }
-
-    /**
-     * @return the logfile
-     */
-    public String getLogfile() {
-        return logfile;
-    }
-
-    /**
-     * @return the debug
-     */
-    public boolean isDebug() {
-        return debug;
+    public static void main(String[] args) {
+//		VideoAnnotationData data = new VideoAnnotationData();
+//		VideoAnnotation annotation = new VideoAnnotation();
+//		annotation.description = "Robot DFKI";
+//		annotation.shapePoints = new ShapePoints();
+//		annotation.shapePoints.add(new Point(24,30));
+//		annotation.shapePoints.add(new Point(98,32));
+//		annotation.shapePoints.add(new Point(100,121));
+//		annotation.shapePoints.add(new Point(22,119));
+//		annotation.shapePoints.add(new Point(24,30));
+//		annotation.time_end = (long) 456343;
+//		annotation.time_start = (long) 455322;
+//		data.videoSource = "src\\main\\resources\\media\\videos\\Robotics Innovation Center 2010.mp4";
+//		data.title = "Robotics Innovation";
+//		data.annotations.add(annotation);
+//		data.save();
+        CovidaConfiguration conf = CovidaConfiguration.getInstance();
+        conf.save();
     }
 }
