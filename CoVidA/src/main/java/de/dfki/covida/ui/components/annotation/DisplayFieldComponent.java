@@ -25,7 +25,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package de.dfki.covida.components.ui.annotation;
+package de.dfki.covida.ui.components.annotation;
 
 import com.jme.animation.SpatialTransformer;
 import com.jme.image.Texture;
@@ -43,13 +43,13 @@ import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
 import com.jmex.angelfont.BitmapText;
 import com.jmex.awt.swingui.ImageGraphics;
-import de.dfki.covida.ui.components.AnimationHandler;
-import de.dfki.covida.ui.components.CovidaComponent;
-import de.dfki.covida.ui.components.TextOverlay;
 import de.dfki.covida.data.ShapePoints;
 import de.dfki.covida.data.VideoAnnotation;
 import de.dfki.covida.data.VideoAnnotationData;
-import de.dfki.covida.components.ui.video.VideoComponent;
+import de.dfki.covida.ui.components.AnimationHandler;
+import de.dfki.covida.ui.components.CovidaComponent;
+import de.dfki.covida.ui.components.TextOverlay;
+import de.dfki.covida.ui.components.video.VideoComponent;
 import de.dfki.touchandwrite.action.DrawAction;
 import de.dfki.touchandwrite.action.HWRAction;
 import de.dfki.touchandwrite.action.TouchAction;

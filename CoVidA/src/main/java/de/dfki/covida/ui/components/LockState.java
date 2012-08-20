@@ -28,19 +28,17 @@
 package de.dfki.covida.ui.components;
 
 import com.jme.math.Vector2f;
+import com.jme.scene.Spatial;
+import de.dfki.covida.ui.CovidaBoard;
+import de.dfki.covida.ui.components.annotation.AnnotationSearch;
+import de.dfki.covida.ui.components.video.VideoComponent;
+import de.dfki.touchandwrite.analyser.touch.gestures.events.DragEvent;
+import de.dfki.touchandwrite.analyser.touch.gestures.events.RotationGestureEvent;
+import de.dfki.touchandwrite.analyser.touch.gestures.events.ZoomEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.jme.scene.Spatial;
-
-import de.dfki.covida.ui.CovidaBoard;
-import de.dfki.covida.components.ui.annotation.AnnotationSearch;
-import de.dfki.covida.components.ui.video.VideoComponent;
-import de.dfki.touchandwrite.analyser.touch.gestures.events.DragEvent;
-import de.dfki.touchandwrite.analyser.touch.gestures.events.RotationGestureEvent;
-import de.dfki.touchandwrite.analyser.touch.gestures.events.ZoomEvent;
 import org.apache.log4j.Logger;
 
 /**

@@ -25,7 +25,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package de.dfki.covida.components.ui.button;
+package de.dfki.covida.ui.components.button;
 
 import com.jme.animation.SpatialTransformer;
 import com.jme.image.Texture;
@@ -37,7 +37,7 @@ import com.jme.scene.state.BlendState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
-import de.dfki.covida.components.ui.annotation.Field;
+import de.dfki.covida.ui.components.annotation.Field;
 import de.dfki.covida.ui.components.CovidaComponent;
 import de.dfki.touchandwrite.action.TouchAction;
 import de.dfki.touchandwrite.action.TouchActionEvent;
@@ -124,13 +124,13 @@ public abstract class CovidaButton extends CovidaComponent {
             }
         }
     }
-    
+
     abstract Field getChild();
 
     @Override
     public void registerWithInputHandler(TouchInputHandler input) {
         input.addAction(touchAction);
-        if(getChild() != null){
+        if (getChild() != null) {
             getChild().registerWithInputHandler(input);
         }
     }
@@ -138,9 +138,9 @@ public abstract class CovidaButton extends CovidaComponent {
     @Override
     protected void touchAction(TouchActionEvent e) {
         if (getLockState().getTouchLock(e.getID()) == getId()) {
-            if((e.getTouchState() == TouchState.TOUCH_BIRTH)){
+            if ((e.getTouchState() == TouchState.TOUCH_BIRTH)) {
                 touchAliveAction(e);
-            }else if (!(e.getTouchState() == TouchState.TOUCH_DEAD)) {
+            } else if (!(e.getTouchState() == TouchState.TOUCH_DEAD)) {
                 getNode().attachChild(this.overlay.get(0));
                 if (inArea(e.getX(), e.getY())) {
                     if (!getNode().hasChild(this.overlay.get(1))) {

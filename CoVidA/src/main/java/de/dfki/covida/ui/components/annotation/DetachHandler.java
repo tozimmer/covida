@@ -1,5 +1,5 @@
 /*
- * DisplayFieldType.java
+ * DetachHandler.java
  * 
  * Copyright (c) 2012, Tobias Zimmermann All rights reserved.
  * 
@@ -25,14 +25,49 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package de.dfki.covida.components.ui.annotation;
+package de.dfki.covida.ui.components.annotation;
+
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author Tobias Zimmermann
- *
  */
-public enum DisplayFieldType {
+public class DetachHandler implements Runnable {
 
-    INFO, LIST, EDIT
+    private Object field;
+    private final Object obj;
+    private int delay;
+    private Logger log = Logger.getLogger(DetachHandler.class);
+
+    public Object getObject() {
+        return obj;
+    }
+
+    public DetachHandler(Field field, int delay) {
+        this.field = field;
+        this.delay = delay;
+        obj = new Object();
+    }
+
+    public void run() {
+        synchronized (obj) {
+            try {
+                obj.wait(delay);
+            } catch (InterruptedException e) {
+                log.error(e);
+            }
+            if (field instanceof AnnotationSearch) {
+                AnnotationSearch search = (AnnotationSearch) field;
+                if (search.isClosing()) {
+                    search.detach();
+                }
+            } else if (field instanceof AnnotationClipboard) {
+                AnnotationClipboard clipboard = (AnnotationClipboard) field;
+                if (clipboard.isClosing()) {
+                    clipboard.detach();
+                }
+            }
+        }
+    }
 }

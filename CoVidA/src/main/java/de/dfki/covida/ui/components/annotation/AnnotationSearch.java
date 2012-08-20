@@ -25,9 +25,8 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package de.dfki.covida.components.ui.annotation;
+package de.dfki.covida.ui.components.annotation;
 
-import com.jme.animation.SpatialTransformer;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
@@ -38,9 +37,9 @@ import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
 import com.jmex.angelfont.BitmapFont.Align;
-import de.dfki.covida.components.ui.video.VideoComponent;
 import de.dfki.covida.data.VideoAnnotationData;
 import de.dfki.covida.ui.components.TextOverlay;
+import de.dfki.covida.ui.components.video.VideoComponent;
 import de.dfki.touchandwrite.action.DrawAction;
 import de.dfki.touchandwrite.action.HWRAction;
 import de.dfki.touchandwrite.action.TouchAction;
@@ -493,7 +492,7 @@ public class AnnotationSearch extends Field {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * de.dfki.touchandwrite.visual.components.TouchAndWriteComponent#initComponent
      * ()

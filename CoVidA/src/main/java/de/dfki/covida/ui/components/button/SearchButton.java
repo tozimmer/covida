@@ -25,15 +25,15 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package de.dfki.covida.components.ui.button;
+package de.dfki.covida.ui.components.button;
 
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.Node;
-import de.dfki.covida.components.ui.annotation.AnnotationSearch;
-import de.dfki.covida.components.ui.annotation.Field;
-import de.dfki.covida.components.ui.video.VideoComponent;
+import de.dfki.covida.ui.components.annotation.AnnotationSearch;
+import de.dfki.covida.ui.components.annotation.Field;
+import de.dfki.covida.ui.components.video.VideoComponent;
 import de.dfki.touchandwrite.action.TouchActionEvent;
 import java.util.ArrayList;
 
@@ -105,7 +105,6 @@ public class SearchButton extends CovidaButton {
 
     @Override
     protected void touchDeadAction(TouchActionEvent e) {
-        
     }
 
     @Override

@@ -25,9 +25,8 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package de.dfki.covida.components.ui.annotation;
+package de.dfki.covida.ui.components.annotation;
 
-import com.jme.animation.SpatialTransformer;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
@@ -113,12 +112,6 @@ public class AnnotationClipboard extends Field {
         caption.setText("Clipboard:");
         caption.setFont(2);
         hwrResults.add("Test");
-//        addSpacer(x, (int) (getTextY(0) - FONT_SIZE), 0,
-//                (int) (quad.getWidth() / 1.1f), TEXT_SPACER);
-//        x = (int) (getWidth() / 9.f);
-//        addSpacer(x, 0, 90, (int) (quad.getHeight() / 1.1f), TEXT_SPACER);
-//        x = (int) -(getWidth() / 4.f);
-//        addSpacer(x, 0, 90, (int) (quad.getHeight() / 1.1f), TEXT_SPACER);
     }
 
     @Override
@@ -144,8 +137,6 @@ public class AnnotationClipboard extends Field {
 
     @Override
     public void handwritingResult(HandwritingRecognitionEvent event) {
-        // TODO pen id!
-//        log.debug("HWR Event: " + event.toString());
         if (!isOpen()) {
             return;
         }
@@ -156,8 +147,9 @@ public class AnnotationClipboard extends Field {
             this.hwrEvents.add(event);
             int size = event.getHWRResultSet().getWords().size();
             for (int i = 0; i < size; i++) {
-                if(hwrResults.contains(event.getHWRResultSet().getWords().get(i).getCandidates().peek().getRecogntionResult()))
-                this.hwrResults.add(event.getHWRResultSet().getWords().get(i).getCandidates().peek().getRecogntionResult());
+                if (hwrResults.contains(event.getHWRResultSet().getWords().get(i).getCandidates().peek().getRecogntionResult())) {
+                    this.hwrResults.add(event.getHWRResultSet().getWords().get(i).getCandidates().peek().getRecogntionResult());
+                }
             }
             update();
         }
@@ -165,7 +157,6 @@ public class AnnotationClipboard extends Field {
 
     public void update() {
         int x = (int) (-width / 4.0f);
-        
         for (int i = 0; i < hwrResults.size(); i++) {
             Node node = new Node("HWR Search Text Node");
             node.setLocalTranslation(x, getTextY(2 + i), 0);

@@ -31,7 +31,6 @@ import de.dfki.touchandwrite.ApplicationType;
 import de.dfki.touchandwrite.conf.TouchAndWriteConfiguration;
 import de.dfki.touchandwrite.visual.StateBasedTouchAndWriteApp;
 import java.io.File;
-
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;

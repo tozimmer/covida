@@ -25,7 +25,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package de.dfki.covida.components.ui.video;
+package de.dfki.covida.ui.components.video;
 
 import com.jme.image.Texture;
 import com.jme.image.Texture.WrapMode;
@@ -58,15 +58,15 @@ import java.util.Queue;
 
 /**
  * Time slider for VideoComponent
- * 
+ *
  * @author Tobias Zimmermann
- * 
+ *
  */
 public class VideoSlider extends CovidaComponent implements DrawingComponent,
         HWRSensitiveComponent {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = -668703009933127672L;
     private ArrayList<Quad> overlaySlider;
@@ -144,12 +144,16 @@ public class VideoSlider extends CovidaComponent implements DrawingComponent,
 
     @Override
     public void registerWithInputHandler(PenInputHandler input) {
-        /** Do Nothing */
+        /**
+         * Do Nothing
+         */
     }
 
     @Override
     public void unRegisterWithInputHandler(PenInputHandler input) {
-        /** Do Nothing */
+        /**
+         * Do Nothing
+         */
     }
 
     @Override
@@ -168,7 +172,7 @@ public class VideoSlider extends CovidaComponent implements DrawingComponent,
     }
 
     /**
-     * 
+     *
      * @param percentage
      */
     public void updateSlider(float percentage) {
@@ -176,7 +180,7 @@ public class VideoSlider extends CovidaComponent implements DrawingComponent,
     }
 
     /**
-     * 
+     *
      * @param x
      */
     public void move(float x) {
@@ -187,27 +191,37 @@ public class VideoSlider extends CovidaComponent implements DrawingComponent,
 
     @Override
     public void handwritingResult(HandwritingRecognitionEvent set) {
-        /** Do Nothing */
+        /**
+         * Do Nothing
+         */
     }
 
     @Override
     public void draw(ShapeEvent shape) {
-        /** Do Nothing */
+        /**
+         * Do Nothing
+         */
     }
 
     @Override
     public void setCurrentPenColor(Color color) {
-        /** Do Nothing */
+        /**
+         * Do Nothing
+         */
     }
 
     @Override
     public void activatePenPressure() {
-        /** Do Nothing */
+        /**
+         * Do Nothing
+         */
     }
 
     @Override
     public void deactivatePenPressure() {
-        /** Do Nothing */
+        /**
+         * Do Nothing
+         */
     }
 
     @Override
@@ -222,7 +236,9 @@ public class VideoSlider extends CovidaComponent implements DrawingComponent,
 
     @Override
     public void setPenThickness(float thickness) {
-        /** Do Nothing */
+        /**
+         * Do Nothing
+         */
     }
 
     public VideoComponent getVideo() {

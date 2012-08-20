@@ -27,32 +27,10 @@
  */
 package de.dfki.covida.ui.components;
 
-import java.awt.AlphaComposite;
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-
-import javax.imageio.ImageIO;
-
-import org.apache.log4j.Logger;
-
 import com.jme.image.Texture;
-import com.jme.image.Texture2D;
 import com.jme.image.Texture.MagnificationFilter;
 import com.jme.image.Texture.MinificationFilter;
+import com.jme.image.Texture2D;
 import com.jme.input.InputHandler;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
@@ -66,7 +44,6 @@ import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
 import com.jmex.awt.swingui.ImageGraphics;
 import com.jmex.awt.swingui.ImageGraphicsBaseImpl;
-
 import de.dfki.covida.data.CovidaConfiguration;
 import de.dfki.covida.data.PenData;
 import de.dfki.covida.data.StrokeTrace;
@@ -74,107 +51,161 @@ import de.dfki.touchandwrite.action.DrawAction;
 import de.dfki.touchandwrite.action.HWRAction;
 import de.dfki.touchandwrite.action.PenActionEvent;
 import de.dfki.touchandwrite.action.TouchAction;
-import de.dfki.touchandwrite.action.TouchActionEvent;
 import de.dfki.touchandwrite.analyser.pen.PenDataConversionUtil;
 import de.dfki.touchandwrite.input.pen.event.ShapeEvent;
 import de.dfki.touchandwrite.input.pen.hwr.HWRResultSet;
 import de.dfki.touchandwrite.input.pen.hwr.HandwritingRecognitionEvent;
 import de.dfki.touchandwrite.jme2.ShapeUtils;
-import de.dfki.touchandwrite.shape.Circle;
-import de.dfki.touchandwrite.shape.Ellipse;
-import de.dfki.touchandwrite.shape.EllipticArc;
-import de.dfki.touchandwrite.shape.LineSegment;
 import de.dfki.touchandwrite.shape.Polygon;
-import de.dfki.touchandwrite.shape.Quadrangle;
 import de.dfki.touchandwrite.shape.Shape;
-import de.dfki.touchandwrite.shape.Triangle;
-import de.dfki.touchandwrite.visual.components.AbstractTouchAndWriteComponent;
-import de.dfki.touchandwrite.visual.components.ComponentType;
-import de.dfki.touchandwrite.visual.components.DrawingComponent;
-import de.dfki.touchandwrite.visual.components.HWRSensitiveComponent;
-import de.dfki.touchandwrite.visual.components.TouchPoint;
-import de.dfki.touchandwrite.visual.components.TouchableComponent;
+import de.dfki.touchandwrite.shape.*;
+import de.dfki.touchandwrite.visual.components.*;
 import de.dfki.touchandwrite.visual.input.PenInputHandler;
 import de.dfki.touchandwrite.visual.input.TouchInputHandler;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.List;
+import java.util.*;
+import java.util.Queue;
+import javax.imageio.ImageIO;
+import org.apache.log4j.Logger;
 
 /**
  * Drawing Overlay for videotouch
- * 
+ *
  * @author Tobias Zimmermann
- * 
+ *
  */
 public class DrawingOverlay extends AbstractTouchAndWriteComponent implements
         DrawingComponent, HWRSensitiveComponent {
 
-    /** Generated serial id */
+    /**
+     * Generated serial id
+     */
     private static final long serialVersionUID = 3901990659651052688L;
-    /** Alpha composite for transparent panel. */
+    /**
+     * Alpha composite for transparent panel.
+     */
     protected final AlphaComposite TRANSPARENT = AlphaComposite.getInstance(
             AlphaComposite.SRC_OVER, 0.0f);
     protected final AlphaComposite SOLID = AlphaComposite.getInstance(
             AlphaComposite.SRC_OVER, 1.0f);
-    /** Logger. */
+    /**
+     * Logger.
+     */
     private Logger log = Logger.getLogger(DrawingOverlay.class);
-    /** Width of this pen's texture. */
+    /**
+     * Width of this pen's texture.
+     */
     protected int boardWidth;
-    /** Height of this pen's texture. */
+    /**
+     * Height of this pen's texture.
+     */
     protected int boardHeight;
-    /** The drawing board is registered with this handler. */
+    /**
+     * The drawing board is registered with this handler.
+     */
     private InputHandler registeredInputHandler;
-    /** Touch action */
+    /**
+     * Touch action
+     */
     private TouchAction touchAction;
-    /** Draw action. */
+    /**
+     * Draw action.
+     */
     private DrawAction drawAction;
-    /** Current stroke. */
+    /**
+     * Current stroke.
+     */
     protected List<Vector3f> currentStroke;
-    /** Strokes */
+    /**
+     * Strokes
+     */
     protected List<StrokeTrace<Float>> strokes;
-    /** Texture state. */
+    /**
+     * Texture state.
+     */
     protected TextureState ts;
-    /** Texture state. */
+    /**
+     * Texture state.
+     */
     protected TextureState tsBackground;
-    /** The texture which has to be dynamically updated. */
+    /**
+     * The texture which has to be dynamically updated.
+     */
     protected Texture texture;
-    /** Background image. */
+    /**
+     * Background image.
+     */
     protected Texture bgTexture;
-    /** Current color of the pen. Default is black. */
+    /**
+     * Current color of the pen. Default is black.
+     */
     private Map<Integer, Color> currentPenColor = new HashMap<Integer, Color>();
-    /** Last x position of the pen. (-1 if there was a pen up event) */
+    /**
+     * Last x position of the pen. (-1 if there was a pen up event)
+     */
     private Map<Integer, Integer> lastX = new HashMap<Integer, Integer>();
-    /** Last y position of the pen. (-1 if there was a pen up event) */
+    /**
+     * Last y position of the pen. (-1 if there was a pen up event)
+     */
     private Map<Integer, Integer> lastY = new HashMap<Integer, Integer>();
-    /** Drawing will be done with Java2D. */
+    /**
+     * Drawing will be done with Java2D.
+     */
     protected ImageGraphics g2d;
-    /** Is pen pressure considered. */
+    /**
+     * Is pen pressure considered.
+     */
     private boolean penPressure = false;
-    /** Thickness of the pen stroke */
+    /**
+     * Thickness of the pen stroke
+     */
     private float pen_thickness = 1.25f;
-    /** Drawing board. */
+    /**
+     * Drawing board.
+     */
     protected Quad board;
-    /** Node which collects all shapes. */
+    /**
+     * Node which collects all shapes.
+     */
     protected Node shapesNode = new Node("Shapes-Node");
     protected Color backgroundColor = Color.white;
-    /** Detected shapes */
+    /**
+     * Detected shapes
+     */
     protected List<Shape> shapes;
     /**
-     * Map a <code>Shape</code> object into its corresponding
+     * Map a
+     * <code>Shape</code> object into its corresponding
      * <code>Spatial</code> object
      */
     protected Map<Shape, Spatial> shapeSpatials;
-    /** Mapping of ids and last seen touch event. */
+    /**
+     * Mapping of ids and last seen touch event.
+     */
     protected Map<Integer, TouchPoint> touchPoints;
-    /** Current shape color. */
+    /**
+     * Current shape color.
+     */
     protected Color shapeColor = Color.blue;
-    /** Handwriting event action. */
+    /**
+     * Handwriting event action.
+     */
     private HWRAction hwrAction;
-    /** List of string, which has to be drawn. */
+    /**
+     * List of string, which has to be drawn.
+     */
     private List<DisplayString> strings = new ArrayList<DisplayString>();
 
     /**
      * Different modes for drawing.
-     * 
+     *
      * @author Tobias Zimmermann
-     * 
+     *
      */
     protected enum DrawMode {
 
@@ -189,7 +220,7 @@ public class DrawingOverlay extends AbstractTouchAndWriteComponent implements
 
         /**
          * Display text.
-         * 
+         *
          * @return
          */
         public String displayText() {
@@ -210,30 +241,48 @@ public class DrawingOverlay extends AbstractTouchAndWriteComponent implements
         String string;
         Point point;
     }
-    /** Current mode of the board. */
+    /**
+     * Current mode of the board.
+     */
     protected DrawMode current_mode = DrawMode.AUTO_DETECTION_MODE;
-    /** Handwriting */
+    /**
+     * Handwriting
+     */
     protected List<HandwritingRecognitionEvent> hwrEvents;
-    /** Displays: Current mode. */
+    /**
+     * Displays: Current mode.
+     */
     // protected Text text;
-    /** Stores the original resolution of the background image */
+    /**
+     * Stores the original resolution of the background image
+     */
     protected int originalImageWidth, originalImageHeight;
-    /** Marks the point, where the background image is drawn. */
+    /**
+     * Marks the point, where the background image is drawn.
+     */
     protected int backgroundX, backgroundY;
-    /** Stores the scaled resolution of the background image */
+    /**
+     * Stores the scaled resolution of the background image
+     */
     protected int scaledImageHeight, scaledImageWidth;
-    /** Indicates if online mode detection is activated. */
+    /**
+     * Indicates if online mode detection is activated.
+     */
     protected boolean onlineModeDetection;
-    /** Flag which indicates of pen is active. */
+    /**
+     * Flag which indicates of pen is active.
+     */
     protected boolean penActive;
     private CovidaConfiguration config;
     private List<PenData> penColor;
     private Iterator<PenData> penColorIterator;
 
-    /** Flag which indicates if the touch points should be displayed. */
+    /**
+     * Flag which indicates if the touch points should be displayed.
+     */
     /**
      * Constructs a new drawing board which only listens to
-     * 
+     *
      * @param name
      * @param limitWidth
      * @param limitHeight
@@ -244,7 +293,7 @@ public class DrawingOverlay extends AbstractTouchAndWriteComponent implements
 
     /**
      * Constructs a new drawing board which only listens to
-     * 
+     *
      * @param name
      * @param limitWidth
      * @param limitHeight
@@ -257,7 +306,7 @@ public class DrawingOverlay extends AbstractTouchAndWriteComponent implements
 
     /**
      * Constructs a new drawing board which only listens to
-     * 
+     *
      * @param name
      * @param limitWidth
      * @param limitHeight
@@ -284,7 +333,7 @@ public class DrawingOverlay extends AbstractTouchAndWriteComponent implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * de.dfki.touchandwrite.visual.components.TouchAndWriteComponent#initComponent
      * ()
@@ -353,7 +402,7 @@ public class DrawingOverlay extends AbstractTouchAndWriteComponent implements
 
     /**
      * Enables anti aliasing.
-     * 
+     *
      * @param graphics
      */
     private void enableAntiAlias(Graphics2D graphics) {
@@ -380,24 +429,25 @@ public class DrawingOverlay extends AbstractTouchAndWriteComponent implements
         g2d.setColor(this.backgroundColor);
         g2d.fillRect(0, 0, boardWidth, boardHeight);
         g2d.setComposite(SOLID);
-        /*g2d.setColor(Color.RED);
-        g2d.drawLine(100 - 10, 90, 100 + 10, 90);
-        g2d.drawLine(100, 90 - 10, 100, 90 + 10);
-        
-        g2d.drawLine(100 - 10, 775, 100 + 10, 775);
-        g2d.drawLine(100, 775 - 10, 100, 775 + 10);
-        
-        g2d.drawLine(1180 - 10, 775, 1180 + 10, 775);
-        g2d.drawLine(1180, 775 - 10, 1180, 775 + 10);
-        
-        g2d.drawLine(1180 - 10, 90, 1180 + 10, 90);
-        g2d.drawLine(1180, 90 - 10, 1180, 90 + 10);*/
+        /*
+         * g2d.setColor(Color.RED); g2d.drawLine(100 - 10, 90, 100 + 10, 90);
+         * g2d.drawLine(100, 90 - 10, 100, 90 + 10);
+         *
+         * g2d.drawLine(100 - 10, 775, 100 + 10, 775); g2d.drawLine(100, 775 -
+         * 10, 100, 775 + 10);
+         *
+         * g2d.drawLine(1180 - 10, 775, 1180 + 10, 775); g2d.drawLine(1180, 775
+         * - 10, 1180, 775 + 10);
+         *
+         * g2d.drawLine(1180 - 10, 90, 1180 + 10, 90); g2d.drawLine(1180, 90 -
+         * 10, 1180, 90 + 10);
+         */
         g2d.update();
     }
 
     /**
      * Stores the content of the board as a PNG image.
-     * 
+     *
      * @param location
      */
     public void storeBoardContent(File location) {
@@ -452,8 +502,7 @@ public class DrawingOverlay extends AbstractTouchAndWriteComponent implements
     }
 
     /**
-     * @param penActive
-     *            the penActive to set
+     * @param penActive the penActive to set
      */
     public void setPenActive(boolean penActive) {
         this.penActive = penActive;
@@ -461,7 +510,7 @@ public class DrawingOverlay extends AbstractTouchAndWriteComponent implements
 
     /**
      * Sets the background for the drawing board.
-     * 
+     *
      * @param background
      */
     public void setBackground(URL background) {
@@ -477,7 +526,7 @@ public class DrawingOverlay extends AbstractTouchAndWriteComponent implements
 
     /**
      * Sets the background texture.
-     * 
+     *
      * @param bg
      */
     protected void setBackgroundTexture(Texture bg) {
@@ -493,7 +542,7 @@ public class DrawingOverlay extends AbstractTouchAndWriteComponent implements
 
     /**
      * Loads image and re-scales it to maximum size.
-     * 
+     *
      * @param imageURL
      * @param limitWidth
      * @param limitHeight
@@ -541,7 +590,7 @@ public class DrawingOverlay extends AbstractTouchAndWriteComponent implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.scene.TriMesh#draw(com.jme.renderer.Renderer)
      */
     @Override
@@ -563,10 +612,10 @@ public class DrawingOverlay extends AbstractTouchAndWriteComponent implements
 
     /**
      * Updates the internal image.
-     * 
+     *
      * @param x
      * @param y
-     * @param i 
+     * @param i
      */
     protected void updateImage(int x, int y, float force, int id) {
         if (!lastX.containsKey(new Integer(id))) {
@@ -599,7 +648,7 @@ public class DrawingOverlay extends AbstractTouchAndWriteComponent implements
 
     /**
      * Erases all strokes.
-     * 
+     *
      * @param shape
      */
     private void eraseStrokes() {
@@ -645,7 +694,7 @@ public class DrawingOverlay extends AbstractTouchAndWriteComponent implements
 
     /**
      * Updates the image.
-     * 
+     *
      * @param s
      */
     public void updateImage(Shape s) {
@@ -660,11 +709,9 @@ public class DrawingOverlay extends AbstractTouchAndWriteComponent implements
     /**
      * Every time a new shape is detected a spatial is generated for the
      * detected shape.
-     * 
-     * @param s
-     *            - event coming from the Touch&Write server
-     * @param spatial
-     *            - mapped spatial
+     *
+     * @param s - event coming from the Touch&Write server
+     * @param spatial - mapped spatial
      */
     protected void newSpatialAddedFor(Shape s, Spatial spatial) {
         // Inherited classes can overwrite this method,
@@ -672,14 +719,17 @@ public class DrawingOverlay extends AbstractTouchAndWriteComponent implements
     }
 
     /**
-     *  Given a shape, creates a corresponding <code>Spatial</code>
-     *         object and returns it.
-     * 
+     * Given a shape, creates a corresponding
+     * <code>Spatial</code> object and returns it.
+     *
      * @author Moheb
-     * @param s
-     *            the <code>Shape</code>
-     * @return the <code>Spatial</code> corresponding to the <code>Shape</code>
-     * */
+     * @param s the
+     * <code>Shape</code>
+     * @return the
+     * <code>Spatial</code> corresponding to the
+     * <code>Shape</code>
+     *
+     */
     public Spatial createSpatialFromShape(Shape s) {
         Spatial spatial = null;
 
@@ -725,7 +775,7 @@ public class DrawingOverlay extends AbstractTouchAndWriteComponent implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * de.dfki.touchandwrite.visual.components.DrawingComponent#draw(de.dfki
      * .touchandwrite.action.PenActionEvent)
@@ -753,7 +803,7 @@ public class DrawingOverlay extends AbstractTouchAndWriteComponent implements
 
     /**
      * Erasing a round area
-     * 
+     *
      * @param x
      * @param y
      * @param radius
@@ -766,7 +816,7 @@ public class DrawingOverlay extends AbstractTouchAndWriteComponent implements
     }
 
     /**
-     * 
+     *
      * @param color
      * @param penID
      */
@@ -776,7 +826,7 @@ public class DrawingOverlay extends AbstractTouchAndWriteComponent implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * de.dfki.touchandwrite.visual.components.DrawingComponent#activatePenPressure
      * ()
@@ -787,7 +837,7 @@ public class DrawingOverlay extends AbstractTouchAndWriteComponent implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seede.dfki.touchandwrite.visual.components.DrawingComponent#
      * deactivatePenPressure()
      */
@@ -797,7 +847,7 @@ public class DrawingOverlay extends AbstractTouchAndWriteComponent implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seede.dfki.touchandwrite.visual.components.DrawingComponent#
      * isPenPressureActivated()
      */
@@ -807,7 +857,7 @@ public class DrawingOverlay extends AbstractTouchAndWriteComponent implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * de.dfki.touchandwrite.visual.components.DrawingComponent#getPenThickness
      * ()
@@ -818,7 +868,7 @@ public class DrawingOverlay extends AbstractTouchAndWriteComponent implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * de.dfki.touchandwrite.visual.components.DrawingComponent#setPenThickness
      * (float)
@@ -846,7 +896,7 @@ public class DrawingOverlay extends AbstractTouchAndWriteComponent implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * de.dfki.touchandwrite.visual.components.DrawingComponent#draw(de.dfki
      * .touchandwrite.input.pen.event.ShapeEvent)
@@ -867,7 +917,7 @@ public class DrawingOverlay extends AbstractTouchAndWriteComponent implements
 
     /**
      * Checks if shape is supported.
-     * 
+     *
      * @param s
      * @return
      */
@@ -877,7 +927,7 @@ public class DrawingOverlay extends AbstractTouchAndWriteComponent implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * de.dfki.touchandwrite.visual.components.TouchableComponent#isSensitiveArea
      * (int, int, int)
@@ -888,7 +938,7 @@ public class DrawingOverlay extends AbstractTouchAndWriteComponent implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seede.dfki.touchandwrite.visual.components.TouchableComponent#
      * registerWithInputHandler
      * (de.dfki.touchandwrite.visual.input.TouchInputHandler)
@@ -899,7 +949,7 @@ public class DrawingOverlay extends AbstractTouchAndWriteComponent implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seede.dfki.touchandwrite.visual.components.TouchableComponent#
      * unRegisterWithInputHandler
      * (de.dfki.touchandwrite.visual.input.TouchInputHandler)
@@ -910,7 +960,7 @@ public class DrawingOverlay extends AbstractTouchAndWriteComponent implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seede.dfki.touchandwrite.visual.components.PenSensitiveComponent#
      * unRegisterWithInputHandler
      * (de.dfki.touchandwrite.visual.input.PenInputHandler)
@@ -922,7 +972,7 @@ public class DrawingOverlay extends AbstractTouchAndWriteComponent implements
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seede.dfki.touchandwrite.visual.components.HWRSensitiveComponent#
      * handwritingResult
      * (de.dfki.touchandwrite.input.pen.hwr.HandwritingRecognitionEvent)
@@ -938,7 +988,7 @@ public class DrawingOverlay extends AbstractTouchAndWriteComponent implements
 
     /**
      * Draws the HWR result.
-     * 
+     *
      * @param event
      */
     protected void drawHWRResult(HandwritingRecognitionEvent event) {
@@ -957,7 +1007,7 @@ public class DrawingOverlay extends AbstractTouchAndWriteComponent implements
 
     /**
      * Checks the hwr result and chooses the best result.
-     * 
+     *
      * @param hwrResultSet
      * @return
      */

@@ -25,7 +25,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package de.dfki.covida.components.ui.video;
+package de.dfki.covida.ui.components.video;
 
 import com.jme.animation.SpatialTransformer;
 import com.jme.image.Texture;

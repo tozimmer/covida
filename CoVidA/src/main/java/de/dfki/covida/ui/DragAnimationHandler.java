@@ -9,7 +9,7 @@ import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.Node;
-import de.dfki.covida.components.ui.video.VideoComponent;
+import de.dfki.covida.ui.components.video.VideoComponent;
 import org.apache.log4j.Logger;
 
 /**

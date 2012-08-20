@@ -25,21 +25,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package de.dfki.covida.components.ui.video;
-
-import de.dfki.covida.data.VideoFormat;
-import de.dfki.touchandwrite.action.TouchActionEvent;
-import java.awt.AlphaComposite;
-import java.awt.Dimension;
-import java.awt.GraphicsEnvironment;
-import java.awt.image.BufferedImage;
-import java.io.File;
-
-import org.apache.log4j.Logger;
-
-import uk.co.caprica.vlcj.player.MediaPlayerFactory;
-import uk.co.caprica.vlcj.player.direct.DirectMediaPlayer;
-import uk.co.caprica.vlcj.player.direct.RenderCallbackAdapter;
+package de.dfki.covida.ui.components.video;
 
 import com.jme.image.Texture;
 import com.jme.image.Texture2D;
@@ -51,21 +37,33 @@ import com.jme.scene.state.BlendState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jmex.awt.swingui.ImageGraphics;
-
+import de.dfki.covida.data.VideoFormat;
 import de.dfki.covida.ui.components.CovidaComponent;
+import de.dfki.touchandwrite.action.TouchActionEvent;
 import de.dfki.touchandwrite.analyser.touch.gestures.events.DragEvent;
 import de.dfki.touchandwrite.analyser.touch.gestures.events.RotationGestureEvent;
 import de.dfki.touchandwrite.analyser.touch.gestures.events.ZoomEvent;
+import java.awt.AlphaComposite;
+import java.awt.Dimension;
+import java.awt.GraphicsEnvironment;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import org.apache.log4j.Logger;
+import uk.co.caprica.vlcj.player.MediaPlayerFactory;
+import uk.co.caprica.vlcj.player.direct.DirectMediaPlayer;
+import uk.co.caprica.vlcj.player.direct.RenderCallbackAdapter;
 
 /**
  * Component to preload videos for dimension detection
- * 
+ *
  * @author Tobias Zimmermann
- * 
+ *
  */
 public class VideoPreloadComponent extends CovidaComponent implements Runnable {
 
-    /** Generated serial id. */
+    /**
+     * Generated serial id.
+     */
     private static final long serialVersionUID = 3695261146791636755L;
     protected final AlphaComposite TRANSPARENT = AlphaComposite.getInstance(
             AlphaComposite.SRC_OVER, 0.0f);
@@ -76,7 +74,9 @@ public class VideoPreloadComponent extends CovidaComponent implements Runnable {
     private MediaPlayerFactory factory;
     private DirectMediaPlayer mediaPlayer;
     private String mrl;
-    /** Logger */
+    /**
+     * Logger
+     */
     private Logger log = Logger.getLogger(VideoPreloadComponent.class);
     private int height;
     private VideoFormat format;
@@ -87,14 +87,13 @@ public class VideoPreloadComponent extends CovidaComponent implements Runnable {
 
     @Override
     protected void touchAction(TouchActionEvent e) {
-        
     }
 
     /**
      * Callback for rendering the video.
-     * 
+     *
      * @author Tobias Zimmermann
-     * 
+     *
      */
     class RenderCallback extends RenderCallbackAdapter {
 
@@ -111,7 +110,7 @@ public class VideoPreloadComponent extends CovidaComponent implements Runnable {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * uk.co.caprica.vlcj.player.direct.RenderCallbackAdapter#onDisplay(
          * int[])
@@ -124,7 +123,7 @@ public class VideoPreloadComponent extends CovidaComponent implements Runnable {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.scene.TriMesh#draw(com.jme.renderer.Renderer)
      */
     @Override
@@ -141,7 +140,7 @@ public class VideoPreloadComponent extends CovidaComponent implements Runnable {
 
     /**
      * Updates the video image.
-     * 
+     *
      * @param image
      */
     public void updateVideo(BufferedImage image) {
@@ -151,7 +150,7 @@ public class VideoPreloadComponent extends CovidaComponent implements Runnable {
 
     /**
      * VideoComponent Constructor
-     * 
+     *
      * @param id
      * @param x
      * @param y
@@ -169,12 +168,12 @@ public class VideoPreloadComponent extends CovidaComponent implements Runnable {
         format = new VideoFormat(1);
         videoQuad = new Quad("video", 10, 10);
         videoQuad.setLocalTranslation(display.x, display.y, 0);
-	this.attachChild(videoQuad);
+        this.attachChild(videoQuad);
     }
 
     /**
      * Initialize the VideoComponent
-     * 
+     *
      */
     @Override
     public void initComponent() {
@@ -214,7 +213,7 @@ public class VideoPreloadComponent extends CovidaComponent implements Runnable {
     }
 
     /**
-     * 
+     *
      * @return the videoSource String
      */
     public String getFile() {
@@ -223,7 +222,7 @@ public class VideoPreloadComponent extends CovidaComponent implements Runnable {
 
     /**
      * Makes a snapshot of the video
-     * 
+     *
      * @return video snapshot
      */
     public BufferedImage getSnapshot() {
@@ -231,7 +230,7 @@ public class VideoPreloadComponent extends CovidaComponent implements Runnable {
     }
 
     /**
-     * 
+     *
      * @return true if video is ready to play
      */
     public boolean isReady() {
@@ -276,7 +275,7 @@ public class VideoPreloadComponent extends CovidaComponent implements Runnable {
 
     /**
      * Changes the actual playing media
-     * 
+     *
      * @param mrl
      */
     public void setMedia(String mrl) {
@@ -299,7 +298,7 @@ public class VideoPreloadComponent extends CovidaComponent implements Runnable {
 
     /**
      * Resumes a paused video
-     * 
+     *
      */
     public void resume() {
         if (isReady()) {
@@ -311,9 +310,8 @@ public class VideoPreloadComponent extends CovidaComponent implements Runnable {
 
     /**
      * Sets the video time position in frames
-     * 
-     * @param time
-     *            - time in frames
+     *
+     * @param time - time in frames
      */
     public void setTimePosition(long time) {
         if (isReady()) {
@@ -323,7 +321,7 @@ public class VideoPreloadComponent extends CovidaComponent implements Runnable {
 
     /**
      * Sets the video time position in percentage
-     * 
+     *
      * @param percentage
      */
     public void setTimePosition(float percentage) {
@@ -334,8 +332,9 @@ public class VideoPreloadComponent extends CovidaComponent implements Runnable {
 
     /**
      * Returns video time position (Frame)
-     * 
-     * @return <code>long</code> lenght , -1 if no video is active
+     *
+     * @return
+     * <code>long</code> lenght , -1 if no video is active
      */
     public long getFramePosition() {
         if (isReady()) {
@@ -346,8 +345,9 @@ public class VideoPreloadComponent extends CovidaComponent implements Runnable {
 
     /**
      * Returns video time position (ms)
-     * 
-     * @return <code>long</code> lenght , -1 if no video is active
+     *
+     * @return
+     * <code>long</code> lenght , -1 if no video is active
      */
     public float getTimePosition() {
         if (isReady()) {
@@ -364,8 +364,9 @@ public class VideoPreloadComponent extends CovidaComponent implements Runnable {
 
     /**
      * Returns video source length in frames
-     * 
-     * @return <code>long</code> lenght , -1 if no video is active
+     *
+     * @return
+     * <code>long</code> lenght , -1 if no video is active
      * @return -1 if video is not ready;
      */
     public long getMaxTime() {
@@ -376,7 +377,7 @@ public class VideoPreloadComponent extends CovidaComponent implements Runnable {
     }
 
     /**
-     * 
+     *
      * @return fps - frames per second
      * @return -1 if video is not Ready
      */
@@ -408,7 +409,7 @@ public class VideoPreloadComponent extends CovidaComponent implements Runnable {
 
     /**
      * Changes video source of VideoComponent
-     * 
+     *
      * @param file
      */
     public void videoChange(File file) {
@@ -430,9 +431,9 @@ public class VideoPreloadComponent extends CovidaComponent implements Runnable {
 
     /**
      * Sets the volume for the video.
-     * 
-     * @param value
-     *            - <code>Integer</code> - Volume in percentage
+     *
+     * @param value -
+     * <code>Integer</code> - Volume in percentage
      */
     public void setVolume(int value) {
         if (isReady()) {
@@ -441,8 +442,8 @@ public class VideoPreloadComponent extends CovidaComponent implements Runnable {
     }
 
     public Dimension getVideoDimension() {
-        if (isReady()){
-        return mediaPlayer.getVideoDimension();
+        if (isReady()) {
+            return mediaPlayer.getVideoDimension();
         }
         return null;
     }
@@ -470,7 +471,7 @@ public class VideoPreloadComponent extends CovidaComponent implements Runnable {
 
     /**
      * Method for calculation of video width
-     * 
+     *
      * @return video width
      */
     public int getWidth() {
@@ -478,7 +479,7 @@ public class VideoPreloadComponent extends CovidaComponent implements Runnable {
     }
 
     /**
-     * 
+     *
      * @return height of the VideoComponent
      */
     public int getHeight() {

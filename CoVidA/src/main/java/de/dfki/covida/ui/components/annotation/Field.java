@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.dfki.covida.components.ui.annotation;
+package de.dfki.covida.ui.components.annotation;
 
 import com.jme.animation.SpatialTransformer;
 import com.jme.image.Texture;
@@ -15,9 +15,9 @@ import com.jme.scene.state.BlendState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jmex.awt.swingui.ImageGraphics;
+import de.dfki.covida.data.VideoAnnotationData;
 import de.dfki.covida.ui.components.CovidaComponent;
 import de.dfki.covida.ui.components.TextOverlay;
-import de.dfki.covida.data.VideoAnnotationData;
 import de.dfki.touchandwrite.action.DrawAction;
 import de.dfki.touchandwrite.action.HWRAction;
 import de.dfki.touchandwrite.action.PenActionEvent;
@@ -113,7 +113,7 @@ public abstract class Field extends CovidaComponent implements
     protected boolean penPressure;
     protected float penThickness;
     protected TextureState tsSpacer;
-    protected Texture textureSpacer;  
+    protected Texture textureSpacer;
     protected boolean detach = true;
     protected ArrayList<TextOverlay> titles;
     protected Map<Integer, ArrayList<Integer>> result = new HashMap<Integer, ArrayList<Integer>>();
@@ -182,8 +182,8 @@ public abstract class Field extends CovidaComponent implements
             this.getParent().detachChild(this);
         }
     }
-    
-     /**
+
+    /**
      * Closes the DisplayInfoComponent
      */
     @Override
@@ -267,9 +267,9 @@ public abstract class Field extends CovidaComponent implements
         input.addAction(this.drawAction);
         input.addAction(this.hwrAction);
     }
-    
+
     @Override
-    public void registerWithInputHandler(TouchInputHandler input){
+    public void registerWithInputHandler(TouchInputHandler input) {
         touchInput = input;
     }
 

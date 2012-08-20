@@ -25,7 +25,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package de.dfki.covida.components.ui.video;
+package de.dfki.covida.ui.components.video;
 
 import com.jme.image.Texture;
 import com.jme.image.Texture.WrapMode;
@@ -49,7 +49,7 @@ import org.apache.log4j.Logger;
 public class VideoComponentControls extends CovidaComponent {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 7384780136991918432L;
     protected Quad overlayControlsDefault;
@@ -58,7 +58,9 @@ public class VideoComponentControls extends CovidaComponent {
     private VideoComponent video;
     private Node node;
     private ArrayList<Quad> overlayControls;
-    /** Logger. */
+    /**
+     * Logger.
+     */
     private Logger log = Logger.getLogger(VideoComponentControls.class);
 
     public VideoComponentControls(VideoComponent video, Node node) {
@@ -262,16 +264,13 @@ public class VideoComponentControls extends CovidaComponent {
 
     @Override
     protected void dragAction(de.dfki.touchandwrite.analyser.touch.gestures.events.DragEvent event) {
-
     }
 
     @Override
     protected void rotationAction(de.dfki.touchandwrite.analyser.touch.gestures.events.RotationGestureEvent event) {
-
     }
 
     @Override
     protected void zoomAction(de.dfki.touchandwrite.analyser.touch.gestures.events.ZoomEvent event) {
-
     }
 }

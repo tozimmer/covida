@@ -1,5 +1,5 @@
 /*
- * CloseButton.java
+ * ClipboardButton.java
  * 
  * Copyright (c) 2012, Tobias Zimmermann All rights reserved.
  * 
@@ -25,21 +25,15 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package de.dfki.covida.components.ui.button;
+package de.dfki.covida.ui.components.button;
 
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.Node;
-
-import de.dfki.covida.ui.components.CovidaComponent;
-import de.dfki.covida.components.ui.annotation.Field;
-import de.dfki.touchandwrite.action.TouchAction;
+import de.dfki.covida.ui.components.annotation.AnnotationClipboard;
+import de.dfki.covida.ui.components.annotation.Field;
 import de.dfki.touchandwrite.action.TouchActionEvent;
-import de.dfki.touchandwrite.analyser.touch.gestures.events.RotationGestureEvent;
-import de.dfki.touchandwrite.analyser.touch.gestures.events.ZoomEvent;
-import de.dfki.touchandwrite.gestures.events.DragEvent;
-import de.dfki.touchandwrite.visual.input.TouchInputHandler;
 
 /**
  * Sidebar menu for VideoTouchBoard
@@ -47,45 +41,73 @@ import de.dfki.touchandwrite.visual.input.TouchInputHandler;
  * @author Tobias Zimmermann
  *
  */
-public class CloseButton extends CovidaButton {
+public class ClipboardButton extends CovidaButton {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 7384780136991918432L;
     private Node fieldNode;
-    static final int ANIMATION_DURATION = 500;
     /**
-     * Touch action
+     * Search Field
      */
-    private TouchAction touchAction;
-    private CovidaComponent component;
+    private AnnotationClipboard clipboard;
 
-    public CloseButton(int width, int height, Node node, CovidaComponent component) {
-        super(width, height, node, node, "media/textures/search.png", "media/textures/search_glow.png");
+    /**
+     * List of VideoComponents on VideoTouchBoard
+     */
+    /**
+     * Creates a button and a clipboard field for annotations
+     *
+     * @param width width of the button
+     * @param height height of the button
+     * @param node the node which the button should be attached
+     * @param videos list of the current videos
+     */
+    public ClipboardButton(int width, int height, Node node) {
+        super(width, height, node, node, "media/textures/arrow.png",
+                "media/textures/arrow_glow.png");
         super.setAlwaysOnTop(true);
-        this.component = component;
-        fieldNode = new Node("Searchfield Node");
+        fieldNode = new Node("Clipboard Node");
         Quaternion q = new Quaternion();
-        q.fromAngleAxis(FastMath.DEG_TO_RAD * (-45), new Vector3f(0, 0, 1));
+        q.fromAngleAxis(FastMath.DEG_TO_RAD * (-90), new Vector3f(0, 0, 1));
         fieldNode.setLocalRotation(q);
-        touchAction = new TouchAction(this);
         getNode().attachChild(fieldNode);
     }
 
     @Override
     public void initComponent() {
         super.initComponent();
+        clipboard = new AnnotationClipboard(
+                "media/textures/clipboard_field_color.png", fieldNode,
+                (int) (display.x / 2.0f), (int) (display.y / 1.5f));
+        clipboard.initComponent();
+        clipboard.close();
     }
 
-    @Override
-    public void registerWithInputHandler(TouchInputHandler input) {
-        input.addAction(touchAction);
+    public AnnotationClipboard getClipboard() {
+        return clipboard;
+    }
+
+    public void closeField() {
+        clipboard.close();
+    }
+
+    public void openField() {
+        clipboard.open();
+    }
+
+    public void toggle() {
+        if (fieldNode.hasChild(clipboard)) {
+            if (clipboard.isClosing()) {
+                openField();
+            } else {
+                closeField();
+            }
+        } else {
+            fieldNode.attachChild(clipboard);
+            openField();
+        }
     }
 
     @Override
     protected void touchDeadAction(TouchActionEvent e) {
-        component.close();
     }
 
     @Override
@@ -95,16 +117,15 @@ public class CloseButton extends CovidaButton {
 
     @Override
     protected void touchBirthAction(TouchActionEvent e) {
-        // TODO Auto-generated method stub
     }
 
     @Override
     protected void touchDeadAction(int touchId) {
-        // TODO Auto-generated method stub
+        toggle();
     }
 
     @Override
     Field getChild() {
-        return null;
+        return clipboard;
     }
 }

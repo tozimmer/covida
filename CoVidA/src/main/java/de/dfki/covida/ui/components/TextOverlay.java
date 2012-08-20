@@ -33,19 +33,24 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
-import com.jme.scene.shape.Quad;
 import com.jmex.angelfont.BitmapFont.Align;
 import com.jmex.angelfont.BitmapText;
 import com.jmex.scene.TimedLifeController;
 import de.dfki.covida.ui.DragAnimationHandler;
+import de.dfki.touchandwrite.action.GestureAction;
+import de.dfki.touchandwrite.action.GestureActionEvent;
 import de.dfki.touchandwrite.action.TouchActionEvent;
 import de.dfki.touchandwrite.analyser.touch.gestures.events.DragEvent;
 import de.dfki.touchandwrite.analyser.touch.gestures.events.RotationGestureEvent;
 import de.dfki.touchandwrite.analyser.touch.gestures.events.ZoomEvent;
+import de.dfki.touchandwrite.input.touch.gesture.TouchGestureEvent;
 import de.dfki.touchandwrite.visual.components.ComponentType;
+import de.dfki.touchandwrite.visual.components.GestureSensitiveComponent;
+import de.dfki.touchandwrite.visual.input.TouchInputHandler;
 import org.apache.log4j.Logger;
 
-public class TextOverlay extends CovidaComponent {
+
+public class TextOverlay extends CovidaComponent implements GestureSensitiveComponent {
 
     /**
      *
@@ -81,6 +86,7 @@ public class TextOverlay extends CovidaComponent {
     private DragAnimationHandler dragAnimationHandler;
     private Thread dragAnimationHandlerThread;
     private boolean isDragging;
+    private final GestureAction gestureAction;
 
     /**
      * Displays Text
@@ -91,6 +97,7 @@ public class TextOverlay extends CovidaComponent {
     public TextOverlay(Node node, CovidaComponent component) {
         super(ComponentType.COMPONENT_2D, "Text Overlay Component", node);
         super.initComponent();
+        this.gestureAction = new GestureAction(this);
         this.component = component;
         super.setRootNode(this.component.getRootNode());
         textOverlayData = TextOverlayData.getInstance();
@@ -106,8 +113,8 @@ public class TextOverlay extends CovidaComponent {
         log.debug("TextOverlay created ID: " + getId());
         init();
     }
-    
-    private void init(){
+
+    private void init() {
         initDragOverlay(initalizeBlendState());
         update();
     }
@@ -205,6 +212,12 @@ public class TextOverlay extends CovidaComponent {
     public void setAlign(Align align) {
         this.align = align;
         update();
+    }
+    
+    @Override
+    public void registerWithInputHandler(TouchInputHandler input) {
+        input.addAction(touchAction);
+        input.addAction(gestureAction);
     }
 
     /**
@@ -330,8 +343,19 @@ public class TextOverlay extends CovidaComponent {
     @Override
     protected void zoomAction(ZoomEvent event) {
     }
-}
 
+    public void touchGesture(GestureActionEvent event) {
+        if (event.getEvent() instanceof DragEvent) {
+            DragEvent e = (DragEvent) event.getEvent();
+            if (getLockState().onTop(e, this)) {
+                dragAction(e);
+            }
+            if (e.getState() == TouchGestureEvent.GestureState.GESTURE_END) {
+//                getLockState().removeTouchLock(e.getTouchID());
+            }
+        }
+    }
+}
 class RemoveControllerHandler implements Runnable {
 
     private int target;

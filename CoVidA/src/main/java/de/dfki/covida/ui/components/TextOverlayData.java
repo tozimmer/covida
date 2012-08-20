@@ -27,67 +27,65 @@
  */
 package de.dfki.covida.ui.components;
 
+import com.jmex.angelfont.BitmapFont;
+import com.jmex.angelfont.BitmapFontLoader;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-
 import org.apache.log4j.Logger;
 
-import com.jmex.angelfont.BitmapFont;
-import com.jmex.angelfont.BitmapFontLoader;
-
 public class TextOverlayData {
-	
-	private static TextOverlayData instance;
-	private ArrayList<BitmapFont> fnt;
-	private static final Logger log = Logger.getLogger(TextOverlayData.class);
-	
-	private TextOverlayData(){
-		fnt = new ArrayList<BitmapFont>();
-		initializeFonts();
-	}
-	
-	private void initializeFonts(){
-		ArrayList<URL> fontFileList = new ArrayList<URL>();
-		ArrayList<URL> textureFileList = new ArrayList<URL>();
-		fontFileList.add(BitmapFontLoader.class.getClassLoader().getResource("media/fonts/youngtech_outline.fnt"));
-		fontFileList.add(BitmapFontLoader.class.getClassLoader().getResource("media/fonts/ubuntu_outline.fnt"));
-		fontFileList.add(BitmapFontLoader.class.getClassLoader().getResource("media/fonts/karabinE_outline.fnt"));
-		fontFileList.add(BitmapFontLoader.class.getClassLoader().getResource("media/fonts/youngtech.fnt"));
-		fontFileList.add(BitmapFontLoader.class.getClassLoader().getResource("media/fonts/ubuntu.fnt"));
-		fontFileList.add(BitmapFontLoader.class.getClassLoader().getResource("media/fonts/karabinE.fnt"));
-		textureFileList.add(BitmapFontLoader.class.getClassLoader().getResource("media/fonts/youngtech_outline_0.png"));
-		textureFileList.add(BitmapFontLoader.class.getClassLoader().getResource("media/fonts/ubuntu_outline_0.png"));
-		textureFileList.add(BitmapFontLoader.class.getClassLoader().getResource("media/fonts/karabinE_outline_0.png"));
-		textureFileList.add(BitmapFontLoader.class.getClassLoader().getResource("media/fonts/youngtech_0.png"));
-		textureFileList.add(BitmapFontLoader.class.getClassLoader().getResource("media/fonts/ubuntu_0.png"));
-		textureFileList.add(BitmapFontLoader.class.getClassLoader().getResource("media/fonts/karabinE_0.png"));
-		for ( int i = 0; i<fontFileList.size(); i++){
-			try {
-				fnt.add(BitmapFontLoader.load(fontFileList.get(i), textureFileList.get(i)));
-				} catch (IOException e) {
-					fnt.add(BitmapFontLoader.loadDefaultFont());
-					e.printStackTrace();
-			}			
-		}	
-	}
-	
-	public int size(){
-		return fnt.size();
-	}
 
-	public static TextOverlayData getInstance() {
-		if(instance==null){
-			instance = new TextOverlayData();
-		}
-		return instance;
-	}
+    private static TextOverlayData instance;
+    private ArrayList<BitmapFont> fnt;
+    private static final Logger log = Logger.getLogger(TextOverlayData.class);
 
-	public BitmapFont getBitmapFont(int font) {
-		if(font < fnt.size()){
-			return fnt.get(font);
-		}
-		log.debug("font < fnt.size()");
-		return BitmapFontLoader.loadDefaultFont();
-	}
+    private TextOverlayData() {
+        fnt = new ArrayList<BitmapFont>();
+        initializeFonts();
+    }
+
+    private void initializeFonts() {
+        ArrayList<URL> fontFileList = new ArrayList<URL>();
+        ArrayList<URL> textureFileList = new ArrayList<URL>();
+        fontFileList.add(BitmapFontLoader.class.getClassLoader().getResource("media/fonts/youngtech_outline.fnt"));
+        fontFileList.add(BitmapFontLoader.class.getClassLoader().getResource("media/fonts/ubuntu_outline.fnt"));
+        fontFileList.add(BitmapFontLoader.class.getClassLoader().getResource("media/fonts/karabinE_outline.fnt"));
+        fontFileList.add(BitmapFontLoader.class.getClassLoader().getResource("media/fonts/youngtech.fnt"));
+        fontFileList.add(BitmapFontLoader.class.getClassLoader().getResource("media/fonts/ubuntu.fnt"));
+        fontFileList.add(BitmapFontLoader.class.getClassLoader().getResource("media/fonts/karabinE.fnt"));
+        textureFileList.add(BitmapFontLoader.class.getClassLoader().getResource("media/fonts/youngtech_outline_0.png"));
+        textureFileList.add(BitmapFontLoader.class.getClassLoader().getResource("media/fonts/ubuntu_outline_0.png"));
+        textureFileList.add(BitmapFontLoader.class.getClassLoader().getResource("media/fonts/karabinE_outline_0.png"));
+        textureFileList.add(BitmapFontLoader.class.getClassLoader().getResource("media/fonts/youngtech_0.png"));
+        textureFileList.add(BitmapFontLoader.class.getClassLoader().getResource("media/fonts/ubuntu_0.png"));
+        textureFileList.add(BitmapFontLoader.class.getClassLoader().getResource("media/fonts/karabinE_0.png"));
+        for (int i = 0; i < fontFileList.size(); i++) {
+            try {
+                fnt.add(BitmapFontLoader.load(fontFileList.get(i), textureFileList.get(i)));
+            } catch (IOException e) {
+                fnt.add(BitmapFontLoader.loadDefaultFont());
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public int size() {
+        return fnt.size();
+    }
+
+    public static TextOverlayData getInstance() {
+        if (instance == null) {
+            instance = new TextOverlayData();
+        }
+        return instance;
+    }
+
+    public BitmapFont getBitmapFont(int font) {
+        if (font < fnt.size()) {
+            return fnt.get(font);
+        }
+        log.debug("font < fnt.size()");
+        return BitmapFontLoader.loadDefaultFont();
+    }
 }

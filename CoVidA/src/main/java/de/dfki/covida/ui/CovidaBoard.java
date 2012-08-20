@@ -46,10 +46,10 @@ import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
 import com.jmex.awt.swingui.ImageGraphics;
 import de.dfki.covida.CovidaCMDOptions;
-import de.dfki.covida.components.ui.button.ClipboardButton;
-import de.dfki.covida.components.ui.button.SearchButton;
-import de.dfki.covida.components.ui.video.VideoComponent;
-import de.dfki.covida.components.ui.video.VideoPreloadComponent;
+import de.dfki.covida.ui.components.button.ClipboardButton;
+import de.dfki.covida.ui.components.button.SearchButton;
+import de.dfki.covida.ui.components.video.VideoComponent;
+import de.dfki.covida.ui.components.video.VideoPreloadComponent;
 import de.dfki.covida.data.CovidaConfiguration;
 import de.dfki.covida.data.VideoFormat;
 import de.dfki.covida.ui.components.DrawingOverlay;
@@ -431,7 +431,7 @@ public class CovidaBoard extends AbstractTouchAndWriteComponent implements
                     translation = new Vector3f(gap, display.y - gap, 0);
                     break;
             }
-            Node menuButtonNode = new Node("VideoTouchBoard - MenuButton Node "+i);
+            Node menuButtonNode = new Node("VideoTouchBoard - MenuButton Node " + i);
             menuButtonNode.setLocalTranslation(translation);
             Quaternion q2 = new Quaternion();
             q2.fromAngleAxis(FastMath.DEG_TO_RAD * (i * 90), new Vector3f(0, 0,
@@ -1005,7 +1005,7 @@ public class CovidaBoard extends AbstractTouchAndWriteComponent implements
         for (SearchButton search : searchButtons) {
             search.registerWithInputHandler(touchInputHandler);
         }
-        for (ClipboardButton clipboard : clipboardButtons) {  
+        for (ClipboardButton clipboard : clipboardButtons) {
             clipboard.registerWithInputHandler(touchInputHandler);
             clipboard.getClipboard().update();
         }

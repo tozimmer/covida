@@ -27,11 +27,9 @@
  */
 package de.dfki.covida.ui.components;
 
-import org.apache.log4j.Logger;
-
 import com.jme.scene.Node;
-
-import de.dfki.covida.components.ui.video.VideoComponent;
+import de.dfki.covida.ui.components.video.VideoComponent;
+import org.apache.log4j.Logger;
 
 /**
  *

@@ -27,7 +27,6 @@
  */
 package de.dfki.covida.ui;
 
-import de.dfki.covida.ui.CovidaBoard;
 import org.apache.log4j.Logger;
 
 public class SplashHandler implements Runnable {

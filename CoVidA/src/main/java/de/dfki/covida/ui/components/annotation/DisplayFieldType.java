@@ -1,5 +1,5 @@
 /*
- * AnnotationSearch.java
+ * DisplayFieldType.java
  * 
  * Copyright (c) 2012, Tobias Zimmermann All rights reserved.
  * 
@@ -25,49 +25,14 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package de.dfki.covida.components.ui.annotation;
-
-import org.apache.log4j.Logger;
+package de.dfki.covida.ui.components.annotation;
 
 /**
  *
  * @author Tobias Zimmermann
+ *
  */
-public class DetachHandler implements Runnable {
+public enum DisplayFieldType {
 
-    private Object field;
-    private final Object obj;
-    private int delay;
-    private Logger log = Logger.getLogger(DetachHandler.class);
-
-    public Object getObject() {
-        return obj;
-    }
-
-    public DetachHandler(Field field, int delay) {
-        this.field = field;
-        this.delay = delay;
-        obj = new Object();
-    }
-
-    public void run() {
-        synchronized (obj) {
-            try {
-                obj.wait(delay);
-            } catch (InterruptedException e) {
-                log.error(e);
-            }
-            if (field instanceof AnnotationSearch) {
-                AnnotationSearch search = (AnnotationSearch) field;
-                if (search.isClosing()) {
-                    search.detach();
-                }
-            } else if (field instanceof AnnotationClipboard) {
-                AnnotationClipboard clipboard = (AnnotationClipboard) field;
-                if (clipboard.isClosing()) {
-                    clipboard.detach();
-                }
-            }
-        }
-    }
+    INFO, LIST, EDIT
 }
