@@ -60,7 +60,6 @@ import de.dfki.touchandwrite.input.pen.hwr.HandwritingRecognitionEvent;
 import de.dfki.touchandwrite.input.touch.event.TouchState;
 import de.dfki.touchandwrite.math.FastMath;
 import de.dfki.touchandwrite.shape.Shape;
-import de.dfki.touchandwrite.visual.TouchAndWriteApp;
 import de.dfki.touchandwrite.visual.components.*;
 import de.dfki.touchandwrite.visual.input.PenInputHandler;
 import de.dfki.touchandwrite.visual.input.TouchInputHandler;
@@ -87,6 +86,7 @@ public class CovidaBoard extends AbstractTouchAndWriteComponent implements
     protected int getVideoCount() {
         return configuration.videos.size();
     }
+
     /**
      * Alpha composite for transparent panel.
      */
@@ -270,6 +270,7 @@ public class CovidaBoard extends AbstractTouchAndWriteComponent implements
      *
      * @param opt
      */
+    @Override
     public void initComponent() {
         configuration = CovidaConfiguration.getInstance();
         // TODO
@@ -454,7 +455,6 @@ public class CovidaBoard extends AbstractTouchAndWriteComponent implements
     }
 
     protected void openOverlays() {
-        log.debug("initOverlays()");
         for (VideoComponent video : videos) {
             video.changeOverlays();
             video.attachAnnotation();
@@ -469,7 +469,6 @@ public class CovidaBoard extends AbstractTouchAndWriteComponent implements
     }
 
     protected void closeOverlays() {
-        log.debug("initOverlays()");
         for (VideoComponent video : videos) {
             video.changeOverlays();
             video.detachList();
@@ -811,6 +810,7 @@ public class CovidaBoard extends AbstractTouchAndWriteComponent implements
      * Touch Event
      *
      */
+    @Override
     public void touch(Map<Integer, TouchActionEvent> event) {
         for (TouchActionEvent e : event.values()) {
             if (!lockState.isTouchLocked(e.getID()) && lockState.inArea(e.getX(), e.getY())) {

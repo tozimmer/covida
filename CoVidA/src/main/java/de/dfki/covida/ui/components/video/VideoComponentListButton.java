@@ -162,22 +162,23 @@ public class VideoComponentListButton extends CovidaComponent {
     }
 
     @Override
-    protected void touchAction(TouchActionEvent e) {
-        if (!e.getTouchState().equals(TouchState.TOUCH_DEAD)) {
-            if (getNode().hasChild(this.overlayMenu.get(0))) {
-                getNode().detachChild(this.overlayMenu.get(0));
-                getNode().attachChild(this.overlayMenu.get(1));
-            }
+    protected void touchBirthAction(TouchActionEvent e) {
+        if (getNode().hasChild(this.overlayMenu.get(0))) {
+            getNode().detachChild(this.overlayMenu.get(0));
+            getNode().attachChild(this.overlayMenu.get(1));
+        }
+    }
+    
+    @Override
+    protected void touchDeadAction(TouchActionEvent e) {
+        if (getNode().hasChild(this.overlayMenu.get(1))) {
+            getNode().detachChild(this.overlayMenu.get(1));
+            getNode().attachChild(this.overlayMenu.get(0));
+        }
+        if (video.hasList()) {
+            video.detachList();
         } else {
-            if (getNode().hasChild(this.overlayMenu.get(1))) {
-                getNode().detachChild(this.overlayMenu.get(1));
-                getNode().attachChild(this.overlayMenu.get(0));
-            }
-            if (video.hasList()) {
-                video.detachList();
-            } else {
-                video.attachList();
-            }
+            video.attachList();
         }
     }
 
@@ -191,5 +192,10 @@ public class VideoComponentListButton extends CovidaComponent {
 
     @Override
     protected void zoomAction(de.dfki.touchandwrite.analyser.touch.gestures.events.ZoomEvent event) {
+    }
+
+    @Override
+    protected void touchAliveAction(TouchActionEvent e) {
+ 
     }
 }

@@ -85,8 +85,20 @@ public class VideoPreloadComponent extends CovidaComponent implements Runnable {
     private ImageGraphics g2d;
     private Spatial videoQuad;
 
+
     @Override
-    protected void touchAction(TouchActionEvent e) {
+    protected void touchBirthAction(TouchActionEvent e) {
+       
+    }
+
+    @Override
+    protected void touchAliveAction(TouchActionEvent e) {
+       
+    }
+
+    @Override
+    protected void touchDeadAction(TouchActionEvent e) {
+        
     }
 
     /**

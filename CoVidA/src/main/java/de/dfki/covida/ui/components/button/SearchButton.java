@@ -111,11 +111,7 @@ public class SearchButton extends CovidaButton {
     protected void touchAliveAction(TouchActionEvent e) {
         // TODO Auto-generated method stub
     }
-
-    @Override
-    protected void touchBirthAction(TouchActionEvent e) {
-    }
-
+    
     @Override
     protected void touchDeadAction(int touchId) {
         toggle();

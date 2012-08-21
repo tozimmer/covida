@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<profile name="default" pageid="0.0.0.0">
+<profile name="EEE Slate" pageid="0.0.0.0">
     <modeareas>
-        <modearea name="default">
+        <modearea name="EEE Slate">
             <area>
                 <x>
                     <value>0</value>
-                    <value>1152</value>
-                    <value>1152</value>
+                    <value>1280</value>
+                    <value>1280</value>
                     <value>0</value>
                 </x>
                 <y>
                     <value>0</value>
                     <value>0</value>
-                    <value>864</value>
-                    <value>864</value>
+                    <value>800</value>
+                    <value>800</value>
                 </y>
             </area>
             <modeconfig>
@@ -32,19 +32,19 @@
                 </hwrconfiguration>
                 <shapedetection>
                     <combineStrokes>false</combineStrokes>
-                    <enabled>true</enabled>
-                    <weightCircle>0.0</weightCircle>
-                    <weightCurvedArrow>0.0</weightCurvedArrow>
-                    <weightEllipticArc>0.0</weightEllipticArc>
-                    <weightEllispe>0.0</weightEllispe>
-                    <weightLine>0.0</weightLine>
-                    <weightParallelogram>0.0</weightParallelogram>
-                    <weightRectangle>0.0</weightRectangle>
-                    <weightRhombus>0.0</weightRhombus>
+                    <enabled>false</enabled>
+                    <weightCircle>1.0</weightCircle>
+                    <weightCurvedArrow>1.0</weightCurvedArrow>
+                    <weightEllipticArc>1.0</weightEllipticArc>
+                    <weightEllispe>1.0</weightEllispe>
+                    <weightLine>1.0</weightLine>
+                    <weightParallelogram>1.0</weightParallelogram>
+                    <weightRectangle>1.0</weightRectangle>
+                    <weightRhombus>1.0</weightRhombus>
                     <weightStroke>1.0</weightStroke>
-                    <weightTriangle>0.0</weightTriangle>
+                    <weightTriangle>1.0</weightTriangle>
                 </shapedetection>
-                <trainingData>../touchandwrite-inputanalyser/src/main/resources/training-data/</trainingData>
+                <trainingData>src/main/resources/training-data/</trainingData>
             </modeconfig>
         </modearea>
     </modeareas>

@@ -46,7 +46,6 @@ import com.jmex.awt.swingui.ImageGraphics;
 import de.dfki.covida.data.ShapePoints;
 import de.dfki.covida.data.VideoAnnotation;
 import de.dfki.covida.data.VideoAnnotationData;
-import de.dfki.covida.ui.components.AnimationHandler;
 import de.dfki.covida.ui.components.CovidaComponent;
 import de.dfki.covida.ui.components.TextOverlay;
 import de.dfki.covida.ui.components.video.VideoComponent;
@@ -69,6 +68,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.log4j.Logger;
+
 
 /**
  * Component which displays annotation data of VideoComponent.
@@ -571,6 +571,7 @@ public class DisplayFieldComponent extends CovidaComponent {
      *
      * @return
      */
+    @Override
     public int getHeight() {
         return HEIGHT;
     }
@@ -579,6 +580,7 @@ public class DisplayFieldComponent extends CovidaComponent {
      *
      * @return
      */
+    @Override
     public int getWidth() {
         return WIDTH;
     }
@@ -1052,24 +1054,62 @@ public class DisplayFieldComponent extends CovidaComponent {
     }
 
     @Override
-    protected void touchDeadAction(int touchId) {
+    protected void touchBirthAction(TouchActionEvent e) {
+        if (e.getTouchState().equals(TouchState.TOUCH_DEAD)) {
+            getLockState().removeTouchLock(e.getID());
+        } else {
+            if (getType().equals(DisplayFieldType.INFO)
+                    || getType().equals(DisplayFieldType.EDIT)) {
+                toFront();
+                setOverlay(e.getX(), e.getY());
+                if (getNode().hasChild(txt)) {
+                    getNode().detachChild(txt);
+                }
+                if (!getNode().hasChild(this.overlayDefault)) {
+                    for (int i = 0; i < 2; i++) {
+                        if (getNode().hasChild(
+                                this.overlayMenu.get(i))) {
+                            getNode().detachChild(
+                                    this.overlayMenu.get(i));
+                            getNode().attachChild(
+                                    this.overlayDefault);
+                        }
+                    }
+                    textOverlay.setText("");
+                    int x = (int) (((getLocal(e.getX(), e.getY()).x + getWidth() / 2) / getWidth()) * 2);
+                    int y = (int) (((getLocal(e.getX(), e.getY()).y + getHeight() / 2) / getHeight()) * 10);
+                    log.debug("x = " + x);
+                    if (x > -1 && x < 2 && y < 1) {
+                        if (x == 0) {
+                            save();
+                        } else if (x == 1) {
+                            close();
+                        }
+                    }
+                }
+            } else if (getType().equals(DisplayFieldType.LIST)) {
+                if (getLockState().isTouchLocked(e.getID())) {
+                    if (getLockState().getTouchLock(e.getID()) == getId()) {
+                        toFront();
+                        int entryID = getSelectedEntry(
+                                e.getX(), e.getY());
+                        setSelectedEntry(entryID);
+
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void touchAliveAction(TouchActionEvent e) {
+    }
+
+    @Override
+    protected void touchDeadAction(TouchActionEvent e) {
         // TODO Auto-generated method stub
     }
 
-    /*
-     * Overlay
-     */
-//    private BlendState initalizeBlendState() {
-//        BlendState alpha = DisplaySystem.getDisplaySystem().getRenderer().createBlendState();
-//        alpha.setEnabled(true);
-//        alpha.setBlendEnabled(true);
-//
-//        alpha.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
-//        alpha.setDestinationFunction(BlendState.DestinationFunction.OneMinusSourceAlpha);
-//        alpha.setTestEnabled(true);
-//        alpha.setTestFunction(BlendState.TestFunction.GreaterThan);
-//        return alpha;
-//    }
     private void initalizeOverlayQuads(BlendState alpha) {
         // Overlay Default
         Texture overlayDefaultTexture = TextureManager.loadTexture(
@@ -1204,54 +1244,10 @@ public class DisplayFieldComponent extends CovidaComponent {
     }
 
     @Override
-    protected void touchAction(TouchActionEvent e) {
-        if (e.getTouchState().equals(TouchState.TOUCH_DEAD)) {
-            getLockState().removeTouchLock(e.getID());
-        } else {
-            if (getType().equals(DisplayFieldType.INFO)
-                    || getType().equals(DisplayFieldType.EDIT)) {
-                toFront();
-                setOverlay(e.getX(), e.getY());
-                if (getNode().hasChild(txt)) {
-                    getNode().detachChild(txt);
-                }
-                if (!getNode().hasChild(this.overlayDefault)) {
-                    for (int i = 0; i < 2; i++) {
-                        if (getNode().hasChild(
-                                this.overlayMenu.get(i))) {
-                            getNode().detachChild(
-                                    this.overlayMenu.get(i));
-                            getNode().attachChild(
-                                    this.overlayDefault);
-                        }
-                    }
-                    textOverlay.setText("");
-                    int x = (int) (((getLocal(e.getX(), e.getY()).x + getWidth() / 2) / getWidth()) * 2);
-                    int y = (int) (((getLocal(e.getX(), e.getY()).y + getHeight() / 2) / getHeight()) * 10);
-                    log.debug("x = " + x);
-                    if (x > -1 && x < 2 && y < 1) {
-                        if (x == 0) {
-                            save();
-                        } else if (x == 1) {
-                            close();
-                        }
-                    }
-                }
-            } else if (getType().equals(DisplayFieldType.LIST)) {
-                if (getLockState().isTouchLocked(e.getID())) {
-                    if (getLockState().getTouchLock(e.getID()) == getId()) {
-                        toFront();
-                        int entryID = getSelectedEntry(
-                                e.getX(), e.getY());
-                        setSelectedEntry(entryID);
+    protected void touchDeadAction(int id) {
 
-                    }
-                }
-            }
-        }
     }
 }
-
 class RemoveHandler implements Runnable {
 
     private float target;
@@ -1259,7 +1255,7 @@ class RemoveHandler implements Runnable {
     /**
      * Logger
      */
-    private Logger log = Logger.getLogger(AnimationHandler.class);
+    private Logger log = Logger.getLogger(RemoveHandler.class);
 
     public RemoveHandler(Node node, int target) {
         this.node = node;
@@ -1270,8 +1266,8 @@ class RemoveHandler implements Runnable {
         this.target = x;
     }
 
+    @Override
     public void run() {
-        log.debug("RemoveHandler startet");
         while (node.getLocalScale().x != target) {
             try {
                 Thread.sleep(50);
@@ -1282,6 +1278,5 @@ class RemoveHandler implements Runnable {
         for (int i = 0; i < node.getControllerCount(); i++) {
             node.removeController(i);
         }
-        log.debug("RemoveHandler ended");
     }
 }

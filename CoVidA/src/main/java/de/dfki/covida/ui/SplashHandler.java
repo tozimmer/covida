@@ -107,17 +107,5 @@ public class SplashHandler implements Runnable {
                 log.error(e);
             }
         }
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            log.error(e);
-        }
-        videoTouchBoard.openOverlays();
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            log.error(e);
-        }
-        videoTouchBoard.closeOverlays();
     }
 }

@@ -44,9 +44,9 @@ import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
 import com.jmex.awt.swingui.ImageGraphics;
 import de.dfki.covida.data.*;
-import de.dfki.covida.ui.components.DragAnimationHandler;
 import de.dfki.covida.ui.components.AnimationHandler;
 import de.dfki.covida.ui.components.CovidaComponent;
+import de.dfki.covida.ui.components.DragAnimationHandler;
 import de.dfki.covida.ui.components.TextOverlay;
 import de.dfki.covida.ui.components.annotation.DisplayFieldComponent;
 import de.dfki.touchandwrite.action.*;
@@ -77,6 +77,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.*;
 import java.util.Queue;
+import java.util.logging.Level;
 import javax.imageio.ImageIO;
 import org.apache.log4j.Logger;
 import uk.co.caprica.vlcj.binding.internal.libvlc_state_t;
@@ -102,7 +103,6 @@ public class VideoComponent extends CovidaComponent implements
      * Stores touch event count for every touchId
      */
     private Map<Integer, Integer> touchCount;
-
     private static final float UPSCALE_FACTOR = 0.5f;
     private static final boolean EXACT_SHAPES = true;
     protected final AlphaComposite TRANSPARENT = AlphaComposite.getInstance(
@@ -206,23 +206,15 @@ public class VideoComponent extends CovidaComponent implements
     private TouchInputHandler touchInputHandler;
     private VideoSlider videoSlider;
 
-    /**
-     *
-     * @param e
-     */
-    @Override
-    protected void touchAction(TouchActionEvent e) {
-        if (!(e.getTouchState() == TouchState.TOUCH_DEAD)) {
-            if (touchCount.containsKey(e.getID())) {
-                touchCount.put(e.getID(), touchCount.get(e.getID()) + 1);
-            } else {
-                touchCount.put(e.getID(), 1);
-            }
+    private void setVlcLoggin(Boolean activated) {
+        if (!activated) {
+            java.util.logging.Logger.getLogger("uk.co.caprica.vlcj").setLevel(Level.OFF);
         } else {
-            getLockState().removeTouchLock(e.getID());
+            java.util.logging.Logger.getLogger("uk.co.caprica.vlcj").setLevel(Level.ALL);
         }
     }
 
+    @Override
     public void touchGesture(GestureActionEvent event) {
         if (event.getEvent() instanceof DragEvent) {
             DragEvent e = (DragEvent) event.getEvent();
@@ -255,6 +247,29 @@ public class VideoComponent extends CovidaComponent implements
         }
     }
 
+    @Override
+    protected void touchBirthAction(TouchActionEvent e) {
+        if (touchCount.containsKey(e.getID())) {
+            touchCount.put(e.getID(), touchCount.get(e.getID()) + 1);
+        } else {
+            touchCount.put(e.getID(), 1);
+        }
+    }
+
+    @Override
+    protected void touchAliveAction(TouchActionEvent e) {
+        if (touchCount.containsKey(e.getID())) {
+            touchCount.put(e.getID(), touchCount.get(e.getID()) + 1);
+        } else {
+            touchCount.put(e.getID(), 1);
+        }
+    }
+
+    @Override
+    protected void touchDeadAction(TouchActionEvent e) {
+        getLockState().removeTouchLock(e.getID());
+    }
+
     /**
      * Callback for rendering the video.
      *
@@ -281,6 +296,7 @@ public class VideoComponent extends CovidaComponent implements
          * uk.co.caprica.vlcj.player.direct.RenderCallbackAdapter#onDisplay(
          * int[])
          */
+        @Override
         public void onDisplay(int[] data) {
             image.setRGB(0, 0, getWidth(), getHeight(), data, 0, getWidth());
             updateVideo(image);
@@ -302,6 +318,7 @@ public class VideoComponent extends CovidaComponent implements
     public VideoComponent(String source, int height, VideoFormat format,
             Node node) {
         super(ComponentType.COMPONENT_2D, "Video Display Component", node);
+        setVlcLoggin(false);
         // TODO correct dimension (performance problem) a.t.m. up scaling
         // (UPSCALE_FACTOR)
         getNode().setLocalScale(1.f / UPSCALE_FACTOR);
@@ -428,6 +445,7 @@ public class VideoComponent extends CovidaComponent implements
      *
      * @return video width
      */
+    @Override
     public int getWidth() {
         return format.determineWidth(getHeight());
     }
@@ -436,6 +454,7 @@ public class VideoComponent extends CovidaComponent implements
      *
      * @return height of the VideoComponent
      */
+    @Override
     public int getHeight() {
         return height;
     }
@@ -1539,9 +1558,9 @@ public class VideoComponent extends CovidaComponent implements
                 && event.getTranslation() != null) {
             startDragAnimation();
             move(getNode().getLocalTranslation().getX()
-                    + event.getTranslation().x * scrnsize.x , 
+                    + event.getTranslation().x * scrnsize.x,
                     getNode().getLocalTranslation().getY()
-                    - event.getTranslation().y * scrnsize.y );
+                    - event.getTranslation().y * scrnsize.y);
         } else if (event.getState().equals(DragEvent.GestureState.GESTURE_END)) {
             stopDragAniation();
             getLockState().removeTouchLock(event.getTouchID());
@@ -1767,6 +1786,7 @@ class RepeatHandler implements Runnable {
         this.video = video;
     }
 
+    @Override
     public void run() {
         while (!close) {
             video.updateSlider((float) video.getTime()

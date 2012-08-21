@@ -333,6 +333,7 @@ public class TextOverlay extends CovidaComponent implements GestureSensitiveComp
     protected void zoomAction(ZoomEvent event) {
     }
 
+    @Override
     public void touchGesture(GestureActionEvent event) {
         if (event.getEvent() instanceof DragEvent) {
             DragEvent e = (DragEvent) event.getEvent();
@@ -346,8 +347,18 @@ public class TextOverlay extends CovidaComponent implements GestureSensitiveComp
     }
 
     @Override
-    protected void touchAction(TouchActionEvent e) {
-        
+    protected void touchBirthAction(TouchActionEvent e) {
+ 
+    }
+
+    @Override
+    protected void touchAliveAction(TouchActionEvent e) {
+
+    }
+
+    @Override
+    protected void touchDeadAction(TouchActionEvent e) {
+
     }
 }
 class RemoveControllerHandler implements Runnable {

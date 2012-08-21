@@ -1,7 +1,6 @@
 package de.dfki.covida;
 
 import com.sun.jna.NativeLibrary;
-import de.dfki.covida.Covida;
 import de.dfki.touchandwrite.TouchAndWriteCMDOptions;
 import de.dfki.touchandwrite.analyser.pen.PenDataAnalyser;
 import de.dfki.touchandwrite.analyser.touch.TouchInputAnalyser;
@@ -95,7 +94,7 @@ public class Covida_eeeslate implements Runnable {
             }
         } else if (getClass().getClassLoader().getResource("conf/touchandwrite-eee-slate.xml") != null) {
             log.debug("Loading Touch And Write configuration. [Configuration location (Resources)]="
-                    + opt.getTouchAndWriteConfiguration());
+                    + "conf/touchandwrite-eee-slate.xml");
             conf = TouchAndWriteConfiguration.loadSettings(getClass().getClassLoader().getResource("conf/touchandwrite-eee-slate.xml"));
         } else {
             log.debug("Loading Touch And Write configuration [Default EEE Slate Config]");
@@ -113,7 +112,7 @@ public class Covida_eeeslate implements Runnable {
                     }
                 }
             } else {
-                profiles.add(ApplicationProfile.loadAppProfile(getClass().getClassLoader().getResource(opt.getTouchAndWriteConfiguration())));
+                profiles.add(ApplicationProfile.loadAppProfile(getClass().getClassLoader().getResource("profiles/default.profile")));
             }
         } else if (opt.getApplicationProfile() != null) {
             profiles.add(ApplicationProfile.loadAppProfile(new File(opt.getApplicationProfile())));

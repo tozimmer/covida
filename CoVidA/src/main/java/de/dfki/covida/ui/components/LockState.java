@@ -31,7 +31,9 @@ import com.jme.math.Vector2f;
 import com.jme.scene.Spatial;
 import de.dfki.covida.ui.CovidaBoard;
 import de.dfki.covida.ui.components.annotation.AnnotationSearch;
+import de.dfki.covida.ui.components.annotation.Field;
 import de.dfki.covida.ui.components.video.VideoComponent;
+import de.dfki.touchandwrite.action.TouchActionEvent;
 import de.dfki.touchandwrite.analyser.touch.gestures.events.DragEvent;
 import de.dfki.touchandwrite.analyser.touch.gestures.events.RotationGestureEvent;
 import de.dfki.touchandwrite.analyser.touch.gestures.events.ZoomEvent;
@@ -127,8 +129,8 @@ public class LockState {
         }
         Boolean onTop = coVidAComponent.inArea(object);
         if (coVidAComponent.isAlwaysOnTop()) {
-            if (coVidAComponent instanceof AnnotationSearch) {
-                if (((AnnotationSearch) coVidAComponent).isOpen()) {
+            if (coVidAComponent instanceof Field) {
+                if (((Field) coVidAComponent).isOpen()) {
                     return onTop;
                 } else {
                     return false;
@@ -141,8 +143,8 @@ public class LockState {
             if (component instanceof CovidaComponent) {
                 if (((CovidaComponent) component).isAlwaysOnTop()
                         && ((CovidaComponent) component).inArea(object)) {
-                    if (component instanceof AnnotationSearch) {
-                        if (((AnnotationSearch) component).isOpen()) {
+                    if (component instanceof Field) {
+                        if (((Field) component).isOpen()) {
                             return false;
                         }
                     } else {
@@ -173,7 +175,7 @@ public class LockState {
      */
     public void removeTouchLock(int touchId) {
         if (isTouchLocked(touchId)) {
-//            log.debug("Remove touch lock: " + touchId);
+            log.debug("Remove touch lock: " + touchId);
             for (Object component : components) {
                 if (component instanceof CovidaComponent) {
                     CovidaComponent cc = (CovidaComponent) component;
@@ -248,9 +250,6 @@ public class LockState {
     }
 
     public boolean onTop(DragEvent e, CovidaComponent coVidAComponent) {
-//        log.debug("Drag onTop: " + onTop(e.getTouchID(),
-//                new Vector2f((float) e.getOrigin().getX(), (float) e.getOrigin().getY()),
-//                coVidAComponent));
         return onTop(e.getTouchID(),new Vector2f((float) e.getOrigin().getX(), (float) e.getOrigin().getY()),coVidAComponent);
     }
 

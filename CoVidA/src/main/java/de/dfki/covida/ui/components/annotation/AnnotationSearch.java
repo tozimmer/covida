@@ -137,6 +137,63 @@ public class AnnotationSearch extends Field {
     }
 
     @Override
+    protected void touchAliveAction(TouchActionEvent e) {
+        setActiveTitle(getSelectedTitle(e.getX(), e.getY()));
+        setActiveEntry(getSelectedEntry(e.getX(), e.getY()));
+        Vector3f nodePosition = getRootNode().getLocalTranslation();
+        if (!(lastTouch == null)) {
+            if (nodePosition.y > getDisplay().y / 2.f) {
+                float diffY = (nodePosition.y - lastTouch.get(e.getID()).y) - (nodePosition.y - e.getY());
+                yDrag = yDrag + diffY;
+            } else {
+                float diffY = (nodePosition.y - lastTouch.get(e.getID()).y) - (nodePosition.y - e.getY());
+                yDrag = yDrag - diffY;
+            }
+            if (nodePosition.x > getDisplay().x / 2.f) {
+                float diffX = (nodePosition.x - lastTouch.get(e.getID()).x) - (nodePosition.x - e.getX());
+                xDrag = xDrag + diffX;
+            } else {
+                float diffX = (nodePosition.x - lastTouch.get(e.getID()).x) - (nodePosition.x - e.getX());
+                xDrag = xDrag - diffX;
+            }
+        }
+        lastTouch.put(e.getID(),
+                new Vector2f(e.getX(), e.getY()));
+    }
+
+    @Override
+    protected void touchDeadAction(TouchActionEvent e) {
+        lastTouch.remove(e.getID());
+        if (yDrag > getDisplay().y / 30.f
+                && xDrag > getDisplay().x / 30.f) {
+            this.close();
+        }
+        yDrag = 0;
+        setSelectedTitle(getSelectedTitle(e.getX(), e.getY()));
+        setSelectedEntry(getSelectedEntry(e.getX(), e.getY()));
+        getLockState().removeTouchLock(e.getID());
+    }
+
+    @Override
+    protected void touchBirthAction(TouchActionEvent e) {
+//        TouchState state = e.getTouchState();
+//        if (state == TouchState.TOUCH_BIRTH || state == TouchState.TOUCH_LIVING) {
+//            if (inArea(e.getX(), e.getY())) {
+//                getLockState().forceTouchLock(e.getID(), getId());
+//                lastTouch.put(e.getID(), new Vector2f(e.getX(), e.getY()));
+//            }
+//        }
+//        if (getLockState().isTouchLocked(e.getID())) {
+//            if (getLockState().getTouchLock(e.getID()) == getId()) {
+//                if (state == TouchState.TOUCH_BIRTH || state == TouchState.TOUCH_LIVING) {
+//                } else if (state == TouchState.TOUCH_DEAD) {
+//                }
+//            }
+//        }
+        touchAliveAction(e);
+    }
+
+    @Override
     public void clearHwrResults() {
         hwrResults.clear();
     }
@@ -217,56 +274,6 @@ public class AnnotationSearch extends Field {
                 log.debug("entries.size()<=" + selectedTitle);
             }
 
-        }
-    }
-
-    @Override
-    public void touch(Map<Integer, TouchActionEvent> event) {
-        for (TouchActionEvent e : event.values()) {
-            TouchState state = e.getTouchState();
-            if (state == TouchState.TOUCH_BIRTH || state == TouchState.TOUCH_LIVING) {
-                if (inArea(e.getX(), e.getY())) {
-                    getLockState().forceTouchLock(e.getID(), getId());
-                    lastTouch.put(e.getID(), new Vector2f(e.getX(), e.getY()));
-                }
-            }
-            if (getLockState().isTouchLocked(e.getID())) {
-                if (getLockState().getTouchLock(e.getID()) == getId()) {
-                    if (state == TouchState.TOUCH_BIRTH || state == TouchState.TOUCH_LIVING) {
-                        setActiveTitle(getSelectedTitle(e.getX(), e.getY()));
-                        setActiveEntry(getSelectedEntry(e.getX(), e.getY()));
-                        Vector3f nodePosition = getRootNode().getLocalTranslation();
-                        if (!(lastTouch == null)) {
-                            if (nodePosition.y > getDisplay().y / 2.f) {
-                                float diffY = (nodePosition.y - lastTouch.get(e.getID()).y) - (nodePosition.y - e.getY());
-                                yDrag = yDrag + diffY;
-                            } else {
-                                float diffY = (nodePosition.y - lastTouch.get(e.getID()).y) - (nodePosition.y - e.getY());
-                                yDrag = yDrag - diffY;
-                            }
-                            if (nodePosition.x > getDisplay().x / 2.f) {
-                                float diffX = (nodePosition.x - lastTouch.get(e.getID()).x) - (nodePosition.x - e.getX());
-                                xDrag = xDrag + diffX;
-                            } else {
-                                float diffX = (nodePosition.x - lastTouch.get(e.getID()).x) - (nodePosition.x - e.getX());
-                                xDrag = xDrag - diffX;
-                            }
-                        }
-                        lastTouch.put(e.getID(),
-                                new Vector2f(e.getX(), e.getY()));
-                    } else if (state == TouchState.TOUCH_DEAD) {
-                        lastTouch.remove(e.getID());
-                        if (yDrag > getDisplay().y / 30.f
-                                && xDrag > getDisplay().x / 30.f) {
-                            this.close();
-                        }
-                        yDrag = 0;
-                        setSelectedTitle(getSelectedTitle(e.getX(), e.getY()));
-                        setSelectedEntry(getSelectedEntry(e.getX(), e.getY()));
-                        getLockState().removeTouchLock(e.getID());
-                    }
-                }
-            }
         }
     }
 

@@ -88,12 +88,7 @@ public class CloseButton extends CovidaButton {
     protected void touchAliveAction(TouchActionEvent e) {
         // TODO Auto-generated method stub
     }
-
-    @Override
-    protected void touchBirthAction(TouchActionEvent e) {
-        // TODO Auto-generated method stub
-    }
-
+    
     @Override
     protected void touchDeadAction(int touchId) {
         // TODO Auto-generated method stub

@@ -78,7 +78,7 @@ public class VideoSlider extends CovidaComponent implements DrawingComponent,
     private TextOverlay textOverlay;
     private TextOverlay timeOverlay;
     private Node sliderNode;
-
+    
     public VideoSlider(VideoComponent video, Node node) {
         super(ComponentType.COMPONENT_2D, "Video Slider Component", node);
         getNode().setLocalScale(
@@ -98,14 +98,14 @@ public class VideoSlider extends CovidaComponent implements DrawingComponent,
         textOverlay = new TextOverlay(textNode, this);
         textOverlay.setAlign(Align.Right);
     }
-
+    
     @Override
     public void initComponent() {
         super.initComponent();
         super.setRootNode(video.getRootNode());
         initalizeOverlayQuads(initalizeBlendState());
     }
-
+    
     private void initalizeOverlayQuads(BlendState alpha) {
         overlaySlider = new ArrayList<Quad>();
         ArrayList<String> textureList = new ArrayList<String>();
@@ -129,38 +129,38 @@ public class VideoSlider extends CovidaComponent implements DrawingComponent,
             sliderNode.attachChild(overlaySlider.get(overlaySlider.size() - 1));
         }
     }
-
+    
     public void attachSlider() {
         if (!video.getRootNode().hasChild(getNode())) {
             video.getRootNode().attachChild(getNode());
         }
     }
-
+    
     public void detachSlider() {
         if (video.getRootNode().hasChild(getNode())) {
             video.getRootNode().detachChild(getNode());
         }
     }
-
+    
     @Override
     public void registerWithInputHandler(PenInputHandler input) {
         /**
          * Do Nothing
          */
     }
-
+    
     @Override
     public void unRegisterWithInputHandler(PenInputHandler input) {
         /**
          * Do Nothing
          */
     }
-
+    
     @Override
     public void draw(Queue<PenActionEvent> penEvent) {
         // TODO
     }
-
+    
     @Override
     public boolean isSensitiveArea(int id, int x, int y) {
         if (getLockState().isTouchLocked(id)) {
@@ -188,88 +188,88 @@ public class VideoSlider extends CovidaComponent implements DrawingComponent,
             sliderNode.setLocalTranslation(x, 0, 0);
         }
     }
-
+    
     @Override
     public void handwritingResult(HandwritingRecognitionEvent set) {
         /**
          * Do Nothing
          */
     }
-
+    
     @Override
     public void draw(ShapeEvent shape) {
         /**
          * Do Nothing
          */
     }
-
+    
     @Override
     public void setCurrentPenColor(Color color) {
         /**
          * Do Nothing
          */
     }
-
+    
     @Override
     public void activatePenPressure() {
         /**
          * Do Nothing
          */
     }
-
+    
     @Override
     public void deactivatePenPressure() {
         /**
          * Do Nothing
          */
     }
-
+    
     @Override
     public boolean isPenPressureActivated() {
         return false;
     }
-
+    
     @Override
     public float getPenThickness() {
         return 0;
     }
-
+    
     @Override
     public void setPenThickness(float thickness) {
         /**
          * Do Nothing
          */
     }
-
+    
     public VideoComponent getVideo() {
         return video;
     }
-
+    
     @Override
     protected void dragAction(DragEvent event) {
         // TODO Auto-generated method stub
     }
-
+    
     @Override
     protected void rotationAction(RotationGestureEvent event) {
         // TODO Auto-generated method stub
     }
-
+    
     @Override
     protected void zoomAction(ZoomEvent event) {
         // TODO Auto-generated method stub
     }
-
+    
     @Override
     protected int getHeight() {
         return HEIGHT;
     }
-
+    
     @Override
     protected int getWidth() {
         return WIDTH;
     }
-
+    
     @Override
     protected void touchDeadAction(int touchId) {
         this.isDragging = false;
@@ -277,30 +277,36 @@ public class VideoSlider extends CovidaComponent implements DrawingComponent,
         textOverlay.detach();
         timeOverlay.detach();
     }
-
+    
     @Override
-    protected void touchAction(TouchActionEvent e) {
-        if (!e.getTouchState().equals(TouchState.TOUCH_DEAD)) {
-            if (!isDragging) {
-                // TODO Animation
-                // sliderNode.attachChild(this.overlayDrag);
-                // animationHandlerThread = new
-                // Thread(animationHandler);
-                // animationHandlerThread.start();
-                this.isDragging = true;
-            }
-            Vector3f result = video.getLocal(e.getX(), e.getY());
-            if (FastMath.abs(result.x) < (video.getWidth() / 2.0f)) {
-                // move(result.x+getWidth()/2.0f);
-                video.setTimePosition((result.x + video.getWidth() / 2.0f)
-                        / video.getWidth());
-                textOverlay.setSize(FONT_SIZE);
-                textOverlay.setText(video.getVideoProgress());
-                timeOverlay.setSize(FONT_SIZE);
-                timeOverlay.setText(video.getTimeCode(video.getTime()));
-            }
-        } else {
-            getLockState().removeTouchLock(e.getID());
+    protected void touchBirthAction(TouchActionEvent e) {
+        touchAliveAction(e);
+    }
+    
+    @Override
+    protected void touchAliveAction(TouchActionEvent e) {
+        if (!isDragging) {
+            // TODO Animation
+            // sliderNode.attachChild(this.overlayDrag);
+            // animationHandlerThread = new
+            // Thread(animationHandler);
+            // animationHandlerThread.start();
+            this.isDragging = true;
         }
+        Vector3f result = video.getLocal(e.getX(), e.getY());
+        if (FastMath.abs(result.x) < (video.getWidth() / 2.0f)) {
+            // move(result.x+getWidth()/2.0f);
+            video.setTimePosition((result.x + video.getWidth() / 2.0f)
+                    / video.getWidth());
+            textOverlay.setSize(FONT_SIZE);
+            textOverlay.setText(video.getVideoProgress());
+            timeOverlay.setSize(FONT_SIZE);
+            timeOverlay.setText(video.getTimeCode(video.getTime()));
+        }
+    }
+    
+    @Override
+    protected void touchDeadAction(TouchActionEvent e) {
+        getLockState().removeTouchLock(e.getID());
     }
 }

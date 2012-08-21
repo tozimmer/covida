@@ -158,6 +158,7 @@ public abstract class Field extends CovidaComponent implements
      *
      * @return
      */
+    @Override
     public int getHeight() {
         return height;
     }
@@ -166,6 +167,7 @@ public abstract class Field extends CovidaComponent implements
      *
      * @return
      */
+    @Override
     public int getWidth() {
         return width;
     }
@@ -321,12 +323,23 @@ public abstract class Field extends CovidaComponent implements
     }
 
     @Override
-    protected void touchDeadAction(int touchId) {
+    protected void touchDeadAction(TouchActionEvent e) {
         // TODO Auto-generated method stub
     }
-
+    
     @Override
-    protected void touchAction(TouchActionEvent e) {
+    protected void touchDeadAction(int id) {
+        // TODO Auto-generated method stub
+    }
+    
+    @Override
+    protected void touchAliveAction(TouchActionEvent e) {
+        // TODO Auto-generated method stub
+    }
+    
+    @Override
+    protected void touchBirthAction(TouchActionEvent e) {
+        // TODO Auto-generated method stub
     }
 
     @Override

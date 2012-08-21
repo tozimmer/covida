@@ -63,10 +63,6 @@ import org.apache.log4j.Logger;
  */
 public abstract class CovidaComponent extends TouchComponent {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = -1624946338865865903L;
     private LockState lockState;
     protected Vector2f display;
     private Node node;
@@ -211,20 +207,6 @@ public abstract class CovidaComponent extends TouchComponent {
      */
     public ArrayList<Spatial> getNodeOrder() {
         return (new ArrayList<Spatial>(getNode().getParent().getChildren()));
-    }
-
-    @Override
-    public void touch(Map<Integer, TouchActionEvent> event) {
-        for (TouchActionEvent e : event.values()) {
-            if (getLockState().onTop(e.getID(), new Vector2f(e.getX(), e.getY()),
-                    this)) {
-                touchAction(e);
-            }
-            if (e.getTouchState() == TouchState.TOUCH_DEAD) {
-                touchDeadAction(e.getID());
-                getLockState().removeTouchLock(e.getID());
-            }
-        }
     }
 
     /**
@@ -420,6 +402,31 @@ public abstract class CovidaComponent extends TouchComponent {
         node.removeFromParent();
         cleanUp();
     }
+    
+    
+    @Override
+    public final void touch(Map<Integer, TouchActionEvent> events) {
+        for (TouchActionEvent event : events.values()) {
+            log.debug(getId()+" "+event.getID());
+            touchAction(event);
+        }
+    }
+
+    @Override
+    protected final void touchAction(TouchActionEvent e) {
+//        if (getLockState().onTop(e.getID(), new Vector2f(e.getX(), e.getY()),
+//                this)) {
+            if (e.getTouchState() == TouchState.TOUCH_BIRTH){
+                touchBirthAction(e);
+            }else if (e.getTouchState() == TouchState.TOUCH_LIVING) {
+                touchAliveAction(e);
+            }
+//        }
+        if (e.getTouchState() == TouchState.TOUCH_DEAD) {
+            touchDeadAction(e);
+            getLockState().removeTouchLock(e.getID());
+        }
+    }
 
     protected abstract void dragAction(DragEvent event);
 
@@ -430,8 +437,12 @@ public abstract class CovidaComponent extends TouchComponent {
     protected abstract int getWidth();
 
     protected abstract int getHeight();
+    
+    protected abstract void touchBirthAction(TouchActionEvent e);
+    
+    protected abstract void touchAliveAction(TouchActionEvent e);
 
-    protected abstract void touchAction(TouchActionEvent e);
-
-    protected abstract void touchDeadAction(int touchId);
+    protected abstract void touchDeadAction(TouchActionEvent e);
+    
+    protected abstract void touchDeadAction(int id);
 }

@@ -211,4 +211,5 @@ public class AnnotationClipboard extends Field {
         spacerQuad.setLocalRotation(q);
         getNode().attachChild(spacerQuad);
     }
+
 }

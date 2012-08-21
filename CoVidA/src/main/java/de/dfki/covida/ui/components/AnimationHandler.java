@@ -64,6 +64,7 @@ public class AnimationHandler implements Runnable {
         obj = new Object();
     }
 
+    @Override
     public void run() {
         while (active) {
             try {

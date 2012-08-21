@@ -157,18 +157,6 @@ public class VideoComponentControls extends CovidaComponent {
         }
         return false;
     }
-    long last = 0l;
-
-    @Override
-    public void touch(Map<Integer, TouchActionEvent> event) {
-        for (TouchActionEvent e : event.values()) {
-//            log.debug("TouchState: " + e.getTouchState().name());
-            if (getLockState().onTop(e.getID(), new Vector2f(e.getX(), e.getY()),
-                    this)) {
-                touchAction(e);
-            }
-        }
-    }
 
     private boolean isAttached() {
         for (Quad quad : overlayControls) {
@@ -212,7 +200,7 @@ public class VideoComponentControls extends CovidaComponent {
     }
 
     @Override
-    protected void touchAction(TouchActionEvent e) {
+    protected void touchBirthAction(TouchActionEvent e) {
         Matrix4f store = new Matrix4f();
         node.getLocalToWorldMatrix(store);
         store = store.invert();
@@ -260,6 +248,16 @@ public class VideoComponentControls extends CovidaComponent {
         if (e.getTouchState().equals(TouchState.TOUCH_DEAD)) {
             getLockState().removeTouchLock(e.getID());
         }
+    }
+
+    @Override
+    protected void touchAliveAction(TouchActionEvent e) {
+        
+    }
+
+    @Override
+    protected void touchDeadAction(TouchActionEvent e) {
+        
     }
 
     @Override

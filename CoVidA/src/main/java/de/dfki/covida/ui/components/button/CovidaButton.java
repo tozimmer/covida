@@ -37,14 +37,13 @@ import com.jme.scene.state.BlendState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
-import de.dfki.covida.ui.components.annotation.Field;
 import de.dfki.covida.ui.components.CovidaComponent;
+import de.dfki.covida.ui.components.annotation.Field;
 import de.dfki.touchandwrite.action.TouchAction;
 import de.dfki.touchandwrite.action.TouchActionEvent;
 import de.dfki.touchandwrite.analyser.touch.gestures.events.DragEvent;
 import de.dfki.touchandwrite.analyser.touch.gestures.events.RotationGestureEvent;
 import de.dfki.touchandwrite.analyser.touch.gestures.events.ZoomEvent;
-import de.dfki.touchandwrite.input.touch.event.TouchState;
 import de.dfki.touchandwrite.visual.components.ComponentType;
 import de.dfki.touchandwrite.visual.input.TouchInputHandler;
 import java.util.ArrayList;
@@ -136,34 +135,9 @@ public abstract class CovidaButton extends CovidaComponent {
     }
 
     @Override
-    protected void touchAction(TouchActionEvent e) {
-        if (getLockState().getTouchLock(e.getID()) == getId()) {
-            if ((e.getTouchState() == TouchState.TOUCH_BIRTH)) {
-                touchAliveAction(e);
-            } else if (!(e.getTouchState() == TouchState.TOUCH_DEAD)) {
-                getNode().attachChild(this.overlay.get(0));
-                if (inArea(e.getX(), e.getY())) {
-                    if (!getNode().hasChild(this.overlay.get(1))) {
-                        getNode().attachChild(this.overlay.get(1));
-                    }
-                    touchAliveAction(e);
-                } else {
-                    if (getNode().hasChild(this.overlay.get(1))) {
-                        getNode().detachChild(this.overlay.get(1));
-                    }
-                }
-            } else {
-                if (inArea(e.getX(), e.getY())) {
-                    if (getNode().hasChild(this.overlay.get(1))) {
-                        getNode().detachChild(this.overlay.get(1));
-                    }
-                    touchDeadAction(e);
-                } else {
-                    if (getNode().hasChild(this.overlay.get(1))) {
-                        getNode().detachChild(this.overlay.get(1));
-                    }
-                }
-            }
+    protected void touchDeadAction(int id) {
+        if (getNode().hasChild(this.overlay.get(1))) {
+            getNode().detachChild(this.overlay.get(1));
         }
     }
 
@@ -185,25 +159,35 @@ public abstract class CovidaButton extends CovidaComponent {
         return height;
     }
 
+    @Override
     protected void dragAction(DragEvent event) {
     }
 
     ;
 
+    @Override
     protected void rotationAction(RotationGestureEvent event) {
     }
 
     ;
 
+    @Override
     protected void zoomAction(ZoomEvent event) {
     }
 
     ;
 
 
+    @Override
     protected abstract void touchDeadAction(TouchActionEvent e);
 
+    @Override
     protected abstract void touchAliveAction(TouchActionEvent e);
 
-    protected abstract void touchBirthAction(TouchActionEvent e);
+    @Override
+    protected final void touchBirthAction(TouchActionEvent e) {
+        if (!getNode().hasChild(this.overlay.get(1))) {
+            getNode().attachChild(this.overlay.get(1));
+        }
+    }
 }

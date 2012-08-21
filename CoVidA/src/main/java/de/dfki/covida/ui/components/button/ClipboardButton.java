@@ -116,10 +116,6 @@ public class ClipboardButton extends CovidaButton {
     }
 
     @Override
-    protected void touchBirthAction(TouchActionEvent e) {
-    }
-
-    @Override
     protected void touchDeadAction(int touchId) {
         toggle();
     }
