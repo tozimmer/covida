@@ -1,7 +1,8 @@
-package de.dfki.touchandwrite;
+package de.dfki.covida;
 
 import com.sun.jna.NativeLibrary;
 import de.dfki.covida.Covida;
+import de.dfki.touchandwrite.TouchAndWriteCMDOptions;
 import de.dfki.touchandwrite.analyser.pen.PenDataAnalyser;
 import de.dfki.touchandwrite.analyser.touch.TouchInputAnalyser;
 import de.dfki.touchandwrite.anoto.pen.AnotoPenInteractionComponent;
@@ -117,7 +118,7 @@ public class Covida_twtable implements Runnable {
         } else if (opt.getApplicationProfile() != null) {
             profiles.add(ApplicationProfile.loadAppProfile(new File(opt.getApplicationProfile())));
         } else {
-            profiles.add(ApplicationProfile.loadAppProfile(getClass().getClassLoader().getResource("profiles/default.profile")));
+            profiles.add(ApplicationProfile.loadAppProfile(getClass().getClassLoader().getResource("default-profile-table.xml")));
         }
         this.eventManager = EventManagerServer.getEventManagerServer(conf.getEventmanagerConfig());
         if (opt.isPenServer() || opt.isAll()) {

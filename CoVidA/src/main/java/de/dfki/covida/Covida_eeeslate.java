@@ -1,7 +1,8 @@
-package de.dfki.touchandwrite;
+package de.dfki.covida;
 
 import com.sun.jna.NativeLibrary;
 import de.dfki.covida.Covida;
+import de.dfki.touchandwrite.TouchAndWriteCMDOptions;
 import de.dfki.touchandwrite.analyser.pen.PenDataAnalyser;
 import de.dfki.touchandwrite.analyser.touch.TouchInputAnalyser;
 import de.dfki.touchandwrite.anoto.pen.AnotoPenInteractionComponent;

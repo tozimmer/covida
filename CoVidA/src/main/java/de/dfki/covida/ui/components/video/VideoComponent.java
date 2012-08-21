@@ -44,7 +44,7 @@ import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
 import com.jmex.awt.swingui.ImageGraphics;
 import de.dfki.covida.data.*;
-import de.dfki.covida.ui.DragAnimationHandler;
+import de.dfki.covida.ui.components.DragAnimationHandler;
 import de.dfki.covida.ui.components.AnimationHandler;
 import de.dfki.covida.ui.components.CovidaComponent;
 import de.dfki.covida.ui.components.TextOverlay;
@@ -102,10 +102,7 @@ public class VideoComponent extends CovidaComponent implements
      * Stores touch event count for every touchId
      */
     private Map<Integer, Integer> touchCount;
-    /**
-     * Generated serial id.
-     */
-    private static final long serialVersionUID = 3695261146791636755L;
+
     private static final float UPSCALE_FACTOR = 0.5f;
     private static final boolean EXACT_SHAPES = true;
     protected final AlphaComposite TRANSPARENT = AlphaComposite.getInstance(
@@ -173,13 +170,6 @@ public class VideoComponent extends CovidaComponent implements
     protected Map<Shape, Spatial> shapeSpatials;
     private DisplayFieldComponent infoField;
     private DisplayFieldComponent listField;
-    /**
-     * Shape overlay
-     */
-//    private Quad board;
-//    private TextureState tsD;
-//    private Texture2D textureD;
-//    private ImageGraphics g2dD;
     private Vector3f defaultScale;
     private Quaternion defaultRotation;
     private Vector3f defaultTranslation;
@@ -199,7 +189,7 @@ public class VideoComponent extends CovidaComponent implements
     private long timeStart;
     private long timeEnd;
     private ShapePoints exactShapePoints;
-    private final GestureAction gestureAction;
+    private GestureAction gestureAction;
     /**
      * Overlay
      */
@@ -357,12 +347,6 @@ public class VideoComponent extends CovidaComponent implements
         videoQuad.setRenderQueueMode(Renderer.QUEUE_ORTHO);
         videoQuad.setCullHint(Spatial.CullHint.Inherit);
         setLightCombineMode(LightCombineMode.Off);
-        // shape overlay
-//        board.getLocalRotation().set(0, 0, 0, 1);
-//        board.getLocalTranslation().set(0, 0, 0);
-//        board.getLocalScale().set(1, 1, 1);
-//        board.setRenderQueueMode(Renderer.QUEUE_ORTHO);
-//        board.setCullHint(Spatial.CullHint.Never);
         shapesNode.setRenderQueueMode(Renderer.QUEUE_ORTHO);
         controls = new VideoComponentControls(this, getNode());
         controls.initComponent();
@@ -380,8 +364,6 @@ public class VideoComponent extends CovidaComponent implements
         menu.initComponent();
         generateTexture();
         this.attachChild(videoQuad);
-//        overlay = new VideoComponentOverlay(this, controls, menu, slider);
-//        overlay.initComponent();
         // Overlay
         Node node = new Node("Video: " + getId()
                 + " Overlay - TextOverlay");
@@ -408,8 +390,6 @@ public class VideoComponent extends CovidaComponent implements
                 this, listField, infoFieldNode, (int) (getHeight() * (0.55f)),
                 (int) (getHeight() * 1.2f));
         infoField.initComponent();
-        // shape overlay
-//        getNode().attachChild(board);
         getNode().attachChild(this.shapesNode);
         this.drawAction = new DrawAction(this);
         this.touchAction = new TouchAction(this);
@@ -542,13 +522,10 @@ public class VideoComponent extends CovidaComponent implements
         if (getWidth() < 1 || getHeight() < 1) {
             log.warn("width < 1");
             g2d = ImageGraphics.createInstance(1, 1, 0);
-//            g2dD = ImageGraphics.createInstance(1, 1, 0);
         } else {
             g2d = ImageGraphics.createInstance(getWidth(), getHeight(), 0);
-//            g2dD = ImageGraphics.createInstance(getWidth(), getHeight(), 0);
         }
         enableAntiAlias(g2d);
-//        enableAntiAlias(g2dD);
         BlendState alpha = DisplaySystem.getDisplaySystem().getRenderer().createBlendState();
         alpha.setEnabled(true);
         alpha.setBlendEnabled(true);
@@ -559,43 +536,10 @@ public class VideoComponent extends CovidaComponent implements
         alpha.setTestFunction(BlendState.TestFunction.GreaterThan);
         texture.setImage(g2d.getImage());
         ts.setTexture(texture);
-        // this.videoQuad.setRenderState(alpha);
         videoQuad.setRenderState(ts);
         videoQuad.updateRenderState();
-//        // ---- Texture state initialization ----
-//        tsD = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
-//        tsD.setCorrectionType(TextureState.CorrectionType.Perspective);
-//        tsD.setEnabled(true);
-//        textureD = new Texture2D();
-//        textureD.setMagnificationFilter(Texture.MagnificationFilter.Bilinear);
-//        textureD.setMinificationFilter(Texture.MinificationFilter.BilinearNoMipMaps);
-//        textureD.setWrap(Texture.WrapMode.Repeat);
-//        // ---- Drawable image initialization ----
-//        BlendState alphaD = DisplaySystem.getDisplaySystem().getRenderer().createBlendState();
-//        alphaD.setEnabled(true);
-//        alphaD.setBlendEnabled(true);
-//        alphaD.setSourceFunction(BlendState.SourceFunction.SourceAlpha);
-//        alphaD.setDestinationFunction(BlendState.DestinationFunction.OneMinusSourceAlpha);
-//        alphaD.setTestEnabled(true);
-//        alphaD.setTestFunction(BlendState.TestFunction.GreaterThan);
-//        refreshBoard();
-//        textureD.setImage(g2dD.getImage());
-//        tsD.setTexture(textureD);
-//        this.board.setRenderState(alphaD);
-//        this.board.setRenderState(tsD);
-//        this.board.updateRenderState();
     }
 
-//    private void refreshBoard() {
-//        // first clear strokes
-//        g2dD.clearRect(0, 0, getWidth(), getHeight());
-//        // paint with transparent color
-//        g2dD.setComposite(TRANSPARENT);
-//        g2dD.setColor(this.backgroundColor);
-//        g2dD.fillRect(0, 0, getWidth(), getHeight());
-//        g2dD.setComposite(SOLID);
-//        g2dD.update();
-//    }
     /**
      * Enables anti aliasing.
      *
@@ -1027,19 +971,6 @@ public class VideoComponent extends CovidaComponent implements
     public void draw(Queue<PenActionEvent> penEvent) {
         for (PenActionEvent evt : penEvent) {
             if (inArea(evt)) {
-//                switch (evt.getType()) {
-//                    case PEN_UP:
-//                        lastX.remove(evt.getId());
-//                        lastY.remove(evt.getId());
-//                        penActive = false;
-//                        break;
-//                    case PEN_DOWN:
-//                        penActive = true;
-//                    case PEN_MOVE:
-////                        updateImage(evt.getAbsoluteX(), evt.getAbsoluteY(), evt.getForce(), evt.getId());
-//                        this.currentStroke.add(new Vector3f(evt.getAbsoluteX(), evt.getAbsoluteY(), 0.0f));
-//                        break;
-//                }
                 Vector3f local = getLocal(evt.getAbsoluteX(), this.display.y
                         - evt.getAbsoluteY());
                 exactShapePoints.add(new Point((int) local.x, (int) local.y));
@@ -1047,75 +978,7 @@ public class VideoComponent extends CovidaComponent implements
             }
         }
     }
-//
-//    /**
-//     *  Updates the internal image.
-//     * 
-//     * @param x
-//     * @param y
-//     * @param force
-//     * @param id 
-//     */
-//    protected void updateImage(int x, int y, float force, int id) {
-//        if (!lastX.containsKey(new Integer(id))) {
-//            if (penColor.isEmpty()) {
-//                currentPenColor.put(id, Color.RED);
-//            } else {
-//                if (!currentPenColor.containsKey(new Integer(id))) {
-//                    if (!penColorIterator.hasNext()) {
-//                        penColorIterator = penColor.iterator();
-//                    }
-//                    currentPenColor.put(id, penColorIterator.next().penColor);
-//                }
-//            }
-//            g2dD.setColor(currentPenColor.get(new Integer(id)));
-//            lastX.put(id, x);
-//            lastY.put(id, y);
-//        } else {
-//            if (this.penPressure) {
-//                this.g2dD.setStroke(new BasicStroke(pen_thickness * force));
-//            } else {
-//                this.g2dD.setStroke(new BasicStroke(pen_thickness));
-//            }
-//            Vector3f lastLocal = getLocal((float) lastX.get(new Integer(id)), (float) lastY.get(new Integer(id)));
-//            Vector3f local = getLocal((float) x, (float) y);
-////            local = local.add(new Vector3f(((float) getWidth())/2.0f, ((float) getHeight())/2.0f, 0.0f));
-////            lastLocal = lastLocal.add(new Vector3f(((float) getWidth())/2.0f, ((float) getHeight())/2.0f, 0.0f));
-//            this.g2dD.drawLine((int) lastLocal.x + (int) ((float) getWidth() / 2.0f), (int) lastLocal.y + (int) ((float) getHeight() / 2.0f), (int) local.x + (int) ((float) getWidth() / 2.0f), (int) local.y + (int) ((float) getHeight() / 2.0f));
-//            lastX.put(id, x);
-//            lastY.put(id, y);
-//        }
-//    }
 
-//    /**
-//     * Erases all strokes.
-//     * 
-//     * @param shape
-//     */
-//    private void eraseStrokes() {
-//        // int l_x = -1;
-//        // int l_y = -1;
-//        this.g2d.setColor(Color.white);
-//        refreshBoard();
-//        updateStrokes();
-//    }
-//    private void updateStrokes() {
-//        g2d.setColor(shapeColor);
-//        for (StrokeTrace<Float> trace : strokes) {
-//            List<Float> x = trace.getX();
-//            List<Float> y = trace.getY();
-//            List<Float> force = trace.getForce();
-//            for (int i = 1; i < x.size(); i++) {
-//                if (this.penPressure) {
-//                    this.g2d.setStroke(new BasicStroke(pen_thickness
-//                            * force.get(i)));
-//                } else {
-//                    this.g2d.setStroke(new BasicStroke(pen_thickness));
-//                }
-//                this.g2d.drawLine(PenDataConversionUtil.convertX2int(x.get(i - 1)), PenDataConversionUtil.convertY2int(y.get(i - 1)), PenDataConversionUtil.convertX2int(x.get(i)), PenDataConversionUtil.convertY2int(y.get(i)));
-//            }
-//        }
-//    }
     @Override
     public void draw(ShapeEvent shape) {
         if (penColor.isEmpty()) {
@@ -1676,8 +1539,9 @@ public class VideoComponent extends CovidaComponent implements
                 && event.getTranslation() != null) {
             startDragAnimation();
             move(getNode().getLocalTranslation().getX()
-                    + event.getTranslation().x * scrnsize.x / getNode().getLocalScale().x, getNode().getLocalTranslation().getY()
-                    - event.getTranslation().y * scrnsize.y / getNode().getLocalScale().y);
+                    + event.getTranslation().x * scrnsize.x , 
+                    getNode().getLocalTranslation().getY()
+                    - event.getTranslation().y * scrnsize.y );
         } else if (event.getState().equals(DragEvent.GestureState.GESTURE_END)) {
             stopDragAniation();
             getLockState().removeTouchLock(event.getTouchID());
@@ -1697,7 +1561,7 @@ public class VideoComponent extends CovidaComponent implements
                 event.getPivotPoint().x, event.getPivotPoint().y,
                 0);
         Quaternion q = new Quaternion();
-        q.fromAngleAxis(event.getRotation() / getNode().getLocalScale().x, Vector3f.UNIT_Z);
+        q.fromAngleAxis(event.getRotation(), Vector3f.UNIT_Z);
         getNode().getLocalRotation().multLocal(q.inverse());
         getNode().getLocalTranslation().addLocal(
                 event.getPivotPoint().x, event.getPivotPoint().y,

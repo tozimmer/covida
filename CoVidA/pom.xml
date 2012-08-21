@@ -23,7 +23,7 @@
                 <version>1.7</version>
                 <executions>
                     <execution>
-                        <id>eeeslate</id>
+                        <id>shade</id>
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
@@ -31,27 +31,6 @@
                         <configuration>
                             <shadedArtifactAttached>true</shadedArtifactAttached>
                             <shadedClassifierName>shaded</shadedClassifierName> 
-                            <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>de.dfki.touchandwrite.Covida_eeeslate</mainClass>
-                                </transformer>
-                            </transformers>
-                        </configuration>  
-                    </execution>
-                    <execution>
-                        <id>twtable</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <shadedArtifactAttached>true</shadedArtifactAttached>
-                            <shadedClassifierName>shaded</shadedClassifierName> 
-                            <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>de.dfki.touchandwrite.Covida_twtable</mainClass>
-                                </transformer>
-                            </transformers>
                         </configuration>  
                     </execution>
                 </executions>
@@ -204,6 +183,12 @@
         <dependency>
             <groupId>de.dfki.touchandwrite</groupId>
             <artifactId>windows-input-adapter</artifactId>
+            <version>0.9</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>de.dfki.touchandwrite</groupId>
+            <artifactId>touchandwrite-server</artifactId>
             <version>0.9</version>
             <type>jar</type>
         </dependency>

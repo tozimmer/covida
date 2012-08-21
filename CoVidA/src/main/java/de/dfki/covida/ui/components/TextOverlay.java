@@ -36,7 +36,6 @@ import com.jme.scene.Spatial;
 import com.jmex.angelfont.BitmapFont.Align;
 import com.jmex.angelfont.BitmapText;
 import com.jmex.scene.TimedLifeController;
-import de.dfki.covida.ui.DragAnimationHandler;
 import de.dfki.touchandwrite.action.GestureAction;
 import de.dfki.touchandwrite.action.GestureActionEvent;
 import de.dfki.touchandwrite.action.TouchActionEvent;
@@ -80,13 +79,13 @@ public class TextOverlay extends CovidaComponent implements GestureSensitiveComp
     private Thread removeHandlerThread;
     private TextOverlayData textOverlayData;
     private BitmapText txt;
-    private Boolean dragEnabled;
     private Thread animationHandlerThread;
     private AnimationHandler animationHandler;
     private DragAnimationHandler dragAnimationHandler;
     private Thread dragAnimationHandlerThread;
     private boolean isDragging;
-    private final GestureAction gestureAction;
+//    private final GestureAction gestureAction;
+    private TouchInputHandler touchInput;
 
     /**
      * Displays Text
@@ -97,7 +96,7 @@ public class TextOverlay extends CovidaComponent implements GestureSensitiveComp
     public TextOverlay(Node node, CovidaComponent component) {
         super(ComponentType.COMPONENT_2D, "Text Overlay Component", node);
         super.initComponent();
-        this.gestureAction = new GestureAction(this);
+//        this.gestureAction = new GestureAction(this);
         this.component = component;
         super.setRootNode(this.component.getRootNode());
         textOverlayData = TextOverlayData.getInstance();
@@ -136,12 +135,8 @@ public class TextOverlay extends CovidaComponent implements GestureSensitiveComp
         txt.removeFromParent();
     }
 
-    public Boolean isDragEnabled() {
-        return dragEnabled;
-    }
-
-    public void setDragEnabled(Boolean dragEnabled) {
-        this.dragEnabled = dragEnabled;
+    public void enableTouchGestures() {
+        touchInput.addAction(new GestureAction((this)));
     }
 
     public void attach() {
@@ -213,11 +208,11 @@ public class TextOverlay extends CovidaComponent implements GestureSensitiveComp
         this.align = align;
         update();
     }
-    
+
     @Override
     public void registerWithInputHandler(TouchInputHandler input) {
         input.addAction(touchAction);
-        input.addAction(gestureAction);
+        this.touchInput = input;
     }
 
     /**
@@ -291,28 +286,22 @@ public class TextOverlay extends CovidaComponent implements GestureSensitiveComp
     }
 
     @Override
-    protected void touchAction(TouchActionEvent e) {
-    }
-
-    @Override
     protected void dragAction(DragEvent event) {
-        if (dragEnabled) {
-            if (event.getState().equals(DragEvent.GestureState.GESTURE_UPDATE)
-                    && event.getTranslation() != null) {
-                startDragAnimation();
-                move(getNode().getLocalTranslation().getX()
-                        + event.getTranslation().x * scrnsize.x / getNode().getLocalScale().x, getNode().getLocalTranslation().getY()
-                        - event.getTranslation().y * scrnsize.y / getNode().getLocalScale().y);
-            } else if (event.getState().equals(DragEvent.GestureState.GESTURE_END)) {
-                stopDragAniation();
-                getLockState().removeTouchLock(event.getTouchID());
-            } else if (event.getState().equals(DragEvent.GestureState.GESTURE_BEGIN)) {
-                if (animationHandlerThread == null
-                        || !animationHandlerThread.isAlive()) {
-                    animationHandlerThread = new Thread(
-                            animationHandler);
-                    animationHandlerThread.start();
-                }
+        if (event.getState().equals(DragEvent.GestureState.GESTURE_UPDATE)
+                && event.getTranslation() != null) {
+            startDragAnimation();
+            move(getNode().getLocalTranslation().getX()
+                    + event.getTranslation().x * scrnsize.x / getNode().getLocalScale().x, getNode().getLocalTranslation().getY()
+                    - event.getTranslation().y * scrnsize.y / getNode().getLocalScale().y);
+        } else if (event.getState().equals(DragEvent.GestureState.GESTURE_END)) {
+            stopDragAniation();
+            getLockState().removeTouchLock(event.getTouchID());
+        } else if (event.getState().equals(DragEvent.GestureState.GESTURE_BEGIN)) {
+            if (animationHandlerThread == null
+                    || !animationHandlerThread.isAlive()) {
+                animationHandlerThread = new Thread(
+                        animationHandler);
+                animationHandlerThread.start();
             }
         }
     }
@@ -347,13 +336,18 @@ public class TextOverlay extends CovidaComponent implements GestureSensitiveComp
     public void touchGesture(GestureActionEvent event) {
         if (event.getEvent() instanceof DragEvent) {
             DragEvent e = (DragEvent) event.getEvent();
-            if (getLockState().onTop(e, this)) {
+            if (inArea(event)) {
                 dragAction(e);
             }
             if (e.getState() == TouchGestureEvent.GestureState.GESTURE_END) {
 //                getLockState().removeTouchLock(e.getTouchID());
             }
         }
+    }
+
+    @Override
+    protected void touchAction(TouchActionEvent e) {
+        
     }
 }
 class RemoveControllerHandler implements Runnable {

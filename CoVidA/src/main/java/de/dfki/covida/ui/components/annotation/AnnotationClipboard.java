@@ -162,8 +162,8 @@ public class AnnotationClipboard extends Field {
             node.setLocalTranslation(x, getTextY(2 + i), 0);
             getNode().attachChild(node);
             TextOverlay textOverlay = new TextOverlay(node, this);
-            textOverlay.setDragEnabled(true);
             textOverlay.registerWithInputHandler(touchInput);
+            textOverlay.enableTouchGestures();         
             textOverlay.setText(hwrResults.get(i));
             textOverlay.setSize(FONT_SIZE);
             textOverlay.setFont(1);

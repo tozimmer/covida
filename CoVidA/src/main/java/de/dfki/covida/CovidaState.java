@@ -48,7 +48,6 @@ public class CovidaState extends ApplicationState {
         this.setStateRenderQueueMode(Renderer.QUEUE_ORTHO);
         videoTouchBoard = new CovidaBoard(opt);
         videoTouchBoard.initComponent();
-        videoTouchBoard.setApp(application);
         return true;
     }
 

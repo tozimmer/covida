@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.dfki.covida.ui;
+package de.dfki.covida.ui.components;
 
 import com.jme.animation.SpatialTransformer;
 import com.jme.math.FastMath;

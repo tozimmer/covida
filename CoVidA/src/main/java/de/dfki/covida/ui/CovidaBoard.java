@@ -46,14 +46,14 @@ import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
 import com.jmex.awt.swingui.ImageGraphics;
 import de.dfki.covida.CovidaCMDOptions;
-import de.dfki.covida.ui.components.button.ClipboardButton;
-import de.dfki.covida.ui.components.button.SearchButton;
-import de.dfki.covida.ui.components.video.VideoComponent;
-import de.dfki.covida.ui.components.video.VideoPreloadComponent;
 import de.dfki.covida.data.CovidaConfiguration;
 import de.dfki.covida.data.VideoFormat;
 import de.dfki.covida.ui.components.DrawingOverlay;
 import de.dfki.covida.ui.components.LockState;
+import de.dfki.covida.ui.components.button.ClipboardButton;
+import de.dfki.covida.ui.components.button.SearchButton;
+import de.dfki.covida.ui.components.video.VideoComponent;
+import de.dfki.covida.ui.components.video.VideoPreloadComponent;
 import de.dfki.touchandwrite.action.TouchAction;
 import de.dfki.touchandwrite.action.TouchActionEvent;
 import de.dfki.touchandwrite.input.pen.hwr.HandwritingRecognitionEvent;
@@ -78,10 +78,6 @@ import org.apache.log4j.Logger;
 public class CovidaBoard extends AbstractTouchAndWriteComponent implements
         TouchableComponent {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 828472453351358070L;
     private boolean eeeSlate = true;
     private final ArrayList<ClipboardButton> clipboardButtons;
 
@@ -235,7 +231,6 @@ public class CovidaBoard extends AbstractTouchAndWriteComponent implements
     private ArrayList<VideoPreloadComponent> preloadVideo;
     private boolean initialized;
     private List<VideoFormat> videoFormat = new ArrayList<VideoFormat>();
-    private TouchAndWriteApp app = null;
     private int TRESHOLD = 3;
 
     public CovidaBoard(CovidaCMDOptions opt) {
@@ -998,6 +993,7 @@ public class CovidaBoard extends AbstractTouchAndWriteComponent implements
     public void registerTouch() {
         touchInputHandler.addAction(touchAction);
 
+        videos.get(0).registerWithInputHandler(touchInputHandler);
         // drag, rotate, zoom Videos
         for (VideoComponent video : videos) {
             video.registerWithInputHandler(touchInputHandler);
@@ -1068,10 +1064,6 @@ public class CovidaBoard extends AbstractTouchAndWriteComponent implements
             }
         }
         return false;
-    }
-
-    public void setApp(TouchAndWriteApp app) {
-        this.app = app;
     }
 
     @Override

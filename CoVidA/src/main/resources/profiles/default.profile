@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<profile name="default" pageid="72.0.7.31">
+<profile name="default" pageid="0.0.0.0">
     <modeareas>
         <modearea name="default">
             <area>
@@ -41,7 +41,7 @@
                     <weightParallelogram>0.0</weightParallelogram>
                     <weightRectangle>0.0</weightRectangle>
                     <weightRhombus>0.0</weightRhombus>
-                    <weightStroke>0.0</weightStroke>
+                    <weightStroke>1.0</weightStroke>
                     <weightTriangle>0.0</weightTriangle>
                 </shapedetection>
                 <trainingData>../touchandwrite-inputanalyser/src/main/resources/training-data/</trainingData>
