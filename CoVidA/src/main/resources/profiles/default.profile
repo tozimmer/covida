@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<profile name="default" pageid="72.0.7.31">
+    <modeareas>
+        <modearea name="default">
+            <area>
+                <x>
+                    <value>0</value>
+                    <value>1152</value>
+                    <value>1152</value>
+                    <value>0</value>
+                </x>
+                <y>
+                    <value>0</value>
+                    <value>0</value>
+                    <value>864</value>
+                    <value>864</value>
+                </y>
+            </area>
+            <modeconfig>
+                <gesturerecognition>
+                    <enabled>true</enabled>
+                </gesturerecognition>
+                <hwrconfiguration>
+                    <dict>
+                        <dictionary>en_US-ak-cur.res</dictionary>
+                        <linguistic>en_US-lk-text.res</linguistic>
+                        <locale>eng</locale>
+                    </dict>
+                    <orientationCorrection>true</orientationCorrection>
+                    <disableMultipleLines>false</disableMultipleLines>
+                    <wordCandidateListSize>10</wordCandidateListSize>
+                </hwrconfiguration>
+                <shapedetection>
+                    <combineStrokes>false</combineStrokes>
+                    <enabled>true</enabled>
+                    <weightCircle>0.0</weightCircle>
+                    <weightCurvedArrow>0.0</weightCurvedArrow>
+                    <weightEllipticArc>0.0</weightEllipticArc>
+                    <weightEllispe>0.0</weightEllispe>
+                    <weightLine>0.0</weightLine>
+                    <weightParallelogram>0.0</weightParallelogram>
+                    <weightRectangle>0.0</weightRectangle>
+                    <weightRhombus>0.0</weightRhombus>
+                    <weightStroke>0.0</weightStroke>
+                    <weightTriangle>0.0</weightTriangle>
+                </shapedetection>
+                <trainingData>../touchandwrite-inputanalyser/src/main/resources/training-data/</trainingData>
+            </modeconfig>
+        </modearea>
+    </modeareas>
+</profile>

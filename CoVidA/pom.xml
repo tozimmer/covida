@@ -1,11 +1,145 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.dfki.touchandwrite</groupId>
     <artifactId>covida</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>CoVidA</name>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <id>eeeslate</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <shadedArtifactAttached>true</shadedArtifactAttached>
+                            <shadedClassifierName>shaded</shadedClassifierName> 
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>de.dfki.touchandwrite.Covida_eeeslate</mainClass>
+                                </transformer>
+                            </transformers>
+                        </configuration>  
+                    </execution>
+                    <execution>
+                        <id>twtable</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <shadedArtifactAttached>true</shadedArtifactAttached>
+                            <shadedClassifierName>shaded</shadedClassifierName> 
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>de.dfki.touchandwrite.Covida_twtable</mainClass>
+                                </transformer>
+                            </transformers>
+                        </configuration>  
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.bluestemsoftware.open.maven.plugin</groupId>
+                <artifactId>launch4j-plugin</artifactId>
+                <version>1.5.0.0</version>
+                <executions>
+
+        <!-- GUI exe -->
+                    <execution>
+                        <id>l4j-binaries</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>launch4j</goal>
+                        </goals>
+                        <configuration>
+                            <headerType>console</headerType>
+                            <outfile>target/binaries/CoVidA.exe</outfile>
+                            <jar>target/${project.artifactId}-${project.version}-shaded.jar</jar> <!-- 'shaded' is the value set on shadedClassifierName above -->
+                            <errTitle>CoVidA</errTitle>
+                            <classPath>
+                                <mainClass>de.dfki.touchandwrite.TouchAndWriteCovida</mainClass>
+                                <addDependencies>true</addDependencies>
+                            </classPath>
+                            <icon>src/main/resources/icon.ico</icon>
+                            <jre>
+                                <minVersion>1.7.0</minVersion>
+                                <opts>
+                                    <opt>-Djava.library.path=native-libs</opt>
+                                </opts>
+                            </jre>
+                            <versionInfo>
+                                <fileVersion>1.0.0.0</fileVersion>
+                                <txtFileVersion>1.0.0.0</txtFileVersion>
+                                <fileDescription>Desc</fileDescription>
+                                <copyright>Tobias Zimmermann</copyright>
+                                <productVersion>1.0.0.0</productVersion>
+                                <txtProductVersion>1.0.0.0</txtProductVersion>
+                                <productName>CoVidA</productName>
+                                <internalName>CoVidA</internalName>
+                                <originalFilename>CoVidA.exe</originalFilename>
+                            </versionInfo>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.5</version>
+                <executions>
+                    <execution>
+                        <id>copy-native-libs</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/binaries/videos</outputDirectory>
+                            <resources>          
+                                <resource>
+                                    <directory>videos</directory>
+                                </resource>
+                            </resources>              
+                        </configuration>            
+                    </execution>
+                    <execution>
+                        <id>copy-videos</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/binaries/native-libs</outputDirectory>
+                            <resources>          
+                                <resource>
+                                    <directory>native-libs</directory>
+                                </resource>
+                            </resources>              
+                        </configuration>            
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -19,6 +153,24 @@
         <dependency>
             <groupId>de.dfki.touchandwrite</groupId>
             <artifactId>touchandwrite-visual</artifactId>
+            <version>0.9</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>de.dfki.touchandwrite</groupId>
+            <artifactId>ccv-adapter</artifactId>
+            <version>0.9</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>de.dfki.touchandwrite</groupId>
+            <artifactId>anoto-pen</artifactId>
+            <version>0.9</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>de.dfki.touchandwrite</groupId>
+            <artifactId>windows-input-adapter</artifactId>
             <version>0.9</version>
             <type>jar</type>
         </dependency>

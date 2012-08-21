@@ -118,15 +118,4 @@ public class Covida extends StateBasedTouchAndWriteApp {
     public ApplicationType getApplicationType() {
         return ApplicationType.APPLICATION_2D;
     }
-
-    /**
-     * @param args
-     */
-    public static void main(String[] args) {
-
-        Covida app;
-        app = new Covida(TouchAndWriteConfiguration.loadSettings(new File(
-                "src/main/resources/touchandwrite.xml")), args);
-        app.start();
-    }
 }

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<touchAndWriteConfiguration>
+	<logConfig>src/main/resources/log4j.xml</logConfig>
+	<tuioconfiguration>
+		<tuioPort>3333</tuioPort>
+		<tuioTarget>localhost</tuioTarget>
+		<delta>0.001</delta>
+	</tuioconfiguration>
+	<eventmanagerconfig>
+		<moveDelta>0.001</moveDelta>
+		<continousPenStreaming>false</continousPenStreaming>
+		<intervalCheck>1000</intervalCheck>
+		<analyzerDelay>500</analyzerDelay>
+	</eventmanagerconfig>
+	<pencalibration>
+		<x1>45</x1>
+		<y1>990</y1>
+		<x2>1000</x2>
+		<y2>990</y2>
+		<x3>45</x3>
+		<y3>1650</y3>
+		<x4>1000</x4>
+		<y4>1650</y4>
+		<screenx1>0</screenx1>
+		<screeny1>0</screeny1>
+		<screenx2>1152</screenx2>
+		<screeny2>864</screeny2>
+	</pencalibration>
+	<storeevents>false</storeevents>
+	<cacheDirectory>cache</cacheDirectory>
+	<peninputdevice>
+		<width>1680</width>
+		<height>1050</height>
+		<devicetype>WM_PEN</devicetype>
+	</peninputdevice>
+</touchAndWriteConfiguration>
