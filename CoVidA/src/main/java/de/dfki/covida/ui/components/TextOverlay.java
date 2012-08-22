@@ -295,7 +295,6 @@ public class TextOverlay extends CovidaComponent implements GestureSensitiveComp
                     - event.getTranslation().y * scrnsize.y / getNode().getLocalScale().y);
         } else if (event.getState().equals(DragEvent.GestureState.GESTURE_END)) {
             stopDragAniation();
-            getLockState().removeTouchLock(event.getTouchID());
         } else if (event.getState().equals(DragEvent.GestureState.GESTURE_BEGIN)) {
             if (animationHandlerThread == null
                     || !animationHandlerThread.isAlive()) {

@@ -69,7 +69,6 @@ import java.util.Arrays;
 import java.util.List;
 import org.apache.log4j.Logger;
 
-
 /**
  * Component which displays annotation data of VideoComponent.
  *
@@ -1055,47 +1054,43 @@ public class DisplayFieldComponent extends CovidaComponent {
 
     @Override
     protected void touchBirthAction(TouchActionEvent e) {
-        if (e.getTouchState().equals(TouchState.TOUCH_DEAD)) {
-            getLockState().removeTouchLock(e.getID());
-        } else {
-            if (getType().equals(DisplayFieldType.INFO)
-                    || getType().equals(DisplayFieldType.EDIT)) {
-                toFront();
-                setOverlay(e.getX(), e.getY());
-                if (getNode().hasChild(txt)) {
-                    getNode().detachChild(txt);
-                }
-                if (!getNode().hasChild(this.overlayDefault)) {
-                    for (int i = 0; i < 2; i++) {
-                        if (getNode().hasChild(
-                                this.overlayMenu.get(i))) {
-                            getNode().detachChild(
-                                    this.overlayMenu.get(i));
-                            getNode().attachChild(
-                                    this.overlayDefault);
-                        }
-                    }
-                    textOverlay.setText("");
-                    int x = (int) (((getLocal(e.getX(), e.getY()).x + getWidth() / 2) / getWidth()) * 2);
-                    int y = (int) (((getLocal(e.getX(), e.getY()).y + getHeight() / 2) / getHeight()) * 10);
-                    log.debug("x = " + x);
-                    if (x > -1 && x < 2 && y < 1) {
-                        if (x == 0) {
-                            save();
-                        } else if (x == 1) {
-                            close();
-                        }
+        if (getType().equals(DisplayFieldType.INFO)
+                || getType().equals(DisplayFieldType.EDIT)) {
+            toFront();
+            setOverlay(e.getX(), e.getY());
+            if (getNode().hasChild(txt)) {
+                getNode().detachChild(txt);
+            }
+            if (!getNode().hasChild(this.overlayDefault)) {
+                for (int i = 0; i < 2; i++) {
+                    if (getNode().hasChild(
+                            this.overlayMenu.get(i))) {
+                        getNode().detachChild(
+                                this.overlayMenu.get(i));
+                        getNode().attachChild(
+                                this.overlayDefault);
                     }
                 }
-            } else if (getType().equals(DisplayFieldType.LIST)) {
-                if (getLockState().isTouchLocked(e.getID())) {
-                    if (getLockState().getTouchLock(e.getID()) == getId()) {
-                        toFront();
-                        int entryID = getSelectedEntry(
-                                e.getX(), e.getY());
-                        setSelectedEntry(entryID);
+                textOverlay.setText("");
+                int x = (int) (((getLocal(e.getX(), e.getY()).x + getWidth() / 2) / getWidth()) * 2);
+                int y = (int) (((getLocal(e.getX(), e.getY()).y + getHeight() / 2) / getHeight()) * 10);
+                log.debug("x = " + x);
+                if (x > -1 && x < 2 && y < 1) {
+                    if (x == 0) {
+                        save();
+                    } else if (x == 1) {
+                        close();
+                    }
+                }
+            }
+        } else if (getType().equals(DisplayFieldType.LIST)) {
+            if (getLockState().isTouchLocked(e.getID())) {
+                if (getLockState().getTouchLock(e.getID()) == getId()) {
+                    toFront();
+                    int entryID = getSelectedEntry(
+                            e.getX(), e.getY());
+                    setSelectedEntry(entryID);
 
-                    }
                 }
             }
         }
@@ -1245,9 +1240,9 @@ public class DisplayFieldComponent extends CovidaComponent {
 
     @Override
     protected void touchDeadAction(int id) {
-
     }
 }
+
 class RemoveHandler implements Runnable {
 
     private float target;

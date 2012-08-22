@@ -90,7 +90,8 @@ public class SearchButton extends CovidaButton {
         searchField.open();
     }
 
-    public void toggle() {
+    @Override
+    protected final void toggle() {
         if (fieldNode.hasChild(searchField)) {
             if (searchField.isClosing()) {
                 openSearch();
@@ -104,17 +105,8 @@ public class SearchButton extends CovidaButton {
     }
 
     @Override
-    protected void touchDeadAction(TouchActionEvent e) {
-    }
-
-    @Override
     protected void touchAliveAction(TouchActionEvent e) {
         // TODO Auto-generated method stub
-    }
-    
-    @Override
-    protected void touchDeadAction(int touchId) {
-        toggle();
     }
 
     @Override

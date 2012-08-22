@@ -56,7 +56,6 @@ import de.dfki.touchandwrite.analyser.touch.gestures.events.ZoomEvent;
 import de.dfki.touchandwrite.input.pen.event.ShapeEvent;
 import de.dfki.touchandwrite.input.pen.hwr.HWRResultSet;
 import de.dfki.touchandwrite.input.pen.hwr.HandwritingRecognitionEvent;
-import de.dfki.touchandwrite.input.touch.event.TouchState;
 import de.dfki.touchandwrite.input.touch.gesture.TouchGestureEvent.GestureState;
 import de.dfki.touchandwrite.jme2.ShapeUtils;
 import de.dfki.touchandwrite.shape.Polygon;
@@ -267,7 +266,13 @@ public class VideoComponent extends CovidaComponent implements
 
     @Override
     protected void touchDeadAction(TouchActionEvent e) {
-        getLockState().removeTouchLock(e.getID());
+        stopDragAniation();
+        if (isUnderThreshold(e.getID())) {
+            attachOverlays();
+        }
+        if (touchCount.containsKey(e.getID())) {
+            touchCount.remove(e.getID());
+        }
     }
 
     /**
@@ -1557,13 +1562,15 @@ public class VideoComponent extends CovidaComponent implements
         if (event.getState().equals(DragEvent.GestureState.GESTURE_UPDATE)
                 && event.getTranslation() != null) {
             startDragAnimation();
-            move(getNode().getLocalTranslation().getX()
-                    + event.getTranslation().x * scrnsize.x,
-                    getNode().getLocalTranslation().getY()
-                    - event.getTranslation().y * scrnsize.y);
+            float x = event.getTranslation().x * scrnsize.x;
+            float y = event.getTranslation().y * scrnsize.y;
+            x = x / getNode().getLocalScale().x;
+            y = y / getNode().getLocalScale().y;
+            x = getNode().getLocalTranslation().getX() + x;
+            y = getNode().getLocalTranslation().getY() - y;
+            move(x, y);
         } else if (event.getState().equals(DragEvent.GestureState.GESTURE_END)) {
             stopDragAniation();
-            getLockState().removeTouchLock(event.getTouchID());
         } else if (event.getState().equals(DragEvent.GestureState.GESTURE_BEGIN)) {
             if (animationHandlerThread == null
                     || !animationHandlerThread.isAlive()) {
@@ -1586,8 +1593,8 @@ public class VideoComponent extends CovidaComponent implements
                 event.getPivotPoint().x, event.getPivotPoint().y,
                 0);
         if (event.getState().equals(DragEvent.GestureState.GESTURE_END)) {
-            getLockState().removeTouchLock(event.getFirstTouch().getID());
-            getLockState().removeTouchLock(event.getSecondTouch().getID());
+//            getLockState().removeTouchLock(event.getFirstTouch().getID());
+//            getLockState().removeTouchLock(event.getSecondTouch().getID());
         }
     }
 
@@ -1604,8 +1611,8 @@ public class VideoComponent extends CovidaComponent implements
         }
         if (event.getState().equals(GestureState.GESTURE_END)) {
             if (event.getState().equals(DragEvent.GestureState.GESTURE_END)) {
-                getLockState().removeTouchLock(event.getFirstTouch().getID());
-                getLockState().removeTouchLockWithoutAction(event.getSecondTouch().getID());
+//                getLockState().removeTouchLock(event.getFirstTouch().getID());
+//                getLockState().removeTouchLockWithoutAction(event.getSecondTouch().getID());
             }
         }
     }
@@ -1756,13 +1763,6 @@ public class VideoComponent extends CovidaComponent implements
 
     @Override
     protected void touchDeadAction(int touchId) {
-        stopDragAniation();
-        if (isUnderThreshold(touchId)) {
-            attachOverlays();
-        }
-        if (touchCount.containsKey(touchId)) {
-            touchCount.remove(touchId);
-        }
     }
 }
 

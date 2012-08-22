@@ -27,6 +27,7 @@
  */
 package de.dfki.covida;
 
+import de.dfki.touchandwrite.TouchAndWriteDevice;
 import org.kohsuke.args4j.Option;
 
 /**
@@ -43,6 +44,8 @@ public class CovidaCMDOptions {
     private boolean debug;
     @Option(name = "-log", usage = "Location of the log configuration.")
     private String logfile = "log4j.xml";
+    @Option(name = "-device", usage = "Name of the device")
+    private String device;
 
     /**
      * Returns the location of the Touch and Write configuration file.
@@ -65,5 +68,16 @@ public class CovidaCMDOptions {
      */
     public boolean isDebug() {
         return debug;
+    }
+
+    /**
+     * @return the debug
+     */
+    public TouchAndWriteDevice getDevice() {
+        if (device != null) {
+            return TouchAndWriteDevice.valueOf(device);
+        } else {
+            return TouchAndWriteDevice.EEE_SLATE;
+        }
     }
 }

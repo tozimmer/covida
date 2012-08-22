@@ -171,7 +171,6 @@ public class AnnotationSearch extends Field {
         yDrag = 0;
         setSelectedTitle(getSelectedTitle(e.getX(), e.getY()));
         setSelectedEntry(getSelectedEntry(e.getX(), e.getY()));
-        getLockState().removeTouchLock(e.getID());
     }
 
     @Override

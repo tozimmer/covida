@@ -27,7 +27,10 @@
  */
 package de.dfki.covida;
 
+import com.sun.jna.NativeLibrary;
 import de.dfki.touchandwrite.ApplicationType;
+import de.dfki.touchandwrite.TouchAndWriteDevice;
+import de.dfki.touchandwrite.TouchAndWriteServer;
 import de.dfki.touchandwrite.conf.TouchAndWriteConfiguration;
 import de.dfki.touchandwrite.visual.StateBasedTouchAndWriteApp;
 import java.io.File;
@@ -93,6 +96,7 @@ public class Covida extends StateBasedTouchAndWriteApp {
      * de.dfki.touchandwrite.visual.StateBasedTouchAndWriteApp#mappingAction2State
      * (java.lang.String)
      */
+    @Override
     protected String mappingAction2State(String action) {
         // TODO Auto-generated method stub
         return null;
@@ -103,6 +107,7 @@ public class Covida extends StateBasedTouchAndWriteApp {
      *
      * @see de.dfki.touchandwrite.visual.TouchAndWriteApp#simpleInitGame()
      */
+    @Override
     protected void simpleInitGame() {
         this.mainScreen = new CovidaState(this, opt);
         this.mainScreen.init();
@@ -115,7 +120,63 @@ public class Covida extends StateBasedTouchAndWriteApp {
      *
      * @see de.dfki.touchandwrite.TouchAndWriteApplication#getApplicationType()
      */
+    @Override
     public ApplicationType getApplicationType() {
         return ApplicationType.APPLICATION_2D;
+    }
+
+    public static void main(final String[] args) {
+        NativeLibrary.addSearchPath("libvlc", "C:\\Program Files (x86)\\VideoLAN\\VLC");
+        final CovidaCMDOptions opt = new CovidaCMDOptions();
+        CmdLineParser parser = new CmdLineParser(opt);
+
+        try {
+            parser.parseArgument(args);
+        } catch (CmdLineException e) {
+            System.err.println("TouchAndWrite [options...] arguments...");
+            parser.printUsage(System.err);
+            System.exit(-1);
+        }
+
+        if (opt.isDebug()) {
+            if (new File(opt.getLogfile()).canRead()) {
+                DOMConfigurator.configure(new File(opt.getLogfile()).getAbsolutePath());
+            } else {
+                BasicConfigurator.configure();
+            }
+            log = Logger.getLogger(Covida.class);
+            log.debug("Verbose mode");
+            log.debug("Current working directory: " + System.getProperty("user.dir"));
+        } else {
+            BasicConfigurator.configure();
+            log = Logger.getLogger(Covida.class);
+            log.setLevel(Level.OFF);
+        }
+        //Starting touch and write server
+        TouchAndWriteServer twserver = new TouchAndWriteServer(opt.getDevice());
+        new Thread(twserver, "Touch&Write").start();
+        // Inprocess mode
+        while (!twserver.running) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                log.error("" + e);
+            }
+        }
+
+        Runnable app = new Runnable() {
+        
+            @Override
+            public void run() {
+                TouchAndWriteConfiguration conf = TouchAndWriteConfiguration.getDefaultEEESlateConfig();
+                if(opt.getDevice() == TouchAndWriteDevice.TW_TABLE){
+                    conf = TouchAndWriteConfiguration.getDefaultTWTableConfig();
+                }
+                Covida app = new Covida(conf, args);
+                app.setJmeLoggin(false);
+                app.start();
+            }
+        };
+        new Thread(app).start();
     }
 }

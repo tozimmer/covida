@@ -80,22 +80,17 @@ public class CloseButton extends CovidaButton {
     }
 
     @Override
-    protected void touchDeadAction(TouchActionEvent e) {
-        component.close();
-    }
-
-    @Override
     protected void touchAliveAction(TouchActionEvent e) {
-        // TODO Auto-generated method stub
-    }
-    
-    @Override
-    protected void touchDeadAction(int touchId) {
         // TODO Auto-generated method stub
     }
 
     @Override
     Field getChild() {
         return null;
+    }
+
+    @Override
+    protected final void toggle() {
+        component.close();
     }
 }

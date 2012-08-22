@@ -135,7 +135,7 @@ public abstract class CovidaButton extends CovidaComponent {
     }
 
     @Override
-    protected void touchDeadAction(int id) {
+    protected final void touchDeadAction(int id) {
         if (getNode().hasChild(this.overlay.get(1))) {
             getNode().detachChild(this.overlay.get(1));
         }
@@ -163,23 +163,20 @@ public abstract class CovidaButton extends CovidaComponent {
     protected void dragAction(DragEvent event) {
     }
 
-    ;
-
     @Override
     protected void rotationAction(RotationGestureEvent event) {
     }
-
-    ;
-
+    
     @Override
     protected void zoomAction(ZoomEvent event) {
     }
 
-    ;
-
-
     @Override
-    protected abstract void touchDeadAction(TouchActionEvent e);
+    protected final void touchDeadAction(TouchActionEvent e){
+        if (getNode().hasChild(this.overlay.get(1))) {
+            getNode().detachChild(this.overlay.get(1));
+        }
+    }
 
     @Override
     protected abstract void touchAliveAction(TouchActionEvent e);
@@ -189,5 +186,8 @@ public abstract class CovidaButton extends CovidaComponent {
         if (!getNode().hasChild(this.overlay.get(1))) {
             getNode().attachChild(this.overlay.get(1));
         }
+        toggle();
     }
+    
+    protected abstract void toggle();
 }

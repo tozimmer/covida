@@ -47,10 +47,7 @@ import de.dfki.touchandwrite.analyser.touch.gestures.events.RotationGestureEvent
 import de.dfki.touchandwrite.analyser.touch.gestures.events.ZoomEvent;
 import de.dfki.touchandwrite.input.pen.event.ShapeEvent;
 import de.dfki.touchandwrite.input.pen.hwr.HandwritingRecognitionEvent;
-import de.dfki.touchandwrite.input.touch.event.TouchState;
 import de.dfki.touchandwrite.visual.components.ComponentType;
-import de.dfki.touchandwrite.visual.components.DrawingComponent;
-import de.dfki.touchandwrite.visual.components.HWRSensitiveComponent;
 import de.dfki.touchandwrite.visual.input.PenInputHandler;
 import java.awt.Color;
 import java.util.ArrayList;
@@ -62,13 +59,8 @@ import java.util.Queue;
  * @author Tobias Zimmermann
  *
  */
-public class VideoSlider extends CovidaComponent implements DrawingComponent,
-        HWRSensitiveComponent {
+public class VideoSlider extends CovidaComponent {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = -668703009933127672L;
     private ArrayList<Quad> overlaySlider;
     private static final int WIDTH = 1000;
     private static final int HEIGHT = 100;
@@ -143,25 +135,6 @@ public class VideoSlider extends CovidaComponent implements DrawingComponent,
     }
     
     @Override
-    public void registerWithInputHandler(PenInputHandler input) {
-        /**
-         * Do Nothing
-         */
-    }
-    
-    @Override
-    public void unRegisterWithInputHandler(PenInputHandler input) {
-        /**
-         * Do Nothing
-         */
-    }
-    
-    @Override
-    public void draw(Queue<PenActionEvent> penEvent) {
-        // TODO
-    }
-    
-    @Override
     public boolean isSensitiveArea(int id, int x, int y) {
         if (getLockState().isTouchLocked(id)) {
             if (getLockState().getTouchLock(id) == getId()) {
@@ -187,58 +160,6 @@ public class VideoSlider extends CovidaComponent implements DrawingComponent,
         if (FastMath.abs(x) < getWidth()) {
             sliderNode.setLocalTranslation(x, 0, 0);
         }
-    }
-    
-    @Override
-    public void handwritingResult(HandwritingRecognitionEvent set) {
-        /**
-         * Do Nothing
-         */
-    }
-    
-    @Override
-    public void draw(ShapeEvent shape) {
-        /**
-         * Do Nothing
-         */
-    }
-    
-    @Override
-    public void setCurrentPenColor(Color color) {
-        /**
-         * Do Nothing
-         */
-    }
-    
-    @Override
-    public void activatePenPressure() {
-        /**
-         * Do Nothing
-         */
-    }
-    
-    @Override
-    public void deactivatePenPressure() {
-        /**
-         * Do Nothing
-         */
-    }
-    
-    @Override
-    public boolean isPenPressureActivated() {
-        return false;
-    }
-    
-    @Override
-    public float getPenThickness() {
-        return 0;
-    }
-    
-    @Override
-    public void setPenThickness(float thickness) {
-        /**
-         * Do Nothing
-         */
     }
     
     public VideoComponent getVideo() {
@@ -307,6 +228,6 @@ public class VideoSlider extends CovidaComponent implements DrawingComponent,
     
     @Override
     protected void touchDeadAction(TouchActionEvent e) {
-        getLockState().removeTouchLock(e.getID());
+        
     }
 }

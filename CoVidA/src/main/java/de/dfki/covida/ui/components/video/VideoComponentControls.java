@@ -242,11 +242,6 @@ public class VideoComponentControls extends CovidaComponent {
             } else {
                 // TODO
             }
-        } else {
-            getLockState().removeTouchLock(e.getID());
-        }
-        if (e.getTouchState().equals(TouchState.TOUCH_DEAD)) {
-            getLockState().removeTouchLock(e.getID());
         }
     }
 

@@ -402,29 +402,28 @@ public abstract class CovidaComponent extends TouchComponent {
         node.removeFromParent();
         cleanUp();
     }
-    
-    
+
     @Override
     public final void touch(Map<Integer, TouchActionEvent> events) {
         for (TouchActionEvent event : events.values()) {
-            log.debug(getId()+" "+event.getID());
-            touchAction(event);
+            if (getLockState().onTop(event.getID(), new Vector2f(event.getX(), event.getY()),
+                    this)) {
+                touchAction(event);
+            }
+            if (event.getTouchState() == TouchState.TOUCH_DEAD) {
+                getLockState().removeTouchLock(event.getID());
+            }
         }
     }
 
     @Override
     protected final void touchAction(TouchActionEvent e) {
-//        if (getLockState().onTop(e.getID(), new Vector2f(e.getX(), e.getY()),
-//                this)) {
-            if (e.getTouchState() == TouchState.TOUCH_BIRTH){
-                touchBirthAction(e);
-            }else if (e.getTouchState() == TouchState.TOUCH_LIVING) {
-                touchAliveAction(e);
-            }
-//        }
-        if (e.getTouchState() == TouchState.TOUCH_DEAD) {
+        if (e.getTouchState() == TouchState.TOUCH_BIRTH) {
+            touchBirthAction(e);
+        } else if (e.getTouchState() == TouchState.TOUCH_LIVING) {
+            touchAliveAction(e);
+        }else if (e.getTouchState() == TouchState.TOUCH_DEAD) {
             touchDeadAction(e);
-            getLockState().removeTouchLock(e.getID());
         }
     }
 
@@ -437,12 +436,12 @@ public abstract class CovidaComponent extends TouchComponent {
     protected abstract int getWidth();
 
     protected abstract int getHeight();
-    
+
     protected abstract void touchBirthAction(TouchActionEvent e);
-    
+
     protected abstract void touchAliveAction(TouchActionEvent e);
 
     protected abstract void touchDeadAction(TouchActionEvent e);
-    
+
     protected abstract void touchDeadAction(int id);
 }

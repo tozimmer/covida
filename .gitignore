@@ -1,1 +1,4 @@
+*.class
+*.cfg
+*.log
 /CoVidA/target/

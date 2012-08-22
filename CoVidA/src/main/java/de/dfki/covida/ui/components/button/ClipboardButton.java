@@ -93,7 +93,8 @@ public class ClipboardButton extends CovidaButton {
         clipboard.open();
     }
 
-    public void toggle() {
+    @Override
+    protected final void toggle() {
         if (fieldNode.hasChild(clipboard)) {
             if (clipboard.isClosing()) {
                 openField();
@@ -107,17 +108,8 @@ public class ClipboardButton extends CovidaButton {
     }
 
     @Override
-    protected void touchDeadAction(TouchActionEvent e) {
-    }
-
-    @Override
     protected void touchAliveAction(TouchActionEvent e) {
         // TODO Auto-generated method stub
-    }
-
-    @Override
-    protected void touchDeadAction(int touchId) {
-        toggle();
     }
 
     @Override
