@@ -126,7 +126,6 @@ public class Covida extends StateBasedTouchAndWriteApp {
     }
 
     public static void main(final String[] args) {
-        NativeLibrary.addSearchPath("libvlc", "C:\\Program Files (x86)\\VideoLAN\\VLC");
         final CovidaCMDOptions opt = new CovidaCMDOptions();
         CmdLineParser parser = new CmdLineParser(opt);
 
