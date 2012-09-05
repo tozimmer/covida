@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.dfki.touchandwrite</groupId>
     <artifactId>covida</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.2-SNAPSHOT</version>
     <name>CoVidA</name>
     <build>
         <plugins>
@@ -135,26 +135,20 @@
         </dependency>
         <dependency>
             <groupId>de.dfki.touchandwrite</groupId>
-            <artifactId>ccv-adapter</artifactId>
-            <version>0.9</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>de.dfki.touchandwrite</groupId>
-            <artifactId>anoto-pen</artifactId>
-            <version>0.9</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>de.dfki.touchandwrite</groupId>
-            <artifactId>windows-input-adapter</artifactId>
-            <version>0.9</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>de.dfki.touchandwrite</groupId>
             <artifactId>touchandwrite-server</artifactId>
             <version>0.9</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>com.jmonkeyengine</groupId>
+            <artifactId>jme-scene</artifactId>
+            <version>2.0</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>uk.co.caprica</groupId>
+            <artifactId>vlcj</artifactId>
+            <version>1.2</version>
             <type>jar</type>
         </dependency>
     </dependencies>
