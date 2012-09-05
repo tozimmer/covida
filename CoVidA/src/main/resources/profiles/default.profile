@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<profile name="EEE Slate" pageid="0.0.0.0">
+<profile name="default" pageid="0.0.0.0">
     <modeareas>
-        <modearea name="EEE Slate">
+        <modearea name="default">
             <area>
                 <x>
                     <value>0</value>
@@ -22,8 +22,9 @@
                 </gesturerecognition>
                 <hwrconfiguration>
                     <dict>
-                        <dictionary>en_US-ak-cur.res</dictionary>
-                        <linguistic>en_US-lk-text.res</linguistic>
+                        <dictionary>en_GB-ak-cur.res</dictionary>
+                        <linguistic>en_GB-lk-text.res</linguistic>
+						<wordlist>radlex-eng.wlist</wordlist>
                         <locale>eng</locale>
                     </dict>
                     <orientationCorrection>true</orientationCorrection>
@@ -32,19 +33,19 @@
                 </hwrconfiguration>
                 <shapedetection>
                     <combineStrokes>false</combineStrokes>
-                    <enabled>false</enabled>
-                    <weightCircle>1.0</weightCircle>
-                    <weightCurvedArrow>1.0</weightCurvedArrow>
-                    <weightEllipticArc>1.0</weightEllipticArc>
-                    <weightEllispe>1.0</weightEllispe>
-                    <weightLine>1.0</weightLine>
-                    <weightParallelogram>1.0</weightParallelogram>
-                    <weightRectangle>1.0</weightRectangle>
-                    <weightRhombus>1.0</weightRhombus>
+                    <enabled>true</enabled>
+                    <weightCircle>0</weightCircle>
+                    <weightCurvedArrow>0</weightCurvedArrow>
+                    <weightEllipticArc>0</weightEllipticArc>
+                    <weightEllispe>0</weightEllispe>
+                    <weightLine>0</weightLine>
+                    <weightParallelogram>0</weightParallelogram>
+                    <weightRectangle>0</weightRectangle>
+                    <weightRhombus>0</weightRhombus>
                     <weightStroke>1.0</weightStroke>
-                    <weightTriangle>1.0</weightTriangle>
+                    <weightTriangle>0</weightTriangle>
                 </shapedetection>
-                <trainingData>src/main/resources/training-data/</trainingData>
+                <trainingData>training-data</trainingData>
             </modeconfig>
         </modearea>
     </modeareas>

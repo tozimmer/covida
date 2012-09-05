@@ -56,6 +56,7 @@ public class Covida extends StateBasedTouchAndWriteApp {
 
     public Covida(TouchAndWriteConfiguration config, String[] CMDOptions) {
         super(config, CMDOptions);
+        
     }
 
     @Override
@@ -126,6 +127,15 @@ public class Covida extends StateBasedTouchAndWriteApp {
     }
 
     public static void main(final String[] args) {
+        log = Logger.getLogger(Covida.class);
+        String vlcPath = "C:/Program Files (x86)/VideoLAN/VLC/";
+        File folder = new File(vlcPath);
+        if (!folder.exists() || !folder.isDirectory()) {
+            log.error("Pleas install vlc in the directory "+vlcPath);
+            System.exit(-1);
+        }
+        log.info("Adding vlc path ...");
+        NativeLibrary.addSearchPath("libvlc", vlcPath);  
         final CovidaCMDOptions opt = new CovidaCMDOptions();
         CmdLineParser parser = new CmdLineParser(opt);
 

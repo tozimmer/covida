@@ -1005,6 +1005,9 @@ public class VideoComponent extends CovidaComponent implements
 
     @Override
     public void draw(ShapeEvent shape) {
+        log.debug("Shape Event with "+shape.getStrokes().size()+" strokes");
+        log.debug("Stroke 1 x1: "+shape.getStrokes().element().getX().get(0));
+        log.debug("Stroke 1 y1: "+shape.getStrokes().element().getY().get(0));
         if (penColor.isEmpty()) {
             currentShapeColor = Color.RED;
         } else {

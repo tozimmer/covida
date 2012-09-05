@@ -47,7 +47,6 @@ import de.dfki.touchandwrite.action.TouchActionEvent;
 import de.dfki.touchandwrite.input.pen.event.ShapeEvent;
 import de.dfki.touchandwrite.input.pen.hwr.HWRResultSet;
 import de.dfki.touchandwrite.input.pen.hwr.HandwritingRecognitionEvent;
-import de.dfki.touchandwrite.input.touch.event.TouchState;
 import de.dfki.touchandwrite.math.FastMath;
 import de.dfki.touchandwrite.visual.components.ComponentType;
 import java.awt.Color;
