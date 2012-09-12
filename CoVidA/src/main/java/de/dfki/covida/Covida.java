@@ -27,6 +27,7 @@
  */
 package de.dfki.covida;
 
+import de.dfki.covida.visual.CovidaState;
 import com.sun.jna.NativeLibrary;
 import de.dfki.touchandwrite.ApplicationType;
 import de.dfki.touchandwrite.TouchAndWriteDevice;
@@ -56,7 +57,7 @@ public class Covida extends StateBasedTouchAndWriteApp {
 
     public Covida(TouchAndWriteConfiguration config, String[] CMDOptions) {
         super(config, CMDOptions);
-        
+
     }
 
     @Override
@@ -131,11 +132,11 @@ public class Covida extends StateBasedTouchAndWriteApp {
         String vlcPath = "C:/Program Files (x86)/VideoLAN/VLC/";
         File folder = new File(vlcPath);
         if (!folder.exists() || !folder.isDirectory()) {
-            log.error("Pleas install vlc in the directory "+vlcPath);
+            log.error("Pleas install vlc in the directory " + vlcPath);
             System.exit(-1);
         }
         log.info("Adding vlc path ...");
-        NativeLibrary.addSearchPath("libvlc", vlcPath);  
+        NativeLibrary.addSearchPath("libvlc", vlcPath);
         final CovidaCMDOptions opt = new CovidaCMDOptions();
         CmdLineParser parser = new CmdLineParser(opt);
 
@@ -174,11 +175,10 @@ public class Covida extends StateBasedTouchAndWriteApp {
         }
 
         Runnable app = new Runnable() {
-        
             @Override
             public void run() {
                 TouchAndWriteConfiguration conf = TouchAndWriteConfiguration.getDefaultEEESlateConfig();
-                if(opt.getDevice() == TouchAndWriteDevice.TW_TABLE){
+                if (opt.getDevice() == TouchAndWriteDevice.TW_TABLE) {
                     conf = TouchAndWriteConfiguration.getDefaultTWTableConfig();
                 }
                 Covida app = new Covida(conf, args);

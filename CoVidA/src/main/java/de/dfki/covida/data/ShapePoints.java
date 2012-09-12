@@ -36,7 +36,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 public class ShapePoints {
 
-    List<Point> points = new ArrayList<Point>();
+    List<Point> points = new ArrayList<>();
 
     public ShapePoints() {
         super();

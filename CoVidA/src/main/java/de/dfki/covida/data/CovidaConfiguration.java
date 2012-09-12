@@ -46,6 +46,20 @@ import org.apache.log4j.Logger;
 @XmlRootElement(name = "configuration")
 public class CovidaConfiguration implements Serializable {
 
+    private static final Logger log = Logger.getLogger(CovidaConfiguration.class);
+    private static CovidaConfiguration instance;
+    @XmlElement(name = "path")
+    public String texturePath;
+    @XmlElement(name = "videoSource")
+    @XmlElementWrapper(name = "videoSourceList")
+    public List<VideoMediaData> videoSources = new ArrayList<>();
+    @XmlElement(name = "video")
+    @XmlElementWrapper(name = "videoList")
+    public List<VideoData> videos = new ArrayList<>();
+    @XmlElement(name = "pen")
+    @XmlElementWrapper(name = "penList")
+    public List<PenData> pens = new ArrayList<>();
+
     private CovidaConfiguration() {
         texturePath = "media/textures/";
         videos.add(new VideoData());
@@ -183,23 +197,6 @@ public class CovidaConfiguration implements Serializable {
         pen.penThickness = 1;
         pens.add(pen);
     }
-    /**
-     *
-     */
-    private static final long serialVersionUID = 729584990456758771L;
-    private static final Logger log = Logger.getLogger(CovidaConfiguration.class);
-    private static CovidaConfiguration instance;
-    @XmlElement(name = "path")
-    public String texturePath;
-    @XmlElement(name = "videoSource")
-    @XmlElementWrapper(name = "videoSourceList")
-    public List<VideoMediaData> videoSources = new ArrayList<VideoMediaData>();
-    @XmlElement(name = "video")
-    @XmlElementWrapper(name = "videoList")
-    public List<VideoData> videos = new ArrayList<VideoData>();
-    @XmlElement(name = "pen")
-    @XmlElementWrapper(name = "penList")
-    public List<PenData> pens = new ArrayList<PenData>();
 
     public static CovidaConfiguration getInstance() {
         if (instance == null) {
@@ -219,9 +216,7 @@ public class CovidaConfiguration implements Serializable {
             FileWriter w = new FileWriter(file);
             m.marshal(this, w);
             log.debug("Written data to: " + file);
-        } catch (JAXBException e) {
-            log.error(e);
-        } catch (IOException e) {
+        } catch (JAXBException | IOException e) {
             log.error(e);
         }
     }

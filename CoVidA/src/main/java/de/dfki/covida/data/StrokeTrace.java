@@ -260,10 +260,10 @@ public class StrokeTrace<T extends Number> implements Serializable {
      */
     public synchronized Element toInkMLTraceElement(Document doc) {
         Element trace = doc.createElement("trace");
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         for (int i = 0; i < x.size(); i++) {
-            buf.append(Math.round(x.get(i).floatValue() * 1000f) + " "
-                    + Math.round(y.get(i).floatValue() * 700f) + ", ");
+            buf.append(Math.round(x.get(i).floatValue() * 1000f)).append(" ")
+                    .append(Math.round(y.get(i).floatValue() * 700f)).append(", ");
         }
         buf.delete(buf.length() - 2, buf.length());
         trace.appendChild(doc.createTextNode(buf.toString()));
@@ -314,7 +314,7 @@ public class StrokeTrace<T extends Number> implements Serializable {
      * @return
      */
     public StrokeTrace<T> merge(StrokeTrace<T> t2) {
-        StrokeTrace<T> t3 = new StrokeTrace<T>(t2.getPageID());
+        StrokeTrace<T> t3 = new StrokeTrace<>(t2.getPageID());
         t3.addPoint(this.getX(), this.getY(), this.getForce());
         t3.addPoint(t2.getX(), t2.getY(), t2.getForce());
         return t3;
@@ -322,9 +322,9 @@ public class StrokeTrace<T extends Number> implements Serializable {
 
     @Override
     public String toString() {
-        StringBuffer buf = new StringBuffer("Trace [");
+        StringBuilder buf = new StringBuilder("Trace [");
         for (int i = 0; i < x.size(); i++) {
-            buf.append(x.get(i) + ", " + y.get(i) + "; ");
+            buf.append(x.get(i)).append(", ").append(y.get(i)).append("; ");
         }
         buf.delete(buf.length() - 2, buf.length());
         buf.append("]");
@@ -337,7 +337,7 @@ public class StrokeTrace<T extends Number> implements Serializable {
      * @return
      */
     public synchronized StrokeTrace<T> reverse() {
-        StrokeTrace<T> reverse = new StrokeTrace<T>(this.getPageID());
+        StrokeTrace<T> reverse = new StrokeTrace<>(this.getPageID());
         for (int i = size() - 1; i >= 0; i--) {
             reverse.addPoint(this.x.get(i), this.y.get(i), this.force.get(i),
                     this.timestamps.get(i));
@@ -351,8 +351,8 @@ public class StrokeTrace<T extends Number> implements Serializable {
      * @return
      */
     public StrokeTrace<T> copy() {
-        return new StrokeTrace<T>(this.pageID, this.id, new ArrayList<T>(this.x),
-                new ArrayList<T>(this.y), new ArrayList<Float>(this.force),
-                new ArrayList<Long>(this.timestamps));
+        return new StrokeTrace<>(this.pageID, this.id, new ArrayList<>(this.x),
+                new ArrayList<>(this.y), new ArrayList<>(this.force),
+                new ArrayList<>(this.timestamps));
     }
 }
