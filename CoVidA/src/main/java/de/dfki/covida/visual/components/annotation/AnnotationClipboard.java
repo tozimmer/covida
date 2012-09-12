@@ -139,10 +139,9 @@ public class AnnotationClipboard extends Field {
         if (!isOpen()) {
             return;
         }
-        if (getLockState().onTop(
-                -1,
-                new Vector2f(event.getBoundingBox().getCenterOfGravity().x,
-                (getDisplay().y - event.getBoundingBox().getCenterOfGravity().y)), this)) {
+        float x = event.getBoundingBox().getCenterOfGravity().x;
+        float y = getDisplay().y - event.getBoundingBox().getCenterOfGravity().y;
+        if (getLockState().onTop(-1, new Vector2f(x, y), this)) {
             hwrResults = HWRPostProcessing.getResult(event);
             update();
         }
@@ -171,18 +170,6 @@ public class AnnotationClipboard extends Field {
     protected float getTextY(int position) {
         return textBeginY - TEXT_SPACER - FONT_SIZE * (position)
                 - (float) FONT_SIZE / 2.f;
-    }
-
-    /**
-     * Checks the hwr result and chooses the best result.
-     *
-     * @param hwrResultSet
-     * @return
-     */
-    @Override
-    protected String checkHWRResult(HWRResultSet hwrResultSet) {
-        hwrResultSet.getWords();
-        return hwrResultSet.topResult();
     }
 
     /**

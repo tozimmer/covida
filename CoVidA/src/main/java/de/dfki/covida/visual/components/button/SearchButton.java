@@ -31,7 +31,7 @@ import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.Node;
-import de.dfki.covida.visual.components.annotation.AnnotationSearch;
+import de.dfki.covida.visual.components.annotation.AnnotationSearchField;
 import de.dfki.covida.visual.components.annotation.Field;
 import de.dfki.covida.visual.components.video.VideoComponent;
 import de.dfki.touchandwrite.action.TouchActionEvent;
@@ -49,7 +49,7 @@ public class SearchButton extends CovidaButton {
     /**
      * Search Field
      */
-    private AnnotationSearch searchField;
+    private AnnotationSearchField searchField;
     /**
      * List of VideoComponents on VideoTouchBoard
      */
@@ -71,14 +71,14 @@ public class SearchButton extends CovidaButton {
     @Override
     public void initComponent() {
         super.initComponent();
-        searchField = new AnnotationSearch(
+        searchField = new AnnotationSearchField(
                 "media/textures/search_field_color.png", fieldNode,
                 (int) (display.x / 2.0f), (int) (display.y / 1.5f), videos);
         searchField.initComponent();
         searchField.close();
     }
 
-    public AnnotationSearch getAnnotationSearchField() {
+    public AnnotationSearchField getAnnotationSearchField() {
         return searchField;
     }
 

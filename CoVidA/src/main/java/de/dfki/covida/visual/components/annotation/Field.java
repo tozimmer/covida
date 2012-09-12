@@ -144,8 +144,6 @@ public abstract class Field extends CovidaComponent implements
 
     abstract float getTextY(int position);
 
-    abstract String checkHWRResult(HWRResultSet hwrResultSet);
-
     abstract void addSpacer(int x, int y, float angle, int width, int height);
 
     abstract void initTextures();

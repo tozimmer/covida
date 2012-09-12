@@ -58,8 +58,8 @@ public class DetachHandler implements Runnable {
             } catch (InterruptedException e) {
                 log.error(e);
             }
-            if (field instanceof AnnotationSearch) {
-                AnnotationSearch search = (AnnotationSearch) field;
+            if (field instanceof AnnotationSearchField) {
+                AnnotationSearchField search = (AnnotationSearchField) field;
                 if (search.isClosing()) {
                     search.detach();
                 }

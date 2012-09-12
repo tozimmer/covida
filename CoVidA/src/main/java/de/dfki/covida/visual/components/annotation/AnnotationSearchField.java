@@ -1,5 +1,5 @@
 /*
- * AnnotationSearch.java
+ * AnnotationSearchField.java
  * 
  * Copyright (c) 2012, Tobias Zimmermann All rights reserved.
  * 
@@ -37,6 +37,8 @@ import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
 import com.jmex.angelfont.BitmapFont.Align;
+import de.dfki.covida.data.SearchResult;
+import de.dfki.covida.utils.AnnotationSearch;
 import de.dfki.covida.utils.HWRPostProcessing;
 import de.dfki.covida.visual.components.TextOverlay;
 import de.dfki.covida.visual.components.video.VideoComponent;
@@ -61,7 +63,7 @@ import org.apache.commons.lang.StringUtils;
  * @author Tobias Zimmermann
  *
  */
-public class AnnotationSearch extends Field {
+public class AnnotationSearchField extends Field {
 
     protected ArrayList<VideoComponent> videos;
 
@@ -76,7 +78,7 @@ public class AnnotationSearch extends Field {
      * @param width
      * @param height
      */
-    public AnnotationSearch(String resource, Node node, int width, int height, ArrayList<VideoComponent> videos) {
+    public AnnotationSearchField(String resource, Node node, int width, int height, ArrayList<VideoComponent> videos) {
         super(ComponentType.COMPONENT_2D, "AnnotationSearch", node);
         this.width = width;
         this.height = height;
@@ -329,7 +331,9 @@ public class AnnotationSearch extends Field {
             title.detach();
         }
         titles = new ArrayList<>();
-        search();
+        SearchResult searchResult = AnnotationSearch.search(hwrResults, data);
+        result = searchResult.result;
+        resultString = searchResult.resultString;
         log.debug("search results: " + result);
         int index = 0;
         for (int i = 0; i < data.size(); i++) {
@@ -417,18 +421,6 @@ public class AnnotationSearch extends Field {
     protected float getTextY(int position) {
         return textBeginY - TEXT_SPACER - FONT_SIZE * (position)
                 - (float) FONT_SIZE / 2.f;
-    }
-
-    /**
-     * Checks the hwr result and chooses the best result.
-     *
-     * @param hwrResultSet
-     * @return
-     */
-    @Override
-    protected String checkHWRResult(HWRResultSet hwrResultSet) {
-        hwrResultSet.getWords();
-        return hwrResultSet.topResult();
     }
 
     /**
@@ -524,140 +516,4 @@ public class AnnotationSearch extends Field {
         addSpacer(x, 0, 90, (int) (quad.getHeight() / 1.1f), TEXT_SPACER);
     }
 
-    private void search() {
-        result = new HashMap<>();
-        resultString = new HashMap<>();
-        if (data != null && hwrResults != null) {
-            /**
-             * video index
-             */
-            int i;
-            /**
-             * annotation index
-             */
-            int j;
-            for (String hwrResult : hwrResults) {
-                // exact search
-                for (i = 0; i < data.size(); i++) {
-                    if (data.get(i) != null) {
-                        for (j = 0; j < data.get(i).size(); j++) {
-                            if (data.get(i).annotations.get(j).description != null) {
-                                for (String s : data.get(i).annotations.get(j).description.split(" ")) {
-                                    if (s.equals(hwrResult)) {
-                                        if (result.containsKey(new Integer(i))) {
-                                            result.get(new Integer(i)).add(j);
-                                            resultString.get(new Integer(i)).add(s);
-                                        } else {
-                                            ArrayList<Integer> list = new ArrayList<>();
-                                            ArrayList<String> stringList = new ArrayList<>();
-                                            list.add(j);
-                                            stringList.add(s);
-                                            result.put(new Integer(i), list);
-                                            resultString.put(new Integer(i),
-                                                    stringList);
-                                        }
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                // case insensitive search
-                for (i = 0; i < data.size(); i++) {
-                    if (data.get(i) != null) {
-                        for (j = 0; j < data.get(i).size(); j++) {
-                            if (data.get(i).annotations.get(j).description != null) {
-                                for (String s : data.get(i).annotations.get(j).description.split(" ")) {
-                                    if (s.equalsIgnoreCase(hwrResult)) {
-                                        if (result.containsKey(new Integer(i))) {
-                                            if (!result.get(new Integer(i)).contains(new Integer(j))) {
-                                                result.get(new Integer(i)).add(
-                                                        j);
-                                                resultString.get(new Integer(i)).add(s);
-                                            } else {
-                                            }
-                                        } else {
-                                            ArrayList<Integer> list = new ArrayList<>();
-                                            ArrayList<String> stringList = new ArrayList<>();
-                                            list.add(j);
-                                            stringList.add(s);
-                                            result.put(new Integer(i), list);
-                                            resultString.put(new Integer(i),
-                                                    stringList);
-                                        }
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                // wrap around search
-                for (i = 0; i < data.size(); i++) {
-                    if (data.get(i) != null) {
-                        for (j = 0; j < data.get(i).size(); j++) {
-                            if (data.get(i).annotations.get(j).description != null) {
-                                for (String s : data.get(i).annotations.get(j).description.split(" ")) {
-                                    if (s.contains(hwrResult)) {
-                                        if (result.containsKey(new Integer(i))) {
-                                            if (!result.get(new Integer(i)).contains(new Integer(j))) {
-                                                result.get(new Integer(i)).add(
-                                                        j);
-                                                resultString.get(new Integer(i)).add(s);
-                                            } else {
-                                            }
-                                        } else {
-                                            ArrayList<Integer> list = new ArrayList<>();
-                                            ArrayList<String> stringList = new ArrayList<>();
-                                            list.add(j);
-                                            stringList.add(s);
-                                            result.put(new Integer(i), list);
-                                            resultString.put(new Integer(i),
-                                                    stringList);
-                                        }
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                // Levenshtein-Distance
-                for (i = 0; i < data.size(); i++) {
-                    if (data.get(i) != null) {
-                        for (j = 0; j < data.get(i).size(); j++) {
-                            if (data.get(i).annotations.get(j).description != null) {
-                                for (String s : data.get(i).annotations.get(j).description.split(" ")) {
-                                    int distance = StringUtils.getLevenshteinDistance(hwrResult, s);
-                                    log.debug("SearchString: " + hwrResults
-                                            + " - " + s + " distance: "
-                                            + distance);
-                                    if (distance < 3) {
-                                        if (result.containsKey(new Integer(i))) {
-                                            if (!result.get(new Integer(i)).contains(new Integer(j))) {
-                                                result.get(new Integer(i)).add(
-                                                        j);
-                                                resultString.get(new Integer(i)).add(s);
-                                            } else {
-                                            }
-                                        } else {
-                                            ArrayList<Integer> list = new ArrayList<>();
-                                            ArrayList<String> stringList = new ArrayList<>();
-                                            list.add(j);
-                                            stringList.add(s);
-                                            result.put(new Integer(i), list);
-                                            resultString.put(new Integer(i),
-                                                    stringList);
-                                        }
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
 }
