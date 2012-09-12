@@ -275,6 +275,12 @@ public class VideoComponent extends CovidaComponent implements
         }
     }
 
+    private void addShapeToImage(BufferedImage img, ShapePoints points) {
+        for (Point point : points) {
+            img.setRGB(point.x, point.y, 16777215);
+        }
+    }
+
     /**
      * Callback for rendering the video.
      *
@@ -1018,7 +1024,7 @@ public class VideoComponent extends CovidaComponent implements
         }
         ShapeUtils.changeShapeColor(currentShapeColor);
         // TODO pen id!
-        if (this.getLockState().onTop(-1, shape, this)) {
+        if (this.getLockState().onTop(-1, exactShapePoints, this)) {
             // delete old data
             shapes.clear();
             getLockState().removeTouchLock(-1);
@@ -1102,10 +1108,19 @@ public class VideoComponent extends CovidaComponent implements
             } else {
                 log.warn("mediaPlayer.getVideoDimension() == null");
             }
-            RenderedImage ri = getSnapshot(x, y, w, h);
+            BufferedImage img = getSnapshot(x, y, w, h);
             try {
-                ImageIO.write(ri, "png", new File(videoSource + "."
+                ImageIO.write(img, "png", new File(videoSource + "."
                         + getAnnotationData().size() + ".png"));
+            } catch (IOException e) {
+                log.error(e);
+            }
+            // Get whole frame and draw shape on it
+            img = getSnapshot();
+            addShapeToImage(img, exactShapePoints);
+            try {
+                ImageIO.write(img, "png", new File(videoSource + "."
+                        + getAnnotationData().size() + "_full.png"));
             } catch (IOException e) {
                 log.error(e);
             }
@@ -1131,7 +1146,7 @@ public class VideoComponent extends CovidaComponent implements
         toFront();
     }
 
-    private RenderedImage getSnapshot(int x, int y, int w, int h) {
+    private BufferedImage getSnapshot(int x, int y, int w, int h) {
         BufferedImage test;
         try {
             test = getSnapshot().getSubimage(x, y, w, h);
@@ -1142,7 +1157,7 @@ public class VideoComponent extends CovidaComponent implements
         if (test == null) {
             return null;
         }
-        return (RenderedImage) test;
+        return test;
     }
 
     /**
@@ -1420,10 +1435,9 @@ public class VideoComponent extends CovidaComponent implements
     public void handwritingResult(HandwritingRecognitionEvent event) {
         log.debug("HWR: " + event.getHWRResultSet().topResult());
         // TODO Pen id!
-        if (getLockState().onTop(
-                -1,
-                new Vector2f(event.getBoundingBox().getCenterOfGravity().x,
-                (display.y - event.getBoundingBox().getCenterOfGravity().y)), this)) {
+        float x = event.getBoundingBox().getCenterOfGravity().x;
+        float y = getDisplay().y - event.getBoundingBox().getCenterOfGravity().y;
+        if (getLockState().onTop(-1, new Vector2f(x, y), this)) {
             exactShapePoints = new ShapePoints();
             this.hwrEvents.add(event);
             drawHWRResult(event);

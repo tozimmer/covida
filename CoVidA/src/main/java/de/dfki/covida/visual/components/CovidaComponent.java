@@ -39,6 +39,7 @@ import com.jme.scene.state.BlendState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
+import de.dfki.covida.data.ShapePoints;
 import de.dfki.covida.visual.components.video.VideoComponent;
 import de.dfki.touchandwrite.action.PenActionEvent;
 import de.dfki.touchandwrite.action.TouchAction;
@@ -334,8 +335,8 @@ public abstract class CovidaComponent extends TouchComponent {
     public boolean inArea(Object object) {
         if (object instanceof Vector2f) {
             return inArea(((Vector2f) object).x, ((Vector2f) object).y);
-        } else if (object instanceof ShapeEvent) {
-            return inArea((ShapeEvent) object);
+        } else if (object instanceof ShapePoints) {
+            return inArea((ShapePoints) object);
         } else if (object instanceof DragEvent) {
             DragEvent e = (DragEvent) object;
             return inArea(e.getOrigin().getX(), e.getOrigin().getY());
@@ -349,30 +350,26 @@ public abstract class CovidaComponent extends TouchComponent {
      * @param shape
      * @return <code>boolean</code> , true if shape is on VideoComponent
      */
-    public boolean inArea(ShapeEvent shape) {
+    public boolean inArea(ShapePoints points) {
         // ----check if shape in area-----
         boolean inArea = true;
-        // iteration over all detected shapes
-        for (Shape s : shape.getDetectedShapes()) {
-            // iteration over all points of the shape
-            Point tolerance = new Point((int) (getWidth() * 0.2f),
-                    (int) (getHeight() * 0.2f));
-            for (Point point : s.getPoints()) {
-                if (!inArea(point.x - tolerance.x, this.display.y
-                        - (point.y - tolerance.y))
-                        && !inArea(point.x - tolerance.x, this.display.y
-                        - (point.y + tolerance.y))
-                        && !inArea(point.x + tolerance.x, this.display.y
-                        - (point.y + tolerance.y))
-                        && !inArea(point.x + tolerance.x, this.display.y
-                        - (point.y - tolerance.y))) {
-                    inArea = false;
-                    if (this instanceof VideoComponent) {
-                        // log.debug(((VideoComponent)
-                        // this).getName()+" shape not in area "+s.getPoints());
-                    }
-                    break;
+        Point tolerance = new Point((int) (getWidth() * 0.2f),
+                (int) (getHeight() * 0.2f));
+        for (Point point : points) {
+            if (!inArea(point.x - tolerance.x, this.display.y
+                    - (point.y - tolerance.y))
+                    && !inArea(point.x - tolerance.x, this.display.y
+                    - (point.y + tolerance.y))
+                    && !inArea(point.x + tolerance.x, this.display.y
+                    - (point.y + tolerance.y))
+                    && !inArea(point.x + tolerance.x, this.display.y
+                    - (point.y - tolerance.y))) {
+                inArea = false;
+                if (this instanceof VideoComponent) {
+                    // log.debug(((VideoComponent)
+                    // this).getName()+" shape not in area "+s.getPoints());
                 }
+                break;
             }
         }
         return inArea;

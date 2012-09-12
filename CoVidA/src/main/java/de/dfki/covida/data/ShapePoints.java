@@ -29,12 +29,14 @@ package de.dfki.covida.data;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-public class ShapePoints {
+
+public class ShapePoints implements Iterable<Point> {
 
     List<Point> points = new ArrayList<>();
 
@@ -59,8 +61,12 @@ public class ShapePoints {
     public Point get(int index) {
         return this.points.get(index);
     }
-}
 
+    @Override
+    public Iterator<Point> iterator() {
+        return points.iterator();
+    }
+}
 /**
  * Adapter for storing the
  * <code>Point</code>.
