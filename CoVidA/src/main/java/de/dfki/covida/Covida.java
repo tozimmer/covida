@@ -129,7 +129,7 @@ public class Covida extends StateBasedTouchAndWriteApp {
 
     public static void main(final String[] args) {
         log = Logger.getLogger(Covida.class);
-        String vlcPath = "C:/Program Files (x86)/VideoLAN/VLC/";
+        String vlcPath = "vlc";
         File folder = new File(vlcPath);
         if (!folder.exists() || !folder.isDirectory()) {
             log.error("Pleas install vlc in the directory " + vlcPath);

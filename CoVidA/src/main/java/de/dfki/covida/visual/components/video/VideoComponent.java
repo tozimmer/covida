@@ -102,7 +102,7 @@ public class VideoComponent extends CovidaComponent implements
      * Stores touch event count for every touchId
      */
     private Map<Integer, Integer> touchCount;
-    private static final float UPSCALE_FACTOR = 0.5f;
+    private static final float UPSCALE_FACTOR = 0.4f;
     private static final boolean EXACT_SHAPES = true;
     protected final AlphaComposite TRANSPARENT = AlphaComposite.getInstance(
             AlphaComposite.SRC_OVER, 0.0f);

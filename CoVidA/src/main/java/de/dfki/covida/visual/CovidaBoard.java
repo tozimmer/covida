@@ -231,7 +231,6 @@ public class CovidaBoard extends AbstractTouchAndWriteComponent implements
     private ArrayList<VideoPreloadComponent> preloadVideo;
     private boolean initialized;
     private List<VideoFormat> videoFormat;
-    
 
     public CovidaBoard(CovidaCMDOptions opt) {
         super(ComponentType.COMPONENT_2D, "CoVidA Board");
@@ -362,51 +361,11 @@ public class CovidaBoard extends AbstractTouchAndWriteComponent implements
         rootNode.attachChild(videoNode);
         rootNode.attachChild(board);
 
-        // Create videos:
-        log.debug("Create videos");
-        for (int i = 0; i < configuration.videos.size(); i++) {
-            Node node = new Node("Leaf Node " + leafNodes.size());
-            if (eeeSlate) {
-                node.setLocalTranslation(325 + (600 * i), 400, 0);
-            } else {
-                node.setLocalTranslation(getInitPosition(true, i),
-                        getInitPosition(false, i), 0);
-            }
-            // Create video field
-            VideoComponent video;
-            int index = indexes.get(i);
-            int size = (int) (configuration.videos.get(i).size * 0.01f * display.y);
-            VideoFormat format = new VideoFormat(
-                    (float) videoDimensions.get(index).width
-                    / (float) videoDimensions.get(index).height);
-            if (eeeSlate) {
-                video = new VideoComponent(
-                        configuration.videoSources.get(index).videoSource, 300,
-                        format, node);
-            } else {
-                video = new VideoComponent(
-                        configuration.videoSources.get(index).videoSource, size,
-                        format, node);
-            }
-            video.setRepeat(true);
-            video.setName(configuration.videoSources.get(index).videoName);
-            if (configuration.videoSources.get(index).time_start > 0) {
-                if (configuration.videoSources.get(index).time_end > 0) {
-                    log.debug("Time Range id: " + index + " Range: "
-                            + configuration.videoSources.get(index).time_start
-                            + " - "
-                            + configuration.videoSources.get(index).time_end);
-                    video.setTimeRange(
-                            configuration.videoSources.get(index).time_start,
-                            configuration.videoSources.get(index).time_end);
-                }
-            }
-            this.videoNode.attachChild(node);
-            node.attachChild(video);
-            this.leafNodes.add(node);
-            video.initComponent();
-            videos.add(video);
-        }
+        createVideos();
+//        createSideMenus();
+    }
+
+    private void createSideMenus() {
         // attach search buttons
         menuNode = new Node("VideoTouchBoardMenu Node");
         rootNode.attachChild(menuNode);
@@ -448,6 +407,54 @@ public class CovidaBoard extends AbstractTouchAndWriteComponent implements
             menuNode.attachChild(menuButtonNode);
             log.debug("Attach drawing overlay");
             rootNode.attachChild(drawingOverlay);
+        }
+    }
+
+    private void createVideos() {
+        // Create videos:
+        log.debug("Create videos");
+        for (int i = 0; i < configuration.videos.size(); i++) {
+            Node node = new Node("Leaf Node " + leafNodes.size());
+            if (eeeSlate) {
+                node.setLocalTranslation(580 + (600 * i), 425, 0);
+            } else {
+                node.setLocalTranslation(getInitPosition(true, i),
+                        getInitPosition(false, i), 0);
+            }
+            // Create video field
+            VideoComponent video;
+            int index = indexes.get(i);
+            int size = (int) (configuration.videos.get(i).size * 0.01f * display.y);
+            VideoFormat format = new VideoFormat(
+                    (float) videoDimensions.get(index).width
+                    / (float) videoDimensions.get(index).height);
+            if (eeeSlate) {
+                video = new VideoComponent(
+                        configuration.videoSources.get(index).videoSource, 550,
+                        format, node);
+            } else {
+                video = new VideoComponent(
+                        configuration.videoSources.get(index).videoSource, size,
+                        format, node);
+            }
+            video.setRepeat(true);
+            video.setName(configuration.videoSources.get(index).videoName);
+            if (configuration.videoSources.get(index).time_start > 0) {
+                if (configuration.videoSources.get(index).time_end > 0) {
+                    log.debug("Time Range id: " + index + " Range: "
+                            + configuration.videoSources.get(index).time_start
+                            + " - "
+                            + configuration.videoSources.get(index).time_end);
+                    video.setTimeRange(
+                            configuration.videoSources.get(index).time_start,
+                            configuration.videoSources.get(index).time_end);
+                }
+            }
+            this.videoNode.attachChild(node);
+            node.attachChild(video);
+            this.leafNodes.add(node);
+            video.initComponent();
+            videos.add(video);
         }
     }
 
