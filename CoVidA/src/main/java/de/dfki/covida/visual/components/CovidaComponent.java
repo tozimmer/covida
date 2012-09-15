@@ -39,7 +39,7 @@ import com.jme.scene.state.BlendState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
-import de.dfki.covida.data.ShapePoints;
+import de.dfki.covida.covidacore.data.ShapePoints;
 import de.dfki.covida.visual.components.video.VideoComponent;
 import de.dfki.touchandwrite.action.PenActionEvent;
 import de.dfki.touchandwrite.action.TouchAction;

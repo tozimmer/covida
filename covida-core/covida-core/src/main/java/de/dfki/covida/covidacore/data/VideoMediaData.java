@@ -1,5 +1,5 @@
 /*
- * PenData.java
+ * VideoMediaData.java
  * 
  * Copyright (c) 2012, Tobias Zimmermann All rights reserved.
  * 
@@ -25,29 +25,18 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package de.dfki.covida.data;
+package de.dfki.covida.covidacore.data;
 
-import java.awt.Color;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-public class PenData {
+public class VideoMediaData {
 
-    @XmlJavaTypeAdapter(ColorAdapter.class)
-    @XmlElement(name = "color")
-    public Color penColor;
-    @XmlElement(name = "thickness")
-    public int penThickness;
-}
-
-class ColorAdapter extends XmlAdapter<String, Color> {
-
-    public Color unmarshal(String s) {
-        return Color.decode(s);
-    }
-
-    public String marshal(Color c) {
-        return "#" + Integer.toHexString(c.getRGB());
-    }
+    @XmlElement(name = "source")
+    public String videoSource;
+    @XmlElement(name = "name")
+    public String videoName;
+    @XmlElement(name = "time_start")
+    public long time_start;
+    @XmlElement(name = "time_end")
+    public long time_end;
 }

@@ -15,7 +15,7 @@ import com.jme.scene.state.BlendState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jmex.awt.swingui.ImageGraphics;
-import de.dfki.covida.data.VideoAnnotationData;
+import de.dfki.covida.covidacore.data.VideoAnnotationData;
 import de.dfki.covida.visual.components.CovidaComponent;
 import de.dfki.covida.visual.components.TextOverlay;
 import de.dfki.touchandwrite.action.DrawAction;

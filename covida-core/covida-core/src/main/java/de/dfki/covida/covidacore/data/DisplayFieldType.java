@@ -1,5 +1,5 @@
 /*
- * VideoFormat.java
+ * DisplayFieldType.java
  * 
  * Copyright (c) 2012, Tobias Zimmermann All rights reserved.
  * 
@@ -25,35 +25,14 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package de.dfki.covida.data;
+package de.dfki.covida.covidacore.data;
 
-public class VideoFormat {
+/**
+ *
+ * @author Tobias Zimmermann
+ *
+ */
+public enum DisplayFieldType {
 
-    private float ratio;
-
-    /**
-     * Constructs video format.
-     *
-     * @param ratioToHeight
-     */
-    public VideoFormat(float ratioToHeight) {
-        this.ratio = ratioToHeight;
-    }
-
-    /**
-     * Determine width according to the height.
-     *
-     * @param height
-     * @return
-     */
-    public int determineWidth(int height) {
-        return (int) (this.ratio * height);
-    }
-
-    /**
-     * @return the ratio
-     */
-    public float getRatio() {
-        return ratio;
-    }
+    INFO, LIST, EDIT
 }

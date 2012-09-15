@@ -2,11 +2,10 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.dfki.covida.utils;
+package de.dfki.covida.covidacore.utils;
 
-import de.dfki.covida.data.SearchResult;
-import de.dfki.covida.data.VideoAnnotationData;
-import de.dfki.covida.visual.components.CovidaComponent;
+import de.dfki.covida.covidacore.data.SearchResult;
+import de.dfki.covida.covidacore.data.VideoAnnotationData;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

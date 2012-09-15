@@ -36,7 +36,7 @@ import com.jme.scene.shape.Quad;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
-import de.dfki.covida.utils.HWRPostProcessing;
+import de.dfki.covida.covidacore.utils.HWRPostProcessing;
 import de.dfki.covida.visual.components.TextOverlay;
 import de.dfki.touchandwrite.action.DrawAction;
 import de.dfki.touchandwrite.action.HWRAction;

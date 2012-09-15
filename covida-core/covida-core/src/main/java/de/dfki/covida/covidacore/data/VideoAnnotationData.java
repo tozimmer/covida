@@ -25,7 +25,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package de.dfki.covida.data;
+package de.dfki.covida.covidacore.data;
 
 import java.awt.Point;
 import java.io.*;

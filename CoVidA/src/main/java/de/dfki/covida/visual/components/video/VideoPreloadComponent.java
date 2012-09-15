@@ -37,7 +37,7 @@ import com.jme.scene.state.BlendState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jmex.awt.swingui.ImageGraphics;
-import de.dfki.covida.data.VideoFormat;
+import de.dfki.covida.covidacore.data.VideoFormat;
 import de.dfki.covida.visual.components.CovidaComponent;
 import de.dfki.touchandwrite.action.TouchActionEvent;
 import de.dfki.touchandwrite.analyser.touch.gestures.events.DragEvent;

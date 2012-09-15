@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.dfki.covida.data;
+package de.dfki.covida.covidacore.data;
 
 import java.util.ArrayList;
 import java.util.Map;

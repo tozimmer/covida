@@ -1,5 +1,5 @@
 /*
- * HWRPostProcessing.java
+ * ShapePoints.java
  * 
  * Copyright (c) 2012, Tobias Zimmermann All rights reserved.
  * 
@@ -25,26 +25,65 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package de.dfki.covida.utils;
+package de.dfki.covida.covidacore.data;
 
-import de.dfki.touchandwrite.input.pen.hwr.HandwritingRecognitionEvent;
+import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-/**
- *
- * @author Tobias Zimmermann
- */
-public class HWRPostProcessing {
-    
-    public static List<String> getResult(HandwritingRecognitionEvent event){
-        List<String> result = new ArrayList<>();
-        int size = event.getHWRResultSet().getWords().size();
-        for (int i = 0; i < size; i++) {
-            result.add(event.getHWRResultSet().getWords().get(i)
-                .getCandidates().peek().getRecogntionResult());
-        }
-        return result;
+
+public class ShapePoints implements Iterable<Point> {
+
+    List<Point> points = new ArrayList<>();
+
+    public ShapePoints() {
+        super();
     }
-    
+
+    @XmlJavaTypeAdapter(PointAdapter.class)
+    @XmlElement(name = "point")
+    public List<Point> getShapePoints() {
+        return points;
+    }
+
+    public void add(Point point) {
+        this.points.add(point);
+    }
+
+    public int size() {
+        return this.points.size();
+    }
+
+    public Point get(int index) {
+        return this.points.get(index);
+    }
+
+    @Override
+    public Iterator<Point> iterator() {
+        return points.iterator();
+    }
+}
+/**
+ * Adapter for storing the
+ * <code>Point</code>.
+ *
+ * @author Markus Weber
+ *
+ */
+class PointAdapter extends XmlAdapter<String, Point> {
+
+    @Override
+    public String marshal(Point point) throws Exception {
+        return point.x + "," + point.y;
+    }
+
+    @Override
+    public Point unmarshal(String str) throws Exception {
+        String[] res = str.split(",");
+        return new Point(Integer.parseInt(res[0]), Integer.parseInt(res[1]));
+    }
 }

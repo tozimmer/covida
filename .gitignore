@@ -3,3 +3,4 @@
 *.log
 /CoVidA/target/
 **/log
+/covida-core/covida-core/target/

@@ -27,6 +27,11 @@
  */
 package de.dfki.covida.visual.components.video;
 
+import de.dfki.covida.covidacore.data.PenData;
+import de.dfki.covida.covidacore.data.VideoAnnotationData;
+import de.dfki.covida.covidacore.data.VideoFormat;
+import de.dfki.covida.covidacore.data.CovidaConfiguration;
+import de.dfki.covida.covidacore.data.ShapePoints;
 import com.jme.animation.SpatialTransformer;
 import com.jme.image.Texture;
 import com.jme.image.Texture.WrapMode;
@@ -43,7 +48,6 @@ import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
 import com.jmex.awt.swingui.ImageGraphics;
-import de.dfki.covida.data.*;
 import de.dfki.covida.visual.components.AnimationHandler;
 import de.dfki.covida.visual.components.CovidaComponent;
 import de.dfki.covida.visual.components.DragAnimationHandler;

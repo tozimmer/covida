@@ -1,5 +1,5 @@
 /*
- * DisplayFieldType.java
+ * VideoAnnotation.java
  * 
  * Copyright (c) 2012, Tobias Zimmermann All rights reserved.
  * 
@@ -10,7 +10,7 @@
  * conditions and the following disclaimer. Redistributions in binary form must reproduce the
  * above copyright notice, this list of conditions and the following disclaimer in the
  * documentation and/or other materials provided with the distribution.
- * 
+ *  
  * Neither the name of the author nor the names of its contributors may be used to endorse or
  * promote products derived from this software without specific prior written permission.
  * 
@@ -25,14 +25,21 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package de.dfki.covida.data;
+package de.dfki.covida.covidacore.data;
 
-/**
- *
- * @author Tobias Zimmermann
- *
- */
-public enum DisplayFieldType {
+import de.dfki.touchandwrite.shape.ShapeType;
+import javax.xml.bind.annotation.XmlElement;
 
-    INFO, LIST, EDIT
+public class VideoAnnotation {
+
+    @XmlElement(name = "time_start")
+    public Long time_start;
+    @XmlElement(name = "time_end")
+    public Long time_end;
+    @XmlElement(name = "shapeTypes")
+    public ShapeType shapeType;
+    @XmlElement(name = "shapePointsList")
+    public ShapePoints shapePoints;
+    @XmlElement(name = "descriptions")
+    public String description;
 }

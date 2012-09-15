@@ -36,7 +36,7 @@ import com.jme.scene.Spatial;
 import com.jmex.angelfont.BitmapFont.Align;
 import com.jmex.angelfont.BitmapText;
 import com.jmex.scene.TimedLifeController;
-import de.dfki.covida.utils.FontLoader;
+import de.dfki.covida.visual.utils.FontLoader;
 import de.dfki.touchandwrite.action.GestureAction;
 import de.dfki.touchandwrite.action.GestureActionEvent;
 import de.dfki.touchandwrite.action.TouchActionEvent;
