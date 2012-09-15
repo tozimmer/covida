@@ -68,7 +68,7 @@ public class VideoAnnotationData implements Serializable {
     private static Logger log = Logger.getLogger(VideoAnnotationData.class);
 
     public VideoAnnotationData() {
-        annotations = new ArrayList<VideoAnnotation>();
+        annotations = new ArrayList<>();
     }
 
     public int size() {
@@ -269,9 +269,7 @@ public class VideoAnnotationData implements Serializable {
             FileWriter w = new FileWriter(file);
             m.marshal(this, w);
             log.debug("Written data to: " + file);
-        } catch (JAXBException e) {
-            log.error(e);
-        } catch (IOException e) {
+        } catch (JAXBException | IOException e) {
             log.error(e);
         }
     }
@@ -287,7 +285,8 @@ public class VideoAnnotationData implements Serializable {
                         + file.getAbsolutePath());
             } else {
                 log.debug("No data file exists at location: "
-                        + file.getAbsolutePath());
+                        + file.getAbsolutePath()+
+                        " create new VideoAnnotationData");
                 instance = new VideoAnnotationData();
             }
         } catch (JAXBException e) {
@@ -313,7 +312,7 @@ public class VideoAnnotationData implements Serializable {
     }
 
     public ArrayList<Long> getTimeList() {
-        ArrayList<Long> list = new ArrayList<Long>();
+        ArrayList<Long> list = new ArrayList<>();
         for (VideoAnnotation annotation : annotations) {
             list.add(annotation.time_start);
         }
@@ -322,21 +321,21 @@ public class VideoAnnotationData implements Serializable {
 
     @Override
     public String toString() {
-        StringBuffer buffer = new StringBuffer();
-        buffer.append("Size: " + annotations.size());
+        StringBuilder buffer = new StringBuilder();
+        buffer.append("Size: ").append(annotations.size());
         buffer.append("\n");
-        buffer.append("title: " + title);
+        buffer.append("title: ").append(title);
         buffer.append("\n");
-        buffer.append("videoSource: " + videoSource);
+        buffer.append("videoSource: ").append(videoSource);
         buffer.append("\n");
         for (VideoAnnotation annotation : annotations) {
-            buffer.append("times_start: " + annotation.time_start);
+            buffer.append("times_start: ").append(annotation.time_start);
             buffer.append("\n");
-            buffer.append("times_end: " + annotation.time_end);
+            buffer.append("times_end: ").append(annotation.time_end);
             buffer.append("\n");
-            buffer.append("shapePointsList: " + annotation.shapePoints);
+            buffer.append("shapePointsList: ").append(annotation.shapePoints);
             buffer.append("\n");
-            buffer.append("descriptions: " + annotation.description);
+            buffer.append("descriptions: ").append(annotation.description);
             buffer.append("\n");
         }
         return buffer.toString();

@@ -109,7 +109,6 @@ public class TextOverlay extends CovidaComponent implements GestureSensitiveComp
         getNode().setTextureCombineMode(TextureCombineMode.CombineClosest);
         removeHandler = new RemoveControllerHandler(getNode(), 1);
         removeHandlerThread = new Thread(removeHandler);
-        log.debug("TextOverlay created ID: " + getId());
         init();
     }
 

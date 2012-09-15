@@ -925,7 +925,7 @@ public class VideoComponent extends CovidaComponent implements
      */
     @Override
     public boolean cleanUp() {
-        log.debug("cleanup " + getId());
+        log.debug("cleanup video (id: "+getId()+")");
         if (repeatHandler != null) {
             this.repeatHandler.cleanUp();
             while (repeatHandlerThread.isAlive()) {

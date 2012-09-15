@@ -202,7 +202,7 @@ public class CovidaBoard extends AbstractTouchAndWriteComponent implements
     private ArrayList<Quad> overlayReset;
     protected HashMap<Integer, Dimension> videoDimensions;
     protected ArrayList<Integer> indexes;
-     /**
+    /**
      * max Height in % of display.y
      */
     private int maxHeight;
@@ -213,8 +213,6 @@ public class CovidaBoard extends AbstractTouchAndWriteComponent implements
     private ArrayList<VideoPreloadComponent> preloadVideo;
     private boolean initialized;
     private List<VideoFormat> videoFormat;
-    
-    
     /**
      * Stores touch event count for every touchId
      */
@@ -223,8 +221,6 @@ public class CovidaBoard extends AbstractTouchAndWriteComponent implements
      * Stores touch positions
      */
     protected Map<Integer, ArrayList<Vector3f>> touchPositions;
-    
-   
 
     public CovidaBoard(CovidaCMDOptions opt) {
         super(ComponentType.COMPONENT_2D, "CoVidA Board");
@@ -265,7 +261,7 @@ public class CovidaBoard extends AbstractTouchAndWriteComponent implements
     protected ArrayList<VideoComponent> getVideos() {
         return videos;
     }
-    
+
     /**
      * Initialize method for the class VideoTouchBoard
      *
@@ -434,7 +430,7 @@ public class CovidaBoard extends AbstractTouchAndWriteComponent implements
                     / (float) videoDimensions.get(index).height);
             if (eeeSlate) {
                 video = new VideoComponent(
-                        configuration.videoSources.get(index).videoSource, 550,
+                        configuration.videoSources.get(index).videoSource, 450,
                         format, node);
             } else {
                 video = new VideoComponent(
@@ -687,15 +683,9 @@ public class CovidaBoard extends AbstractTouchAndWriteComponent implements
     }
 
     public void cleanUp() {
-        new Thread(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        for (VideoComponent video : videos) {
-                            video.cleanUp();
-                        }
-                    }
-                }).start();
+        for (VideoComponent video : videos) {
+            video.cleanUp();
+        }
     }
 
     /**
@@ -1071,8 +1061,9 @@ public class CovidaBoard extends AbstractTouchAndWriteComponent implements
                 if (videos.get(configuration.videos.size() - 1).isReady()
                         && touchInputHandler != null && touchAction != null
                         && penInputHandler != null) {
-                    log.debug("------------------------------------------S");
-                    log.debug("CoVidA is ready.");
+                    log.debug("##################");
+                    log.debug("#CoVidA is ready.#");
+                    log.debug("##################");
                     return true;
                 }
             }

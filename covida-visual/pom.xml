@@ -3,9 +3,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.dfki.touchandwrite</groupId>
-    <artifactId>covida</artifactId>
+    <artifactId>covida-visual</artifactId>
     <version>0.0.2-SNAPSHOT</version>
-    <name>CoVidA</name>
+    <name>covida-visual</name>
     <build>
         <plugins>
             <plugin>
@@ -29,6 +29,16 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
                             <shadedArtifactAttached>true</shadedArtifactAttached>
                             <shadedClassifierName>shaded</shadedClassifierName> 
                         </configuration>  
@@ -200,12 +210,6 @@
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.13</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>org.jwebsockets</groupId>
-            <artifactId>bundle</artifactId>
-            <version>1.0</version>
             <type>jar</type>
         </dependency>
         <dependency>
