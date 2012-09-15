@@ -67,7 +67,6 @@ public abstract class CovidaComponent extends TouchComponent {
     private Node node;
     protected boolean newPenAction = false;
     protected TouchAction touchAction;
-    protected final Vector2f scrnsize;
     protected Quad overlayDrag;
     /**
      * Logger
@@ -91,7 +90,6 @@ public abstract class CovidaComponent extends TouchComponent {
         this.setRootNode(node);
         this.display = new Vector2f(
                 DisplaySystem.getDisplaySystem().getWidth(), DisplaySystem.getDisplaySystem().getHeight());
-        scrnsize = display;
         initialize();
     }
 
@@ -108,7 +106,6 @@ public abstract class CovidaComponent extends TouchComponent {
         this.setRootNode(node);
         this.display = new Vector2f(
                 DisplaySystem.getDisplaySystem().getWidth(), DisplaySystem.getDisplaySystem().getHeight());
-        scrnsize = display;
     }
 
     protected final BlendState initalizeBlendState() {
@@ -363,10 +360,6 @@ public abstract class CovidaComponent extends TouchComponent {
                     && !inArea(point.x + tolerance.x, this.display.y
                     - (point.y - tolerance.y))) {
                 inArea = false;
-                if (this instanceof VideoComponent) {
-                    // log.debug(((VideoComponent)
-                    // this).getName()+" shape not in area "+s.getPoints());
-                }
                 break;
             }
         }

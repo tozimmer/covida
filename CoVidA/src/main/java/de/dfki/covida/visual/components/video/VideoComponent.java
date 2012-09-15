@@ -102,7 +102,7 @@ public class VideoComponent extends CovidaComponent implements
      * Stores touch event count for every touchId
      */
     private Map<Integer, Integer> touchCount;
-    private static final float UPSCALE_FACTOR = 0.4f;
+    private static final float UPSCALE_FACTOR = 0.75f;
     private static final boolean EXACT_SHAPES = true;
     protected final AlphaComposite TRANSPARENT = AlphaComposite.getInstance(
             AlphaComposite.SRC_OVER, 0.0f);
@@ -1576,8 +1576,8 @@ public class VideoComponent extends CovidaComponent implements
         if (event.getState().equals(DragEvent.GestureState.GESTURE_UPDATE)
                 && event.getTranslation() != null) {
             startDragAnimation();
-            float x = event.getTranslation().x * scrnsize.x;
-            float y = event.getTranslation().y * scrnsize.y;
+            float x = event.getTranslation().x * display.x;
+            float y = event.getTranslation().y * display.y;
             x = x / getNode().getLocalScale().x;
             y = y / getNode().getLocalScale().y;
             x = getNode().getLocalTranslation().getX() + x;

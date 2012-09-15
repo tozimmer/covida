@@ -27,8 +27,8 @@
  */
 package de.dfki.covida;
 
-import de.dfki.covida.visual.CovidaState;
 import com.sun.jna.NativeLibrary;
+import de.dfki.covida.visual.CovidaState;
 import de.dfki.touchandwrite.ApplicationType;
 import de.dfki.touchandwrite.TouchAndWriteDevice;
 import de.dfki.touchandwrite.TouchAndWriteServer;

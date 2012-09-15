@@ -121,6 +121,14 @@ public class LockState {
      * @return true if component is on top
      */
     public boolean onTop(int id, Object object, CovidaComponent coVidAComponent) {
+        if(object == null){
+            log.warn("object is null");
+            return false;
+        }
+        if(coVidAComponent == null){
+            log.warn("covida component is null");
+            return false;
+        }
         if (isTouchLocked(id)) {
             return (getTouchLock(id) == coVidAComponent.getId());
         }

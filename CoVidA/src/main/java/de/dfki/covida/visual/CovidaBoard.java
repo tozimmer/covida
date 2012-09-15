@@ -183,13 +183,6 @@ public class CovidaBoard extends AbstractTouchAndWriteComponent implements
      */
     protected int scaledImageHeight, scaledImageWidth;
     private ArrayList<VideoComponent> videos;
-
-    /**
-     * @return the videos
-     */
-    protected ArrayList<VideoComponent> getVideos() {
-        return videos;
-    }
     private ArrayList<Node> leafNodes;
     private Node rootNode;
     private Node videoNode;
@@ -200,17 +193,6 @@ public class CovidaBoard extends AbstractTouchAndWriteComponent implements
     private PenInputHandler penInputHandler;
     private CovidaConfiguration configuration;
     private LockState lockState;
-    /**
-     * Stores touch event count for every touchId
-     */
-    protected Map<Integer, Integer> touchCount;
-    /**
-     * Stores touch positions
-     */
-    protected Map<Integer, ArrayList<Vector3f>> touchPositions;
-    /**
-     * Stores nodes on touch position
-     */
     protected Map<Integer, Node> touchNodes;
     private ArrayList<Integer> iteratorList;
     private Vector2f borders;
@@ -220,7 +202,7 @@ public class CovidaBoard extends AbstractTouchAndWriteComponent implements
     private ArrayList<Quad> overlayReset;
     protected HashMap<Integer, Dimension> videoDimensions;
     protected ArrayList<Integer> indexes;
-    /**
+     /**
      * max Height in % of display.y
      */
     private int maxHeight;
@@ -231,6 +213,18 @@ public class CovidaBoard extends AbstractTouchAndWriteComponent implements
     private ArrayList<VideoPreloadComponent> preloadVideo;
     private boolean initialized;
     private List<VideoFormat> videoFormat;
+    
+    
+    /**
+     * Stores touch event count for every touchId
+     */
+    protected Map<Integer, Integer> touchCount;
+    /**
+     * Stores touch positions
+     */
+    protected Map<Integer, ArrayList<Vector3f>> touchPositions;
+    
+   
 
     public CovidaBoard(CovidaCMDOptions opt) {
         super(ComponentType.COMPONENT_2D, "CoVidA Board");
@@ -265,6 +259,13 @@ public class CovidaBoard extends AbstractTouchAndWriteComponent implements
         preloadVideo = new ArrayList<>();
     }
 
+    /**
+     * @return the videos
+     */
+    protected ArrayList<VideoComponent> getVideos() {
+        return videos;
+    }
+    
     /**
      * Initialize method for the class VideoTouchBoard
      *
@@ -318,7 +319,7 @@ public class CovidaBoard extends AbstractTouchAndWriteComponent implements
     }
 
     protected void init() {
-        log.debug("init()");
+        log.debug("Initialization of the covida board");
         this.setLightCombineMode(LightCombineMode.Off);
         maxWidth = 0;
         maxHeight = 0;
@@ -362,10 +363,13 @@ public class CovidaBoard extends AbstractTouchAndWriteComponent implements
         rootNode.attachChild(board);
 
         createVideos();
-//        createSideMenus();
+//        createCornerMenus();
     }
 
-    private void createSideMenus() {
+    /**
+     * Creates the corner menus and buttons
+     */
+    private void createCornerMenus() {
         // attach search buttons
         menuNode = new Node("VideoTouchBoardMenu Node");
         rootNode.attachChild(menuNode);
