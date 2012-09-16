@@ -1,0 +1,818 @@
+/*
+ * AbstractVideoHandler.java
+ *
+ * Copyright (c) 2012, Tobias Zimmermann All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification, are
+ * permitted provided that the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice, this list of
+ * conditions and the following disclaimer. Redistributions in binary form must reproduce the
+ * above copyright notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
+ *
+ * Neither the name of the author nor the names of its contributors may be used to endorse or
+ * promote products derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS
+ * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
+ * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+package de.dfki.covida.videovlcj;
+
+import de.dfki.covida.covidacore.data.ShapePoints;
+import de.dfki.covida.covidacore.utils.VideoUtils;
+import de.dfki.covida.videovlcj.rendered.RenderedVideoHandler;
+import de.dfki.covida.videovlcj.rendered.VideoRenderer;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.util.logging.Level;
+import org.apache.log4j.Logger;
+import uk.co.caprica.vlcj.binding.internal.libvlc_media_t;
+import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
+import uk.co.caprica.vlcj.player.MediaPlayer;
+import uk.co.caprica.vlcj.player.MediaPlayerEventListener;
+import uk.co.caprica.vlcj.player.MediaPlayerFactory;
+import uk.co.caprica.vlcj.player.embedded.videosurface.VideoSurface;
+
+/**
+ * Component to create a {@link MediaPlayer} and {@link VideoRenderer} to play
+ * videos.
+ *
+ * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
+ */
+public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
+
+    /**
+     * Logger.
+     */
+    private Logger log = Logger.getLogger(AbstractVideoHandler.class);
+    /**
+     * height of the video {@link Quad}
+     */
+    private final int height;
+    /**
+     * width of the video {@link Quad}
+     */
+    private final int width;
+    /**
+     * video source as {@link String}
+     */
+    private final String source;
+    /**
+     * If true the video is playing.
+     */
+    protected boolean isPlaying;
+    /**
+     * If true the {@code timeStart} and {@code timeEnd} is considered.
+     *
+     * @see #setTimeRange(long, long)
+     */
+    protected boolean isTimeRanged;
+    /**
+     * Defines the start time of the video. Note that {@code timeStart} is only
+     * considered if {@code isTimeRange} is true.
+     */
+    protected long timeStart;
+    /**
+     * Defines the end time of the video. Note that {@code timeEnd} is only
+     * considered if {@code isTimeRange} is true.
+     */
+    protected long timeEnd;
+    /**
+     * Video Slider {@link ISlider}
+     */
+    protected ISlider slider;
+    /**
+     * Video controls {@link IVideoControls}
+     */
+    protected IVideoControls controls;
+    /**
+     * If tue the video repeating is enabled.
+     */
+    protected Boolean repeat;
+    /**
+     * Current recognized handwriting
+     * Note that this {@link String} must be set by the visual component of
+     * covida
+     */
+    protected String hwr;
+    /**
+     * {@link MediaPlayer} instance to play the {@code source}
+     */
+    protected MediaPlayer mediaPlayer;
+    /**
+     * Embedded media player, used by {@link EmbeddedMediaPlayerComponent}
+     */
+    protected EmbeddedMediaPlayerComponent mediaPlayerComponent;
+    /**
+     * {@link VideoRenderer}
+     * Note that this variable is only used by {@link RenderedVideoHandler}
+     */
+    protected VideoRenderer renderer;
+    /**
+     * The {@link MediaPlayerFactory} to crate {@link VideoSurface} 
+     * or {@link MediaPlayer}
+     */
+    protected final MediaPlayerFactory mediaPlayerFactory;
+
+    /**
+     * Creates an instance of {@link AbstractVideoHandler}
+     *
+     * @param source video source as {@link String}
+     * @param height height of the video {@link Quad}
+     * @param width width of the video {@link Quad}
+     */
+    public AbstractVideoHandler(String source, String title, int height
+            , int width, VideoType videoType) {
+        this.mediaPlayerFactory = new MediaPlayerFactory();
+        if (videoType == VideoType.EMBEDDED) {
+            mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
+            mediaPlayer = mediaPlayerComponent.getMediaPlayer();
+        } else if (videoType == VideoType.RENDERED) {
+            this.renderer = new VideoRenderer(width, height, title);
+            mediaPlayer = mediaPlayerFactory.newDirectMediaPlayer(width, height, renderer);
+        }
+        this.source = source;
+        this.height = height;
+        this.width = width;
+        addEventListener();
+    }
+
+    private void addEventListener() {
+        if (mediaPlayer != null) {
+            mediaPlayer.addMediaPlayerEventListener(this);
+        } else {
+            log.warn("Could not set EventListener, mediaPlayer == null!");
+        }
+    }
+
+
+    /**
+     * Sets the logging status.
+     *
+     * @param activated if true the logging for {@link uk.co.caprica.vlcj} is
+     * activated.
+     */
+    public final void setLoggin(Boolean activated) {
+        if (!activated) {
+            java.util.logging.Logger.getLogger("uk.co.caprica.vlcj").setLevel(Level.OFF);
+        } else {
+            java.util.logging.Logger.getLogger("uk.co.caprica.vlcj").setLevel(Level.ALL);
+        }
+    }
+
+    /**
+     * Returns the {@link Dimension} of the video.
+     *
+     * @return {@link Dimension} of the video.
+     * @return {@link null} if video is not created or activated.
+     */
+    public Dimension getDimension() {
+        return new Dimension(getWidth(), getHeight());
+    }
+
+    /**
+     * Returns the current time postion in ms.
+     *
+     * Note that only the part from {@code timeStart) to {
+     *
+     * @timeEnd} is considered.
+     * @see #setTimeRange(long, long)
+     *
+     * @return
+     */
+    public long getTime() {
+        if (mediaPlayer == null) {
+            return -1;
+        }
+        if (isTimeRanged) {
+            if (isReady()) {
+                return mediaPlayer.getTime() - timeStart;
+            }
+            return -1;
+        } else {
+            if (isReady()) {
+                return mediaPlayer.getTime();
+            }
+            return -1;
+        }
+    }
+
+    /**
+     * Returns the video progess in percent as {@link String}.
+     *
+     * Note that only the part from {@code timeStart) to {
+     *
+     * @timeEnd} is considered.
+     * @see #setTimeRange(long, long)
+     *
+     * @return vieo progress in the format xx % (xx is the progress in percent)
+     */
+    public String getVideoProgress() {
+        if (mediaPlayer == null) {
+            return null;
+        }
+        if (!isTimeRanged) {
+            int p = (int) (mediaPlayer.getPosition() * 100);
+            return String.valueOf(p) + " %";
+        } else {
+            int p = (int) ((getTime() / getMaxTime()) * 100);
+            return String.valueOf(p) + " %";
+        }
+    }
+
+    /**
+     * Start video
+     */
+    public void start() {
+        if (mediaPlayer == null) {
+            log.warn("Could not start video, mediaPlayer == null!");
+            return;
+        }
+        mediaPlayer.playMedia(getSource());
+        mediaPlayer.setPlaySubItems(true);
+    }
+
+    /**
+     * Returns the status of the video.
+     *
+     * @return true if video is ready to play
+     */
+    public boolean isReady() {
+        if (mediaPlayer != null) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Returns the shape points.
+     *
+     * @return {@link ShapePoints}
+     */
+    abstract public ShapePoints getShape();
+
+    abstract public ShapePoints getDrawing();
+
+    /**
+     * Sets the shape points to draw on the video.
+     *
+     * @param points {@link ShapePoints}
+     */
+    abstract public void setShape(ShapePoints points);
+
+    /**
+     * Sets the video slider for the video {@link ISlider}
+     *
+     * @param slider Video slider {@link ISlider}
+     */
+    public void setSlider(ISlider slider) {
+        this.slider = slider;
+    }
+
+    /**
+     * Sets the video control elements {@link IVideoControls}
+     *
+     * @param controls Video controls {@link IVideoControls}
+     */
+    public void setControls(IVideoControls controls) {
+        this.controls = controls;
+    }
+
+    /**
+     * Returns the {@link AbstractVideoHandler} status.
+     *
+     * @return true if video is active
+     */
+    public boolean isActive() {
+        if (mediaPlayer == null) {
+            return false;
+        }
+        return (mediaPlayer.isPlaying());
+    }
+
+    /**
+     * Clean up all resources of the {@link AbstractVideoHandler}
+     */
+    public void cleanup() {
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+        }
+        if (mediaPlayerComponent != null) {
+            mediaPlayerComponent.release();
+        }
+        if (mediaPlayerFactory != null) {
+            mediaPlayerFactory.release();
+        }
+    }
+
+    /**
+     * Stops the video.
+     */
+    public void stop() {
+        isPlaying = false;
+        if (mediaPlayer == null) {
+            return;
+        }
+        if (isReady()) {
+            mediaPlayer.stop();
+        }
+    }
+
+    /**
+     * Sets the media source of the video.
+     *
+     * @param source video source as {@link String}
+     */
+    public void setMedia(String source) {
+        if (mediaPlayer == null) {
+            return;
+        }
+        mediaPlayer.playMedia(source);
+    }
+
+    /**
+     * Pauses the video.
+     */
+    public void pause() {
+        isPlaying = false;
+        if (mediaPlayer == null) {
+            return;
+        }
+        if (isReady()) {
+            if (this.mediaPlayer.isPlaying()) {
+                this.mediaPlayer.pause();
+            }
+        }
+    }
+
+    /**
+     * Resumes the video.
+     */
+    public void resume() {
+        if (mediaPlayer == null) {
+            return;
+        }
+        if (isReady()) {
+            if (!isPlaying) {
+                this.mediaPlayer.play();
+            }
+        }
+    }
+
+    /**
+     * Sets the time position of the video in percentage.
+     *
+     * Note that only the part from {@code timeStart) to {
+     *
+     * @timeEnd} is considered if {@code isTimeRanged} is {@code true}.
+     * @see #setTimeRange(long, long)
+     *
+     * @param time
+     */
+    public void setTimePostion(long time) {
+        if (mediaPlayer == null) {
+            return;
+        }
+        if (isTimeRanged) {
+            if (isReady()) {
+                mediaPlayer.setTime(time + timeStart);
+            }
+        } else {
+            if (isReady()) {
+                mediaPlayer.setTime(time);
+            }
+        }
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    abstract public void setHWR(String hwr);
+
+    /**
+     * Sets the time position of the video in percentage.
+     *
+     * Note that only the part from {@code timeStart) to {
+     *
+     * @timeEnd} is considered.
+     * @see #setTimeRange(long, long)
+     *
+     * @param percentage
+     */
+    public void setTimePostion(float percentage) {
+        if (mediaPlayer == null) {
+            return;
+        }
+        if (isTimeRanged) {
+            if (isReady()) {
+                mediaPlayer.setTime((long) ((percentage * (getMaxTime() - timeStart)) + timeStart));
+            }
+        } else {
+            if (isReady()) {
+                mediaPlayer.setTime((long) (percentage * getMaxTime()));
+            }
+        }
+    }
+
+    /**
+     * Returns the max time position of the video in ms.
+     *
+     * Note that only the part from {@code timeStart) to {
+     *
+     * @timeEnd} is considered.
+     * @see #setTimeRange(long, long)
+     *
+     * @return
+     */
+    public long getMaxTime() {
+        if (mediaPlayer == null) {
+            return -1;
+        }
+        if (isTimeRanged) {
+            if (isReady()) {
+                return timeEnd;
+            }
+            return -1;
+        } else {
+            if (isReady()) {
+                return mediaPlayer.getLength();
+            }
+            return -1;
+        }
+    }
+
+    /**
+     * Sets the volume of the video.
+     *
+     * @param volume percentage of video volume as {@link Integer}
+     */
+    public void setVolume(int volume) {
+        if (isReady()) {
+            this.mediaPlayer.setVolume(volume);
+        }
+    }
+
+    /**
+     * Sets a time range for the video. Only the part from start to long (time
+     * in ms) is played.
+     *
+     * @param start start time in ms
+     * @param end end time in ms
+     */
+    public void setTimeRange(long start, long end) {
+        this.isTimeRanged = true;
+        this.timeStart = start;
+        this.timeEnd = end;
+    }
+
+    /**
+     * Clears all shapes from the video.
+     */
+    abstract public void clearShape();
+
+    /**
+     * Clears all shapes from the video.
+     */
+    abstract public void clearDrawing();
+
+    /**
+     * Sets the repeat value.
+     *
+     * @param repeat if set to true repeating is enabled.
+     */
+    public void setRepeat(Boolean repeat) {
+        this.repeat = repeat;
+    }
+
+    /**
+     * Returns the repeat value.
+     *
+     * @return true if repeating is enabled.
+     */
+    public boolean isRepeat() {
+        return repeat;
+    }
+
+    // vlcj event handling
+    /**
+     * Handles mediaChange event
+     *
+     * @param mp {@link MediaPlayer} which fired the event
+     * @param l {@link libvlc_media_t}
+     * @param string New media.
+     */
+    public void mediaChanged(MediaPlayer mp, libvlc_media_t l, String string) {
+    }
+
+    /**
+     * Handles opening event.
+     *
+     * @param mp {@link MediaPlayer} which fired the event
+     */
+    public void opening(MediaPlayer mp) {
+    }
+
+    /**
+     * Handles buffering event.
+     *
+     * @param mp {@link MediaPlayer} which fired the event
+     * @param f buffering status as {@link flaot}
+     */
+    public void buffering(MediaPlayer mp, float f) {
+    }
+
+    /**
+     * Handles playing event.
+     *
+     * @param mp {@link MediaPlayer} which fired the event
+     */
+    public void playing(MediaPlayer mp) {
+    }
+
+    /**
+     * Handles pause event.
+     *
+     * @param mp {@link MediaPlayer} which fired the event
+     */
+    public void paused(MediaPlayer mp) {
+//        if (controls != null) {
+//            controls.highlightPause();
+//        }
+    }
+
+    /**
+     * Handles forward event.
+     *
+     * @param mp {@link MediaPlayer} which fired the event
+     */
+    public void forward(MediaPlayer mp) {
+    }
+
+    /**
+     * Handles backward event.
+     *
+     * @param mp {@link MediaPlayer} which fired the event
+     */
+    public void backward(MediaPlayer mp) {
+    }
+
+    /**
+     * Handles timeChanged event.
+     *
+     * @param mp {@link MediaPlayer} which fired the event
+     * @param l time position in ms as {@link Long}
+     */
+    public void timeChanged(MediaPlayer mp, long l) {
+        renderer.setTimecode(VideoUtils.getTimeCode(l));
+    }
+
+    /**
+     * Handles positionChanged event.
+     *
+     * @param mp {@link MediaPlayer} which fired the event
+     * @param f time position in percentage as {@link Float}
+     */
+    public void positionChanged(MediaPlayer mp, float f) {
+        if (slider != null) {
+            slider.setSlider(f);
+        }
+//        if (controls != null) {
+//            controls.highlightPlay();
+//        }
+        isPlaying = true;
+    }
+
+    /**
+     * Handles seekableChanged event.
+     *
+     * @param mp {@link MediaPlayer} which fired the event
+     * @param i status as {@link Integer}
+     */
+    public void seekableChanged(MediaPlayer mp, int i) {
+    }
+
+    /**
+     * Handles pausableChanged event.
+     *
+     * @param mp {@link MediaPlayer} which fired the event
+     * @param i status as {@link Integer}
+     */
+    public void pausableChanged(MediaPlayer mp, int i) {
+    }
+
+    /**
+     * Handles titleChanged event.
+     *
+     * @param mp {@link MediaPlayer} which fired the event
+     * @param i status as {@link Integer}
+     */
+    public void titleChanged(MediaPlayer mp, int i) {
+    }
+
+    /**
+     * Handles snapshotTaken event.
+     *
+     * @param mp {@link MediaPlayer} which fired the event
+     * @param string target file as {@link String}
+     */
+    public void snapshotTaken(MediaPlayer mp, String string) {
+    }
+
+    /**
+     * Handles lengthChanged event.
+     *
+     * @param mp {@link MediaPlayer} which fired the event
+     * @param l length of video in ms as {@link Long}
+     */
+    public void lengthChanged(MediaPlayer mp, long l) {
+    }
+
+    /**
+     * Handles videoOutput event.
+     *
+     * @param mp {@link MediaPlayer} which fired the event
+     * @param i status as {@link Integer}
+     */
+    public void videoOutput(MediaPlayer mp, int i) {
+    }
+
+    /**
+     * Handles error event.
+     *
+     * @param mp {@link MediaPlayer} which fired the event
+     */
+    public void error(MediaPlayer mp) {
+        log.error(mp + " has thrown an error.");
+    }
+
+    /**
+     * Handles the mediaMetaChanged event.
+     *
+     * @param mp {@link MediaPlayer} which fired the event
+     * @param i status as {@link Integer}
+     */
+    public void mediaMetaChanged(MediaPlayer mp, int i) {
+    }
+
+    /**
+     * Handles the mediaSubItemAdded event.
+     *
+     * @param mp {@link MediaPlayer} which fired the event
+     * @param l {@link libvlc_media_t}
+     */
+    public void mediaSubItemAdded(MediaPlayer mp, libvlc_media_t l) {
+    }
+
+    /**
+     * Handles the mediaDurationChanged event.
+     *
+     * @param mp {@link MediaPlayer} which fired the event
+     * @param l media duration in ms as {@link long}
+     */
+    public void mediaDurationChanged(MediaPlayer mp, long l) {
+    }
+
+    /**
+     * Handles mediaParsedChange event.
+     *
+     * @param mp {@link MediaPlayer} which fired the event
+     * @param i status as {@link Integer}
+     */
+    public void mediaParsedChanged(MediaPlayer mp, int i) {
+    }
+
+    /**
+     * Handles meduaFreed event.
+     *
+     * @param mp {@link MediaPlayer} which fired the event
+     */
+    public void mediaFreed(MediaPlayer mp) {
+    }
+
+    /**
+     * Handles mediaStageChanged event.
+     *
+     * @param mp {@link MediaPlayer} which fired the event
+     * @param i status as {@link Integer}
+     */
+    public void mediaStateChanged(MediaPlayer mp, int i) {
+    }
+
+    /**
+     * Handles newMedia event.
+     *
+     * @param mp {@link MediaPlayer} which fired the event
+     */
+    public void newMedia(MediaPlayer mp) {
+    }
+
+    /**
+     * Handles subItemPlayed event.
+     *
+     * @param mp {@link MediaPlayer} which fired the event
+     * @param i status as {@link Integer}
+     */
+    public void subItemPlayed(MediaPlayer mp, int i) {
+    }
+
+    /**
+     * Handles subItemFinished event.
+     *
+     * @param mp {@link MediaPlayer} which fired the event
+     * @param i status as {@link Integer}
+     */
+    public void subItemFinished(MediaPlayer mp, int i) {
+    }
+
+    /**
+     * Handles endOfSubItems event.
+     *
+     * @param mp {@link MediaPlayer} which fired the event
+     */
+    public void endOfSubItems(MediaPlayer mp) {
+    }
+
+    /**
+     * Handles finished event.
+     *
+     * @param mp {@link MediaPlayer} which fired the event
+     */
+    public void finished(MediaPlayer mp) {
+        isPlaying = false;
+        if (mediaPlayer == null) {
+            return;
+        }
+        if (isRepeat()) {
+            mediaPlayer.playMedia(getSource());
+        }
+    }
+
+    /**
+     * Handles stop event.
+     *
+     * @param mp {@link MediaPlayer} which fired the event
+     */
+    public void stopped(MediaPlayer mp) {
+        if (mediaPlayer == null) {
+            return;
+        }
+        mediaPlayer.prepareMedia(getSource());
+//        if (controls != null) {
+//            controls.highlightStop();
+//        }
+    }
+
+    
+    
+    /**
+     * Makes a snapshot of the video
+     *
+     * @return video snapshot as {@link BufferedImage}
+     */
+    abstract public BufferedImage getSnapshot();
+
+    /**
+     * Saves the video frame including the shape to {@link File}
+     * {@code source + "."+ mediaPlayer.getTime() + ".png"}
+     */
+    abstract public void saveShape();
+
+    /**
+     * Adds the {@link Point} to the {@link ShapePoints} which should be draw on
+     * the video.
+     *
+     * @param point {@link Point}
+     */
+    abstract public void draw(Point point);
+    
+    /**
+     *
+     *
+     * @return
+     */
+    abstract public BufferedImage getVideoImage();
+    
+    abstract public void setTitleOverlayEnabled(boolean enabled);
+    
+    abstract public void enableTimeCodeOverlay(long timeout);
+}
