@@ -119,7 +119,7 @@
                             <outputDirectory>${basedir}/target/binaries/vlc</outputDirectory>
                             <resources>          
                                 <resource>
-                                    <directory>vlc</directory>
+                                    <directory>../vlc</directory>
                                 </resource>
                             </resources>              
                         </configuration>            

@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- jWebSocket server configuration -->
+<jWebSocket>
+	<installation>prod</installation>
+	<protocol>json</protocol>
+	<!--
+		the unique ID of this instance within a jWebSocket cluster
+		can be left empty to run just a single stand-alone server
+		Preparation for pending cluster-plug-in
+	-->
+	<node_id>01</node_id>
+	<!-- jWebSocket logging configuration -->
+	<logging>
+		<log4j>
+			<!-- new config file option in 1.0b, override settings below -->
+			<config>${JWEBSOCKET_HOME}/conf/log4j.xm</config>
+			<!-- automatic reload of log config options in ms (0 for none, minimum 5000ms) -->
+			<autoreload>20000</autoreload>
+		</log4j>
+	</logging>
+
+	<!--
+		initializer class required only in 'dev' mode so that client application can register custom servers,
+		plugins at compile time for debugging capability to test custom plugins and servers without a need for
+		jar files
+	-->
+	<initializerClass>org.jwebsocket.factory.JWebSocketInitializer</initializerClass>
+
+	<!-- jWebSocket engine configuration -->
+	<engines>
+		<!-- TCP Engine Configuration -->
+		<engine>
+			<name>org.jwebsocket.tcp.TCPEngine</name>
+			<id>tcp0</id>
+			<jar>jWebSocketTCPEngine-1.0.jar</jar>
+			<port>8787</port>
+			<sslport>9797</sslport>
+			<!-- keystore file with in %JWEBSOCKET_HOME%/conf -->
+			<keystore>jWebSocket.ks</keystore>
+			<!-- password to access keystore file -->
+			<password>jWebSocket</password>
+			<domains>
+				<domain>localhost</domain>
+			</domains>
+			<!-- default session timeout 1h, max timeout currently 1 hour -->
+			<timeout>0</timeout>
+			<!--
+				maximum size of the data packet that the engine will read,
+				if the frame size is larger than this the connection will be closed.
+			-->
+			<maxframesize>1048840</maxframesize>
+		</engine>
+	</engines>
+
+	<!-- server types to be instantiated for jWebSocket -->
+	<servers>
+		<server>
+			<name>org.jwebsocket.server.TokenServer</name>
+			<id>ts0</id>
+			<jar>jWebSocketTokenServer-1.0.jar</jar>
+			<!-- define the thread pool properties. Thread are spawned when Token's spawnThread value is true 
+			 Queue sizes and maximum pool sizes may be traded off for each other: Using large queues and small pools minimizes CPU usage, OS resources, and context-switching overhead, but can lead to artificially low throughput. 
+			 If tasks frequently block (for example if they are I/O bound), a system may be able to schedule time for more threads than you otherwise allow. 
+			 Use of small queues generally requires larger pool sizes, which keeps CPUs busier but may encounter unacceptable scheduling overhead, which also decreases throughput.
+			 -->
+			<threadPool>
+				<!--  number of thread that are "waiting" even if the queue is empty  -->
+				<corePoolSize>10</corePoolSize>
+				<!--  number maximum of thread that can be running at the same time -->
+				<maximumPoolSize>100</maximumPoolSize>
+				<!--  time before the desctruction of "free" threads (seconds) -->
+				<keepAliveTime>60</keepAliveTime>
+				<!--  size of the blocking queue. Connection will be refused if the queue is full and the poolsize is equals to the maximumPoolSize -->
+				<blockingQueueSize>1000</blockingQueueSize>
+			</threadPool>
+		</server>
+		<server>
+			<name>org.jwebsocket.server.CustomServer</name>
+			<id>cs0</id>
+			<jar>jWebSocketCustomServer-1.0.jar</jar>
+		</server>
+	</servers>
+	<!-- jWebSocket global rights -->
+	<rights>
+		<!-- configuration of system plug-in specific rights -->
+		<right>
+			<ns>org.jwebsocket.plugins.system</ns>
+			<id>broadcast</id>
+			<description>Broadcast message to all other clients.</description>
+		</right>
+		<right>
+			<ns>org.jwebsocket.plugins.system</ns>
+			<id>send</id>
+			<description>Send message to a single target client.</description>
+		</right>
+		<!-- configuration of rpc plug-in specific rights -->
+
+	</rights>
+
+	<!-- jWebSocket roles -->
+	<roles>
+		<role>
+			<id>eventlistener</id>
+			<description>Event listener role.</description>
+			<rights>
+				<right>org.jwebsocket.plugins.system.broadcast</right>
+				<right>org.jwebsocket.plugins.system.send</right>
+			</rights>
+		</role>
+	</roles>
+
+	<!-- jWebSocket users -->
+	<users>
+		<user>
+			<uuid>000-000-001-2011-07-14-11-32-40-223</uuid>
+			<loginname>touchandwrite</loginname>
+			<firstname>Touch</firstname>
+			<lastname>Write</lastname>
+			<!-- no password means that the user does not need a password -->
+			<password>enablestreaming</password>
+			<description>Touch and Write Event streaming</description>
+			<status>1</status>
+			<roles>
+				<!-- should be restricted in your application! open for demo purposes only! -->
+				<role>eventlistener</role>
+			</roles>
+		</user>
+
+		<user>
+			<uuid>000-000-004-2011-07-14-11-35-54-871</uuid>
+			<loginname>anonymous</loginname>
+			<firstname>jWebSocket Anonymous User</firstname>
+			<lastname>(Roles to be specified!)</lastname>
+			<!-- empty password -->
+			<password></password>
+			<description>jWebSocket Anonymous User (Specify if anonymous logins should be supported at all in System Plug-in)</description>
+			<!-- 0=blocked 1=allowed ... future states pending -->
+			<status>1</status>
+			<roles>
+				<!-- the rights of all roles are merged -->
+				<role>eventlistener</role>
+			</roles>
+		</user>
+	</users>
+
+	<!-- plug-ins to be instantiated for jWebSocket -->
+	<plugins>
+		<!-- the system plug-in, do not remove, mandatory for basic WebsScket communication operations -->
+		<plugin>
+			<name>org.jwebsocket.plugins.system.SystemPlugIn</name>
+			<ns>org.jwebsocket.plugins.system</ns>
+			<id>jws.system</id>
+			<jar>jWebSocketServer-1.0.jar</jar>
+			<!-- plug-in specific settings -->
+			<settings>
+				<!-- specify whether open, close, login, logout events should 
+					 be broadcasted per default. To suppress these broadcasts
+					 per events turn settings "on" here and optionally suppress
+					 them per client command. -->
+				<setting key="broadcastOpenEvent">true</setting>
+				<setting key="broadcastCloseEvent">true</setting>
+				<setting key="broadcastLoginEvent">true</setting>
+				<setting key="broadcastLogoutEvent">true</setting>
+				<setting key="allowAnonymousLogin">true</setting>
+				<!-- this is the user name used for anonymous logins,
+					all anonymous users that just connect will get this user 
+					name and all roles and rights assigned to this user.
+					Hence, be careful with the roles and rights you assign to 
+					this user when you set allowAnonymousLogin to true -->
+				<setting key="anonymousLoginName">anonymous</setting>
+				<setting key="loginNameCaseInsensitive">true</setting>
+				<!-- if this flag is set to true all unknown users automatically 
+					are anonymous users. This means they required the optional 
+					anonymous password and they get the roles and rights from 
+					the anonymous user. -->
+				<setting key="allowAutoAnonymous">true</setting>
+			</settings>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</plugin>
+	</plugins>
+
+	<!-- filters to be instantiated for jWebSocket -->
+	<filters>
+		<filter>
+			<name>org.jwebsocket.filters.system.SystemFilter</name>
+			<id>jws.sampleFilter</id>
+			<ns>org.jwebsocket.filters.system</ns>
+			<jar>jWebSocketPlugins-1.0.jar</jar>
+			<server-assignments>
+				<server-assignment>ts0</server-assignment>
+			</server-assignments>
+		</filter>
+	</filters>
+
+</jWebSocket>
