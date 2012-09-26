@@ -45,7 +45,7 @@
                     <weightStroke>0</weightStroke>
                     <weightTriangle>0</weightTriangle>
                 </shapedetection>
-                <trainingData>training-data</trainingData>
+                <trainingData>../covida-res/training-data</trainingData>
             </modeconfig>
         </modearea>
     </modeareas>

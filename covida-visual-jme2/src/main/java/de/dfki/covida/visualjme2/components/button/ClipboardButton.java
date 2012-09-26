@@ -30,8 +30,11 @@ package de.dfki.covida.visualjme2.components.button;
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
+import com.jme.util.GameTaskQueueManager;
 import de.dfki.covida.visualjme2.components.annotation.AnnotationClipboard;
 import de.dfki.covida.visualjme2.components.annotation.Field;
+import de.dfki.covida.visualjme2.utils.AttachChildCallable;
+import de.dfki.covida.visualjme2.utils.DetachChildCallable;
 
 /**
  * Sidebar menu for VideoTouchBoard
@@ -84,14 +87,14 @@ public class ClipboardButton extends CovidaButton {
 
     @Override
     protected final void toggle() {
-        if (hasChild(clipboard)) {
+        if (node.hasChild(clipboard.node)) {
             if (clipboard.isClosing()) {
                 openField();
             } else {
                 closeField();
             }
         } else {
-            nodeHandler.addAttachChildRequest(this, clipboard);
+            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, clipboard.node));
             openField();
         }
     }

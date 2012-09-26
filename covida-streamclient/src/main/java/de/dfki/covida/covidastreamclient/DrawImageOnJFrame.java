@@ -7,7 +7,6 @@ package de.dfki.covida.covidastreamclient;
 import de.dfki.covida.covidacore.utils.ImageUtils;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -79,7 +78,6 @@ public class DrawImageOnJFrame extends JFrame implements IStreamingClient {
 
                 img.setRGB(x, y, argb);
             }
-
         }
         imageToBeDraw = ImageUtils.deepCopy(img);
     }

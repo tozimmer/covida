@@ -144,27 +144,39 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
         this.timecode = timecode;
     }
 
+    @Override
     public synchronized void setShape(ShapePoints points) {
         this.shapePoints = points;
     }
 
+    @Override
     public ShapePoints getDrawing() {
         return drawedPoints;
     }
 
+    @Override
     public ShapePoints getSavedShape() {
         return shapePoints;
     }
 
+    @Override
     public synchronized void clearShape() {
         shapePoints = new ShapePoints();
     }
 
+    @Override
     public synchronized void clearDrawing() {
         drawedPoints = new ShapePoints();
     }
+    
+    public String getTitle(){
+        return title;
+    }
 
     public BufferedImage getVideoImage() {
+        if(frame == null){
+            log.error("Frame is null.");
+        }
         return frame;
     }
 
@@ -262,6 +274,7 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
         }
     }
 
+    @Override
     public void setHWR(String hwr) {
         this.hwr = hwr;
     }

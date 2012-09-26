@@ -29,11 +29,11 @@ public class TCPServer extends Thread {
     }
 
     public synchronized void writeByteBuffer(byte[] bytes) {
-        log.debug("Send Frame");
         List<TcpThread> deadThreads = new ArrayList<>();
         for (TcpThread tcpThread : tcpThreads) {
             if (tcpThread.running) {
                 tcpThread.writeByteBuffer(bytes);
+                bytes = null;
             } else {
                 deadThreads.add(tcpThread);
             }
@@ -56,7 +56,9 @@ public class TCPServer extends Thread {
         /* create socket server and wait for connection requests */
         try {
             serverSocket = new ServerSocket(port);
-            log.debug("Server waiting for client on port " + serverSocket.getLocalPort());
+            log.debug("#########################################################");
+            log.debug("# Server waiting for client on port " + serverSocket.getLocalPort()+" #");
+            log.debug("#########################################################");
 
             while (true) {
                 Socket socket = serverSocket.accept();  // accept connection
@@ -88,6 +90,7 @@ public class TCPServer extends Thread {
 
         public void writeByteBuffer(byte[] bytes) {
             try {
+                Soutput.flush();
                 Soutput.writeObject(bytes);
             } catch (IOException e) {
                 log.error("Exception writing  Image: " + e);
@@ -108,12 +111,12 @@ public class TCPServer extends Thread {
                     Soutput.flush();
                     Soutput.close();
                 } catch (IOException ex1) {
-                    log.error(ex);
+                    log.error(ex1);
                 }
             }
             while (running) {
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(25);
                 } catch (InterruptedException ex) {
                     log.error(ex);
                 }

@@ -50,7 +50,7 @@ public class TouchAndWriteSupport {
     public TouchAndWriteSupport(){
     }
     
-    public static void start(TouchAndWriteDevice device, IApplication application){
+    public static void start(IApplication application, TouchAndWriteDevice device){
         TWServer twServer = new TWServer(device);
         twServer.start();
         TouchAndWriteEventHandler touchAndWrite = new TouchAndWriteEventHandler(application);

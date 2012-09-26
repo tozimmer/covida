@@ -27,21 +27,15 @@
  */
 package de.dfki.covida.visualjme2.components.video;
 
-import com.jme.image.Texture;
-import com.jme.image.Texture.WrapMode;
-import com.jme.math.Vector3f;
 import com.jme.scene.shape.Quad;
-import com.jme.scene.state.BlendState;
-import com.jme.scene.state.TextureState;
-import com.jme.system.DisplaySystem;
-import com.jme.util.TextureManager;
+import com.jme.util.GameTaskQueueManager;
+import de.dfki.covida.covidacore.components.IControlableComponent;
+import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.videovlcj.IVideoControls;
 import de.dfki.covida.visualjme2.components.CovidaJMEComponent;
 import de.dfki.covida.visualjme2.components.video.controls.ControlButton;
-import de.dfki.covida.visualjme2.utils.JMEUtils;
-import java.util.ArrayList;
+import de.dfki.covida.visualjme2.utils.AttachChildCallable;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.apache.log4j.Logger;
 
@@ -54,38 +48,78 @@ public class VideoComponentControls extends CovidaJMEComponent implements IVideo
     protected Quad overlayControlsDefault;
     private int width;
     private int height;
-    private VideoComponent video;
-    private List<ControlButton> controls;
+    private IControlableComponent controlable;
+    private Map<ActionName, ControlButton> controls;
 
-    public VideoComponentControls(VideoComponent video) {
-        super("Video " + video.getId() + " Control");
-        this.width = video.getWidth();
-        this.height = video.getHeight();
-        this.video = video;
-        initalizeOverlayQuads(JMEUtils.initalizeBlendState());
+    public VideoComponentControls(IControlableComponent controlable) {
+        super("Video " + controlable.getId() + " Control");
+        this.width = controlable.getWidth();
+        this.height = controlable.getHeight();
+        this.controlable = controlable;
+        initalizeControls();
     }
 
-    private void initalizeOverlayQuads(BlendState alpha) {
-        Map<String, String> textureList = new HashMap<>();
-        textureList.put("media/textures/video_controls_back.png", "Back");
-        textureList.put("media/textures/video_controls_stop.png", "Stop");
-        textureList.put("media/textures/video_controls_play.png", "Play");
-        textureList.put("media/textures/video_controls_forward.png", "Forward");
-        textureList.put("media/textures/video_controls_sound.png", "Sound");
-        controls = new ArrayList<>();
-        for (String texture : textureList.keySet()) {
-            controls.add(new ControlButton(textureList.get(texture),
-                    texture, width, height));
+    private void initalizeControls() {
+        Map<String, ActionName> controlList = new HashMap<>();
+        controlList.put("media/textures/video_controls_back.png", ActionName.BACKWARD);
+        controlList.put("media/textures/video_controls_stop.png", ActionName.STOP);
+        controlList.put("media/textures/video_controls_pause.png", ActionName.PLAYPAUSE);
+        controlList.put("media/textures/video_controls_forward.png", ActionName.FORWARD);
+        controlList.put("media/textures/video_controls_soundoff.png", ActionName.SOUND);
+        Map<ActionName, String> controlActiveList = new HashMap<>();
+        controlActiveList.put(ActionName.BACKWARD, "media/textures/video_controls_back.png");
+        controlActiveList.put(ActionName.STOP, "media/textures/video_controls_stop.png");
+        controlActiveList.put(ActionName.PLAYPAUSE, "media/textures/video_controls_play.png");
+        controlActiveList.put(ActionName.FORWARD, "media/textures/video_controls_forward.png");
+        controlActiveList.put(ActionName.SOUND, "media/textures/video_controls_sound.png");
+        controls = new HashMap<>();
+        int controlHeight = (int) (0.15f * height);
+        int controlWidth = width / 5;
+        for (String texture : controlList.keySet()) {
+            ControlButton control = new ControlButton(controlList.get(texture),
+                    controlable, texture, controlActiveList.get(controlList.get(texture)),
+                    controlWidth, controlHeight);
+            control.setLocalTranslation(controlWidth / 2 + (-width / 2)
+                    + (controls.size() * (width / 5)), -height / (1.4f), 0);
+            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, control.node));
+            controls.put(controlList.get(texture), control);
         }
-        for (int i = 0; i < controls.size(); i++) {
-            controls.get(i).setLocalTranslation((-width / 2) + (i * (width / 5)),
-                    -height / (1.4f), 0);
-            nodeHandler.addAttachChildRequest(this, controls.get(i));
+        controlWidth = (int) (0.15f * height);
+        controlList = new HashMap<>();
+        controlList.put("media/textures/video_controls_changemedia.png", ActionName.CHANGEMEDIA);
+        controlList.put("media/textures/video_controls_close.png", ActionName.CLOSE);
+        controlActiveList = new HashMap<>();
+        controlActiveList.put(ActionName.CHANGEMEDIA, "media/textures/video_controls_changemedia.png");
+        controlActiveList.put(ActionName.CLOSE, "media/textures/video_controls_close.png");
+        int start = -width / 2 - controlWidth / 2;
+        for (String texture : controlList.keySet()) {
+            ControlButton control = new ControlButton(controlList.get(texture),
+                    controlable, texture, controlActiveList.get(controlList.get(texture)),
+                    controlWidth, controlHeight);
+            control.setLocalTranslation(start, height / (1.7f), 0);
+            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, control.node));
+            controls.put(controlList.get(texture), control);
+            start += width + controlWidth;
+        }
+        controlList = new HashMap<>();
+        controlList.put("media/textures/video_controls_list_back.png", ActionName.NONE);
+        controlList.put("media/textures/video_controls_list_front.png", ActionName.LIST);
+        controlActiveList = new HashMap<>();
+        controlActiveList.put(ActionName.LIST, "media/textures/video_controls_list_back.png");
+        controlActiveList.put(ActionName.LIST, "media/textures/video_controls_list_front.png");
+        for (String texture : controlList.keySet()) {
+            ControlButton control = new ControlButton(controlList.get(texture),
+                    controlable, texture, controlActiveList.get(controlList.get(texture)),
+                    controlWidth, controlHeight);
+            control.setLocalTranslation((int) (-width/1.85f), 0, 0);
+            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, control.node));
+            controls.put(controlList.get(texture), control);
+            start += width + controlWidth;
         }
     }
 
-    public VideoComponent getVideo() {
-        return video;
+    public IControlableComponent getControlable() {
+        return controlable;
     }
 
     @Override
@@ -100,13 +134,16 @@ public class VideoComponentControls extends CovidaJMEComponent implements IVideo
 
     @Override
     public void highlightPause() {
+        controls.get(ActionName.PLAYPAUSE).setActive(false);
     }
 
     @Override
     public void highlightPlay() {
+        controls.get(ActionName.PLAYPAUSE).setActive(true);
     }
 
     @Override
     public void highlightStop() {
+        controls.get(ActionName.STOP).setActive(true);
     }
 }

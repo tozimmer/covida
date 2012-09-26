@@ -35,9 +35,13 @@ import com.jme.scene.shape.Quad;
 import com.jme.scene.state.BlendState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
+import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
 import de.dfki.covida.visualjme2.components.CovidaJMEComponent;
 import de.dfki.covida.visualjme2.components.annotation.Field;
+import de.dfki.covida.visualjme2.utils.AddControllerCallable;
+import de.dfki.covida.visualjme2.utils.AttachChildCallable;
+import de.dfki.covida.visualjme2.utils.DetachChildCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
 import java.util.ArrayList;
 
@@ -68,9 +72,9 @@ public abstract class CovidaButton extends CovidaJMEComponent {
         textureList.add(inactive);
         textureList.add(active);
         st = new SpatialTransformer(1);
-        nodeHandler.addAddControllerRequest(this, st);
+        GameTaskQueueManager.getManager().update(new AddControllerCallable(node, st));
         initalizeOverlayQuads(JMEUtils.initalizeBlendState());
-        nodeHandler.addAttachChildRequest(this, overlay.get(0));
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, overlay.get(0)));
     }
 
     private void initalizeOverlayQuads(BlendState alpha) {
@@ -96,8 +100,8 @@ public abstract class CovidaButton extends CovidaJMEComponent {
 
     public void detachButton() {
         for (int i = 0; i < 2; i++) {
-            if (hasChild(overlay.get(i))) {
-                nodeHandler.addDetachChildRequest(this, overlay.get(i));
+            if (node.hasChild(overlay.get(i))) {
+                GameTaskQueueManager.getManager().update(new DetachChildCallable(node, overlay.get(i)));
             }
         }
     }
@@ -105,10 +109,10 @@ public abstract class CovidaButton extends CovidaJMEComponent {
     abstract Field getChild();
 
     public void changeOverlay() {
-        if (hasChild(this.overlay.get(1))) {
-            nodeHandler.addDetachChildRequest(this, overlay.get(1));
+        if (node.hasChild(this.overlay.get(1))) {
+            GameTaskQueueManager.getManager().update(new DetachChildCallable(node, overlay.get(1)));
         } else {
-            nodeHandler.addAttachChildRequest(this, overlay.get(1));
+            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, overlay.get(1)));
         }
     }
 

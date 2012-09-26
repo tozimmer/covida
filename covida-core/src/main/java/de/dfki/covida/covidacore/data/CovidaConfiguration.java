@@ -71,7 +71,7 @@ public class CovidaConfiguration implements Serializable {
         videos.get(videos.size() - 1).time_start = 0;
         videoSources.add(new VideoMediaData());
         videoSources.get(videoSources.size() - 1).videoName = "CoVidA Demo";
-        videoSources.get(videoSources.size() - 1).videoSource = "..\\videos\\Collaborative Video Annotation.mp4";
+        videoSources.get(videoSources.size() - 1).videoSource = "..\\covida-res\\videos\\Collaborative Video Annotation.mp4";
         videoSources.get(videoSources.size() - 1).time_start = 0;
         videoSources.get(videoSources.size() - 1).time_end = 0;
         PenData pen = new PenData();

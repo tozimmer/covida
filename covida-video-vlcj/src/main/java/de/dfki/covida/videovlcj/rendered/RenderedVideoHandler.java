@@ -64,10 +64,12 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
         super(source, title, height, width, VideoType.RENDERED);
     }
     
+    @Override
     public void enableTimeCodeOverlay(long timeout){
         renderer.enableTimeCodeOverlay(30000);
     }
     
+    @Override
     public void setTitleOverlayEnabled(boolean enabled){
         renderer.setTitleOverlayEnabled(enabled);
     }
@@ -77,6 +79,7 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
      *
      * @return
      */
+    @Override
     public BufferedImage getVideoImage() {
         return renderer.getVideoImage();
     }
@@ -86,6 +89,7 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
      *
      * @return video snapshot as {@link BufferedImage}
      */
+    @Override
     public BufferedImage getSnapshot() {
         if (renderer == null) {
             return null;
@@ -97,6 +101,7 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
      * Saves the video frame including the shape to {@link File}
      * {@code source + "."+ mediaPlayer.getTime() + ".png"}
      */
+    @Override
     public void saveShape() {
         if (renderer == null) {
             return;
@@ -128,6 +133,7 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
      *
      * @param point {@link Point}
      */
+    @Override
     public void draw(Point point) {
         if (renderer == null) {
             return;
@@ -140,6 +146,7 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
      *
      * @return {@link ShapePoints}
      */
+    @Override
     public ShapePoints getShape() {
         if (renderer == null) {
             return null;
@@ -147,6 +154,7 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
         return renderer.getSavedShape();
     }
 
+    @Override
     public ShapePoints getDrawing() {
         if (renderer == null) {
             return null;
@@ -159,6 +167,7 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
      *
      * @param points {@link ShapePoints}
      */
+    @Override
     public void setShape(ShapePoints points) {
         if (renderer == null) {
             return;
@@ -166,6 +175,7 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
         renderer.setShape(points);
     }
 
+    @Override
     public void setHWR(String hwr) {
         if (renderer == null) {
             log.warn("Cannot set HWR result: HWR result is == null");
@@ -177,6 +187,7 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
     /**
      * Clears all shapes from the video.
      */
+    @Override
     public void clearShape() {
         if (renderer == null) {
             return;
@@ -187,10 +198,16 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
     /**
      * Clears all shapes from the video.
      */
+    @Override
     public void clearDrawing() {
         if (renderer == null) {
             return;
         }
         renderer.clearDrawing();
+    }
+
+    @Override
+    public String getTitle() {
+        return renderer.getTitle();
     }
 }

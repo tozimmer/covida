@@ -29,6 +29,7 @@ package de.dfki.covida.visualjme2;
 
 import com.acarter.scenemonitor.SceneMonitor;
 import com.jme.animation.SpatialTransformer;
+import com.jme.image.Image;
 import com.jme.image.Texture;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector2f;
@@ -37,17 +38,25 @@ import com.jme.scene.TexCoords;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
+import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
+import com.jme.util.geom.BufferUtils;
 import de.dfki.covida.covidacore.data.CovidaConfiguration;
 import de.dfki.covida.covidacore.data.VideoMediaData;
+import de.dfki.covida.covidacore.streaming.TCPServer;
 import de.dfki.covida.covidacore.tw.ITouchAndWriteComponent;
 import de.dfki.covida.visualjme2.animations.PreloadAnimation;
-import de.dfki.covida.visualjme2.components.CovidaJMEComponent;
-import de.dfki.covida.visualjme2.components.JMENodeHandler;
 import de.dfki.covida.visualjme2.components.video.VideoComponent;
+import de.dfki.covida.visualjme2.utils.AddControllerCallable;
+import de.dfki.covida.visualjme2.utils.AttachChildCallable;
+import de.dfki.covida.visualjme2.utils.CovidaRootNode;
+import de.dfki.covida.visualjme2.utils.DetachChildCallable;
+import de.dfki.covida.visualjme2.utils.RemoveControllerCallable;
 import de.dfki.touchandwrite.TouchAndWriteDevice;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 /**
  * Component to display videos.
@@ -70,8 +79,9 @@ public class CovidaApplication extends ApplicationImpl {
      */
     private Quad preloadScreen;
     private CovidaApplicationPreloader preloader;
-    private final JMENodeHandler nodeHandler;
     private SpatialTransformer stPreload;
+    private TCPServer tcpServer;
+    private long snapshotTimer;
 
     /**
      * Creates an instance of {@link CovidaApplication}
@@ -82,12 +92,12 @@ public class CovidaApplication extends ApplicationImpl {
      */
     public CovidaApplication(TouchAndWriteDevice device, String windowtitle) {
         super(device, windowtitle);
-        nodeHandler = JMENodeHandler.getInstance();
-        nodeHandler.setRootNode(rootNode);
         videoSources = new ArrayList<>();
         CovidaConfiguration configuration = CovidaConfiguration.getInstance();
         videoSources = configuration.videoSources;
         videos = new ArrayList<>();
+        tcpServer = TCPServer.getInstance();
+        snapshotTimer = System.currentTimeMillis();
     }
 
     @Override
@@ -120,15 +130,16 @@ public class CovidaApplication extends ApplicationImpl {
 
         background.setRenderState(backgroundTextureState);
         background.updateRenderState();
-        nodeHandler.addAttachChildRequest(rootNode, background);
+
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(CovidaRootNode.node, background));
     }
 
     /**
      * Ends the loading animation
      */
     public void endLoadingAnimation() {
-        nodeHandler.addRemoveControllerRequest(preloadScreen, stPreload);
-        nodeHandler.addDetachChildRequest(rootNode, preloadScreen);
+        GameTaskQueueManager.getManager().update(new RemoveControllerCallable(preloadScreen, stPreload));
+        GameTaskQueueManager.getManager().update(new DetachChildCallable(CovidaRootNode.node, preloadScreen));
         preloader.cleanUp();
     }
 
@@ -144,10 +155,11 @@ public class CovidaApplication extends ApplicationImpl {
             int x = display.getWidth() / 2;
             int y = display.getHeight() / 2;
             video.setLocalTranslation(x, y, 0);
-            nodeHandler.addAttachChildRequest(rootNode, video);
+
             video.setDefaultPosition();
             video.setRepeat(true);
             video.start();
+            video.toFront();
         }
     }
 
@@ -180,9 +192,9 @@ public class CovidaApplication extends ApplicationImpl {
         splashTextureState.setTexture(splashTexture);
         preloadScreen.setRenderState(splashTextureState);
         preloadScreen.updateRenderState();
-        nodeHandler.addAttachChildRequest(rootNode, preloadScreen);
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(rootNode, preloadScreen));
         stPreload = PreloadAnimation.getController(preloadScreen);
-        nodeHandler.addAddControllerRequest(preloadScreen, stPreload);
+        GameTaskQueueManager.getManager().update(new AddControllerCallable(preloadScreen, stPreload));
         preloader = new CovidaApplicationPreloader(this);
         Thread preloadThread = new Thread(preloader);
         preloadThread.start();
@@ -193,29 +205,41 @@ public class CovidaApplication extends ApplicationImpl {
         super.simpleInitGame();
         SceneMonitor.getMonitor().registerNode(rootNode, "Root Node");
         SceneMonitor.getMonitor().showViewer(true);
+        tcpServer.start();
     }
 
     @Override
     protected void simpleUpdate() {
         super.simpleUpdate();
-//        GameTaskQueueManager.getManager().render(new Callable<Object>() {
-//            @Override
-//            public Object call() throws Exception {
-//
-//                File file = new File(windowtitle + ".png");
-//                if (!file.exists()) {
-//                    takeScreenshot(windowtitle);
-//                }
-//
-//                return null;
-//            }
-//        });
+        if (System.currentTimeMillis() - snapshotTimer > 100) {
+            snapshotTimer = System.currentTimeMillis();
+            GameTaskQueueManager.getManager().update(new Callable<Void>() {
+                @Override
+                public Void call() throws Exception {
+                    ByteBuffer buff = BufferUtils.createByteBuffer(display.getWidth()
+                            * display.getWidth() * 4);
+                    display.getRenderer().grabScreenContents(buff, Image.Format.RGBA8, 0, 0, display.getWidth(), display.getWidth());
+                    int buffSize = 4 * display.getWidth() * display.getWidth();
+                    byte[] bytes = new byte[buffSize];
+                    for (int i = 0; i < buffSize; i++) {
+                        bytes[i] = buff.get(i);
+                    }
+                    if (buff != null) {
+                        tcpServer.writeByteBuffer(bytes);
+                    }
+                    bytes = null;
+                    buff.clear();
+                    return null;
+                }
+            });
+        }
         SceneMonitor.getMonitor().updateViewer(tpf);
     }
 
     @Override
     protected void simpleRender() {
         super.simpleRender();
+
         SceneMonitor.getMonitor().renderViewer(display.getRenderer());
     }
 

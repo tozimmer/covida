@@ -27,19 +27,7 @@
  */
 package de.dfki.covida.visualjme2;
 
-import com.sun.jna.Native;
-import com.sun.jna.NativeLibrary;
-import de.dfki.touchandwrite.TouchAndWriteDevice;
-import de.dfki.touchandwrite.conf.TouchAndWriteConfiguration;
-import java.io.File;
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.xml.DOMConfigurator;
-import org.kohsuke.args4j.CmdLineException;
-import org.kohsuke.args4j.CmdLineParser;
-import uk.co.caprica.vlcj.binding.LibVlc;
-import uk.co.caprica.vlcj.runtime.RuntimeUtil;
+import de.dfki.covida.covidacore.MainImplementation;
 
 /**
  * Covida main application.
@@ -48,58 +36,10 @@ import uk.co.caprica.vlcj.runtime.RuntimeUtil;
  */
 public class Covida {
 
-    /**
-     * Logger
-     */
-    private static Logger log;
-    /**
-     * Covida visual application
-     */
-    private static CovidaApplication application;
-
-    public static void main(final String[] args) {
-        Thread.currentThread().setName("Covida Visual");
-        log = Logger.getLogger(Covida.class);
-        String vlcPath = "vlc";
-        File folder = new File(vlcPath);
-        if (!folder.exists() || !folder.isDirectory()) {
-            log.error("Pleas install vlc in the directory " + vlcPath);
-            System.exit(-1);
-        }
-        log.info("Adding vlc path ...");
-        NativeLibrary.addSearchPath(
-                RuntimeUtil.getLibVlcLibraryName(), "../vlc");
-        Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
-        final CovidaCMDOptions opt = new CovidaCMDOptions();
-        CmdLineParser parser = new CmdLineParser(opt);
-
-        try {
-            parser.parseArgument(args);
-        } catch (CmdLineException e) {
-            System.err.println("TouchAndWrite [options...] arguments...");
-            parser.printUsage(System.err);
-            System.exit(-1);
-        }
-
-        if (opt.isDebug()) {
-            if (new File(opt.getLogfile()).canRead()) {
-                DOMConfigurator.configure(new File(opt.getLogfile()).getAbsolutePath());
-            } else {
-                BasicConfigurator.configure();
-            }
-            log = Logger.getLogger(Covida.class);
-            log.debug("Verbose mode");
-            log.debug("Current working directory: " + System.getProperty("user.dir"));
-        } else {
-            BasicConfigurator.configure();
-            log = Logger.getLogger(Covida.class);
-            log.setLevel(Level.OFF);
-        }
-        TouchAndWriteConfiguration conf = TouchAndWriteConfiguration.getDefaultEEESlateConfig();
-        if (opt.getDevice() == TouchAndWriteDevice.TW_TABLE) {
-            conf = TouchAndWriteConfiguration.getDefaultTWTableConfig();
-        }
-        application = new CovidaApplication(opt.getDevice(), "Covida");
-        application.start();
-    }
+    public static void main(final String[] args){
+        MainImplementation main = new MainImplementation(args);
+        main.startApplication(new CovidaApplication(main.getDevice(), "Covida"));
+    }            
+    
+    
 }

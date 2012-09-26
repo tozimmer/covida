@@ -6,7 +6,6 @@ package de.dfki.covida.visualjme2.animations;
 
 import com.jme.animation.SpatialTransformer;
 import com.jme.scene.Spatial;
-import de.dfki.covida.visualjme2.components.JMENodeHandler;
 
 /**
  *
@@ -15,11 +14,9 @@ import de.dfki.covida.visualjme2.components.JMENodeHandler;
 public class CovidaSpatialController extends SpatialTransformer{
     private float lifetime;
     private Spatial spatial;
-    private final JMENodeHandler nodeHandler;
     
     public CovidaSpatialController(Spatial spatial, float lifetime){
         super(1);
-        this.nodeHandler = JMENodeHandler.getInstance();
         this.lifetime = lifetime;
         this.spatial = spatial;
     }

@@ -30,8 +30,10 @@ package de.dfki.covida.visualjme2.components.button;
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
+import com.jme.util.GameTaskQueueManager;
 import de.dfki.covida.visualjme2.components.annotation.AnnotationSearchField;
 import de.dfki.covida.visualjme2.components.annotation.Field;
+import de.dfki.covida.visualjme2.utils.AttachChildCallable;
 
 /**
  * Sidebar menu for VideoTouchBoard
@@ -73,14 +75,14 @@ public class SearchButton extends CovidaButton {
 
     @Override
     protected final void toggle() {
-        if (hasChild(searchField)) {
+        if (node.hasChild(searchField.node)) {
             if (searchField.isClosing()) {
                 openSearch();
             } else {
                 closeSearch();
             }
         } else {
-            nodeHandler.addAttachChildRequest(this, searchField);
+            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, searchField.node));
             openSearch();
         }
     }

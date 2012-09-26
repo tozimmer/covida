@@ -35,8 +35,14 @@ import com.jme.scene.Controller;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.system.DisplaySystem;
+import com.jme.util.GameTaskQueueManager;
 import de.dfki.covida.covidacore.tw.ITouchAndWriteComponent;
 import de.dfki.covida.covidacore.tw.TouchAndWriteComponentHandler;
+import de.dfki.covida.visualjme2.utils.AddControllerCallable;
+import de.dfki.covida.visualjme2.utils.AttachChildCallable;
+import de.dfki.covida.visualjme2.utils.CovidaRootNode;
+import de.dfki.covida.visualjme2.utils.DetachChildCallable;
+import de.dfki.covida.visualjme2.utils.RemoveControllerCallable;
 import de.dfki.touchandwrite.analyser.touch.gestures.events.PanEventImpl;
 import de.dfki.touchandwrite.analyser.touch.gestures.events.RotationGestureEventImpl;
 import de.dfki.touchandwrite.analyser.touch.gestures.events.ZoomEventImpl;
@@ -49,7 +55,7 @@ import org.apache.log4j.Logger;
  * @author Tobias Zimmermann
  *
  */
-public abstract class CovidaJMEComponent extends Node implements ITouchAndWriteComponent {
+public abstract class CovidaJMEComponent implements ITouchAndWriteComponent {
 
     protected Vector2f display;
     protected boolean newPenAction = false;
@@ -77,58 +83,77 @@ public abstract class CovidaJMEComponent extends Node implements ITouchAndWriteC
      * id
      */
     private int id;
-    protected final JMENodeHandler nodeHandler;
+    public final Node node;
 
     public CovidaJMEComponent(String nameOfComponent) {
-        super(nameOfComponent);
-        nodeHandler = JMENodeHandler.getInstance();
+        node = new Node(nameOfComponent);
         this.display = new Vector2f(
                 DisplaySystem.getDisplaySystem().getWidth(),
                 DisplaySystem.getDisplaySystem().getHeight());
         registerComponent();
     }
 
+    public Vector3f getLocalTranslation() {
+        return node.getLocalTranslation();
+    }
+
+    public void setLocalTranslation(Vector3f translation) {
+        node.setLocalTranslation(translation);
+    }
+
     private void registerComponent() {
         TouchAndWriteComponentHandler.getInstance().addComponent(this);
     }
 
-    @Override
     public final int attachChild(Spatial spatial) {
-        nodeHandler.addAttachChildRequest(this, spatial);
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, spatial));
         return 0;
     }
 
-    public final void executeDetachChild(Spatial spatial) {
-        super.detachChild(spatial);
-    }
-
-    public final void executeAttachChild(Spatial spatial) {
-        super.attachChild(spatial);
-    }
-
-    public final void executeAddController(Controller controller) {
-        super.addController(controller);
-    }
-
-    public final void executeRemoveController(Controller controller) {
-        super.removeController(controller);
-    }
-
-    @Override
     public final int detachChild(Spatial spatial) {
-        nodeHandler.addDetachChildRequest(this, spatial);
+        GameTaskQueueManager.getManager().update(new DetachChildCallable(node, spatial));
         return 0;
     }
 
-    @Override
     public final void addController(Controller controller) {
-        nodeHandler.addAddControllerRequest(this, controller);
+        GameTaskQueueManager.getManager().update(new AddControllerCallable(node, controller));
     }
 
-    @Override
     public final boolean removeController(Controller controller) {
-        nodeHandler.addRemoveControllerRequest(this, controller);
+        GameTaskQueueManager.getManager().update(new RemoveControllerCallable(node, controller));
         return true;
+    }
+
+    public void setLocalTranslation(float x, float y, float z) {
+        setLocalTranslation(new Vector3f(x, y, z));
+    }
+
+    public Node getParent() {
+        return node.getParent();
+    }
+
+    public void setLocalScale(Vector3f scale) {
+        node.setLocalScale(scale);
+    }
+
+    public void setLocalScale(float f) {
+        setLocalScale(new Vector3f(f, f, f));
+    }
+
+    public void setLocalRotation(Quaternion rotation) {
+        node.setLocalRotation(rotation);
+    }
+
+    public Vector3f getLocalScale() {
+        return node.getLocalScale();
+    }
+
+    public Quaternion getLocalRotation() {
+        return node.getLocalRotation();
+    }
+
+    public void getLocalToWorldMatrix(Matrix4f matrix) {
+        node.getLocalToWorldMatrix(matrix);
     }
 
     /**
@@ -166,11 +191,13 @@ public abstract class CovidaJMEComponent extends Node implements ITouchAndWriteC
 
     @Override
     public final void toFront() {
-        while (getParent() != null && getParent().equals(nodeHandler.getRootNode())) {
-            Node n = getParent();
-            nodeHandler.addDetachChildRequest(n, this);
-            nodeHandler.addAttachChildRequest(n, this);
+        Node n = node;
+        while (getParent() != null && !getParent().equals(CovidaRootNode.node)) {
+            n = node.getParent();
         }
+        GameTaskQueueManager.getManager().update(new DetachChildCallable(CovidaRootNode.node, node));
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(CovidaRootNode.node, node));
+        
     }
 
     public final Vector3f getLocal(Node node, float x, float y) {
@@ -187,15 +214,7 @@ public abstract class CovidaJMEComponent extends Node implements ITouchAndWriteC
      * @return <code>Integer</code>
      */
     public final int getNodeIndex() {
-        if (getRootNode() == null) {
-            return -1;
-        }
-        if (getRootNode().getParent() != null
-                && getRootNode().getParent() != getRootNode()
-                && getRootNode().getParent().getChildren() != null) {
-            return getRootNode().getParent().getChildren().lastIndexOf(getRootNode());
-        }
-        return -1;
+        return CovidaRootNode.node.getChildren().lastIndexOf(this);
     }
 
     /**
@@ -266,15 +285,6 @@ public abstract class CovidaJMEComponent extends Node implements ITouchAndWriteC
     }
 
     /**
-     * Return the root {@link Node} of the {@link CovidaJMEComponent}
-     *
-     * @return the rootNode
-     */
-    private Node getRootNode() {
-        return nodeHandler.getRootNode();
-    }
-
-    /**
      * Clean up the resources reserved for this component
      */
     public void cleanUp() {
@@ -284,7 +294,7 @@ public abstract class CovidaJMEComponent extends Node implements ITouchAndWriteC
      * Close the component
      */
     public void close() {
-        removeFromParent();
+        node.removeFromParent();
         cleanUp();
     }
 

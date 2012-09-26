@@ -27,6 +27,8 @@
  */
 package de.dfki.covida.videovlcj;
 
+import com.sun.jna.Memory;
+import com.sun.jna.Platform;
 import de.dfki.covida.covidacore.data.ShapePoints;
 import de.dfki.covida.covidacore.utils.VideoUtils;
 import de.dfki.covida.videovlcj.rendered.RenderedVideoHandler;
@@ -101,9 +103,8 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      */
     protected Boolean repeat;
     /**
-     * Current recognized handwriting
-     * Note that this {@link String} must be set by the visual component of
-     * covida
+     * Current recognized handwriting Note that this {@link String} must be set
+     * by the visual component of covida
      */
     protected String hwr;
     /**
@@ -115,13 +116,13 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      */
     protected EmbeddedMediaPlayerComponent mediaPlayerComponent;
     /**
-     * {@link VideoRenderer}
-     * Note that this variable is only used by {@link RenderedVideoHandler}
+     * {@link VideoRenderer} Note that this variable is only used by
+     * {@link RenderedVideoHandler}
      */
     protected VideoRenderer renderer;
     /**
-     * The {@link MediaPlayerFactory} to crate {@link VideoSurface} 
-     * or {@link MediaPlayer}
+     * The {@link MediaPlayerFactory} to crate {@link VideoSurface} or
+     * {@link MediaPlayer}
      */
     protected final MediaPlayerFactory mediaPlayerFactory;
 
@@ -132,9 +133,14 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * @param height height of the video {@link Quad}
      * @param width width of the video {@link Quad}
      */
-    public AbstractVideoHandler(String source, String title, int height
-            , int width, VideoType videoType) {
-        this.mediaPlayerFactory = new MediaPlayerFactory();
+    public AbstractVideoHandler(String source, String title, int height, int width, VideoType videoType) {
+        String[] args;
+        if (Platform.isMac()) {
+            args = new String[]{"--no-video-title-show", "--vout=macosx"};
+        } else {
+            args = new String[]{"--no-video-title-show"};
+        }
+        this.mediaPlayerFactory = new MediaPlayerFactory(args);
         if (videoType == VideoType.EMBEDDED) {
             mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
             mediaPlayer = mediaPlayerComponent.getMediaPlayer();
@@ -155,8 +161,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
             log.warn("Could not set EventListener, mediaPlayer == null!");
         }
     }
-
-
+    
     /**
      * Sets the logging status.
      *
@@ -301,6 +306,14 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
         return (mediaPlayer.isPlaying());
     }
 
+    public boolean isPlaying() {
+        return isPlaying;
+    }
+
+    public int getVolume() {
+        return mediaPlayer.getVolume();
+    }
+
     /**
      * Clean up all resources of the {@link AbstractVideoHandler}
      */
@@ -380,7 +393,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      *
      * @param time
      */
-    public void setTimePostion(long time) {
+    public void setTimePosition(long time) {
         if (mediaPlayer == null) {
             return;
         }
@@ -521,6 +534,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * @param l {@link libvlc_media_t}
      * @param string New media.
      */
+    @Override
     public void mediaChanged(MediaPlayer mp, libvlc_media_t l, String string) {
     }
 
@@ -529,6 +543,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      *
      * @param mp {@link MediaPlayer} which fired the event
      */
+    @Override
     public void opening(MediaPlayer mp) {
     }
 
@@ -538,6 +553,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * @param mp {@link MediaPlayer} which fired the event
      * @param f buffering status as {@link flaot}
      */
+    @Override
     public void buffering(MediaPlayer mp, float f) {
     }
 
@@ -546,6 +562,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      *
      * @param mp {@link MediaPlayer} which fired the event
      */
+    @Override
     public void playing(MediaPlayer mp) {
     }
 
@@ -554,6 +571,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      *
      * @param mp {@link MediaPlayer} which fired the event
      */
+    @Override
     public void paused(MediaPlayer mp) {
 //        if (controls != null) {
 //            controls.highlightPause();
@@ -565,6 +583,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      *
      * @param mp {@link MediaPlayer} which fired the event
      */
+    @Override
     public void forward(MediaPlayer mp) {
     }
 
@@ -573,6 +592,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      *
      * @param mp {@link MediaPlayer} which fired the event
      */
+    @Override
     public void backward(MediaPlayer mp) {
     }
 
@@ -582,8 +602,11 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * @param mp {@link MediaPlayer} which fired the event
      * @param l time position in ms as {@link Long}
      */
+    @Override
     public void timeChanged(MediaPlayer mp, long l) {
-        renderer.setTimecode(VideoUtils.getTimeCode(l));
+        if(renderer != null){
+            renderer.setTimecode(VideoUtils.getTimeCode(l));
+        }
     }
 
     /**
@@ -592,6 +615,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * @param mp {@link MediaPlayer} which fired the event
      * @param f time position in percentage as {@link Float}
      */
+    @Override
     public void positionChanged(MediaPlayer mp, float f) {
         if (slider != null) {
             slider.setSlider(f);
@@ -608,6 +632,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * @param mp {@link MediaPlayer} which fired the event
      * @param i status as {@link Integer}
      */
+    @Override
     public void seekableChanged(MediaPlayer mp, int i) {
     }
 
@@ -617,6 +642,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * @param mp {@link MediaPlayer} which fired the event
      * @param i status as {@link Integer}
      */
+    @Override
     public void pausableChanged(MediaPlayer mp, int i) {
     }
 
@@ -626,6 +652,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * @param mp {@link MediaPlayer} which fired the event
      * @param i status as {@link Integer}
      */
+    @Override
     public void titleChanged(MediaPlayer mp, int i) {
     }
 
@@ -635,6 +662,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * @param mp {@link MediaPlayer} which fired the event
      * @param string target file as {@link String}
      */
+    @Override
     public void snapshotTaken(MediaPlayer mp, String string) {
     }
 
@@ -644,6 +672,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * @param mp {@link MediaPlayer} which fired the event
      * @param l length of video in ms as {@link Long}
      */
+    @Override
     public void lengthChanged(MediaPlayer mp, long l) {
     }
 
@@ -653,6 +682,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * @param mp {@link MediaPlayer} which fired the event
      * @param i status as {@link Integer}
      */
+    @Override
     public void videoOutput(MediaPlayer mp, int i) {
     }
 
@@ -661,6 +691,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      *
      * @param mp {@link MediaPlayer} which fired the event
      */
+    @Override
     public void error(MediaPlayer mp) {
         log.error(mp + " has thrown an error.");
     }
@@ -671,6 +702,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * @param mp {@link MediaPlayer} which fired the event
      * @param i status as {@link Integer}
      */
+    @Override
     public void mediaMetaChanged(MediaPlayer mp, int i) {
     }
 
@@ -680,6 +712,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * @param mp {@link MediaPlayer} which fired the event
      * @param l {@link libvlc_media_t}
      */
+    @Override
     public void mediaSubItemAdded(MediaPlayer mp, libvlc_media_t l) {
     }
 
@@ -689,6 +722,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * @param mp {@link MediaPlayer} which fired the event
      * @param l media duration in ms as {@link long}
      */
+    @Override
     public void mediaDurationChanged(MediaPlayer mp, long l) {
     }
 
@@ -698,6 +732,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * @param mp {@link MediaPlayer} which fired the event
      * @param i status as {@link Integer}
      */
+    @Override
     public void mediaParsedChanged(MediaPlayer mp, int i) {
     }
 
@@ -706,6 +741,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      *
      * @param mp {@link MediaPlayer} which fired the event
      */
+    @Override
     public void mediaFreed(MediaPlayer mp) {
     }
 
@@ -715,6 +751,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * @param mp {@link MediaPlayer} which fired the event
      * @param i status as {@link Integer}
      */
+    @Override
     public void mediaStateChanged(MediaPlayer mp, int i) {
     }
 
@@ -723,6 +760,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      *
      * @param mp {@link MediaPlayer} which fired the event
      */
+    @Override
     public void newMedia(MediaPlayer mp) {
     }
 
@@ -732,6 +770,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * @param mp {@link MediaPlayer} which fired the event
      * @param i status as {@link Integer}
      */
+    @Override
     public void subItemPlayed(MediaPlayer mp, int i) {
     }
 
@@ -741,6 +780,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * @param mp {@link MediaPlayer} which fired the event
      * @param i status as {@link Integer}
      */
+    @Override
     public void subItemFinished(MediaPlayer mp, int i) {
     }
 
@@ -749,6 +789,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      *
      * @param mp {@link MediaPlayer} which fired the event
      */
+    @Override
     public void endOfSubItems(MediaPlayer mp) {
     }
 
@@ -757,6 +798,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      *
      * @param mp {@link MediaPlayer} which fired the event
      */
+    @Override
     public void finished(MediaPlayer mp) {
         isPlaying = false;
         if (mediaPlayer == null) {
@@ -772,6 +814,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      *
      * @param mp {@link MediaPlayer} which fired the event
      */
+    @Override
     public void stopped(MediaPlayer mp) {
         if (mediaPlayer == null) {
             return;
@@ -782,8 +825,6 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
 //        }
     }
 
-    
-    
     /**
      * Makes a snapshot of the video
      *
@@ -804,15 +845,17 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * @param point {@link Point}
      */
     abstract public void draw(Point point);
-    
+
     /**
      *
      *
      * @return
      */
     abstract public BufferedImage getVideoImage();
-    
+
     abstract public void setTitleOverlayEnabled(boolean enabled);
-    
+
     abstract public void enableTimeCodeOverlay(long timeout);
+
+    abstract public String getTitle();
 }

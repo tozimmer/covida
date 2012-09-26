@@ -27,10 +27,13 @@
  */
 package de.dfki.covida.visualjme2;
 
+import com.jme.util.GameTaskQueueManager;
 import de.dfki.covida.covidacore.data.VideoFormat;
 import de.dfki.covida.covidacore.data.VideoMediaData;
 import de.dfki.covida.videovlcj.preload.VideoPreload;
 import de.dfki.covida.visualjme2.components.video.VideoComponent;
+import de.dfki.covida.visualjme2.utils.AttachChildCallable;
+import de.dfki.covida.visualjme2.utils.CovidaRootNode;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,8 +64,19 @@ public class CovidaApplicationPreloader implements Runnable {
         for (int i = 0; i < videoData.size(); i++) {
             VideoComponent video = new VideoComponent(
                     videoData.get(i).videoSource, videoData.get(i).videoName,
-                    450, videoFormats.get(i));
+                    385, videoFormats.get(i));
             videos.add(video);
+            GameTaskQueueManager.getManager().update(new AttachChildCallable(CovidaRootNode.node, video.node));
+            video.createControls();
+//            Node node = new Node("fis");
+//            GameTaskQueueManager.getManager().update(new AttachChildCallable(CovidaRootNode.node, node));
+//            GameTaskQueue q = new GameTaskQueue();
+//            GameTaskQueueManager.getManager().getQueue("foo").enqueue(new AttachChildCallable(node, video));
+//            GameTaskQueueManager.getManager().getQueue("foo").enqueue(new AttachChildCallable(video, video.controls));
+            video.createVideo();
+            video.createFields();
+            video.createOverlays();
+            video.startTests();
         }
         for (VideoComponent video : videos) {
             while (!video.isReady()) {
@@ -83,7 +97,7 @@ public class CovidaApplicationPreloader implements Runnable {
 
     @Override
     public void run() {
-        Thread.currentThread().setName(this.getClass().getName()+" Thread");
+        Thread.currentThread().setName(this.getClass().getName() + " Thread");
         List<VideoMediaData> videoData = application.getVideoSources();
         for (VideoMediaData videoDatum : videoData) {
             preloadVideo(videoDatum.videoSource);

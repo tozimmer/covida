@@ -37,12 +37,14 @@ import com.jme.scene.shape.Quad;
 import com.jme.scene.state.BlendState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
+import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
 import com.jmex.awt.swingui.ImageGraphics;
 import de.dfki.covida.covidacore.data.Annotation;
 import de.dfki.covida.covidacore.data.AnnotationStorage;
 import de.dfki.covida.covidacore.data.DisplayFieldType;
 import de.dfki.covida.covidacore.data.ShapePoints;
+import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.covidacore.utils.VideoUtils;
 import de.dfki.covida.visualjme2.animations.CloseAnimation;
 import de.dfki.covida.visualjme2.animations.CloseAnimationType;
@@ -52,7 +54,12 @@ import de.dfki.covida.visualjme2.animations.SaveAnimation;
 import de.dfki.covida.visualjme2.components.CovidaJMEComponent;
 import de.dfki.covida.visualjme2.components.TextOverlay;
 import de.dfki.covida.visualjme2.components.video.VideoComponent;
+import de.dfki.covida.visualjme2.components.video.controls.ControlButton;
+import de.dfki.covida.visualjme2.utils.AddControllerCallable;
+import de.dfki.covida.visualjme2.utils.AttachChildCallable;
+import de.dfki.covida.visualjme2.utils.DetachChildCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
+import de.dfki.covida.visualjme2.utils.RemoveControllerCallable;
 import de.dfki.touchandwrite.shape.ShapeType;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -131,7 +138,6 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
      * Overlay
      */
     private TextOverlay textOverlay;
-    private ArrayList<Quad> overlayMenu;
     private static final int FONT_SIZE = 30;
     protected Quad overlayDefault;
     private SpatialTransformer st;
@@ -175,31 +181,30 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
                 getLocalTranslation().y, getLocalTranslation().z);
         image = resource;
         entries = new ArrayList<>();
-        overlayMenu = new ArrayList<>();
         if (listField != null) {
             this.listField = listField;
         }
     }
-
+    
     public DisplayFieldType getType() {
         if (listField != null) {
             return DisplayFieldType.INFO;
         }
         return DisplayFieldType.LIST;
     }
-
+    
     private int getFontSize() {
         return (int) (1.2f * (float) DEFAULT_FONT_SIZE * ((float) getHeight() / (float) DEFAULT_HEIGHT));
     }
-
+    
     private int getFontSpacer() {
         return (int) ((float) getFontSize() * 0.8f);
     }
-
+    
     private int getTextSpacer() {
         return (int) ((float) getFontSize() / 5.f);
     }
-
+    
     private int getCharacterLimit() {
         return (int) ((float) DEFAULT_CHARACTER_LIMIT * ((float) getFontSize() / (float) DEFAULT_FONT_SIZE));
     }
@@ -216,10 +221,7 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
         textBeginY = (int) (quad.getHeight() / 12.f);
         textOverlay = new TextOverlay(this);
         textOverlay.setSize(FONT_SIZE);
-        if (getType().equals(DisplayFieldType.INFO)) {
-            initalizeOverlayQuads(JMEUtils.initalizeBlendState());
-            nodeHandler.addAttachChildRequest(this, overlayDefault);
-        } else {
+        if (!getType().equals(DisplayFieldType.INFO)) {
             initalizeListOverlayQuads(JMEUtils.initalizeBlendState());
         }
         if (getType().equals(DisplayFieldType.LIST)) {
@@ -227,7 +229,7 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
             float y = getTextY(0);
             TextOverlay to = new TextOverlay(this);
             to.setLocalTranslation(x, y, 0);
-            nodeHandler.addAttachChildRequest(this, to);
+            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, to.node));
             to.setSize(getFontSize());
             to.setText("Entries:");
             to.setFont(1);
@@ -237,21 +239,21 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
             titleTextOverlay = new TextOverlay(this);
             titleTextOverlay.setFont(1);
             titleTextOverlay.setSize(getFontSize());
-            nodeHandler.addAttachChildRequest(this, titleTextOverlay);
+            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, titleTextOverlay.node));
             titleTextOverlay.setLocalTranslation(0, textBeginY, 0);
             int y = (int) (titleTextOverlay.getLocalTranslation().y + ((float) titleTextOverlay.getFontSize() / 2.f));
             addSpacer(0, y, (int) (quad.getWidth() / 1.1f), getTextSpacer());
             textBeginY = (int) (textBeginY - (float) getFontSpacer() * 1.25f - getTextSpacer());
             timeOverlay = new TextOverlay(this);
             timeOverlay.setLocalTranslation(0, textBeginY, 0);
-            nodeHandler.addAttachChildRequest(this, timeOverlay);
+            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, timeOverlay.node));
             timeOverlay.setFont(1);
             timeOverlay.setSize(getFontSize());
             timeOverlay.setText("Time:");
             textBeginY = (int) (textBeginY - (float) getFontSpacer() * 1.25f);
             timeTextOverlay = new TextOverlay(this);
             timeTextOverlay.setLocalTranslation(0, textBeginY, 0);
-            nodeHandler.addAttachChildRequest(this, timeTextOverlay);
+            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, timeTextOverlay.node));
             timeTextOverlay.setFont(1);
             timeTextOverlay.setSize(getFontSize());
             y = (int) (timeTextOverlay.getLocalTranslation().y + ((float) timeTextOverlay.getFontSize() / 2.f));
@@ -259,7 +261,7 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
             textBeginY = (int) (textBeginY - (float) getFontSpacer() * 1.25f - getTextSpacer());
             descriptionOverlay = new TextOverlay(this);
             descriptionOverlay.setLocalTranslation(0, textBeginY, 0);
-            nodeHandler.addAttachChildRequest(this, descriptionOverlay);
+            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, descriptionOverlay.node));
             descriptionOverlay.setFont(1);
             descriptionOverlay.setSize(getFontSize());
             descriptionText = new ArrayList<>();
@@ -267,9 +269,19 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
                 listField.updateEntries(AnnotationStorage
                         .getInstance().getAnnotationData(video).getTimeList());
             }
+            ControlButton save = new ControlButton(ActionName.SAVE, video,
+                    "media/textures/video_controls_save.png",
+                    "media/textures/video_controls_save.png", 64, 64);
+            save.setLocalTranslation(-getWidth()/2 + 32, -getHeight()/2 + 32, 0);
+            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, save.node));
+            ControlButton delete = new ControlButton(ActionName.DELETE, video,
+                    "media/textures/video_control_delete.png",
+                    "media/textures/video_control_delete.png", 64, 64);
+            delete.setLocalTranslation(getWidth()/2 - 32, -getHeight()/2 + 32, 0);
+            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, delete.node));
         }
     }
-
+    
     protected final void initTextures() {
         // ---- Background Texture state initialization ----
         ts = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
@@ -277,12 +289,12 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
         ts.setEnabled(true);
         texture = TextureManager.loadTexture(getClass().getClassLoader().getResource(image));
         ts.setTexture(texture);
-
+        
         quad = new Quad("Display image quad", WIDTH, HEIGHT);
         quad.setRenderState(ts);
         quad.setRenderState(JMEUtils.initalizeBlendState());
         quad.updateRenderState();
-        nodeHandler.addAttachChildRequest(this, quad);
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, quad));
 
         // Spacer
         tsSpacer = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
@@ -299,7 +311,7 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
         setShapePoints(annotation.shapePoints);
         setShapeType(annotation.shapeType);
     }
-
+    
     private void setTitle(String title) {
         if (titleTextOverlay != null && title != null) {
             this.title = title;
@@ -311,7 +323,7 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
             }
         }
     }
-
+    
     private void setTime(long time) {
         if (timeOverlay != null && timeTextOverlay != null) {
             this.time_start = time;
@@ -323,7 +335,7 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
 //			}	
         }
     }
-
+    
     public void drawHwrResult(ArrayList<String> hwrResults) {
         if (descriptionOverlay != null && descriptionText != null) {
             descriptionOverlay.setText("Description:");
@@ -337,7 +349,7 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
                 descriptionBeginY = (int) (descriptionBeginY - (float) getFontSpacer() * 0.9f);
                 TextOverlay descriptionTextOverlay = new TextOverlay(this);
                 descriptionTextOverlay.setLocalTranslation(0, descriptionBeginY, 0);
-                nodeHandler.addAttachChildRequest(this, descriptionTextOverlay);
+                GameTaskQueueManager.getManager().update(new AttachChildCallable(node, descriptionTextOverlay.node));
                 descriptionText.add(descriptionTextOverlay);
                 descriptionText.get(descriptionText.size() - 1).setText(
                         hwrResults.get(i - start));
@@ -361,11 +373,11 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
                     + " !(descriptionOverlay != null && descriptionText != null)");
         }
     }
-
+    
     public void clearDescriptionText() {
         for (int i = 0; i < descriptionText.size(); i++) {
-            if (hasChild(descriptionText.get(i))) {
-                nodeHandler.addDetachChildRequest(this, descriptionText.get(i));
+            if (node.hasChild(descriptionText.get(i).node)) {
+                GameTaskQueueManager.getManager().update(new DetachChildCallable(node, descriptionText.get(i).node));
             } else {
                 log.debug("TextOverlay Node wasn't attached during clearDescriptionText");
             }
@@ -373,14 +385,14 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
         descriptionText = new ArrayList<>();
         descriptionBeginY = textBeginY;
     }
-
+    
     private void addSpacer(int x, int y, int width, int height) {
         Quad spacerQuad = new Quad("Spacer", width, height);
         spacerQuad.setRenderState(tsSpacer);
         spacerQuad.setRenderState(JMEUtils.initalizeBlendState());
         spacerQuad.updateRenderState();
         spacerQuad.setLocalTranslation(x, y, 0);
-        nodeHandler.addAttachChildRequest(this, spacerQuad);
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, spacerQuad));
     }
 
     /**
@@ -420,8 +432,8 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
     @Override
     public void close() {
         open = false;
-        if (getControllers().contains(st)) {
-            nodeHandler.addRemoveControllerRequest(this, st);
+        if (node.getControllers().contains(st)) {
+            GameTaskQueueManager.getManager().update(new RemoveControllerCallable(node, st));
         }
         if (getType().equals(DisplayFieldType.INFO)) {
             // methods for info field closing
@@ -432,8 +444,8 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
                 listField.updateEntries(AnnotationStorage.getInstance().getAnnotationData(video).getTimeList());
                 listField.drawEntries();
                 // Close animation (Info Field)
-                st = CloseAnimation.getController(this, ANIMATION_DURATION, CloseAnimationType.INFO_FIELD);
-                nodeHandler.addAddControllerRequest(this, st);
+                st = CloseAnimation.getController(node, ANIMATION_DURATION, CloseAnimationType.INFO_FIELD);
+                GameTaskQueueManager.getManager().update(new AddControllerCallable(node, st));
             }
         } else if (getType().equals(DisplayFieldType.LIST)) {
             // fade out entry list
@@ -441,8 +453,8 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
                 e.fadeOut((float) ANIMATION_DURATION / 1000);
             }
             // Close animation List Field
-            st = CloseAnimation.getController(this, ANIMATION_DURATION, CloseAnimationType.LIST_FIELD);
-            nodeHandler.addAddControllerRequest(this, st);
+            st = CloseAnimation.getController(node, ANIMATION_DURATION, CloseAnimationType.LIST_FIELD);
+            GameTaskQueueManager.getManager().update(new AddControllerCallable(node, st));
         }
         resetInfo();
     }
@@ -453,8 +465,8 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
     public void save() {
         log.debug("Save begin");
         open = false;
-        if (getControllers().contains(st)) {
-            nodeHandler.addRemoveControllerRequest(this, st);
+        if (node.getControllers().contains(st)) {
+            GameTaskQueueManager.getManager().update(new RemoveControllerCallable(node, st));
         }
         if (getType().equals(DisplayFieldType.INFO)) {
             saveData();
@@ -462,18 +474,17 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
                     .getAnnotationData(video).getTimeList());
             listField.drawEntries();
             // Save animation
-            st = SaveAnimation.getController(parent, ANIMATION_DURATION, CloseAnimationType.INFO_FIELD);
-            nodeHandler.addAddControllerRequest(this, st);
+            st = SaveAnimation.getController(node, ANIMATION_DURATION, CloseAnimationType.INFO_FIELD);
+            GameTaskQueueManager.getManager().update(new AddControllerCallable(node, st));
             resetInfo();
         }
-
     }
-
+    
     private float getTextY(int position) {
         return quad.getHeight() / 2.1f
                 - ((float) getFontSize() * ((float) (position + 1) * 1.1f));
     }
-
+    
     private void drawEntries() {
         if (times != null) {
             // TODO max limit for list
@@ -486,7 +497,7 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
                 for (int i = 0; i < times.size(); i++) {
                     TextOverlay entryTextOverlay = new TextOverlay(this);
                     entryTextOverlay.setLocalTranslation(0, getTextY(i + 1), 0);
-                    nodeHandler.addAttachChildRequest(this, entryTextOverlay);
+                    GameTaskQueueManager.getManager().update(new AttachChildCallable(node, entryTextOverlay.node));
                     entries.add(entryTextOverlay);
                     log.debug("draw Entry: " + VideoUtils.getTimeCode(times.get(i)));
                     entries.get(i).setText(VideoUtils.getTimeCode(times.get(i)));
@@ -507,7 +518,7 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
     private void updateEntries(ArrayList<Long> times) {
         this.times = times;
     }
-
+    
     public String getDescription() {
         String descriptions = "";
         for (TextOverlay description : descriptionText) {
@@ -546,7 +557,7 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
             AnnotationStorage.getInstance().getAnnotationData(video).export();
         }
     }
-
+    
     public void lockPosition(boolean lock) {
         this.locked = lock;
     }
@@ -556,7 +567,7 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
      */
     public void detach() {
         if (this.getParent() != null) {
-            nodeHandler.addDetachChildRequest(getParent(), this);
+            GameTaskQueueManager.getManager().update(new DetachChildCallable(getParent(), node));
             resetNode();
         }
     }
@@ -566,11 +577,8 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
      */
     public void open() {
         open = true;
-        if (getControllers().contains(st)) {
-            nodeHandler.addRemoveControllerRequest(this, st);
-        }
-        st = OpenAnimation.getController(this, ANIMATION_DURATION, defaultScale);
-        nodeHandler.addAddControllerRequest(this, st);
+        st = OpenAnimation.getController(node, ANIMATION_DURATION, defaultScale);
+        GameTaskQueueManager.getManager().update(new AddControllerCallable(node, st));
         if (getType().equals(DisplayFieldType.LIST)) {
             drawEntries();
         }
@@ -685,91 +693,46 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
                 log.debug("VideoAnnotationData has not enough entries VideoId: "
                         + video.getId()
                         + " title: "
-                        + video.getName()
+                        + video.node.getName()
                         + " "
                         + AnnotationStorage.getInstance().getAnnotationData(video));
             }
-
+            
         }
     }
-
+    
     private void setShapePoints(ShapePoints shapePoints) {
         this.shapePoints = shapePoints;
     }
-
+    
     private void setVideoSource(String videoSource) {
         this.videoSource = videoSource;
     }
-
+    
     public void reset() {
-        if (getControllers().contains(st)) {
-            nodeHandler.addRemoveControllerRequest(this, st);
+        if (node.getControllers().contains(st)) {
+            GameTaskQueueManager.getManager().update(new RemoveControllerCallable(node, st));
         }
-        st = ResetAnimation.getController(this, defaultScale, defaultRotation, defaultTranslation);
-        nodeHandler.addAddControllerRequest(this, st);
+        st = ResetAnimation.getController(node, defaultScale, defaultRotation, defaultTranslation);
+        GameTaskQueueManager.getManager().update(new AddControllerCallable(node, st));
     }
-
+    
     public VideoComponent getVideo() {
         return video;
     }
-
+    
     private void setShapeType(ShapeType shapeType) {
         this.shapeType = shapeType;
     }
-
+    
     public boolean isOpen() {
         return open;
     }
-
+    
     public boolean isLocked() {
         return locked;
     }
-
-    private void initalizeOverlayQuads(BlendState alpha) {
-        // Overlay Default
-        Texture overlayDefaultTexture = TextureManager.loadTexture(
-                getClass().getClassLoader().getResource(
-                "media/textures/bg_info_default.png"),
-                Texture.MinificationFilter.BilinearNearestMipMap,
-                Texture.MagnificationFilter.Bilinear);
-        overlayDefaultTexture.setWrap(WrapMode.Clamp);
-
-        TextureState overlayDefaultState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
-        overlayDefaultState.setTexture(overlayDefaultTexture);
-
-        this.overlayDefault = new Quad("Overlay-Default-Image-Quad",
-                getWidth(), getHeight());
-
-        overlayDefault.setRenderState(overlayDefaultState);
-        overlayDefault.setRenderState(alpha);
-        overlayDefault.updateRenderState();
-        overlayDefault.getLocalTranslation().set(0, 0, 0);
-
-        ArrayList<String> textureList = new ArrayList<>();
-        textureList.add("media/textures/bg_info_h.png");
-        textureList.add("media/textures/bg_info_x.png");
-
-        for (int i = 0; i < 2; i++) {
-            Texture overlayMenuTexture = TextureManager.loadTexture(getClass().getClassLoader().getResource(textureList.get(i)),
-                    Texture.MinificationFilter.BilinearNearestMipMap,
-                    Texture.MagnificationFilter.Bilinear);
-            overlayMenuTexture.setWrap(WrapMode.Clamp);
-
-            TextureState overlayMenuState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
-            overlayMenuState.setTexture(overlayMenuTexture);
-
-            this.overlayMenu.add(new Quad(
-                    ("Overlay-Video-Menu-Image-Quad-0" + i), getWidth(),
-                    getHeight()));
-
-            overlayMenu.get(overlayMenu.size() - 1).setRenderState(
-                    overlayMenuState);
-            overlayMenu.get(overlayMenu.size() - 1).setRenderState(alpha);
-            overlayMenu.get(overlayMenu.size() - 1).updateRenderState();
-            overlayMenu.get(overlayMenu.size() - 1).getLocalTranslation().set(new Vector3f(0, 0, 0));
-        }
-    }
-
+    
     private void initalizeListOverlayQuads(BlendState alpha) {
         // Overlay Default
         Texture overlayDefaultTexture = TextureManager.loadTexture(
@@ -778,78 +741,16 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
                 Texture.MinificationFilter.BilinearNearestMipMap,
                 Texture.MagnificationFilter.Bilinear);
         overlayDefaultTexture.setWrap(WrapMode.Clamp);
-
+        
         TextureState overlayDefaultState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
         overlayDefaultState.setTexture(overlayDefaultTexture);
-
+        
         this.overlayDefault = new Quad("Overlay-Default-Image-Quad",
                 getWidth(), getHeight());
-
+        
         overlayDefault.setRenderState(overlayDefaultState);
         overlayDefault.setRenderState(alpha);
         overlayDefault.updateRenderState();
         overlayDefault.getLocalTranslation().set(0, 0, 0);
-
-        ArrayList<String> textureList = new ArrayList<>();
-        textureList.add("media/textures/bg_info_blank.png");
-        textureList.add("media/textures/bg_info_blank.png");
-
-        for (int i = 0; i < 2; i++) {
-            Texture overlayMenuTexture = TextureManager.loadTexture(getClass().getClassLoader().getResource(textureList.get(i)),
-                    Texture.MinificationFilter.BilinearNearestMipMap,
-                    Texture.MagnificationFilter.Bilinear);
-            overlayMenuTexture.setWrap(WrapMode.Clamp);
-
-            TextureState overlayMenuState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
-            overlayMenuState.setTexture(overlayMenuTexture);
-
-            this.overlayMenu.add(new Quad(
-                    ("Overlay-Video-Menu-Image-Quad-0" + i), getWidth(),
-                    getHeight()));
-
-            overlayMenu.get(overlayMenu.size() - 1).setRenderState(
-                    overlayMenuState);
-            overlayMenu.get(overlayMenu.size() - 1).setRenderState(alpha);
-            overlayMenu.get(overlayMenu.size() - 1).updateRenderState();
-            overlayMenu.get(overlayMenu.size() - 1).getLocalTranslation().set(new Vector3f(0, 0, 0));
-        }
-    }
-
-    /**
-     *
-     * @param xC
-     * @param yC
-     */
-    private void setOverlay(float xC, float yC) {
-        if (getType().equals(DisplayFieldType.INFO)) {
-            int x = (int) (((getLocal(xC, yC).x + getWidth() / 2) / getWidth()) * 2);
-            int y = (int) (((getLocal(xC, yC).y + getHeight() / 2) / getHeight()) * 10);
-            if (x > -1 && x < 2 && y < 1) {
-                lockPosition(true);
-                if (hasChild(this.overlayMenu.get(x))) {
-                } else if (!hasChild(this.overlayDefault)) {
-                    for (int i = 0; i < 2; i++) {
-                        if (hasChild(this.overlayMenu.get(i))) {
-                            nodeHandler.addDetachChildRequest(this, overlayMenu.get(i));
-                            nodeHandler.addAttachChildRequest(this, overlayMenu.get(x));
-                        }
-                    }
-                } else {
-                    nodeHandler.addDetachChildRequest(this, overlayDefault);
-                    nodeHandler.addAttachChildRequest(this, overlayMenu.get(x));
-                }
-                if (getType().equals(DisplayFieldType.INFO)) {
-                    if (x == 0) {
-                        textOverlay.setText("Save Data");
-                    } else if (x == 1) {
-                        textOverlay.setText("Delete");
-                    }
-                }
-            } else {
-                textOverlay.setText("");
-            }
-        } else {
-            log.debug("Wrong DisplayFieldType");
-        }
     }
 }

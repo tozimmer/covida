@@ -31,10 +31,14 @@ import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.shape.Quad;
+import com.jme.util.GameTaskQueueManager;
 import de.dfki.covida.visualjme2.animations.CloseAnimation;
 import de.dfki.covida.visualjme2.animations.OpenAnimation;
 import de.dfki.covida.visualjme2.components.TextOverlay;
+import de.dfki.covida.visualjme2.utils.AddControllerCallable;
+import de.dfki.covida.visualjme2.utils.AttachChildCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
+import de.dfki.covida.visualjme2.utils.RemoveControllerCallable;
 import de.dfki.touchandwrite.math.FastMath;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -75,7 +79,7 @@ public class AnnotationClipboard extends Field {
         textBeginY = (int) (quad.getHeight() / 2.75f);
         int x = (int) (0);
         TextOverlay caption = new TextOverlay(this);
-        nodeHandler.addAttachChildRequest(this, caption);
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, caption.node));
         caption.setLocalTranslation(x, getTextY(0) - FONT_SIZE / 4.f, 0);
         caption.setSize((int) (FONT_SIZE * 1.5f));
         caption.setText("Clipboard:");
@@ -89,7 +93,7 @@ public class AnnotationClipboard extends Field {
         for (int i = 0; i < hwrResults.size(); i++) {
             TextOverlay textOverlay = new TextOverlay(this);
             textOverlay.setLocalTranslation(x, getTextY(2 + i), 0);
-            nodeHandler.addAttachChildRequest(this, textOverlay);
+            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, textOverlay.node));
             textOverlay.setText(hwrResults.get(i));
             textOverlay.setSize(FONT_SIZE);
             textOverlay.setFont(1);
@@ -123,29 +127,29 @@ public class AnnotationClipboard extends Field {
         spacerQuad.updateRenderState();
         spacerQuad.setLocalTranslation(x, y, 0);
         spacerQuad.setLocalRotation(q);
-        nodeHandler.addAttachChildRequest(this, spacerQuad);
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, spacerQuad));
     }
 
     @Override
     public void close() {
         detach = true;
-        if (getControllers().contains(st)) {
-            nodeHandler.addRemoveControllerRequest(this, st);
+        if (node.getControllers().contains(st)) {
+            GameTaskQueueManager.getManager().update(new RemoveControllerCallable(node, st));
         }
         // Close animation
-        st = CloseAnimation.getController(this, ANIMATION_DURATION, (float) getWidth(), (float) getHeight());
-        nodeHandler.addAddControllerRequest(this, st);
+        st = CloseAnimation.getController(node, ANIMATION_DURATION, (float) getWidth(), (float) getHeight());
+        GameTaskQueueManager.getManager().update(new AddControllerCallable(node, st));
     }
 
     @Override
     public void open() {
         detach = false;
-        if (getControllers().contains(st)) {
-            nodeHandler.addRemoveControllerRequest(this, st);
+        if (node.getControllers().contains(st)) {
+            GameTaskQueueManager.getManager().update(new RemoveControllerCallable(node, st));
         }
         // Open animation
-        st = OpenAnimation.getController(this, ANIMATION_DURATION);
-        nodeHandler.addAddControllerRequest(this, st);
+        st = OpenAnimation.getController(node, ANIMATION_DURATION);
+        GameTaskQueueManager.getManager().update(new AddControllerCallable(node, st));
         update();
     }
 }

@@ -12,4 +12,6 @@ public interface IApplication {
     
     public String getWindowTitle();
     
+    public void start();
+    
 }

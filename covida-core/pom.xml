@@ -70,9 +70,15 @@
             <type>jar</type>
         </dependency>
         <dependency>
-            <groupId>com.jme</groupId>
-            <artifactId>jme</artifactId>
-            <version>2.1</version>
+            <groupId>com.sun</groupId>
+            <artifactId>jna</artifactId>
+            <version>3.4.0</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>uk.co.caprica</groupId>
+            <artifactId>vlcj</artifactId>
+            <version>2.1.0</version>
             <type>jar</type>
         </dependency>
     </dependencies>

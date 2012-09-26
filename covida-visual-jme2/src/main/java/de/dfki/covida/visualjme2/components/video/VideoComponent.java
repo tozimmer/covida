@@ -30,21 +30,19 @@ package de.dfki.covida.visualjme2.components.video;
 import com.jme.animation.SpatialTransformer;
 import com.jme.image.Texture;
 import com.jme.image.Texture.WrapMode;
-import com.jme.image.Texture2D;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
-import com.jme.renderer.Renderer;
-import com.jme.scene.Spatial;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.state.BlendState;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
+import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
-import com.jmex.awt.swingui.ImageGraphics;
 import de.dfki.covida.covidacore.components.IVideoComponent;
 import de.dfki.covida.covidacore.data.*;
+import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.videovlcj.AbstractVideoHandler;
 import de.dfki.covida.videovlcj.rendered.RenderedVideoHandler;
 import de.dfki.covida.visualjme2.animations.CovidaSpatialController;
@@ -53,7 +51,13 @@ import de.dfki.covida.visualjme2.animations.ResetAnimation;
 import de.dfki.covida.visualjme2.components.CovidaJMEComponent;
 import de.dfki.covida.visualjme2.components.TextOverlay;
 import de.dfki.covida.visualjme2.components.annotation.DisplayFieldComponent;
+import de.dfki.covida.covidacore.components.IControlableComponent;
+import de.dfki.covida.visualjme2.test.DrawTest;
+import de.dfki.covida.visualjme2.utils.AddControllerCallable;
+import de.dfki.covida.visualjme2.utils.AttachChildCallable;
+import de.dfki.covida.visualjme2.utils.DetachChildCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
+import de.dfki.covida.visualjme2.utils.RemoveControllerCallable;
 import de.dfki.touchandwrite.input.pen.event.ShapeEvent;
 import de.dfki.touchandwrite.shape.ShapeType;
 import java.awt.*;
@@ -65,7 +69,8 @@ import org.apache.log4j.Logger;
  *
  * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
  */
-public final class VideoComponent extends CovidaJMEComponent implements IVideoComponent {
+public final class VideoComponent extends CovidaJMEComponent implements
+        IVideoComponent, IControlableComponent {
 
     /**
      * Logger
@@ -82,14 +87,6 @@ public final class VideoComponent extends CovidaJMEComponent implements IVideoCo
      */
     private static final long THRESHOLD = 750;
     /**
-     * Video {@link Quad}
-     */
-    private Quad videoQuad;
-    /**
-     * Drawing will be done with Java2D.
-     */
-    protected ImageGraphics g2d;
-    /**
      * Info field with current annotation
      */
     private DisplayFieldComponent infoField;
@@ -100,11 +97,7 @@ public final class VideoComponent extends CovidaJMEComponent implements IVideoCo
     /**
      * Video controls
      */
-    private VideoComponentControls controls;
-    /**
-     * Video list field button
-     */
-    private VideoComponentListButton listButton;
+    public VideoComponentControls controls;
     /**
      * Video slider
      */
@@ -129,17 +122,12 @@ public final class VideoComponent extends CovidaJMEComponent implements IVideoCo
      * {@link SpatialTransformer} for the reset animation.
      */
     private CovidaSpatialController stReset;
-    /**
-     * {@link Texture2D} with the rendered video and the shapes.
-     */
-    private Texture2D texture;
     private TextureState overlayDefaultState;
     private TextureState overlaySelectState;
     private Quad overlayDrag;
     private TextureState overlayDragState;
     private TextureState overlayDragBlankState;
     private long dragTimer;
-    
 
     /**
      * Creates an instance of {@link VideoComponent}
@@ -151,18 +139,12 @@ public final class VideoComponent extends CovidaJMEComponent implements IVideoCo
      */
     public VideoComponent(String source, String title, int height, VideoFormat format) {
         super("Video Component ");
-        super.setName(title);
         log.debug("Create video id:" + getId());
         video = new RenderedVideoHandler(source, title, (int) (height * UPSCALE_FACTOR), format.determineWidth((int) (height * UPSCALE_FACTOR)));
         setDefaultPosition();
-        createControls();
-        createVideo();
-        createFields();
-        createOverlays();
-        startTests();
     }
 
-    private void startTests() {
+    public void startTests() {
 //        DrawTest drawTest = new DrawTest(video);
 //        Thread drawTestThread = new Thread(drawTest);
 //        drawTestThread.start();
@@ -188,53 +170,23 @@ public final class VideoComponent extends CovidaJMEComponent implements IVideoCo
     /**
      * Creates the video controls.
      */
-    private void createControls() {
+    public void createControls() {
         controls = new VideoComponentControls(this);
-        nodeHandler.addAttachChildRequest(this, controls);
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, controls.node));
         slider = new VideoSlider(this);
         slider.getLocalTranslation().set(
                 new Vector3f(-15, -30 - getHeight() / 2, 0));
         slider.setDefaultPosition();
-        nodeHandler.addAttachChildRequest(this, slider);
-        listButton = new VideoComponentListButton(this);
-        listButton.getLocalTranslation().set(
-                new Vector3f(-getWidth() / 1.90f, 0, 0));
-        nodeHandler.addAttachChildRequest(this, listButton);
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, slider.node));
     }
 
     /**
      * Creates video quad and handler for the video.
      */
-    private void createVideo() {
-        this.videoQuad = new Quad("Video " + getId() + " Texture Quad", video.getWidth(), video.getHeight());
-        this.videoQuad.setRenderQueueMode(Renderer.QUEUE_ORTHO);
-        this.videoQuad.setCullHint(Spatial.CullHint.Inherit);
-        // ---- Texture state initialization ----
-        TextureState ts = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
-        ts.setCorrectionType(TextureState.CorrectionType.Perspective);
-        ts.setEnabled(true);
-        texture = new Texture2D();
-        texture.setMagnificationFilter(Texture.MagnificationFilter.Bilinear);
-        texture.setMinificationFilter(Texture.MinificationFilter.BilinearNoMipMaps);
-        texture.setWrap(Texture.WrapMode.Repeat);
-        // ---- Drawable image initialization ----
-        if (getWidth() < 1 || getHeight() < 1) {
-            log.warn("width < 1");
-            g2d = ImageGraphics.createInstance(1, 1, 0);
-        } else {
-            g2d = ImageGraphics.createInstance(getWidth(), getHeight(), 0);
-        }
-        enableAntiAlias(g2d);
-        texture.setImage(g2d.getImage());
-        ts.setTexture(texture);
-        videoQuad.setRenderState(ts);
-        videoQuad.updateRenderState();
-        Quaternion q = new Quaternion();
-        // Rotation need because of ImageGraphics
-        q.fromAngles(0f, (float) Math.toRadians(180),
-                (float) Math.toRadians(180));
-        videoQuad.rotatePoints(q);
-        nodeHandler.addAttachChildRequest(this, videoQuad);
+    public void createVideo() {
+        VideoQuad videoQuad = new VideoQuad(video);
+
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, videoQuad));
 
         video.setLoggin(false);
         video.setSlider(slider);
@@ -250,18 +202,20 @@ public final class VideoComponent extends CovidaJMEComponent implements IVideoCo
     /**
      * Creates info and list field.
      */
-    private void createFields() {
+    public void createFields() {
         listField = new DisplayFieldComponent("media/textures/bg_list.png",
                 this, (int) (getHeight() * (0.55f)), (int) (getHeight() * 1.2f));
         listField.setLocalTranslation(-getWidth() * (0.75f), 0, 0);
         listField.initComponent();
         listField.setDefaultPosition();
+        attachList();
         infoField = new DisplayFieldComponent("media/textures/bg_info.png",
                 this, listField, (int) (getHeight() * (0.55f)),
                 (int) (getHeight() * 1.2f));
         infoField.setLocalTranslation(getWidth() * (0.75f), 0, 0);
         infoField.initComponent();
         infoField.setDefaultPosition();
+        attachAnnotation();
     }
 
     @Override
@@ -291,17 +245,15 @@ public final class VideoComponent extends CovidaJMEComponent implements IVideoCo
     /**
      * Creates overlays
      */
-    private void createOverlays() {
+    public void createOverlays() {
         textOverlay = new TextOverlay(this);
         textOverlay.setLocalTranslation(0, getHeight() / (1.50f) - getFontSize()
                 / 2.f, 0);
-        nodeHandler.addAttachChildRequest(this, textOverlay);
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, textOverlay.node));
         textOverlay.setSize(getFontSize());
         initalizeOverlayQuads(JMEUtils.initalizeBlendState());
         stDrag = DragAnimation.getController(overlayDrag);
-        attachChild(overlayDrag);
-        nodeHandler.addAddControllerRequest(overlayDrag, stDrag);
-        nodeHandler.addAttachChildRequest(this, overlay);
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, overlay));
     }
 
     /**
@@ -358,42 +310,6 @@ public final class VideoComponent extends CovidaJMEComponent implements IVideoCo
     }
 
     /**
-     * Enables anti aliasing.
-     *
-     * @param graphics
-     */
-    private void enableAntiAlias(Graphics2D graphics) {
-        RenderingHints hints = graphics.getRenderingHints();
-        if (hints == null) {
-            hints = new RenderingHints(RenderingHints.KEY_ANTIALIASING,
-                    RenderingHints.VALUE_ANTIALIAS_ON);
-        } else {
-            hints.put(RenderingHints.KEY_ANTIALIASING,
-                    RenderingHints.VALUE_ANTIALIAS_ON);
-        }
-        graphics.setRenderingHints(hints);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see com.jme.scene.TriMesh#draw(com.jme.renderer.Renderer)
-     */
-    @Override
-    public void draw(Renderer r) {
-        try {
-            g2d.drawImage(video.getVideoImage(), null, 0, 0);
-            g2d.update();
-            if (g2d != null && texture.getTextureId() > 0) {
-                g2d.update(texture, false);
-            }
-        } catch (Exception e) {
-            log.error(e);
-        }
-        super.draw(r);
-    }
-
-    /**
      * Method to set video repeat flag
      *
      * @param repeat - repeat flag (true -> repeat video)
@@ -446,7 +362,7 @@ public final class VideoComponent extends CovidaJMEComponent implements IVideoCo
      * @param time - time in frames
      */
     public void setTimePosition(long time) {
-        video.setTimePostion(time);
+        video.setTimePosition(time);
     }
 
     /**
@@ -570,7 +486,6 @@ public final class VideoComponent extends CovidaJMEComponent implements IVideoCo
     public void detachList() {
         if (hasList()) {
             listField.close();
-            listButton.detachAnimation();
         }
     }
 
@@ -580,9 +495,8 @@ public final class VideoComponent extends CovidaJMEComponent implements IVideoCo
      */
     public void attachList() {
         if (!hasList()) {
-            nodeHandler.addAttachChildRequest(this, listField);
+            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, listField.node));
             listField.open();
-            listButton.attachAnimation();
         }
     }
 
@@ -600,7 +514,7 @@ public final class VideoComponent extends CovidaJMEComponent implements IVideoCo
      */
     public void attachAnnotation() {
         if (!hasAnnotation()) {
-            nodeHandler.addAttachChildRequest(this, infoField);
+            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, infoField.node));
             infoField.open();
         }
     }
@@ -694,7 +608,6 @@ public final class VideoComponent extends CovidaJMEComponent implements IVideoCo
         overlayDrag.setRenderState(overlayDragState);
         overlayDrag.setRenderState(alpha);
         overlayDrag.updateRenderState();
-        attachChild(overlayDrag);
     }
 
     public void toggleSelected() {
@@ -702,7 +615,7 @@ public final class VideoComponent extends CovidaJMEComponent implements IVideoCo
             overlay.setRenderState(overlaySelectState);
             overlay.updateRenderState();
             attachControls();
-            textOverlay.setText(getName());
+            textOverlay.setText(video.getTitle());
         } else {
             overlay.setRenderState(overlayDefaultState);
             overlay.updateRenderState();
@@ -712,11 +625,11 @@ public final class VideoComponent extends CovidaJMEComponent implements IVideoCo
     }
 
     private void detachMenu() {
-        nodeHandler.addDetachChildRequest(this, controls);
+        GameTaskQueueManager.getManager().update(new DetachChildCallable(node, controls.node));
     }
 
     private void attachControls() {
-        nodeHandler.addAttachChildRequest(this, controls);
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, controls.node));
     }
 
     /**
@@ -727,23 +640,25 @@ public final class VideoComponent extends CovidaJMEComponent implements IVideoCo
     public void reset(float angle) {
         listField.reset();
         infoField.reset();
-        if (getControllers().contains(stReset)) {
-            nodeHandler.addRemoveControllerRequest(this, stReset);
+        if (node.getControllers().contains(stReset)) {
+            GameTaskQueueManager.getManager().update(new RemoveControllerCallable(node, stReset));
         }
-        stReset = ResetAnimation.getController(this, defaultScale, angle, defaultTranslation);
-        nodeHandler.addAddControllerRequest(this, stReset);
+        stReset = ResetAnimation.getController(node, defaultScale, angle, defaultTranslation);
+        GameTaskQueueManager.getManager().update(new AddControllerCallable(node, stReset));
     }
 
     public void startDragAnimation() {
         overlayDrag.setRenderState(overlayDragState);
         overlayDrag.updateRenderState();
-        nodeHandler.addAddControllerRequest(overlayDrag, stDrag);
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, overlayDrag));
+        GameTaskQueueManager.getManager().update(new AddControllerCallable(overlayDrag, stDrag));
     }
 
     public void stopDragAniation() {
         overlayDrag.setRenderState(overlayDragBlankState);
         overlayDrag.updateRenderState();
-        nodeHandler.addRemoveControllerRequest(overlayDrag, stDrag);
+        GameTaskQueueManager.getManager().update(new DetachChildCallable(node, overlayDrag));
+        GameTaskQueueManager.getManager().update(new RemoveControllerCallable(overlayDrag, stDrag));
     }
 
     public boolean isReady() {
@@ -762,7 +677,7 @@ public final class VideoComponent extends CovidaJMEComponent implements IVideoCo
         return video.getTime();
     }
 
-    String getVideoProgress() {
+    public String getVideoProgress() {
         return video.getVideoProgress();
     }
 
@@ -776,5 +691,67 @@ public final class VideoComponent extends CovidaJMEComponent implements IVideoCo
     @Override
     public String getSource() {
         return video.getSource();
+    }
+
+    @Override
+    public boolean toggle(ActionName action) {
+        log.debug(action.toString());
+        if (action.equals(ActionName.BACKWARD)) {
+            if ((video.getTime() - video.getMaxTime() / 20) > 0) {
+                setTimePosition(video.getTime()
+                        - video.getMaxTime() / 20);
+            } else {
+                setTimePosition(0);
+            }
+            return false;
+        } else if (action.equals(ActionName.CHANGEMEDIA)) {
+            video.setMedia("http://www.youtube.com/watch?v=uBiN119_wvg");
+            return false;
+        } else if (action.equals(ActionName.CLOSE)) {
+            close();
+            return false;
+        } else if (action.equals(ActionName.FORWARD)) {
+            if ((video.getTime() + video.getMaxTime() / 100) < video.getMaxTime()) {
+                setTimePosition(video.getTime()
+                        + video.getMaxTime() / 100);
+            } else {
+                setTimePosition(video.getMaxTime());
+            }
+            return false;
+        } else if (action.equals(ActionName.LIST)) {
+            if (!hasList()) {
+                attachList();
+                return true;
+            } else {
+                detachList();
+                return false;
+            }
+        } else if (action.equals(ActionName.PLAYPAUSE)) {
+            if (video.isPlaying()) {
+                pause();
+                return true;
+            } else {
+                resume();
+                return false;
+            }
+        } else if (action.equals(ActionName.SOUND)) {
+            if (video.getVolume() > 0) {
+                video.setVolume(0);
+                return false;
+            } else {
+                video.setVolume(100);
+                return true;
+            }
+        } else if (action.equals(ActionName.SAVE)) {
+            if (infoField.isOpen()) {
+                this.infoField.save();
+            }
+        } else if (action.equals(ActionName.DELETE)) {
+            if (infoField.isOpen()) {
+                this.infoField.close();
+            }
+        }
+
+        return false;
     }
 }

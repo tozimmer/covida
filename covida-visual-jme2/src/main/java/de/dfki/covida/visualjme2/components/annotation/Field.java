@@ -11,12 +11,15 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
+import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
 import com.jmex.awt.swingui.ImageGraphics;
 import de.dfki.covida.covidacore.data.Annotation;
 import de.dfki.covida.covidacore.data.AnnotationData;
 import de.dfki.covida.visualjme2.components.CovidaJMEComponent;
 import de.dfki.covida.visualjme2.components.TextOverlay;
+import de.dfki.covida.visualjme2.utils.AttachChildCallable;
+import de.dfki.covida.visualjme2.utils.DetachChildCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
 import java.awt.Color;
 import java.util.*;
@@ -111,7 +114,7 @@ public abstract class Field extends CovidaJMEComponent {
         quad.setRenderState(ts);
         quad.setRenderState(JMEUtils.initalizeBlendState());
         quad.updateRenderState();
-        nodeHandler.addAttachChildRequest(this, quad);
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, quad));
         // Spacer
         tsSpacer = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
         tsSpacer.setCorrectionType(TextureState.CorrectionType.Perspective);
@@ -153,7 +156,7 @@ public abstract class Field extends CovidaJMEComponent {
      */
     protected void detach() {
         if (this.getParent() != null) {
-            nodeHandler.addDetachChildRequest(getParent(), this);
+            GameTaskQueueManager.getManager().update(new DetachChildCallable(getParent(), node));
         }
     }
 

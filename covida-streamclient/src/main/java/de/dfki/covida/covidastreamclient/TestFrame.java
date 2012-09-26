@@ -26,6 +26,8 @@ public class TestFrame extends JFrame implements IStreamingClient {
     private static final Logger log = Logger.getLogger(TestFrame.class);
     int w = 1152;
     int h  = 864;
+//    int w = 1280;
+//    int h = 720;
     private final boolean FULLSCREEN = false;
     private BufferedImage frame;
     private final Dimension size;
@@ -97,6 +99,7 @@ public class TestFrame extends JFrame implements IStreamingClient {
 
     @Override
     public void paint(Graphics g) {
+
         g.drawImage(frame, 0, 0, this);
     }
 
@@ -120,8 +123,10 @@ public class TestFrame extends JFrame implements IStreamingClient {
 
                 img.setRGB(x, y, argb);
             }
-
         }
         frame = ImageUtils.deepCopy(img);
+        img.flush();
+        repaint();
+        frame.flush();
     }
 }

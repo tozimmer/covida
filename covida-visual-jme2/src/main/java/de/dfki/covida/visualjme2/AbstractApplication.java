@@ -45,6 +45,7 @@ import com.jme.util.*;
 import com.jme.util.stat.StatCollector;
 import com.jmex.audio.AudioSystem;
 import de.dfki.covida.covidacore.tw.IApplication;
+import de.dfki.covida.visualjme2.utils.CovidaRootNode;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -145,7 +146,9 @@ public abstract class AbstractApplication extends AbstractGame implements IAppli
         }
 
         // Execute updateQueue item
-        GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE).execute();
+        GameTaskQueue update = GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE);
+        update.setExecuteAll(true);
+        update.execute();
 
         if (!pause) {
             /**
@@ -161,9 +164,7 @@ public abstract class AbstractApplication extends AbstractGame implements IAppli
             } catch (IndexOutOfBoundsException e) {
                 logger.warning(e.toString());
             }
-            executeRequests();
         }
-
     }
 
     /**
@@ -180,8 +181,7 @@ public abstract class AbstractApplication extends AbstractGame implements IAppli
          */
         r.clearBuffers();
 
-        // Execute renderQueue item
-        GameTaskQueueManager.getManager().getQueue(GameTaskQueue.RENDER).execute();
+
 
         try {
             /**
@@ -196,6 +196,8 @@ public abstract class AbstractApplication extends AbstractGame implements IAppli
          * Call simpleRender() in any derived classes.
          */
         simpleRender();
+        // Execute renderQueue item
+        GameTaskQueueManager.getManager().getQueue(GameTaskQueue.RENDER).execute();
     }
 
     protected void initSystemSubApp(DisplaySystem disp, Camera camera) throws JmeException {
@@ -344,6 +346,7 @@ public abstract class AbstractApplication extends AbstractGame implements IAppli
          * Create rootNode
          */
         rootNode = new Node("rootNode");
+        CovidaRootNode.node = rootNode;
         rootNode.setRenderQueueMode(Renderer.QUEUE_ORTHO);
 
         /**
@@ -448,29 +451,22 @@ public abstract class AbstractApplication extends AbstractGame implements IAppli
     @Override
     public final void start() {
         logger.info("Application started.");
-
         try {
             getAttributes();
-
             if (!finished) {
                 initSystem();
-
                 assertDisplayCreated();
                 DisplaySystem.getSystemProvider().getDisplaySystem();
                 initGame();
                 // MouseInput.get().addListener(this.clientManager);
                 // main loop
                 while (!finished && !display.isClosing()) {
-
                     // update game state, do not use interpolation parameter
                     update(-1.0f);
-
                     // render, do not use interpolation parameter
                     render(-1.0f);
-
                     // swap buffers
                     display.getRenderer().displayBackBuffer();
-
                     Thread.yield();
                 }
             }
@@ -571,9 +567,7 @@ public abstract class AbstractApplication extends AbstractGame implements IAppli
     public String getWindowTitle() {
         return windowtitle;
     }
-    
-    public abstract void executeRequests();
-    
+
     public abstract void setBackground();
 
     /**

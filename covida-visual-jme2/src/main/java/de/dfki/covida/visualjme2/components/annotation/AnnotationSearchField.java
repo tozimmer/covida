@@ -31,6 +31,7 @@ import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.shape.Quad;
+import com.jme.util.GameTaskQueueManager;
 import com.jmex.angelfont.BitmapFont.Align;
 import de.dfki.covida.covidacore.data.Annotation;
 import de.dfki.covida.covidacore.data.AnnotationData;
@@ -40,7 +41,10 @@ import de.dfki.covida.covidacore.utils.VideoUtils;
 import de.dfki.covida.visualjme2.animations.CloseAnimation;
 import de.dfki.covida.visualjme2.animations.OpenAnimation;
 import de.dfki.covida.visualjme2.components.TextOverlay;
+import de.dfki.covida.visualjme2.utils.AddControllerCallable;
+import de.dfki.covida.visualjme2.utils.AttachChildCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
+import de.dfki.covida.visualjme2.utils.RemoveControllerCallable;
 import de.dfki.touchandwrite.math.FastMath;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -87,7 +91,7 @@ public class AnnotationSearchField extends Field {
         caption.setSize((int) (FONT_SIZE * 1.5f));
         caption.setText("Write here for annotation search:");
         caption.setFont(2);
-        nodeHandler.addAttachChildRequest(this, caption);
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, caption.node));
         addSpacer(x, (int) (getTextY(0) - FONT_SIZE), 0,
                 (int) (quad.getWidth() / 1.1f), TEXT_SPACER);
         x = (int) (getWidth() / 9.f);
@@ -215,7 +219,7 @@ public class AnnotationSearchField extends Field {
             for (int i = 0; i < hwrResults.size(); i++) {
                 TextOverlay hwrText = new TextOverlay(this);
                 hwrText.setLocalTranslation(x, getTextY(2 + i), 0);
-                nodeHandler.addAttachChildRequest(this, hwrText);
+                GameTaskQueueManager.getManager().update(new AttachChildCallable(node, hwrText.node));
                 hwr.add(hwrText);
                 hwr.get(i).setText(hwrResults.get(i));
                 hwr.get(i).setSize(FONT_SIZE);
@@ -244,7 +248,7 @@ public class AnnotationSearchField extends Field {
                 x = (int) (-quad.getWidth() / 4.15f);
                 TextOverlay titleText = new TextOverlay(this);
                 titleText.setLocalTranslation(x, getTextY(index + 2), 0);
-                nodeHandler.addAttachChildRequest(this, titleText);
+                GameTaskQueueManager.getManager().update(new AttachChildCallable(node, titleText.node));
                 titles.add(titleText);
                 titles.get(titles.size() - 1).setFont(1);
                 titles.get(titles.size() - 1).setSize(FONT_SIZE);
@@ -264,7 +268,7 @@ public class AnnotationSearchField extends Field {
                     textOverlay.setAlign(Align.Left);
                     textOverlay.fadeIn((float) resultEntries.size() * 1.f + 1.f);
                     resultEntries.add(textOverlay);
-                    
+
                     entriesMap.put(resultEntries.size() - 1, annotation);
                 }
                 entryMap.put(index, resultEntries);
@@ -337,29 +341,29 @@ public class AnnotationSearchField extends Field {
         spacerQuad.updateRenderState();
         spacerQuad.setLocalTranslation(x, y, 0);
         spacerQuad.setLocalRotation(q);
-        nodeHandler.addAttachChildRequest(this, spacerQuad);
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, spacerQuad));
     }
 
     @Override
     public void close() {
         detach = true;
-        if (getControllers().contains(st)) {
-            nodeHandler.addRemoveControllerRequest(this, st);
+        if (node.getControllers().contains(st)) {
+            GameTaskQueueManager.getManager().update(new RemoveControllerCallable(node, st));
         }
         // Close animation
-        st = CloseAnimation.getController(this, ANIMATION_DURATION, (float) getWidth(), (float) getHeight());
-        nodeHandler.addAddControllerRequest(this, st);
+        st = CloseAnimation.getController(node, ANIMATION_DURATION, (float) getWidth(), (float) getHeight());
+        GameTaskQueueManager.getManager().update(new AddControllerCallable(node, st));
     }
 
     @Override
     public void open() {
         detach = false;
-        if (getControllers().contains(st)) {
-            nodeHandler.addRemoveControllerRequest(this, st);
+        if (node.getControllers().contains(st)) {
+            GameTaskQueueManager.getManager().update(new RemoveControllerCallable(node, st));
         }
         // Open animation
-        st = OpenAnimation.getController(this, ANIMATION_DURATION);
-        nodeHandler.addAddControllerRequest(this, st);
+        st = OpenAnimation.getController(node, ANIMATION_DURATION);
+        GameTaskQueueManager.getManager().update(new AddControllerCallable(node, st));
         update();
     }
 }

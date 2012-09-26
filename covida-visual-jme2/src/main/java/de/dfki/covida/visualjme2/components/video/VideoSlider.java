@@ -36,11 +36,13 @@ import com.jme.scene.shape.Quad;
 import com.jme.scene.state.BlendState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
+import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
 import com.jmex.angelfont.BitmapFont.Align;
 import de.dfki.covida.videovlcj.ISlider;
 import de.dfki.covida.visualjme2.components.CovidaJMEComponent;
 import de.dfki.covida.visualjme2.components.TextOverlay;
+import de.dfki.covida.visualjme2.utils.AttachChildCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
 import java.util.ArrayList;
 
@@ -69,17 +71,17 @@ public class VideoSlider extends CovidaJMEComponent implements ISlider {
         timeOverlay = new TextOverlay(this);
         timeOverlay.setLocalTranslation(-getWidth() * 0.45f, getHeight(), 0);
         timeOverlay.setAlign(Align.Left);
-        nodeHandler.addAttachChildRequest(this, timeOverlay);
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, timeOverlay.node));
         textOverlay = new TextOverlay(this);
         textOverlay.setLocalTranslation(-getWidth() * 0.515f, getHeight(), 0);
-        nodeHandler.addAttachChildRequest(this, textOverlay);
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, textOverlay.node));
         textOverlay.setAlign(Align.Right);
         initalizeOverlayQuads(JMEUtils.initalizeBlendState());
     }
 
     private void initalizeOverlayQuads(BlendState alpha) {
         sliderNode = new Node("Slider Node");
-        nodeHandler.addAttachChildRequest(this, sliderNode);
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, sliderNode));
         overlaySlider = new ArrayList<>();
         ArrayList<String> textureList = new ArrayList<>();
         textureList.add("media/textures/slider.png");
@@ -99,7 +101,7 @@ public class VideoSlider extends CovidaJMEComponent implements ISlider {
                     overlaySliderState);
             overlaySlider.get(overlaySlider.size() - 1).setRenderState(alpha);
             overlaySlider.get(overlaySlider.size() - 1).updateRenderState();
-            nodeHandler.addAttachChildRequest(sliderNode, overlaySlider.get(overlaySlider.size() - 1));
+            GameTaskQueueManager.getManager().update(new AttachChildCallable(sliderNode, overlaySlider.get(overlaySlider.size() - 1)));
         }
     }
 

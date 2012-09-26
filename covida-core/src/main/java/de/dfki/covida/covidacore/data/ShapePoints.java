@@ -45,166 +45,214 @@ public class ShapePoints implements List, Cloneable {
      * Logger
      */
     private Logger log = Logger.getLogger(ShapePoints.class);
-    List<Point> points;
+    private final List<Point> points;
 
     public ShapePoints() {
         super();
         points = Collections.synchronizedList(new ArrayList<Point>());
     }
 
-    public synchronized List<Point> getShapePoints() {
-        return points;
+    public List<Point> getShapePoints() {
+        synchronized (points) {
+            return points;
+        }
     }
 
     public void add(Point point) {
-        this.points.add(point);
+        synchronized (point) {
+            points.add(point);
+        }
     }
 
     @Override
     public int size() {
-        return this.points.size();
+        synchronized (points) {
+            return this.points.size();
+        }
     }
 
     @XmlJavaTypeAdapter(PointAdapter.class)
     @XmlElement(name = "point")
     @Override
     public Point get(int index) {
-        return this.points.get(index);
+        synchronized (points) {
+            return this.points.get(index);
+        }
     }
 
     @Override
     public Iterator<Point> iterator() {
-        return points.iterator();
+        synchronized (points) {
+            return points.iterator();
+        }
     }
 
     @Override
-    public synchronized ShapePoints clone() {
+    public ShapePoints clone() {
         ShapePoints shapePointList = new ShapePoints();
-        List<Point> pointList = Collections.synchronizedList(new ArrayList<Point>());
-        for(Point point : points){
-            pointList.add(point);
-        }
-        for (Point point : pointList) {
-            shapePointList.add(point);
+        synchronized (points) {
+            for (Point point : points) {
+                shapePointList.add(point);
+            }
         }
         return shapePointList;
     }
 
     @Override
     public boolean isEmpty() {
-        return points.isEmpty();
+        synchronized (points) {
+            return points.isEmpty();
+        }
     }
 
     @Override
     public boolean contains(Object o) {
-        return points.contains(o);
+        synchronized (points) {
+            return points.contains(o);
+        }
     }
 
     @Override
     public Object[] toArray() {
-        return points.toArray();
+        synchronized (points) {
+            return points.toArray();
+        }
     }
 
     @Override
     public Object[] toArray(Object[] a) {
-        return points.toArray(a);
+        synchronized (points) {
+            return points.toArray(a);
+        }
     }
 
     @Override
     public boolean add(Object e) {
-        if(e instanceof Point){
-            return points.add((Point) e);
-        }else{
-            log.warn(this.getClass().getName()+" does only accept "
-                    +Point.class.getName()+" objects");
-            return false;
+        synchronized (points) {
+            if (e instanceof Point) {
+                return points.add((Point) e);
+            } else {
+                log.warn(this.getClass().getName() + " does only accept "
+                        + Point.class.getName() + " objects");
+                return false;
+            }
         }
     }
 
     @Override
     public boolean remove(Object o) {
-        return points.remove(o);
+        synchronized (points) {
+            return points.remove(o);
+        }
     }
 
     @Override
     public boolean containsAll(Collection c) {
-        return points.containsAll(c);
+        synchronized (points) {
+            return points.containsAll(c);
+        }
     }
 
     @Override
     public boolean addAll(Collection c) {
-        return points.addAll(c);
+        synchronized (points) {
+            return points.addAll(c);
+        }
     }
 
     @Override
     public boolean addAll(int index, Collection c) {
-        return points.addAll(index, c);
+        synchronized (points) {
+            return points.addAll(index, c);
+        }
     }
 
     @Override
     public boolean removeAll(Collection c) {
-        return points.removeAll(c);
+        synchronized (points) {
+            return points.removeAll(c);
+        }
     }
 
     @Override
     public boolean retainAll(Collection c) {
-        return points.retainAll(c);
+        synchronized (points) {
+            return points.retainAll(c);
+        }
     }
 
     @Override
     public void clear() {
-        points.clear();
+        synchronized (points) {
+            points.clear();
+        }
     }
 
     @Override
     public Object set(int index, Object element) {
-        if (element instanceof Point) {
-            return points.set(index, (Point) element);
-        } else {
-            log.warn(this.getClass().getName() + " does only accept "
-                    + Point.class.getName() + " objects");
-            return null;
+        synchronized (points) {
+            if (element instanceof Point) {
+                return points.set(index, (Point) element);
+            } else {
+                log.warn(this.getClass().getName() + " does only accept "
+                        + Point.class.getName() + " objects");
+                return null;
+            }
         }
     }
 
     @Override
     public void add(int index, Object element) {
-        if (element instanceof Point) {
-            points.add((Point) element);
-        } else {
-            log.warn(this.getClass().getName() + " does only accept "
-                    + Point.class.getName() + " objects");
+        synchronized (points) {
+            if (element instanceof Point) {
+                points.add((Point) element);
+            } else {
+                log.warn(this.getClass().getName() + " does only accept "
+                        + Point.class.getName() + " objects");
+            }
         }
     }
 
     @Override
     public Object remove(int index) {
-        return points.remove(index);
+        synchronized (points) {
+            return points.remove(index);
+        }
     }
 
     @Override
     public int indexOf(Object o) {
-        return points.indexOf(o);
+        synchronized (points) {
+            return points.indexOf(o);
+        }
     }
 
     @Override
     public int lastIndexOf(Object o) {
-        return points.lastIndexOf(o);
+        synchronized (points) {
+            return points.lastIndexOf(o);
+        }
     }
 
     @Override
     public ListIterator listIterator() {
-        return points.listIterator();
+        synchronized (points) {
+            return points.listIterator();
+        }
     }
 
     @Override
     public ListIterator listIterator(int index) {
-        return points.listIterator(index);
+        synchronized (points) {
+            return points.listIterator(index);
+        }
     }
 
     @Override
     public List subList(int fromIndex, int toIndex) {
-        return points.subList(fromIndex, toIndex);
+        synchronized (points) {
+            return points.subList(fromIndex, toIndex);
+        }
     }
 }
 

@@ -29,12 +29,17 @@ package de.dfki.covida.visualjme2.components;
 
 import com.jme.animation.SpatialTransformer;
 import com.jme.renderer.ColorRGBA;
+import com.jme.util.GameTaskQueueManager;
 import com.jmex.angelfont.BitmapFont.Align;
 import com.jmex.angelfont.BitmapText;
 import com.jmex.scene.TimedLifeController;
 import de.dfki.covida.visualjme2.animations.DragAnimation;
 import de.dfki.covida.visualjme2.animations.ScaleAnimation;
+import de.dfki.covida.visualjme2.utils.AddControllerCallable;
+import de.dfki.covida.visualjme2.utils.AttachChildCallable;
+import de.dfki.covida.visualjme2.utils.DetachChildCallable;
 import de.dfki.covida.visualjme2.utils.FontLoader;
+import de.dfki.covida.visualjme2.utils.RemoveControllerCallable;
 import org.apache.log4j.Logger;
 
 public class TextOverlay extends CovidaJMEComponent {
@@ -71,7 +76,7 @@ public class TextOverlay extends CovidaJMEComponent {
      * @param rootNode - rootNode for onTop detection
      */
     public TextOverlay(CovidaJMEComponent component) {
-        super(component.getName() + " Text Overlay");
+        super(component.node.getName() + " Text Overlay");
         this.component = component;
         textOverlayData = FontLoader.getInstance();
         txt = new BitmapText(textOverlayData.getBitmapFont(font), false);
@@ -79,12 +84,13 @@ public class TextOverlay extends CovidaJMEComponent {
     }
 
     private void init() {
-        stScale = ScaleAnimation.getController(this, 2.f, 2.f);
-        stDrag = DragAnimation.getController(this);
+        stScale = ScaleAnimation.getController(node, 2.f, 2.f);
+        stDrag = DragAnimation.getController(node);
         update();
     }
 
     public void update() {
+        
         txt.setText(text);
         txt.setSize(size);
         txt.setLocalTranslation(0, (float) size / 2.f, 0);
@@ -94,52 +100,44 @@ public class TextOverlay extends CovidaJMEComponent {
         } catch (NullPointerException e) {
             log.error(e);
         }
-        nodeHandler.addAttachChildRequest(this, txt);
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, txt));
     }
 
     public void detach() {
-        if (hasChild(txt)) {
-            nodeHandler.addDetachChildRequest(this, txt);
+        if (node.hasChild(txt)) {
+            GameTaskQueueManager.getManager().update(new DetachChildCallable(node, txt));
         }
     }
 
     public void attach() {
-        if (!hasChild(txt)) {
-            nodeHandler.addAttachChildRequest(this, txt);
+        if (!node.hasChild(txt)) {
+            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, txt));
         }
     }
 
     public void fadeOut(float time) {
         txt.setDefaultColor(color);
         TimedLifeController fader = new TimedLifeController(time) {
-            /**
-             *
-             */
-            private static final long serialVersionUID = 6426373978649178012L;
 
             @Override
             public void updatePercentage(float percentComplete) {
                 color.a = 1 - percentComplete;
             }
         };
-        nodeHandler.addAddControllerRequest(txt, fader);
+        GameTaskQueueManager.getManager().update(new AddControllerCallable(txt, fader));
         fader.setActive(true);
     }
 
     public void fadeIn(float time) {
         txt.setDefaultColor(color);
         TimedLifeController fader = new TimedLifeController(time) {
-            /**
-             *
-             */
-            private static final long serialVersionUID = 6426373978649178012L;
 
             @Override
             public void updatePercentage(float percentComplete) {
                 color.a = percentComplete;
             }
         };
-        nodeHandler.addAddControllerRequest(txt, fader);
+        GameTaskQueueManager.getManager().update(new AddControllerCallable(txt, fader));
         fader.setActive(true);
     }
 
@@ -150,7 +148,7 @@ public class TextOverlay extends CovidaJMEComponent {
      * @param id
      */
     public void setFont(int id) {
-        txt.removeFromParent();
+        GameTaskQueueManager.getManager().update(new DetachChildCallable(node, txt));
         txt = new BitmapText(textOverlayData.getBitmapFont(id), false);
         update();
     }
@@ -207,10 +205,10 @@ public class TextOverlay extends CovidaJMEComponent {
     }
 
     public void startScaleAnimation() {
-        if (getControllers().contains(stScale)) {
-            nodeHandler.addRemoveControllerRequest(this, stScale);
-            stScale = ScaleAnimation.getController(this, 2.0f, 2.0f);
+        if (node.getControllers().contains(stScale)) {
+            GameTaskQueueManager.getManager().update(new RemoveControllerCallable(node, stScale));
+            stScale = ScaleAnimation.getController(node, 2.0f, 2.0f);
         }
-        nodeHandler.addAddControllerRequest(this, stScale);
+        GameTaskQueueManager.getManager().update(new AddControllerCallable(node, stScale));
     }
 }

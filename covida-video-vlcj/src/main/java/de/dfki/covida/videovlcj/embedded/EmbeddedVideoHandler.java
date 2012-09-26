@@ -33,10 +33,12 @@ import de.dfki.covida.videovlcj.VideoType;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Point;
+import java.awt.Window;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import javax.swing.JWindow;
 import org.apache.log4j.Logger;
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
 import uk.co.caprica.vlcj.player.MediaPlayer;
@@ -49,7 +51,7 @@ import uk.co.caprica.vlcj.player.embedded.videosurface.CanvasVideoSurface;
  *
  * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
  */
-public class EmbeddedVideoHandler extends AbstractVideoHandler {
+public final class EmbeddedVideoHandler extends AbstractVideoHandler {
 
     /**
      * Logger.
@@ -72,7 +74,8 @@ public class EmbeddedVideoHandler extends AbstractVideoHandler {
             embeddedMediaPlayer = (EmbeddedMediaPlayer) mediaPlayer;
             embeddedMediaPlayer.setVideoSurface(videoSurface);
         }
-
+        overlay = new EmbeddedVideoOverlay(width, height);
+        setOverlay(overlay);
     }
 
     public EmbeddedMediaPlayerComponent getMediaPlayerComponent() {
@@ -84,6 +87,7 @@ public class EmbeddedVideoHandler extends AbstractVideoHandler {
      *
      * @return
      */
+    @Override
     public BufferedImage getVideoImage() {
         return getSnapshot();
     }
@@ -93,6 +97,7 @@ public class EmbeddedVideoHandler extends AbstractVideoHandler {
      *
      * @return video snapshot as {@link BufferedImage}
      */
+    @Override
     public BufferedImage getSnapshot() {
         if (mediaPlayerComponent.getMediaPlayer() == null) {
             return null;
@@ -104,6 +109,7 @@ public class EmbeddedVideoHandler extends AbstractVideoHandler {
      * Saves the video frame including the shape to {@link File}
      * {@code source + "."+ mediaPlayer.getTime() + ".png"}
      */
+    @Override
     public void saveShape() {
         // draw and save new shapes
         if (overlay.getDrawing().size() < 2) {
@@ -132,6 +138,7 @@ public class EmbeddedVideoHandler extends AbstractVideoHandler {
      *
      * @param point {@link Point}
      */
+    @Override
     public void draw(Point point) {
         overlay.getDrawing().add(point);
     }
@@ -141,10 +148,12 @@ public class EmbeddedVideoHandler extends AbstractVideoHandler {
      *
      * @return {@link ShapePoints}
      */
+    @Override
     public ShapePoints getShape() {
         return overlay.getSavedShape();
     }
 
+    @Override
     public ShapePoints getDrawing() {
         return overlay.getDrawing();
     }
@@ -154,10 +163,12 @@ public class EmbeddedVideoHandler extends AbstractVideoHandler {
      *
      * @param points {@link ShapePoints}
      */
+    @Override
     public void setShape(ShapePoints points) {
         overlay.setShape(points);
     }
 
+    @Override
     public void setHWR(String hwr) {
         overlay.setHWR(hwr);
     }
@@ -165,6 +176,7 @@ public class EmbeddedVideoHandler extends AbstractVideoHandler {
     /**
      * Clears all shapes from the video.
      */
+    @Override
     public void clearShape() {
         overlay.clearShape();
     }
@@ -172,6 +184,7 @@ public class EmbeddedVideoHandler extends AbstractVideoHandler {
     /**
      * Clears all shapes from the video.
      */
+    @Override
     public void clearDrawing() {
         overlay.clearDrawing();
     }
@@ -208,5 +221,22 @@ public class EmbeddedVideoHandler extends AbstractVideoHandler {
     @Override
     public void enableTimeCodeOverlay(long timeout) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public String getTitle() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void setOverlay(JWindow win) {
+        embeddedMediaPlayer.setOverlay(win);
+    }
+
+    public void enableOverlay(boolean b) {
+        embeddedMediaPlayer.enableOverlay(b);
+    }
+
+    public Window getOverlay() {
+        return embeddedMediaPlayer.getOverlay();
     }
 }

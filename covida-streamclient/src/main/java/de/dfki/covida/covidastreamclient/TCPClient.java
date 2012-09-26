@@ -44,6 +44,7 @@ public class TCPClient extends Thread {
     private void connect(){
         while (!listening) {
             try {
+//                socket = new Socket("192.168.178.31", 1500);
                 socket = new Socket("localhost", 1500);
                 listening = true;
                 log.debug("Connection accepted " + socket.getInetAddress() + ":"
