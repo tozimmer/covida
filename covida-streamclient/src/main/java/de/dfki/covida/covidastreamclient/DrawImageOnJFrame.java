@@ -5,6 +5,7 @@
 package de.dfki.covida.covidastreamclient;
 
 import de.dfki.covida.covidacore.utils.ImageUtils;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -80,5 +81,10 @@ public class DrawImageOnJFrame extends JFrame implements IStreamingClient {
             }
         }
         imageToBeDraw = ImageUtils.deepCopy(img);
+    }
+
+    @Override
+    public void setScreenSize(Dimension dimension) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

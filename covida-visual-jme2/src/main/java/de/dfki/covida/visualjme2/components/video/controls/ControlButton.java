@@ -4,8 +4,6 @@
  */
 package de.dfki.covida.visualjme2.components.video.controls;
 
-import de.dfki.covida.covidacore.components.IControlButton;
-import de.dfki.covida.covidacore.components.IControlableComponent;
 import com.jme.image.Texture;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.state.RenderState;
@@ -13,6 +11,8 @@ import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
+import de.dfki.covida.covidacore.components.IControlButton;
+import de.dfki.covida.covidacore.components.IControlableComponent;
 import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.visualjme2.components.CovidaJMEComponent;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
@@ -47,6 +47,7 @@ public class ControlButton extends CovidaJMEComponent
         this.action = actionName;
         this.width = width;
         this.height = height;
+        this.enabled = true;
         this.controlable = controlable;
         Texture defaultTexture = TextureManager.loadTexture(
                 getClass().getClassLoader().getResource(texScr),
@@ -57,7 +58,7 @@ public class ControlButton extends CovidaJMEComponent
                 .getRenderer().createTextureState();
         defaultTextureState.setTexture(defaultTexture);
         Texture activeTexture = TextureManager.loadTexture(
-                getClass().getClassLoader().getResource(texScr),
+                getClass().getClassLoader().getResource(activeTexSrc),
                 Texture.MinificationFilter.BilinearNearestMipMap,
                 Texture.MagnificationFilter.Bilinear);
         activeTexture.setWrap(Texture.WrapMode.Clamp);
@@ -108,14 +109,16 @@ public class ControlButton extends CovidaJMEComponent
     public boolean getEnabled() {
         return enabled;
     }
-    
+
     @Override
     public void touchBirthAction(int id, int x, int y) {
         //TODO
     }
-    
+
     @Override
     public void touchDeadAction(int id, int x, int y) {
-        setActive(controlable.toggle(action));
+        if (enabled) {
+            setActive(controlable.toggle(action));
+        }
     }
 }

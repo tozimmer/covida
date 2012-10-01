@@ -4,6 +4,7 @@
  */
 package de.dfki.covida.covidastreamclient;
 
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +42,13 @@ public class RemoteStreamingApplication implements IRemoteReceiver{
     public void onNewFrame(byte[] bytes) {
         for(IStreamingClient client : clients){
             client.onNewFrame(bytes);
+        }
+    }
+
+    @Override
+    public void setScreenSize(Dimension dimension) {
+        for(IStreamingClient client : clients){
+            client.setScreenSize(dimension);
         }
     }
 }

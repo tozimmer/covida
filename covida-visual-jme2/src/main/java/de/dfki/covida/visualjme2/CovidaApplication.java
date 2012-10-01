@@ -27,7 +27,6 @@
  */
 package de.dfki.covida.visualjme2;
 
-import com.acarter.scenemonitor.SceneMonitor;
 import com.jme.animation.SpatialTransformer;
 import com.jme.image.Image;
 import com.jme.image.Texture;
@@ -53,6 +52,7 @@ import de.dfki.covida.visualjme2.utils.CovidaRootNode;
 import de.dfki.covida.visualjme2.utils.DetachChildCallable;
 import de.dfki.covida.visualjme2.utils.RemoveControllerCallable;
 import de.dfki.touchandwrite.TouchAndWriteDevice;
+import java.awt.Dimension;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -203,49 +203,44 @@ public class CovidaApplication extends ApplicationImpl {
     @Override
     protected void simpleInitGame() {
         super.simpleInitGame();
-        SceneMonitor.getMonitor().registerNode(rootNode, "Root Node");
-        SceneMonitor.getMonitor().showViewer(true);
+//        SceneMonitor.getMonitor().registerNode(rootNode, "Root Node");
+//        SceneMonitor.getMonitor().showViewer(true);
         tcpServer.start();
+        tcpServer.setScreenSize(new Dimension(display.getWidth(), display.getHeight()));
     }
 
     @Override
     protected void simpleUpdate() {
         super.simpleUpdate();
-        if (System.currentTimeMillis() - snapshotTimer > 100) {
+        if (System.currentTimeMillis() - snapshotTimer > 500) {
             snapshotTimer = System.currentTimeMillis();
             GameTaskQueueManager.getManager().update(new Callable<Void>() {
                 @Override
                 public Void call() throws Exception {
+                    int depth = 3;
                     ByteBuffer buff = BufferUtils.createByteBuffer(display.getWidth()
-                            * display.getWidth() * 4);
-                    display.getRenderer().grabScreenContents(buff, Image.Format.RGBA8, 0, 0, display.getWidth(), display.getWidth());
-                    int buffSize = 4 * display.getWidth() * display.getWidth();
-                    byte[] bytes = new byte[buffSize];
-                    for (int i = 0; i < buffSize; i++) {
-                        bytes[i] = buff.get(i);
-                    }
+                            * display.getWidth() * depth);
+                    display.getRenderer().grabScreenContents(buff, Image.Format.RGB4, 0, 0, display.getWidth(), display.getWidth());
                     if (buff != null) {
-                        tcpServer.writeByteBuffer(bytes);
+                        tcpServer.writeByteBuffer(buff, display.getWidth(), display.getHeight(), depth);
                     }
-                    bytes = null;
                     buff.clear();
                     return null;
                 }
             });
         }
-        SceneMonitor.getMonitor().updateViewer(tpf);
+//        SceneMonitor.getMonitor().updateViewer(tpf);
     }
 
     @Override
     protected void simpleRender() {
         super.simpleRender();
-
-        SceneMonitor.getMonitor().renderViewer(display.getRenderer());
+//        SceneMonitor.getMonitor().renderViewer(display.getRenderer());
     }
 
     @Override
     protected void cleanup() {
         super.cleanup();
-        SceneMonitor.getMonitor().cleanup();
+//        SceneMonitor.getMonitor().cleanup();
     }
 }

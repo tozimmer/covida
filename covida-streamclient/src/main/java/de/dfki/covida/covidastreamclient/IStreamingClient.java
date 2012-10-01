@@ -4,6 +4,8 @@
  */
 package de.dfki.covida.covidastreamclient;
 
+import java.awt.Dimension;
+
 /**
  *
  * @author Tobias
@@ -11,5 +13,7 @@ package de.dfki.covida.covidastreamclient;
 public interface IStreamingClient {
     
     public void onNewFrame(byte[] bytes);
+
+    public void setScreenSize(Dimension dimension);
     
 }

@@ -4,6 +4,7 @@
  */
 package de.dfki.covida.covidastreamclient;
 
+import java.awt.Dimension;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
@@ -40,8 +41,8 @@ public class TCPClient extends Thread {
             connect();
         }
     }
-    
-    private void connect(){
+
+    private void connect() {
         while (!listening) {
             try {
 //                socket = new Socket("192.168.178.31", 1500);
@@ -68,17 +69,21 @@ public class TCPClient extends Thread {
     public void run() {
         while (listening) {
             try {
-                log.debug("Waiting for input");
                 Object object = Sinput.readObject();
                 if (object instanceof byte[]) {
                     for (IRemoteReceiver receiver : receivers) {
                         receiver.onNewFrame((byte[]) object);
+                    }
+                }else if (object instanceof Dimension) {
+                    for (IRemoteReceiver receiver : receivers) {
+                        receiver.setScreenSize((Dimension) object);
                     }
                 }
             } catch (IOException | ClassNotFoundException e) {
                 log.error("Problem reading back from server: " + e);
                 close();
             }
+
         }
         try {
             Sinput.close();

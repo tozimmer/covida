@@ -24,10 +24,10 @@ public class TestFrame extends JFrame implements IStreamingClient {
      * Logger
      */
     private static final Logger log = Logger.getLogger(TestFrame.class);
-    int w = 1152;
-    int h  = 864;
-//    int w = 1280;
-//    int h = 720;
+//    int w = 1152;
+//    int h = 864;
+    public int w = 1280;
+    public int h = 720;
     private final boolean FULLSCREEN = false;
     private BufferedImage frame;
     private final Dimension size;
@@ -49,7 +49,6 @@ public class TestFrame extends JFrame implements IStreamingClient {
             device.setFullScreenWindow(this);
         } else {
             setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
-//            setUndecorated(true);
         }
         setSize(size);
         setLocationRelativeTo(null);
@@ -105,28 +104,55 @@ public class TestFrame extends JFrame implements IStreamingClient {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
+//    @Override
+//    public void onNewFrame(byte[] bytes) {
+//        BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+//        for (int x = 0; x < w; x++) {
+//            for (int y = 0; y < h; y++) {
+//                int index = 4 * ((h - y - 1) * w + x);
+//                int r = ((int) (bytes[index + 0]));
+//                int g = ((int) (bytes[index + 1]));
+//                int b = ((int) (bytes[index + 2]));
+//                int a = ((int) (bytes[index + 3]));
+//                int argb = ((a & 0xFF) << 24) //a
+//                        | ((r & 0xFF) << 16) //r
+//                        | ((g & 0xFF) << 8) //g
+//                        | ((b & 0xFF));      //b
+//
+//                img.setRGB(x, y, argb);
+//            }
+//        }
+//        frame = ImageUtils.deepCopy(img);
+//        img.flush();
+//        repaint();
+//        frame.flush();
+//    }
     @Override
     public void onNewFrame(byte[] bytes) {
-        BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-        log.debug("New Frame :" + bytes.length);
+        BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
         for (int x = 0; x < w; x++) {
             for (int y = 0; y < h; y++) {
-                int index = 4 * ((h - y - 1) * w + x);
+                int index = 3 * ((h - y - 1) * w + x);
                 int r = ((int) (bytes[index + 0]));
                 int g = ((int) (bytes[index + 1]));
                 int b = ((int) (bytes[index + 2]));
-                int a = ((int) (bytes[index + 3]));
-                int argb = ((a & 0xFF) << 24) //a
-                        | ((r & 0xFF) << 16) //r
+                int rgb = ((r & 0xFF) << 16) //r
                         | ((g & 0xFF) << 8) //g
                         | ((b & 0xFF));      //b
 
-                img.setRGB(x, y, argb);
+                img.setRGB(x, y, rgb);
             }
         }
         frame = ImageUtils.deepCopy(img);
         img.flush();
         repaint();
         frame.flush();
+    }
+
+    @Override
+    public void setScreenSize(Dimension dimension) {
+        log.debug(dimension);
+        w = dimension.width;
+        h = dimension.height;
     }
 }

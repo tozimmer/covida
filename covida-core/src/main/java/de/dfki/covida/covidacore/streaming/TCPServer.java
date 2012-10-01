@@ -1,7 +1,9 @@
 package de.dfki.covida.covidacore.streaming;
 
+import java.awt.Dimension;
 import java.io.*;
 import java.net.*;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -23,6 +25,7 @@ public class TCPServer extends Thread {
     // server constructor
     private static int port = 1500;
     private List<TcpThread> tcpThreads;
+    public Dimension dimension;
 
     private TCPServer() {
         tcpThreads = new ArrayList<>();
@@ -44,6 +47,32 @@ public class TCPServer extends Thread {
         }
     }
 
+    public void writeByteBuffer(ByteBuffer buffer, int width, int height, int depth) {
+        int buffSize = depth * width * height;
+        byte[] bytes = new byte[buffSize];
+        for (int i = 0; i < buffSize; i++) {
+            bytes[i] = buffer.get(i);
+        }
+        List<TcpThread> deadThreads = new ArrayList<>();
+        for (TcpThread tcpThread : tcpThreads) {
+            if (tcpThread.running) {
+                tcpThread.writeByteBuffer(bytes);
+                bytes = null;
+            } else {
+                deadThreads.add(tcpThread);
+            }
+        }
+        for (TcpThread deadThread : deadThreads) {
+            tcpThreads.remove(deadThread);
+            deadThread = null;
+        }
+        buffer.clear();
+    }
+
+    public void setScreenSize(Dimension dimension) {
+        this.dimension = dimension;
+    }
+
     public static TCPServer getInstance() {
         if (instance == null) {
             instance = new TCPServer();
@@ -57,7 +86,7 @@ public class TCPServer extends Thread {
         try {
             serverSocket = new ServerSocket(port);
             log.debug("#########################################################");
-            log.debug("# Server waiting for client on port " + serverSocket.getLocalPort()+" #");
+            log.debug("# Server waiting for client on port " + serverSocket.getLocalPort() + " #");
             log.debug("#########################################################");
 
             while (true) {
@@ -90,7 +119,7 @@ public class TCPServer extends Thread {
 
         public void writeByteBuffer(byte[] bytes) {
             try {
-                Soutput.flush();
+                Soutput.reset();
                 Soutput.writeObject(bytes);
             } catch (IOException e) {
                 log.error("Exception writing  Image: " + e);
@@ -104,6 +133,8 @@ public class TCPServer extends Thread {
             Thread.currentThread().setName("TCP-Server");
             try {
                 Soutput = new ObjectOutputStream(socket.getOutputStream());
+                Soutput.writeObject(dimension);
+                Soutput.reset();
             } catch (IOException ex) {
                 log.error(ex);
                 running = false;

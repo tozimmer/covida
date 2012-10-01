@@ -105,13 +105,16 @@ public class VideoComponentControls extends CovidaJMEComponent implements IVideo
         controlList.put("media/textures/video_controls_list_back.png", ActionName.NONE);
         controlList.put("media/textures/video_controls_list_front.png", ActionName.LIST);
         controlActiveList = new HashMap<>();
-        controlActiveList.put(ActionName.LIST, "media/textures/video_controls_list_back.png");
+        controlActiveList.put(ActionName.NONE, "media/textures/video_controls_list_back.png");
         controlActiveList.put(ActionName.LIST, "media/textures/video_controls_list_front.png");
         for (String texture : controlList.keySet()) {
             ControlButton control = new ControlButton(controlList.get(texture),
                     controlable, texture, controlActiveList.get(controlList.get(texture)),
                     controlWidth, controlHeight);
             control.setLocalTranslation((int) (-width/1.85f), 0, 0);
+            if(controlList.get(texture).equals(ActionName.NONE)){
+                control.setEnabled(false);
+            }
             GameTaskQueueManager.getManager().update(new AttachChildCallable(node, control.node));
             controls.put(controlList.get(texture), control);
             start += width + controlWidth;
