@@ -45,6 +45,7 @@ import de.dfki.covida.covidacore.data.VideoMediaData;
 import de.dfki.covida.covidacore.streaming.TCPServer;
 import de.dfki.covida.covidacore.tw.ITouchAndWriteComponent;
 import de.dfki.covida.visualjme2.animations.PreloadAnimation;
+import de.dfki.covida.visualjme2.components.ControlButton;
 import de.dfki.covida.visualjme2.components.video.VideoComponent;
 import de.dfki.covida.visualjme2.utils.AddControllerCallable;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
@@ -82,6 +83,7 @@ public class CovidaApplication extends ApplicationImpl {
     private SpatialTransformer stPreload;
     private TCPServer tcpServer;
     private long snapshotTimer;
+    private int sideMenuCount;
 
     /**
      * Creates an instance of {@link CovidaApplication}
@@ -98,6 +100,7 @@ public class CovidaApplication extends ApplicationImpl {
         videos = new ArrayList<>();
         tcpServer = TCPServer.getInstance();
         snapshotTimer = System.currentTimeMillis();
+        sideMenuCount = 0;
     }
 
     @Override
@@ -142,6 +145,14 @@ public class CovidaApplication extends ApplicationImpl {
         GameTaskQueueManager.getManager().update(new DetachChildCallable(CovidaRootNode.node, preloadScreen));
         preloader.cleanUp();
     }
+    
+    public int getWidth(){
+        return display.getWidth();
+    }
+    
+    public int getHeight(){
+        return display.getHeight();
+    }
 
     /**
      * Adds a {@link CovidaJMEComponent} to the {@link CovidaApplication}
@@ -160,6 +171,61 @@ public class CovidaApplication extends ApplicationImpl {
             video.setRepeat(true);
             video.start();
             video.toFront();
+        } else if (component instanceof ControlButton) {
+            ControlButton button = (ControlButton) component;
+            GameTaskQueueManager.getManager().update(
+                            new AttachChildCallable(CovidaRootNode.node,
+                            button.node));
+            switch (sideMenuCount) {
+                case 0:
+                    button.setLocalTranslation(button.getWidth(),
+                            button.getHeight(), 0);
+                    button.rotate(-90);
+                    break;
+                case 1:
+                    button.setLocalTranslation(display.getWidth()
+                            - button.getWidth(), button.getHeight(), 0);
+                    button.rotate(0);
+                    break;
+                case 2:
+                    button.setLocalTranslation(display.getWidth()
+                            - button.getWidth(), display.getHeight()
+                            - button.getHeight(), 0);
+                    button.rotate(90);
+                    break;
+                case 3:
+                    button.setLocalTranslation(button.getWidth(),
+                            display.getHeight() - button.getHeight(), 0);
+                    button.rotate(180);
+                    break;
+                case 4:
+                    button.setLocalTranslation(display.getWidth() / 2,
+                            display.getHeight() - button.getHeight(), 0);
+                    button.rotate(-225);
+                    break;
+                case 5:
+                    button.setLocalTranslation(button.getWidth(),
+                            display.getHeight() / 2, 0);
+                    button.rotate(225);
+                    break;
+                case 6:
+                    button.setLocalTranslation(display.getWidth() - button.getWidth(),
+                            display.getHeight() / 2, 0);
+                    button.rotate(45);
+                    
+                    break;
+                case 7:
+                    button.setLocalTranslation(display.getWidth() / 2,
+                            button.getHeight(), 0);
+                    button.rotate(-45);
+                    break;
+                default:
+                     GameTaskQueueManager.getManager().update(
+                            new DetachChildCallable(CovidaRootNode.node,
+                            button.node));
+                    break;
+            }
+            sideMenuCount++;
         }
     }
 

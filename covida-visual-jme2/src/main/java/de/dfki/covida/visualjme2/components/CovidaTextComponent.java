@@ -1,5 +1,5 @@
 /*
- * TextOverlay.java
+ * CovidaTextComponent.java
  * 
  * Copyright (c) 2012, Tobias Zimmermann All rights reserved.
  * 
@@ -42,7 +42,7 @@ import de.dfki.covida.visualjme2.utils.FontLoader;
 import de.dfki.covida.visualjme2.utils.RemoveControllerCallable;
 import org.apache.log4j.Logger;
 
-public class TextOverlay extends CovidaJMEComponent {
+public class CovidaTextComponent extends CovidaJMEComponent {
 
     /**
      * Config
@@ -61,7 +61,6 @@ public class TextOverlay extends CovidaJMEComponent {
      * actual displayed string
      */
     private String text = "";
-    private Logger log = Logger.getLogger(TextOverlay.class);
     private CovidaJMEComponent component;
     private SpatialTransformer stDrag;
     private SpatialTransformer stScale;
@@ -75,7 +74,7 @@ public class TextOverlay extends CovidaJMEComponent {
      * @param node - Node which the Text should be attached
      * @param rootNode - rootNode for onTop detection
      */
-    public TextOverlay(CovidaJMEComponent component) {
+    public CovidaTextComponent(CovidaJMEComponent component) {
         super(component.node.getName() + " Text Overlay");
         this.component = component;
         textOverlayData = FontLoader.getInstance();

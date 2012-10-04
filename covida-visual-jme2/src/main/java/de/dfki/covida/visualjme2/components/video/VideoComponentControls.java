@@ -32,19 +32,14 @@ import com.jme.util.GameTaskQueueManager;
 import de.dfki.covida.covidacore.components.IControlableComponent;
 import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.videovlcj.IVideoControls;
+import de.dfki.covida.visualjme2.components.ControlButton;
 import de.dfki.covida.visualjme2.components.CovidaJMEComponent;
-import de.dfki.covida.visualjme2.components.video.controls.ControlButton;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.log4j.Logger;
 
 public class VideoComponentControls extends CovidaJMEComponent implements IVideoControls {
 
-    /**
-     * Logger.
-     */
-    private Logger log = Logger.getLogger(VideoComponentControls.class);
     protected Quad overlayControlsDefault;
     private int width;
     private int height;
@@ -86,12 +81,12 @@ public class VideoComponentControls extends CovidaJMEComponent implements IVideo
         }
         controlWidth = (int) (0.15f * height);
         controlList = new HashMap<>();
-        controlList.put("media/textures/video_controls_changemedia.png", ActionName.CHANGEMEDIA);
+//        controlList.put("media/textures/video_controls_changemedia.png", ActionName.CHANGEMEDIA);
         controlList.put("media/textures/video_controls_close.png", ActionName.CLOSE);
         controlActiveList = new HashMap<>();
-        controlActiveList.put(ActionName.CHANGEMEDIA, "media/textures/video_controls_changemedia.png");
+//        controlActiveList.put(ActionName.CHANGEMEDIA, "media/textures/video_controls_changemedia.png");
         controlActiveList.put(ActionName.CLOSE, "media/textures/video_controls_close.png");
-        int start = -width / 2 - controlWidth / 2;
+        int start = width / 2 + controlWidth / 2;
         for (String texture : controlList.keySet()) {
             ControlButton control = new ControlButton(controlList.get(texture),
                     controlable, texture, controlActiveList.get(controlList.get(texture)),
@@ -99,7 +94,7 @@ public class VideoComponentControls extends CovidaJMEComponent implements IVideo
             control.setLocalTranslation(start, height / (1.7f), 0);
             GameTaskQueueManager.getManager().update(new AttachChildCallable(node, control.node));
             controls.put(controlList.get(texture), control);
-            start += width + controlWidth;
+            start -= width + controlWidth;
         }
         controlList = new HashMap<>();
         controlList.put("media/textures/video_controls_list_back.png", ActionName.NONE);

@@ -33,14 +33,17 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.shape.Quad;
 import com.jme.util.GameTaskQueueManager;
 import com.jmex.angelfont.BitmapFont.Align;
+import de.dfki.covida.covidacore.components.IControlableComponent;
 import de.dfki.covida.covidacore.data.Annotation;
 import de.dfki.covida.covidacore.data.AnnotationData;
 import de.dfki.covida.covidacore.data.AnnotationStorage;
+import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.covidacore.utils.AnnotationSearch;
 import de.dfki.covida.covidacore.utils.VideoUtils;
 import de.dfki.covida.visualjme2.animations.CloseAnimation;
 import de.dfki.covida.visualjme2.animations.OpenAnimation;
-import de.dfki.covida.visualjme2.components.TextOverlay;
+import de.dfki.covida.visualjme2.components.CovidaFieldComponent;
+import de.dfki.covida.visualjme2.components.CovidaTextComponent;
 import de.dfki.covida.visualjme2.utils.AddControllerCallable;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
@@ -57,7 +60,8 @@ import java.util.Map;
  * @author Tobias Zimmermann
  *
  */
-public class AnnotationSearchField extends Field {
+public class AnnotationSearchField extends CovidaFieldComponent implements 
+        IControlableComponent{
 
     /**
      * Search field constructor
@@ -86,7 +90,7 @@ public class AnnotationSearchField extends Field {
         initTextures();
         textBeginY = (int) (quad.getHeight() / 2.0f);
         int x = (int) (0);
-        TextOverlay caption = new TextOverlay(this);
+        CovidaTextComponent caption = new CovidaTextComponent(this);
         caption.setLocalTranslation(x, getTextY(0) - FONT_SIZE / 4.f, 0);
         caption.setSize((int) (FONT_SIZE * 1.5f));
         caption.setText("Write here for annotation search:");
@@ -145,7 +149,7 @@ public class AnnotationSearchField extends Field {
     public void setActiveEntry(int index) {
         if (entryMap.get(mapping.get(selectedTitle)) != null && index > -1
                 && index < entryMap.get(mapping.get(selectedTitle)).size()) {
-            for (TextOverlay entry : entryMap.get(mapping.get(selectedTitle))) {
+            for (CovidaTextComponent entry : entryMap.get(mapping.get(selectedTitle))) {
                 entry.setColor(defaultColor);
             }
             entryMap.get(mapping.get(selectedTitle)).get(index).setColor(activeColor);
@@ -161,7 +165,7 @@ public class AnnotationSearchField extends Field {
     public void setSelectedEntry(int index) {
 //        if (index > -1
 //                && index < entryMap.get(mapping.get(selectedTitle)).size() + 1) {
-//            for (TextOverlay entry : entryMap.get(mapping.get(selectedTitle))) {
+//            for (CovidaTextComponent entry : entryMap.get(mapping.get(selectedTitle))) {
 //                entry.setColor(defaultColor);
 //            }
 //            
@@ -187,7 +191,7 @@ public class AnnotationSearchField extends Field {
      */
     public void setActiveTitle(int titleID) {
         if (titleID > -1 && titleID < titles.size()) {
-            for (TextOverlay title : titles) {
+            for (CovidaTextComponent title : titles) {
                 title.setColor(defaultColor);
             }
             titles.get(titleID).setColor(activeColor);
@@ -198,14 +202,14 @@ public class AnnotationSearchField extends Field {
     protected void update() {
         if (this.hwrResults != null) {
             // TODO handle to much entries (display capacity)
-            for (TextOverlay to : hwr) {
+            for (CovidaTextComponent to : hwr) {
                 to.detach();
             }
-            for (TextOverlay to : titles) {
+            for (CovidaTextComponent to : titles) {
                 to.detach();
             }
             if (entryMap.containsKey(mapping.get(selectedTitle))) {
-                for (TextOverlay entry : entryMap.get(mapping.get(selectedTitle))) {
+                for (CovidaTextComponent entry : entryMap.get(mapping.get(selectedTitle))) {
                     // TODO detach!
                     entry.fadeOut(1.f);
                 }
@@ -217,7 +221,7 @@ public class AnnotationSearchField extends Field {
             titles = new ArrayList<>();
             hwr = new ArrayList<>();
             for (int i = 0; i < hwrResults.size(); i++) {
-                TextOverlay hwrText = new TextOverlay(this);
+                CovidaTextComponent hwrText = new CovidaTextComponent(this);
                 hwrText.setLocalTranslation(x, getTextY(2 + i), 0);
                 GameTaskQueueManager.getManager().update(new AttachChildCallable(node, hwrText.node));
                 hwr.add(hwrText);
@@ -231,7 +235,7 @@ public class AnnotationSearchField extends Field {
         // TODO max limit for list
         int x;
 
-        for (TextOverlay title : titles) {
+        for (CovidaTextComponent title : titles) {
             title.detach();
         }
         titles = new ArrayList<>();
@@ -246,7 +250,7 @@ public class AnnotationSearchField extends Field {
                 String title = data.title;
                 log.debug("draw title: " + title);
                 x = (int) (-quad.getWidth() / 4.15f);
-                TextOverlay titleText = new TextOverlay(this);
+                CovidaTextComponent titleText = new CovidaTextComponent(this);
                 titleText.setLocalTranslation(x, getTextY(index + 2), 0);
                 GameTaskQueueManager.getManager().update(new AttachChildCallable(node, titleText.node));
                 titles.add(titleText);
@@ -255,12 +259,12 @@ public class AnnotationSearchField extends Field {
                 titles.get(titles.size() - 1).setAlign(Align.Left);
                 titles.get(titles.size() - 1).setText(title);
                 // get search results (entries)
-                ArrayList<TextOverlay> resultEntries = new ArrayList<>();
+                ArrayList<CovidaTextComponent> resultEntries = new ArrayList<>();
                 for (Annotation annotation : searchResult.get(data)) {
                     x = (int) (quad.getWidth() / 7.85f);
                     String entry = VideoUtils.getTimeCode(annotation.time_start);
                     log.debug("draw entry: " + entry);
-                    TextOverlay textOverlay = new TextOverlay(this);
+                    CovidaTextComponent textOverlay = new CovidaTextComponent(this);
                     textOverlay.setLocalTranslation(x, getTextY(resultEntries.size() + 2), 0);
                     textOverlay.setText(entry);
                     textOverlay.setFont(1);
@@ -295,18 +299,18 @@ public class AnnotationSearchField extends Field {
     public void setSelectedTitle(int index) {
         if (index > -1 && index < titles.size() + 1) {
             if (entryMap.containsKey(mapping.get(index))) {
-                for (TextOverlay title : titles) {
+                for (CovidaTextComponent title : titles) {
                     title.setColor(defaultColor);
                 }
                 if (entryMap.containsKey(mapping.get(selectedTitle))) {
-                    for (TextOverlay entry : entryMap.get(mapping.get(selectedTitle))) {
+                    for (CovidaTextComponent entry : entryMap.get(mapping.get(selectedTitle))) {
                         // TODO detach!
                         entry.fadeOut(1.f);
                     }
                 }
                 titles.get(index).setColor(selectedColor);
                 selectedTitle = index;
-                for (TextOverlay entry : entryMap.get(mapping.get(index))) {
+                for (CovidaTextComponent entry : entryMap.get(mapping.get(index))) {
                     entry.attach();
                     entry.fadeIn(1.5f);
                 }
@@ -365,5 +369,16 @@ public class AnnotationSearchField extends Field {
         st = OpenAnimation.getController(node, ANIMATION_DURATION);
         GameTaskQueueManager.getManager().update(new AddControllerCallable(node, st));
         update();
+    }
+
+    @Override
+    public boolean toggle(ActionName action) {
+        if(isOpen()){
+            close();
+            return false;
+        }else{
+            open();
+            return true;
+        }
     }
 }

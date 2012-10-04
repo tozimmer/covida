@@ -32,9 +32,12 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.shape.Quad;
 import com.jme.util.GameTaskQueueManager;
+import de.dfki.covida.covidacore.components.IControlableComponent;
+import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.visualjme2.animations.CloseAnimation;
 import de.dfki.covida.visualjme2.animations.OpenAnimation;
-import de.dfki.covida.visualjme2.components.TextOverlay;
+import de.dfki.covida.visualjme2.components.CovidaFieldComponent;
+import de.dfki.covida.visualjme2.components.CovidaTextComponent;
 import de.dfki.covida.visualjme2.utils.AddControllerCallable;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
@@ -49,7 +52,8 @@ import java.util.HashMap;
  * @author Tobias Zimmermann
  *
  */
-public class AnnotationClipboard extends Field {
+public class AnnotationClipboard extends CovidaFieldComponent implements 
+        IControlableComponent{
 
     /**
      * Search field constructor
@@ -78,7 +82,7 @@ public class AnnotationClipboard extends Field {
         initTextures();
         textBeginY = (int) (quad.getHeight() / 2.75f);
         int x = (int) (0);
-        TextOverlay caption = new TextOverlay(this);
+        CovidaTextComponent caption = new CovidaTextComponent(this);
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, caption.node));
         caption.setLocalTranslation(x, getTextY(0) - FONT_SIZE / 4.f, 0);
         caption.setSize((int) (FONT_SIZE * 1.5f));
@@ -91,7 +95,7 @@ public class AnnotationClipboard extends Field {
     public void update() {
         int x = (int) (-width / 4.0f);
         for (int i = 0; i < hwrResults.size(); i++) {
-            TextOverlay textOverlay = new TextOverlay(this);
+            CovidaTextComponent textOverlay = new CovidaTextComponent(this);
             textOverlay.setLocalTranslation(x, getTextY(2 + i), 0);
             GameTaskQueueManager.getManager().update(new AttachChildCallable(node, textOverlay.node));
             textOverlay.setText(hwrResults.get(i));
@@ -151,5 +155,16 @@ public class AnnotationClipboard extends Field {
         st = OpenAnimation.getController(node, ANIMATION_DURATION);
         GameTaskQueueManager.getManager().update(new AddControllerCallable(node, st));
         update();
+    }
+
+    @Override
+    public boolean toggle(ActionName action) {
+        if(isOpen()){
+            close();
+            return false;
+        }else{
+            open();
+            return true;
+        }
     }
 }

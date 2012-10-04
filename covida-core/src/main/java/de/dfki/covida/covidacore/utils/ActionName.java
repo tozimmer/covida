@@ -10,7 +10,8 @@ package de.dfki.covida.covidacore.utils;
  */
 public enum ActionName {
 
-    NONE, BACKWARD, STOP, PLAYPAUSE, FORWARD, CLOSE, CHANGEMEDIA, SOUND, LIST, SAVE, DELETE;
+    NONE, BACKWARD, STOP, PLAYPAUSE, FORWARD, CLOSE, CHANGEMEDIA, SOUND, LIST, 
+    SAVE, DELETE;
 
     @Override
     public String toString() {

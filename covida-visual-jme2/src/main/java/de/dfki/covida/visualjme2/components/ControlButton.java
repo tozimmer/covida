@@ -2,9 +2,13 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.dfki.covida.visualjme2.components.video.controls;
+package de.dfki.covida.visualjme2.components;
 
+import com.jme.animation.SpatialTransformer;
 import com.jme.image.Texture;
+import com.jme.math.FastMath;
+import com.jme.math.Quaternion;
+import com.jme.math.Vector3f;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
@@ -14,7 +18,9 @@ import com.jme.util.TextureManager;
 import de.dfki.covida.covidacore.components.IControlButton;
 import de.dfki.covida.covidacore.components.IControlableComponent;
 import de.dfki.covida.covidacore.utils.ActionName;
-import de.dfki.covida.visualjme2.components.CovidaJMEComponent;
+import de.dfki.covida.visualjme2.animations.RotateAnimation;
+import de.dfki.covida.visualjme2.animations.ScaleAnimation;
+import de.dfki.covida.visualjme2.utils.AddControllerCallable;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
 
@@ -33,6 +39,7 @@ public class ControlButton extends CovidaJMEComponent
     private final TextureState activeTextureState;
     private boolean enabled;
     private final ActionName action;
+    private final static float ANIMATIONTIME = 0.5f;
 
     /**
      *
@@ -73,21 +80,39 @@ public class ControlButton extends CovidaJMEComponent
     }
 
     @Override
-    protected int getWidth() {
+    public int getWidth() {
         return width;
     }
 
     @Override
-    protected int getHeight() {
+    public int getHeight() {
         return height;
+    }
+
+    public void rotate(float angle) {
+        Quaternion q = new Quaternion();
+        q.fromAngleAxis(FastMath.DEG_TO_RAD * (angle), new Vector3f(0, 0, 1));
+        setLocalRotation(q);
     }
 
     @Override
     public void setActive(boolean activated) {
         if (enabled) {
             if (activated) {
+                if (action.equals(ActionName.LIST)) {
+                    SpatialTransformer controller = RotateAnimation.getController(node,
+                            180.f, ANIMATIONTIME);
+                    GameTaskQueueManager.getManager().update(new AddControllerCallable(
+                            node, controller));
+                }
                 controlQuad.setRenderState(activeTextureState);
             } else {
+                if (action.equals(ActionName.LIST)) {
+                    SpatialTransformer controller = RotateAnimation.getController(node,
+                            0.f, ANIMATIONTIME);
+                    GameTaskQueueManager.getManager().update(new AddControllerCallable(
+                            node, controller));
+                }
                 controlQuad.setRenderState(defaultTextureState);
             }
             controlQuad.updateRenderState();
@@ -112,12 +137,27 @@ public class ControlButton extends CovidaJMEComponent
 
     @Override
     public void touchBirthAction(int id, int x, int y) {
-        //TODO
+        if (enabled && getParent().getParent() !=null) {
+            if (action.equals(ActionName.LIST)) {
+            } else {
+                SpatialTransformer controller = ScaleAnimation.getController(node,
+                        2.0f, ANIMATIONTIME);
+                GameTaskQueueManager.getManager().update(new AddControllerCallable(
+                        node, controller));
+            }
+        }
     }
 
     @Override
     public void touchDeadAction(int id, int x, int y) {
-        if (enabled) {
+        if (enabled && getParent().getParent() !=null) {
+            if (action.equals(ActionName.LIST)) {
+            } else {
+                SpatialTransformer controller = ScaleAnimation.getController(node,
+                        1.0f, ANIMATIONTIME);
+                GameTaskQueueManager.getManager().update(new AddControllerCallable(
+                        node, controller));
+            }
             setActive(controlable.toggle(action));
         }
     }

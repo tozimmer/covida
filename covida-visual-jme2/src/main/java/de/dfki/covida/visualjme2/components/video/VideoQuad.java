@@ -14,6 +14,7 @@ import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jmex.awt.swingui.ImageGraphics;
 import de.dfki.covida.videovlcj.AbstractVideoHandler;
+import de.dfki.covida.visualjme2.components.video.fields.DisplayFieldComponent;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import org.apache.log4j.Logger;

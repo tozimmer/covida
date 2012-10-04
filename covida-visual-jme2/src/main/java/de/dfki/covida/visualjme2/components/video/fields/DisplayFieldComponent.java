@@ -25,7 +25,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package de.dfki.covida.visualjme2.components.annotation;
+package de.dfki.covida.visualjme2.components.video.fields;
 
 import com.jme.animation.SpatialTransformer;
 import com.jme.image.Texture;
@@ -51,10 +51,10 @@ import de.dfki.covida.visualjme2.animations.CloseAnimationType;
 import de.dfki.covida.visualjme2.animations.OpenAnimation;
 import de.dfki.covida.visualjme2.animations.ResetAnimation;
 import de.dfki.covida.visualjme2.animations.SaveAnimation;
+import de.dfki.covida.visualjme2.components.ControlButton;
 import de.dfki.covida.visualjme2.components.CovidaJMEComponent;
-import de.dfki.covida.visualjme2.components.TextOverlay;
+import de.dfki.covida.visualjme2.components.CovidaTextComponent;
 import de.dfki.covida.visualjme2.components.video.VideoComponent;
-import de.dfki.covida.visualjme2.components.video.controls.ControlButton;
 import de.dfki.covida.visualjme2.utils.AddControllerCallable;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
 import de.dfki.covida.visualjme2.utils.DetachChildCallable;
@@ -88,10 +88,6 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
     static int HEIGHT = 250;
     private static final int DEFAULT_CHARACTER_LIMIT = 14;
     /**
-     * Logger
-     */
-    private Logger log = Logger.getLogger(DisplayFieldComponent.class);
-    /**
      * image
      */
     private String image;
@@ -121,40 +117,26 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
     private String title;
     private long time_start;
     private long time_end;
-    private DisplayFieldComponent listField;
-    private ArrayList<TextOverlay> entries;
-    private ArrayList<TextOverlay> descriptionText;
+    private ListFieldComponent listField;
+    private ArrayList<CovidaTextComponent> entries;
+    private ArrayList<CovidaTextComponent> descriptionText;
     private TextureState tsSpacer;
     private Texture textureSpacer;
     private ShapeType shapeType;
-    private TextOverlay titleTextOverlay;
-    private TextOverlay timeOverlay;
-    private TextOverlay timeTextOverlay;
-    private TextOverlay descriptionOverlay;
+    private CovidaTextComponent titleTextOverlay;
+    private CovidaTextComponent timeOverlay;
+    private CovidaTextComponent timeTextOverlay;
+    private CovidaTextComponent descriptionOverlay;
     private boolean open;
     private ArrayList<Long> times;
     private int descriptionBeginY;
     /*
      * Overlay
      */
-    private TextOverlay textOverlay;
+    private CovidaTextComponent textOverlay;
     private static final int FONT_SIZE = 30;
     protected Quad overlayDefault;
     private SpatialTransformer st;
-
-    /**
-     * List field constructor
-     *
-     * @param resource
-     * @param id
-     * @param node
-     * @param width
-     * @param height
-     */
-    public DisplayFieldComponent(String resource, VideoComponent video,
-            int width, int height) {
-        this(resource, video, null, width, height);
-    }
 
     /**
      * Info field constructor
@@ -168,7 +150,7 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
      * @param height
      */
     public DisplayFieldComponent(String resource, VideoComponent video,
-            DisplayFieldComponent listField, int width, int height) {
+            ListFieldComponent listField, int width, int height) {
         super("DisplayFieldComponent");
         this.video = video;
         WIDTH = width;
@@ -185,26 +167,23 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
             this.listField = listField;
         }
     }
-    
+
     public DisplayFieldType getType() {
-        if (listField != null) {
-            return DisplayFieldType.INFO;
-        }
-        return DisplayFieldType.LIST;
+        return DisplayFieldType.INFO;
     }
-    
+
     private int getFontSize() {
         return (int) (1.2f * (float) DEFAULT_FONT_SIZE * ((float) getHeight() / (float) DEFAULT_HEIGHT));
     }
-    
+
     private int getFontSpacer() {
         return (int) ((float) getFontSize() * 0.8f);
     }
-    
+
     private int getTextSpacer() {
         return (int) ((float) getFontSize() / 5.f);
     }
-    
+
     private int getCharacterLimit() {
         return (int) ((float) DEFAULT_CHARACTER_LIMIT * ((float) getFontSize() / (float) DEFAULT_FONT_SIZE));
     }
@@ -219,69 +198,54 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
     public void initComponent() {
         initTextures();
         textBeginY = (int) (quad.getHeight() / 12.f);
-        textOverlay = new TextOverlay(this);
+        textOverlay = new CovidaTextComponent(this);
         textOverlay.setSize(FONT_SIZE);
-        if (!getType().equals(DisplayFieldType.INFO)) {
-            initalizeListOverlayQuads(JMEUtils.initalizeBlendState());
+        initalizeListOverlayQuads(JMEUtils.initalizeBlendState());
+        titleTextOverlay = new CovidaTextComponent(this);
+        titleTextOverlay.setFont(1);
+        titleTextOverlay.setSize(getFontSize());
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, titleTextOverlay.node));
+        titleTextOverlay.setLocalTranslation(0, textBeginY, 0);
+        int y = (int) (titleTextOverlay.getLocalTranslation().y + ((float) titleTextOverlay.getFontSize() / 2.f));
+        addSpacer(0, y, (int) (quad.getWidth() / 1.1f), getTextSpacer());
+        textBeginY = (int) (textBeginY - (float) getFontSpacer() * 1.25f - getTextSpacer());
+        timeOverlay = new CovidaTextComponent(this);
+        timeOverlay.setLocalTranslation(0, textBeginY, 0);
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, timeOverlay.node));
+        timeOverlay.setFont(1);
+        timeOverlay.setSize(getFontSize());
+        timeOverlay.setText("Time:");
+        textBeginY = (int) (textBeginY - (float) getFontSpacer() * 1.25f);
+        timeTextOverlay = new CovidaTextComponent(this);
+        timeTextOverlay.setLocalTranslation(0, textBeginY, 0);
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, timeTextOverlay.node));
+        timeTextOverlay.setFont(1);
+        timeTextOverlay.setSize(getFontSize());
+        y = (int) (timeTextOverlay.getLocalTranslation().y + ((float) timeTextOverlay.getFontSize() / 2.f));
+        addSpacer(0, y, (int) (quad.getWidth() / 1.1f), getTextSpacer());
+        textBeginY = (int) (textBeginY - (float) getFontSpacer() * 1.25f - getTextSpacer());
+        descriptionOverlay = new CovidaTextComponent(this);
+        descriptionOverlay.setLocalTranslation(0, textBeginY, 0);
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, descriptionOverlay.node));
+        descriptionOverlay.setFont(1);
+        descriptionOverlay.setSize(getFontSize());
+        descriptionText = new ArrayList<>();
+        if (AnnotationStorage.getInstance().getAnnotationData(video).size() > 0) {
+            listField.updateEntries(AnnotationStorage
+                    .getInstance().getAnnotationData(video).getTimeList());
         }
-        if (getType().equals(DisplayFieldType.LIST)) {
-            int x = (int) (0);
-            float y = getTextY(0);
-            TextOverlay to = new TextOverlay(this);
-            to.setLocalTranslation(x, y, 0);
-            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, to.node));
-            to.setSize(getFontSize());
-            to.setText("Entries:");
-            to.setFont(1);
-            addSpacer(x, (int) (y - (float) getFontSpacer() / 2.f),
-                    (int) (quad.getWidth() / 1.1f), getTextSpacer());
-        } else if (getType().equals(DisplayFieldType.INFO)) {
-            titleTextOverlay = new TextOverlay(this);
-            titleTextOverlay.setFont(1);
-            titleTextOverlay.setSize(getFontSize());
-            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, titleTextOverlay.node));
-            titleTextOverlay.setLocalTranslation(0, textBeginY, 0);
-            int y = (int) (titleTextOverlay.getLocalTranslation().y + ((float) titleTextOverlay.getFontSize() / 2.f));
-            addSpacer(0, y, (int) (quad.getWidth() / 1.1f), getTextSpacer());
-            textBeginY = (int) (textBeginY - (float) getFontSpacer() * 1.25f - getTextSpacer());
-            timeOverlay = new TextOverlay(this);
-            timeOverlay.setLocalTranslation(0, textBeginY, 0);
-            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, timeOverlay.node));
-            timeOverlay.setFont(1);
-            timeOverlay.setSize(getFontSize());
-            timeOverlay.setText("Time:");
-            textBeginY = (int) (textBeginY - (float) getFontSpacer() * 1.25f);
-            timeTextOverlay = new TextOverlay(this);
-            timeTextOverlay.setLocalTranslation(0, textBeginY, 0);
-            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, timeTextOverlay.node));
-            timeTextOverlay.setFont(1);
-            timeTextOverlay.setSize(getFontSize());
-            y = (int) (timeTextOverlay.getLocalTranslation().y + ((float) timeTextOverlay.getFontSize() / 2.f));
-            addSpacer(0, y, (int) (quad.getWidth() / 1.1f), getTextSpacer());
-            textBeginY = (int) (textBeginY - (float) getFontSpacer() * 1.25f - getTextSpacer());
-            descriptionOverlay = new TextOverlay(this);
-            descriptionOverlay.setLocalTranslation(0, textBeginY, 0);
-            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, descriptionOverlay.node));
-            descriptionOverlay.setFont(1);
-            descriptionOverlay.setSize(getFontSize());
-            descriptionText = new ArrayList<>();
-            if (AnnotationStorage.getInstance().getAnnotationData(video).size() > 0) {
-                listField.updateEntries(AnnotationStorage
-                        .getInstance().getAnnotationData(video).getTimeList());
-            }
-            ControlButton save = new ControlButton(ActionName.SAVE, video,
-                    "media/textures/video_controls_save.png",
-                    "media/textures/video_controls_save.png", 64, 64);
-            save.setLocalTranslation(-getWidth()/2 + 32, -getHeight()/2 + 32, 0);
-            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, save.node));
-            ControlButton delete = new ControlButton(ActionName.DELETE, video,
-                    "media/textures/video_control_delete.png",
-                    "media/textures/video_control_delete.png", 64, 64);
-            delete.setLocalTranslation(getWidth()/2 - 32, -getHeight()/2 + 32, 0);
-            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, delete.node));
-        }
+        ControlButton save = new ControlButton(ActionName.SAVE, video,
+                "media/textures/video_controls_save.png",
+                "media/textures/video_controls_save.png", 64, 64);
+        save.setLocalTranslation(-getWidth() / 2 + 32, -getHeight() / 2 + 32, 0);
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, save.node));
+        ControlButton delete = new ControlButton(ActionName.DELETE, video,
+                "media/textures/video_control_delete.png",
+                "media/textures/video_control_delete.png", 64, 64);
+        delete.setLocalTranslation(getWidth() / 2 - 32, -getHeight() / 2 + 32, 0);
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, delete.node));
     }
-    
+
     protected final void initTextures() {
         // ---- Background Texture state initialization ----
         ts = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
@@ -289,7 +253,7 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
         ts.setEnabled(true);
         texture = TextureManager.loadTexture(getClass().getClassLoader().getResource(image));
         ts.setTexture(texture);
-        
+
         quad = new Quad("Display image quad", WIDTH, HEIGHT);
         quad.setRenderState(ts);
         quad.setRenderState(JMEUtils.initalizeBlendState());
@@ -303,7 +267,7 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
         textureSpacer = TextureManager.loadTexture(getClass().getClassLoader().getResource("media/textures/info_spacer.png"));
         tsSpacer.setTexture(textureSpacer);
     }
-    
+
     public void setAnnotationData(Annotation annotation) {
         setTime(annotation.time_start);
         setTitle(AnnotationStorage.getInstance().getAnnotationData(video).title);
@@ -311,7 +275,7 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
         setShapePoints(annotation.shapePoints);
         setShapeType(annotation.shapeType);
     }
-    
+
     private void setTitle(String title) {
         if (titleTextOverlay != null && title != null) {
             this.title = title;
@@ -323,7 +287,7 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
             }
         }
     }
-    
+
     private void setTime(long time) {
         if (timeOverlay != null && timeTextOverlay != null) {
             this.time_start = time;
@@ -335,7 +299,7 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
 //			}	
         }
     }
-    
+
     public void drawHwrResult(ArrayList<String> hwrResults) {
         if (descriptionOverlay != null && descriptionText != null) {
             descriptionOverlay.setText("Description:");
@@ -347,7 +311,7 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
             }
             for (int i = start; i < count; i++) {
                 descriptionBeginY = (int) (descriptionBeginY - (float) getFontSpacer() * 0.9f);
-                TextOverlay descriptionTextOverlay = new TextOverlay(this);
+                CovidaTextComponent descriptionTextOverlay = new CovidaTextComponent(this);
                 descriptionTextOverlay.setLocalTranslation(0, descriptionBeginY, 0);
                 GameTaskQueueManager.getManager().update(new AttachChildCallable(node, descriptionTextOverlay.node));
                 descriptionText.add(descriptionTextOverlay);
@@ -373,7 +337,7 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
                     + " !(descriptionOverlay != null && descriptionText != null)");
         }
     }
-    
+
     public void clearDescriptionText() {
         for (int i = 0; i < descriptionText.size(); i++) {
             if (node.hasChild(descriptionText.get(i).node)) {
@@ -385,7 +349,7 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
         descriptionText = new ArrayList<>();
         descriptionBeginY = textBeginY;
     }
-    
+
     private void addSpacer(int x, int y, int width, int height) {
         Quad spacerQuad = new Quad("Spacer", width, height);
         spacerQuad.setRenderState(tsSpacer);
@@ -399,13 +363,7 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
      * Resets textNode
      */
     public void resetInfo() {
-        if (getType().equals(DisplayFieldType.INFO)) {
-            clearDescriptionText();
-        } else if (getType().equals(DisplayFieldType.LIST)) {
-            for (TextOverlay e : entries) {
-                e.setColor(defaultColor);
-            }
-        }
+        clearDescriptionText();
     }
 
     /**
@@ -435,27 +393,14 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
         if (node.getControllers().contains(st)) {
             GameTaskQueueManager.getManager().update(new RemoveControllerCallable(node, st));
         }
-        if (getType().equals(DisplayFieldType.INFO)) {
-            // methods for info field closing
-            if (getType().equals(DisplayFieldType.INFO)) {
-                title = null;
-                time_start = 0;
-                resetInfo();
-                listField.updateEntries(AnnotationStorage.getInstance().getAnnotationData(video).getTimeList());
-                listField.drawEntries();
-                // Close animation (Info Field)
-                st = CloseAnimation.getController(node, ANIMATION_DURATION, CloseAnimationType.INFO_FIELD);
-                GameTaskQueueManager.getManager().update(new AddControllerCallable(node, st));
-            }
-        } else if (getType().equals(DisplayFieldType.LIST)) {
-            // fade out entry list
-            for (TextOverlay e : entries) {
-                e.fadeOut((float) ANIMATION_DURATION / 1000);
-            }
-            // Close animation List Field
-            st = CloseAnimation.getController(node, ANIMATION_DURATION, CloseAnimationType.LIST_FIELD);
-            GameTaskQueueManager.getManager().update(new AddControllerCallable(node, st));
-        }
+        title = null;
+        time_start = 0;
+        resetInfo();
+        listField.updateEntries(AnnotationStorage.getInstance().getAnnotationData(video).getTimeList());
+        listField.drawEntries();
+        // Close animation (Info Field)
+        st = CloseAnimation.getController(node, ANIMATION_DURATION, CloseAnimationType.INFO_FIELD);
+        GameTaskQueueManager.getManager().update(new AddControllerCallable(node, st));
         resetInfo();
     }
 
@@ -468,60 +413,19 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
         if (node.getControllers().contains(st)) {
             GameTaskQueueManager.getManager().update(new RemoveControllerCallable(node, st));
         }
-        if (getType().equals(DisplayFieldType.INFO)) {
-            saveData();
-            listField.updateEntries(AnnotationStorage.getInstance()
-                    .getAnnotationData(video).getTimeList());
-            listField.drawEntries();
-            // Save animation
-            st = SaveAnimation.getController(node, ANIMATION_DURATION, CloseAnimationType.INFO_FIELD);
-            GameTaskQueueManager.getManager().update(new AddControllerCallable(node, st));
-            resetInfo();
-        }
-    }
-    
-    private float getTextY(int position) {
-        return quad.getHeight() / 2.1f
-                - ((float) getFontSize() * ((float) (position + 1) * 1.1f));
-    }
-    
-    private void drawEntries() {
-        if (times != null) {
-            // TODO max limit for list
-            if (getType().equals(DisplayFieldType.LIST)) {
-                log.debug("draw entries: " + times);
-                for (TextOverlay e : entries) {
-                    e.detach();
-                }
-                entries = new ArrayList<>();
-                for (int i = 0; i < times.size(); i++) {
-                    TextOverlay entryTextOverlay = new TextOverlay(this);
-                    entryTextOverlay.setLocalTranslation(0, getTextY(i + 1), 0);
-                    GameTaskQueueManager.getManager().update(new AttachChildCallable(node, entryTextOverlay.node));
-                    entries.add(entryTextOverlay);
-                    log.debug("draw Entry: " + VideoUtils.getTimeCode(times.get(i)));
-                    entries.get(i).setText(VideoUtils.getTimeCode(times.get(i)));
-                    entries.get(i).setFont(1);
-                    entries.get(i).setSize((int) (getFontSize()));
-                    entries.get(i).fadeIn((float) ANIMATION_DURATION / 125.f);
-                }
-            } else {
-                log.debug("draw enries -> Type != LIST!");
-            }
-        }
+        saveData();
+        listField.updateEntries(AnnotationStorage.getInstance()
+                .getAnnotationData(video).getTimeList());
+        listField.drawEntries();
+        // Save animation
+        st = SaveAnimation.getController(node, ANIMATION_DURATION, CloseAnimationType.INFO_FIELD);
+        GameTaskQueueManager.getManager().update(new AddControllerCallable(node, st));
+        resetInfo();
     }
 
-    /**
-     *
-     * @param times
-     */
-    private void updateEntries(ArrayList<Long> times) {
-        this.times = times;
-    }
-    
     public String getDescription() {
         String descriptions = "";
-        for (TextOverlay description : descriptionText) {
+        for (CovidaTextComponent description : descriptionText) {
             descriptions = descriptions + description.getText() + " ";
         }
         return descriptions;
@@ -531,33 +435,31 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
      * Save annotation data to binary and XML files
      */
     private void saveData() {
-        if (getType().equals(DisplayFieldType.INFO)) {
-            String descriptions = "";
-            boolean first = true;
-            for (TextOverlay description : descriptionText) {
-                if (first) {
-                    descriptions = description.getText();
-                    first = false;
-                } else {
-                    descriptions = descriptions + " " + description.getText();
-                }
+        String descriptions = "";
+        boolean first = true;
+        for (CovidaTextComponent description : descriptionText) {
+            if (first) {
+                descriptions = description.getText();
+                first = false;
+            } else {
+                descriptions = descriptions + " " + description.getText();
             }
-            // TODO new annotation data if media has changed!
-            AnnotationStorage.getInstance().getAnnotationData(video).title = title;
-            AnnotationStorage.getInstance().getAnnotationData(video).videoSource = videoSource;
-            Annotation annotation = new Annotation();
-            annotation.time_start = time_start;
-            annotation.time_end = time_end;
-            annotation.shapeType = shapeType;
-            annotation.shapePoints = shapePoints;
-            annotation.description = descriptions;
-            AnnotationStorage.getInstance().getAnnotationData(video).annotations.add(annotation);
-            clearDescriptionText();
-            AnnotationStorage.getInstance().getAnnotationData(video).save();
-            AnnotationStorage.getInstance().getAnnotationData(video).export();
         }
+        // TODO new annotation data if media has changed!
+        AnnotationStorage.getInstance().getAnnotationData(video).title = title;
+        AnnotationStorage.getInstance().getAnnotationData(video).videoSource = videoSource;
+        Annotation annotation = new Annotation();
+        annotation.time_start = time_start;
+        annotation.time_end = time_end;
+        annotation.shapeType = shapeType;
+        annotation.shapePoints = shapePoints;
+        annotation.description = descriptions;
+        AnnotationStorage.getInstance().getAnnotationData(video).annotations.add(annotation);
+        clearDescriptionText();
+        AnnotationStorage.getInstance().getAnnotationData(video).save();
+        AnnotationStorage.getInstance().getAnnotationData(video).export();
     }
-    
+
     public void lockPosition(boolean lock) {
         this.locked = lock;
     }
@@ -579,9 +481,6 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
         open = true;
         st = OpenAnimation.getController(node, ANIMATION_DURATION, defaultScale);
         GameTaskQueueManager.getManager().update(new AddControllerCallable(node, st));
-        if (getType().equals(DisplayFieldType.LIST)) {
-            drawEntries();
-        }
     }
 
     /**
@@ -606,7 +505,7 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
      */
     public void setActiveEntry(int entryID) {
         if (entryID > -1 && entryID < entries.size()) {
-            for (TextOverlay e : entries) {
+            for (CovidaTextComponent e : entries) {
                 e.setColor(defaultColor);
             }
             entries.get(entryID).setColor(activeColor);
@@ -620,7 +519,7 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
      */
     public void setSelectedEntry(int entryID) {
         if (entryID > -1 && entryID < entries.size() + 1) {
-            for (TextOverlay e : entries) {
+            for (CovidaTextComponent e : entries) {
                 e.setColor(defaultColor);
             }
             entries.get(entryID).setColor(selectedColor);
@@ -675,40 +574,37 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
      * @param index {@link Annotation} index
      */
     public void loadData(int index) {
-        if (this.getType().equals(DisplayFieldType.INFO)) {
-            if (AnnotationStorage.getInstance().getAnnotationData(video).size() > index) {
-                resetInfo();
-                video.draw(AnnotationStorage.getInstance().getAnnotationData(video).annotations.get(index).shapePoints);
-                video.setTimePosition(AnnotationStorage.getInstance()
-                        .getAnnotationData(video).annotations.get(index).time_start);
-                setTime(AnnotationStorage.getInstance().getAnnotationData(video).annotations.get(index).time_start);
-                video.pause();
-                setTitle(AnnotationStorage.getInstance().getAnnotationData(video).title);
-                ArrayList<String> descriptions = new ArrayList<>();
-                descriptions.addAll(Arrays.asList(
-                        AnnotationStorage.getInstance().getAnnotationData(video).annotations.get(index).description.split(" ")));
-                drawHwrResult(descriptions);
-                AnnotationStorage.getInstance().getAnnotationData(video).annotations.remove(index);
-            } else {
-                log.debug("VideoAnnotationData has not enough entries VideoId: "
-                        + video.getId()
-                        + " title: "
-                        + video.node.getName()
-                        + " "
-                        + AnnotationStorage.getInstance().getAnnotationData(video));
-            }
-            
+        if (AnnotationStorage.getInstance().getAnnotationData(video).size() > index) {
+            resetInfo();
+            video.draw(AnnotationStorage.getInstance().getAnnotationData(video).annotations.get(index).shapePoints);
+            video.setTimePosition(AnnotationStorage.getInstance()
+                    .getAnnotationData(video).annotations.get(index).time_start);
+            setTime(AnnotationStorage.getInstance().getAnnotationData(video).annotations.get(index).time_start);
+            video.pause();
+            setTitle(AnnotationStorage.getInstance().getAnnotationData(video).title);
+            ArrayList<String> descriptions = new ArrayList<>();
+            descriptions.addAll(Arrays.asList(
+                    AnnotationStorage.getInstance().getAnnotationData(video).annotations.get(index).description.split(" ")));
+            drawHwrResult(descriptions);
+            AnnotationStorage.getInstance().getAnnotationData(video).annotations.remove(index);
+        } else {
+            log.debug("VideoAnnotationData has not enough entries VideoId: "
+                    + video.getId()
+                    + " title: "
+                    + video.node.getName()
+                    + " "
+                    + AnnotationStorage.getInstance().getAnnotationData(video));
         }
     }
-    
+
     private void setShapePoints(ShapePoints shapePoints) {
         this.shapePoints = shapePoints;
     }
-    
+
     private void setVideoSource(String videoSource) {
         this.videoSource = videoSource;
     }
-    
+
     public void reset() {
         if (node.getControllers().contains(st)) {
             GameTaskQueueManager.getManager().update(new RemoveControllerCallable(node, st));
@@ -716,23 +612,23 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
         st = ResetAnimation.getController(node, defaultScale, defaultRotation, defaultTranslation);
         GameTaskQueueManager.getManager().update(new AddControllerCallable(node, st));
     }
-    
+
     public VideoComponent getVideo() {
         return video;
     }
-    
+
     private void setShapeType(ShapeType shapeType) {
         this.shapeType = shapeType;
     }
-    
+
     public boolean isOpen() {
         return open;
     }
-    
+
     public boolean isLocked() {
         return locked;
     }
-    
+
     private void initalizeListOverlayQuads(BlendState alpha) {
         // Overlay Default
         Texture overlayDefaultTexture = TextureManager.loadTexture(
@@ -741,13 +637,13 @@ public class DisplayFieldComponent extends CovidaJMEComponent {
                 Texture.MinificationFilter.BilinearNearestMipMap,
                 Texture.MagnificationFilter.Bilinear);
         overlayDefaultTexture.setWrap(WrapMode.Clamp);
-        
+
         TextureState overlayDefaultState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
         overlayDefaultState.setTexture(overlayDefaultTexture);
-        
+
         this.overlayDefault = new Quad("Overlay-Default-Image-Quad",
                 getWidth(), getHeight());
-        
+
         overlayDefault.setRenderState(overlayDefaultState);
         overlayDefault.setRenderState(alpha);
         overlayDefault.updateRenderState();

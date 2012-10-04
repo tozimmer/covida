@@ -74,7 +74,7 @@ public abstract class CovidaJMEComponent implements ITouchAndWriteComponent {
     /**
      * Logger
      */
-    private Logger log = Logger.getLogger(CovidaJMEComponent.class);
+    protected Logger log;
     /**
      * Flag which indicates of pen is active.
      */
@@ -87,6 +87,7 @@ public abstract class CovidaJMEComponent implements ITouchAndWriteComponent {
 
     public CovidaJMEComponent(String nameOfComponent) {
         node = new Node(nameOfComponent);
+        log = Logger.getLogger(getClass());
         this.display = new Vector2f(
                 DisplaySystem.getDisplaySystem().getWidth(),
                 DisplaySystem.getDisplaySystem().getHeight());

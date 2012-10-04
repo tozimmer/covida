@@ -41,7 +41,7 @@ import com.jme.util.TextureManager;
 import com.jmex.angelfont.BitmapFont.Align;
 import de.dfki.covida.videovlcj.ISlider;
 import de.dfki.covida.visualjme2.components.CovidaJMEComponent;
-import de.dfki.covida.visualjme2.components.TextOverlay;
+import de.dfki.covida.visualjme2.components.CovidaTextComponent;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
 import java.util.ArrayList;
@@ -58,8 +58,8 @@ public class VideoSlider extends CovidaJMEComponent implements ISlider {
     private static final int WIDTH = 1000;
     private static final int HEIGHT = 100;
     private VideoComponent video;
-    private TextOverlay textOverlay;
-    private TextOverlay timeOverlay;
+    private CovidaTextComponent textOverlay;
+    private CovidaTextComponent timeOverlay;
     private Node sliderNode;
 
     public VideoSlider(VideoComponent video) {
@@ -68,11 +68,11 @@ public class VideoSlider extends CovidaJMEComponent implements ISlider {
                 new Vector3f((float) video.getWidth() / ((float) getWidth()*1.5f),
                 (float) video.getWidth() / ((float) getWidth()*1.5f), 1));
         this.video = video;
-        timeOverlay = new TextOverlay(this);
+        timeOverlay = new CovidaTextComponent(this);
         timeOverlay.setLocalTranslation(-getWidth() * 0.45f, getHeight(), 0);
         timeOverlay.setAlign(Align.Left);
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, timeOverlay.node));
-        textOverlay = new TextOverlay(this);
+        textOverlay = new CovidaTextComponent(this);
         textOverlay.setLocalTranslation(-getWidth() * 0.515f, getHeight(), 0);
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, textOverlay.node));
         textOverlay.setAlign(Align.Right);

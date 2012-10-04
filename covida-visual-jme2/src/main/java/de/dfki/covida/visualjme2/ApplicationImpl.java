@@ -5,7 +5,6 @@
 package de.dfki.covida.visualjme2;
 
 import de.dfki.touchandwrite.TouchAndWriteDevice;
-import org.apache.log4j.Logger;
 
 /**
  *
@@ -17,11 +16,6 @@ public class ApplicationImpl extends AbstractApplication {
      * {@link TouchAndWriteDevice}
      */
     private final TouchAndWriteDevice device;
-    /**
-     * Logger
-     */
-    private Logger log = Logger.getLogger(ApplicationImpl.class);
-
     /**
      * Creates an instance of {@link ApplicationImpl}
      *

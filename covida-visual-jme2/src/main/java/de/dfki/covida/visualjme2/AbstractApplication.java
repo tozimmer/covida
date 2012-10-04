@@ -46,8 +46,7 @@ import com.jme.util.stat.StatCollector;
 import com.jmex.audio.AudioSystem;
 import de.dfki.covida.covidacore.tw.IApplication;
 import de.dfki.covida.visualjme2.utils.CovidaRootNode;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.log4j.Logger;
 
 /**
  * Abstract application
@@ -67,7 +66,7 @@ public abstract class AbstractApplication extends AbstractGame implements IAppli
     /**
      * Logger
      */
-    protected static final Logger logger = Logger.getLogger(AbstractApplication.class.getName());
+    protected Logger log;
     /**
      * The camera that we see through.
      */
@@ -162,7 +161,7 @@ public abstract class AbstractApplication extends AbstractGame implements IAppli
                  */
                 rootNode.updateGeometricState(tpf, true);
             } catch (IndexOutOfBoundsException e) {
-                logger.warning(e.toString());
+                log.warn(e.toString());
             }
         }
     }
@@ -189,7 +188,7 @@ public abstract class AbstractApplication extends AbstractGame implements IAppli
              */
             r.draw(rootNode);
         } catch (IndexOutOfBoundsException e) {
-            logger.warning(e.toString());
+            log.warn(e.toString());
         }
 
         /**
@@ -214,7 +213,7 @@ public abstract class AbstractApplication extends AbstractGame implements IAppli
              * If the displaysystem can't be initialized correctly, exit
              * instantly.
              */
-            logger.log(Level.SEVERE, "Could not create displaySystem", e);
+            log.warn("Could not create displaySystem", e);
             //TODO exit or quit?
             System.exit(1);
         }
@@ -251,7 +250,8 @@ public abstract class AbstractApplication extends AbstractGame implements IAppli
      */
     @Override
     protected void initSystem() throws JmeException {
-        logger.info(getVersion());
+        log = Logger.getLogger(getClass());
+        log.info(getVersion());
         try {
             /**
              * Get a DisplaySystem acording to the renderer selected in the
@@ -268,7 +268,9 @@ public abstract class AbstractApplication extends AbstractGame implements IAppli
              */
             display.createWindow(settings.getWidth(), settings.getHeight(),
                     settings.getDepth(), settings.getFrequency(), settings.isFullscreen());
-            logger.log(Level.INFO, "Running on: {0}\nDriver version: {1}\n{2} - {3} - {4}", new Object[]{display.getAdapter(), display.getDriverVersion(), display.getDisplayVendor(), display.getDisplayRenderer(), display.getDisplayAPIVersion()});
+            log.info("Running on: " + display.getAdapter());
+            log.info("Driver version: " + display.getDriverVersion());
+            log.info(display.getDisplayVendor() + " - " + display.getDisplayRenderer() + " - " + display.getDisplayAPIVersion());
 
             /**
              * Create a camera specific to the DisplaySystem that works with the
@@ -281,7 +283,7 @@ public abstract class AbstractApplication extends AbstractGame implements IAppli
              * If the displaysystem can't be initialized correctly, exit
              * instantly.
              */
-            logger.log(Level.SEVERE, "Could not create displaySystem", e);
+            log.warn("Could not create displaySystem", e);
             System.exit(1);
         }
         /**
@@ -385,7 +387,7 @@ public abstract class AbstractApplication extends AbstractGame implements IAppli
             rootNode.updateGeometricState(0.0f, true);
             rootNode.updateRenderState();
         } catch (IndexOutOfBoundsException e) {
-            logger.warning(e.toString());
+            log.warn(e.toString());
         }
 
         timer.reset();
@@ -430,7 +432,7 @@ public abstract class AbstractApplication extends AbstractGame implements IAppli
      */
     @Override
     protected void cleanup() {
-        logger.info("Cleaning up resources.");
+        log.info("Cleaning up resources.");
 
         TextureManager.doTextureCleanup();
         if (display != null && display.getRenderer() != null) {
@@ -450,7 +452,7 @@ public abstract class AbstractApplication extends AbstractGame implements IAppli
      */
     @Override
     public final void start() {
-        logger.info("Application started.");
+        log.info("Application started.");
         try {
             getAttributes();
             if (!finished) {
@@ -471,7 +473,7 @@ public abstract class AbstractApplication extends AbstractGame implements IAppli
                 }
             }
         } catch (Throwable t) {
-            logger.logp(Level.SEVERE, this.getClass().toString(), "start()",
+            log.error(this.getClass().toString() + "start()" +
                     "Exception in game loop", t);
             if (throwableHandler != null) {
                 throwableHandler.handle(t);
@@ -479,7 +481,7 @@ public abstract class AbstractApplication extends AbstractGame implements IAppli
         }
 
         cleanup();
-        logger.info("Application ending.");
+        log.info("Application ending.");
 
         if (display != null) {
             display.reset();
@@ -514,7 +516,7 @@ public abstract class AbstractApplication extends AbstractGame implements IAppli
                 }
             }
         } catch (Throwable t) {
-            logger.logp(Level.SEVERE, this.getClass().toString(), "start()",
+            log.error(this.getClass().toString() + "start()" +
                     "Exception in game loop", t);
             if (throwableHandler != null) {
                 throwableHandler.handle(t);
@@ -522,7 +524,7 @@ public abstract class AbstractApplication extends AbstractGame implements IAppli
         }
 
         //cleanup();
-        logger.info("Application ending.");
+        log.info("Application ending.");
     }
 
     /**

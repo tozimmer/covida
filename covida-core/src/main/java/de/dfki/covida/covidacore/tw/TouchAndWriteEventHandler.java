@@ -240,6 +240,7 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
     public void onPenEvent(String device, int x, int y, float force, PenEventDataType penEventState, long timestamp, String eventPageID) {
         for (ITouchAndWriteComponent component : componentHandler.getComponents()) {
             if (component.inArea(x, y)) {
+                log.debug(x+" "+y);
                 component.draw(x, y);
             }
         }

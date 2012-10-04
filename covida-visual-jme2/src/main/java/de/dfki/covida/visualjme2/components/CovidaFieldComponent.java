@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.dfki.covida.visualjme2.components.annotation;
+package de.dfki.covida.visualjme2.components;
 
 import com.jme.animation.SpatialTransformer;
 import com.jme.image.Texture;
@@ -16,8 +16,7 @@ import com.jme.util.TextureManager;
 import com.jmex.awt.swingui.ImageGraphics;
 import de.dfki.covida.covidacore.data.Annotation;
 import de.dfki.covida.covidacore.data.AnnotationData;
-import de.dfki.covida.visualjme2.components.CovidaJMEComponent;
-import de.dfki.covida.visualjme2.components.TextOverlay;
+import de.dfki.covida.visualjme2.components.annotation.AnnotationClipboard;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
 import de.dfki.covida.visualjme2.utils.DetachChildCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
@@ -29,23 +28,19 @@ import org.apache.log4j.Logger;
  *
  * @author Tobias Zimmermann
  */
-public abstract class Field extends CovidaJMEComponent {
+public abstract class CovidaFieldComponent extends CovidaJMEComponent {
 
     /**
      * Config
      */
-    public ColorRGBA color = new ColorRGBA(1, 1, 1, 0);
-    static ColorRGBA defaultColor = new ColorRGBA(1, 1, 1, 1);
-    static ColorRGBA activeColor = new ColorRGBA(1, 0, 0, 1);
-    static ColorRGBA selectedColor = new ColorRGBA(0, 1, 0, 1);
-    static final int ANIMATION_DURATION = 500;
-    static final int FONT_SIZE = 30;
-    static final int TEXT_SPACER = 2;
-    static int textBeginY;
-    /**
-     * Logger
-     */
-    protected Logger log = Logger.getLogger(AnnotationClipboard.class);
+    protected ColorRGBA color = new ColorRGBA(1, 1, 1, 0);
+    protected static ColorRGBA defaultColor = new ColorRGBA(1, 1, 1, 1);
+    protected static ColorRGBA activeColor = new ColorRGBA(1, 0, 0, 1);
+    protected static ColorRGBA selectedColor = new ColorRGBA(0, 1, 0, 1);
+    protected static final int ANIMATION_DURATION = 500;
+    protected static final int FONT_SIZE = 30;
+    protected static final int TEXT_SPACER = 2;
+    protected static int textBeginY;
     /**
      * image
      */
@@ -68,7 +63,7 @@ public abstract class Field extends CovidaJMEComponent {
      * Drawing will be done with Java2D.
      */
     protected ImageGraphics g2d;
-    List<String> hwrResults;
+    protected List<String> hwrResults;
     @SuppressWarnings("unused")
     protected Color currentPenColor;
     protected boolean penPressure;
@@ -76,7 +71,7 @@ public abstract class Field extends CovidaJMEComponent {
     protected TextureState tsSpacer;
     protected Texture textureSpacer;
     protected boolean detach = true;
-    protected ArrayList<TextOverlay> titles;
+    protected ArrayList<CovidaTextComponent> titles;
     protected int selectedTitle = -1;
     /**
      * maps index to video id
@@ -85,7 +80,7 @@ public abstract class Field extends CovidaJMEComponent {
     /**
      * Map with all search results mapped on video ids
      */
-    protected HashMap<Integer, ArrayList<TextOverlay>> entryMap;
+    protected HashMap<Integer, ArrayList<CovidaTextComponent>> entryMap;
     /**
      * Map with all search results mapped to annotation ids
      */
@@ -93,13 +88,13 @@ public abstract class Field extends CovidaJMEComponent {
     /**
      * HWR TextOverlays
      */
-    protected ArrayList<TextOverlay> hwr;
+    protected ArrayList<CovidaTextComponent> hwr;
     protected Map<Integer, Vector2f> lastTouch = new HashMap<>();
     protected float yDrag = 0;
     protected float xDrag = 0;
     protected SpatialTransformer st;
 
-    public Field(String name) {
+    public CovidaFieldComponent(String name) {
         super(name);
     }
     
@@ -123,11 +118,11 @@ public abstract class Field extends CovidaJMEComponent {
         tsSpacer.setTexture(textureSpacer);
     }
 
-    abstract void update();
+    protected abstract void update();
 
-    abstract float getTextY(int position);
+    protected abstract float getTextY(int position);
 
-    abstract void addSpacer(int x, int y, float angle, int width, int height);
+    protected abstract void addSpacer(int x, int y, float angle, int width, int height);
 
     /**
      *

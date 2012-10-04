@@ -30,7 +30,11 @@ package de.dfki.covida.visualjme2;
 import com.jme.util.GameTaskQueueManager;
 import de.dfki.covida.covidacore.data.VideoFormat;
 import de.dfki.covida.covidacore.data.VideoMediaData;
+import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.videovlcj.preload.VideoPreload;
+import de.dfki.covida.visualjme2.components.ControlButton;
+import de.dfki.covida.visualjme2.components.annotation.AnnotationClipboard;
+import de.dfki.covida.visualjme2.components.annotation.AnnotationSearchField;
 import de.dfki.covida.visualjme2.components.video.VideoComponent;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
 import de.dfki.covida.visualjme2.utils.CovidaRootNode;
@@ -88,6 +92,37 @@ public class CovidaApplicationPreloader implements Runnable {
             }
         }
     }
+    
+    private void createSideMenus(){
+        AnnotationClipboard clipboard = new AnnotationClipboard(
+                "media/textures/clipboard_field_color.png",
+                application.getWidth()/2, (int) (application.getHeight()/1.5f));
+        ControlButton clipboardButton = new ControlButton(ActionName.CLOSE, 
+                clipboard, "media/textures/arrow.png", 
+                "media/textures/arrow.png", 64, 64);
+        application.addComponent(clipboardButton);
+        AnnotationSearchField search = new AnnotationSearchField(
+                "media/textures/search_field_color.png", 
+                application.getWidth()/2, (int) (application.getHeight()/1.5f));
+        ControlButton searchButton = new ControlButton(ActionName.CLOSE, 
+                search, "media/textures/search.png", 
+                "media/textures/search.png", 64, 64);
+        application.addComponent(searchButton);
+        AnnotationClipboard clipboard2 = new AnnotationClipboard(
+                "media/textures/clipboard_field_color.png",
+                application.getWidth()/2, (int) (application.getHeight()/1.5f));
+        ControlButton clipboardButton2 = new ControlButton(ActionName.CLOSE, 
+                clipboard2, "media/textures/arrow.png", 
+                "media/textures/arrow.png", 64, 64);
+        application.addComponent(clipboardButton2);
+        AnnotationSearchField search2 = new AnnotationSearchField(
+                "media/textures/search_field_color.png", 
+                application.getWidth()/2, (int) (application.getHeight()/1.5f));
+        ControlButton searchButton2 = new ControlButton(ActionName.CLOSE, 
+                search2, "media/textures/search.png", 
+                "media/textures/search.png", 64, 64);
+        application.addComponent(searchButton2);
+    }
 
     public void cleanUp() {
         for (VideoPreload preload : preloadVideos) {
@@ -123,6 +158,7 @@ public class CovidaApplicationPreloader implements Runnable {
         application.endLoadingAnimation();
         for (VideoComponent video : videos) {
             application.addComponent(video);
+            createSideMenus();
         }
     }
 }
