@@ -30,7 +30,6 @@ package de.dfki.covida.visualjme2.components.video;
 import com.jme.animation.SpatialTransformer;
 import com.jme.image.Texture;
 import com.jme.image.Texture.WrapMode;
-import com.jme.math.Quaternion;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.scene.shape.Quad;
@@ -51,7 +50,7 @@ import de.dfki.covida.visualjme2.animations.DragAnimation;
 import de.dfki.covida.visualjme2.animations.ResetAnimation;
 import de.dfki.covida.visualjme2.components.CovidaJMEComponent;
 import de.dfki.covida.visualjme2.components.CovidaTextComponent;
-import de.dfki.covida.visualjme2.components.video.fields.DisplayFieldComponent;
+import de.dfki.covida.visualjme2.components.video.fields.InfoFieldComponent;
 import de.dfki.covida.visualjme2.components.video.fields.ListFieldComponent;
 import de.dfki.covida.visualjme2.utils.AddControllerCallable;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
@@ -60,8 +59,12 @@ import de.dfki.covida.visualjme2.utils.JMEUtils;
 import de.dfki.covida.visualjme2.utils.RemoveControllerCallable;
 import de.dfki.touchandwrite.input.pen.event.ShapeEvent;
 import de.dfki.touchandwrite.shape.ShapeType;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Point;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 
 /**
@@ -85,7 +88,7 @@ public final class VideoComponent extends CovidaJMEComponent implements
     /**
      * Info field with current annotation
      */
-    private DisplayFieldComponent infoField;
+    private InfoFieldComponent infoField;
     /**
      * List field with all annotation
      */
@@ -101,7 +104,7 @@ public final class VideoComponent extends CovidaJMEComponent implements
     /**
      * Default overlay.
      */
-    protected Quad overlay;
+    private Quad overlay;
     /**
      * Overlay for the video title
      */
@@ -135,8 +138,8 @@ public final class VideoComponent extends CovidaJMEComponent implements
      */
     private TextureState overlayDragState;
     /**
-     * Overlay state for not dragging video components 
-     * (not dragging texture state)
+     * Overlay state for not dragging video components (not dragging texture
+     * state)
      */
     private TextureState overlayDragBlankState;
     /**
@@ -158,7 +161,7 @@ public final class VideoComponent extends CovidaJMEComponent implements
         video = new RenderedVideoHandler(source, title, (int) (height * UPSCALE_FACTOR), format.determineWidth((int) (height * UPSCALE_FACTOR)));
         setDefaultPosition();
     }
-    
+
     /**
      * Calculates the {@link Font} size.
      *
@@ -171,10 +174,10 @@ public final class VideoComponent extends CovidaJMEComponent implements
     /**
      * Mehod which holds test method calls
      */
-    private void startTests() {
-//        DrawTest drawTest = new DrawTest(video);
-//        Thread drawTestThread = new Thread(drawTest);
-//        drawTestThread.start();
+    public void startTests() {
+        DrawTest drawTest = new DrawTest(video);
+        Thread drawTestThread = new Thread(drawTest);
+        drawTestThread.start();
 //        HWRTest hwrTest = new HWRTest(this);
 //        Thread hwrTestThread=  new Thread(hwrTest);
 //        hwrTestThread.start();
@@ -184,6 +187,35 @@ public final class VideoComponent extends CovidaJMEComponent implements
 //        RotateTest rotateTest = new RotateTest(this);
 //        Thread rotateThread = new Thread(rotateTest);
 //        rotateThread.start();
+        if (video.getTitle().equals("CoVidA Demo")) {
+            video.draw(new Point(25, 25));
+            video.draw(new Point(25, 50));
+            video.draw(new Point(35, 65));
+            video.draw(new Point(70, 100));
+            video.draw(new Point(20, 85));
+            video.draw(new Point(25, 25));
+            move(getLocalTranslation().x, getLocalTranslation().y + 400);
+            rotate(180.f, new Vector3f(0, 0, 1));
+            attachAnnotation();
+            Annotation annotation = new Annotation();
+            annotation.description = "test";
+            annotation.shapePoints = new ArrayList<>();
+            annotation.shapeType = ShapeType.POLYGON;
+            annotation.time_end = Long.valueOf(200);
+            annotation.time_start = Long.valueOf(200);
+            infoField.setAnnotationData(annotation);
+            infoField.drawHwrResult("Test");
+        } else {
+            attachList();
+            ArrayList<Long> entries = new ArrayList<>();
+            entries.add(Long.valueOf(15000));
+            entries.add(Long.valueOf(550000));
+            entries.add(Long.valueOf(6655000));
+            entries.add(Long.valueOf(7898000));
+            listField.updateEntries(entries);
+            listField.drawEntries();
+            node.setLocalScale(0.75f);
+        }
     }
 
     /**
@@ -205,19 +237,19 @@ public final class VideoComponent extends CovidaJMEComponent implements
         infoField.setAnnotationData(annotation);
         toFront();
     }
-    
+
     /**
      * Returns info field status
-     * 
+     *
      * @return true if info field is attached to the {@link VideoComponent}
      */
     private boolean hasInfoField() {
         return infoField.isOpen();
     }
-    
+
     /**
      * Initialized the overlay quads and texture states.
-     * 
+     *
      * @param alpha {@link BlendState}
      */
     private void initalizeOverlayQuads(BlendState alpha) {
@@ -311,11 +343,10 @@ public final class VideoComponent extends CovidaJMEComponent implements
             listField.close();
         }
     }
-    
-    
+
     /**
      * Sets title overlay status in the video {@link MediaPlayer}
-     * 
+     *
      * @param enabled if true title overlay is enabled
      */
     public void setTitleOverlayEnabled(boolean enabled) {
@@ -324,8 +355,8 @@ public final class VideoComponent extends CovidaJMEComponent implements
 
     /**
      * Enable time code overlay in the video {@link MediaPlayer}
-     * 
-     * @param timeout 
+     *
+     * @param timeout
      */
     public void enableTimeCodeOverlay(long timeout) {
         video.enableTimeCodeOverlay(timeout);
@@ -336,7 +367,6 @@ public final class VideoComponent extends CovidaJMEComponent implements
      */
     public void createControls() {
         controls = new VideoComponentControls(this);
-        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, controls.node));
         slider = new VideoSlider(this);
         slider.getLocalTranslation().set(
                 new Vector3f(-15, -30 - getHeight() / 2, 0));
@@ -352,7 +382,6 @@ public final class VideoComponent extends CovidaJMEComponent implements
 
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, videoQuad));
 
-        video.setLoggin(false);
         video.setSlider(slider);
         video.setControls(controls);
 
@@ -372,14 +401,12 @@ public final class VideoComponent extends CovidaJMEComponent implements
         listField.setLocalTranslation(-getWidth() * (0.75f), 0, 0);
         listField.initComponent();
         listField.setDefaultPosition();
-        attachList();
-        infoField = new DisplayFieldComponent("media/textures/bg_info.png",
+        infoField = new InfoFieldComponent("media/textures/bg_info.png",
                 this, listField, (int) (getHeight() * (0.55f)),
                 (int) (getHeight() * 1.2f));
         infoField.setLocalTranslation(getWidth() * (0.75f), 0, 0);
         infoField.initComponent();
         infoField.setDefaultPosition();
-        attachAnnotation();
     }
 
     /**
@@ -399,13 +426,12 @@ public final class VideoComponent extends CovidaJMEComponent implements
     /**
      * Adds points to shape which will be drawn on the video
      *
-     * @param points {@link ShapePoints} which contains the point data.
+     * @param points {@link List} which contains the point data.
      */
-    public void draw(ShapePoints points) {
+    public void draw(List<Point> points) {
         video.setShape(points);
     }
-    
-    
+
     /**
      * Method to set video repeat flag
      *
@@ -488,17 +514,16 @@ public final class VideoComponent extends CovidaJMEComponent implements
     public void videoChange(File file) {
         video.setMedia(file.getAbsolutePath());
     }
-    
-    
+
     /**
+     * Returns repeating status.
      *
-     *
-     * @return
+     * @return true if video repeating is enabled.
      */
     public boolean isRepeating() {
         return video.isRepeat();
     }
-        
+
     /**
      * Loads annotation data into InfoField.
      *
@@ -523,14 +548,14 @@ public final class VideoComponent extends CovidaJMEComponent implements
     /**
      * Returns true if AnnotationList is attached.
      *
-     * @return
+     * @return true if AnnotationList is attached.
      */
     public boolean hasList() {
         return listField.isOpen();
     }
 
     /**
-     * Shows AnnotationField
+     * Attachs AnnotationField
      */
     public void attachAnnotation() {
         if (!hasInfoField()) {
@@ -540,7 +565,7 @@ public final class VideoComponent extends CovidaJMEComponent implements
     }
 
     /**
-     * Shows AnnotationField
+     * Detaches AnnotationField
      */
     public void detachAnnotation() {
         if (hasInfoField()) {
@@ -555,7 +580,6 @@ public final class VideoComponent extends CovidaJMEComponent implements
         toggleSelected();
     }
 
-
     public Vector3f resetLocalTranslation(Vector3f local) {
         return local.add(new Vector3f(getLocalTranslation().x,
                 getLocalTranslation().x, 0));
@@ -564,28 +588,25 @@ public final class VideoComponent extends CovidaJMEComponent implements
     /**
      * Sets the local scale of the node from this instance of VideoComponent
      *
-     * @param scale
+     * @param scale Video scale as {@link Float} Note that 1.f is the standart
+     * scale
      */
     public void rescale(float scale) {
         this.setLocalScale(scale);
     }
 
+    /**
+     * Returns video dimensions.
+     *
+     * @return {@link Dimension} of the video.
+     */
     public Dimension getVideoDimension() {
         return video.getDimension();
     }
 
     /**
-     * Rotate the node from this instance of VideoComponent
-     *
-     * @param angle
-     * @param axis
+     * Method which selects and deselects the component
      */
-    public void rotate(float angle, Vector3f axis) {
-        Quaternion rotation = new Quaternion();
-        rotation.fromAngleAxis(angle, axis);
-        setLocalRotation(rotation);
-    }
-
     public void toggleSelected() {
         if (!overlay.getRenderState(RenderState.StateType.Texture).equals(overlaySelectState)) {
             overlay.setRenderState(overlaySelectState);
@@ -600,10 +621,16 @@ public final class VideoComponent extends CovidaJMEComponent implements
         }
     }
 
+    /**
+     * Detachs the controls from the video.
+     */
     private void detachMenu() {
         GameTaskQueueManager.getManager().update(new DetachChildCallable(node, controls.node));
     }
 
+    /**
+     * Attachs the controls from the video.
+     */
     private void attachControls() {
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, controls.node));
     }
@@ -623,6 +650,9 @@ public final class VideoComponent extends CovidaJMEComponent implements
         GameTaskQueueManager.getManager().update(new AddControllerCallable(node, stReset));
     }
 
+    /**
+     * Starts the drag animation.
+     */
     public void startDragAnimation() {
         overlayDrag.setRenderState(overlayDragState);
         overlayDrag.updateRenderState();
@@ -630,6 +660,9 @@ public final class VideoComponent extends CovidaJMEComponent implements
         GameTaskQueueManager.getManager().update(new AddControllerCallable(overlayDrag, stDrag));
     }
 
+    /**
+     * Ends the drag animation
+     */
     public void stopDragAniation() {
         overlayDrag.setRenderState(overlayDragBlankState);
         overlayDrag.updateRenderState();
@@ -637,26 +670,52 @@ public final class VideoComponent extends CovidaJMEComponent implements
         GameTaskQueueManager.getManager().update(new RemoveControllerCallable(overlayDrag, stDrag));
     }
 
+    /**
+     * Returns true if video component is ready.
+     *
+     * @return true if video is ready to play.
+     */
     public boolean isReady() {
         return video.isReady();
     }
 
+    /**
+     * Sets the volome.
+     *
+     * @param i Volume as {@link Integer} Note that 0 is muted and 100 is full
+     * volume.
+     */
     public void setVolume(int i) {
         video.setVolume(i);
     }
 
+    /**
+     * Returns the end postion from the video as {@link Long}
+     *
+     * @return end position in ms as {@link Long}
+     */
     public long getMaxTime() {
         return video.getMaxTime();
     }
 
+    /**
+     * Returns the current time position.
+     *
+     * @return current time position in ms as {@link Long}
+     */
     public long getTime() {
         return video.getTime();
     }
 
+    /**
+     * Returns video progress as {@link String}
+     *
+     * @return video progress.
+     */
     public String getVideoProgress() {
         return video.getVideoProgress();
     }
-    
+
     @Override
     public void dragAction(int id, int x, int y, int dx, int dy) {
         startDragAnimation();
@@ -695,6 +754,7 @@ public final class VideoComponent extends CovidaJMEComponent implements
     public void hwrAction(String hwr) {
         video.clearDrawing();
         video.setHWR(hwr);
+        infoField.drawHwrResult(hwr);
     }
 
     /**
@@ -716,9 +776,6 @@ public final class VideoComponent extends CovidaJMEComponent implements
         return video.getHeight();
     }
 
-    /**
-     * Releases native sources
-     */
     @Override
     public void cleanUp() {
         log.debug("cleanup video (id: " + getId() + ")");
@@ -726,7 +783,7 @@ public final class VideoComponent extends CovidaJMEComponent implements
         this.infoField.cleanUp();
         this.listField.cleanUp();
         this.slider.cleanUp();
-        video.cleanup();
+        video.cleanUp();
     }
 
     @Override

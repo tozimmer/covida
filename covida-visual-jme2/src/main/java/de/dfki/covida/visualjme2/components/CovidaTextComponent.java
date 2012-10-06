@@ -40,8 +40,12 @@ import de.dfki.covida.visualjme2.utils.AttachChildCallable;
 import de.dfki.covida.visualjme2.utils.DetachChildCallable;
 import de.dfki.covida.visualjme2.utils.FontLoader;
 import de.dfki.covida.visualjme2.utils.RemoveControllerCallable;
-import org.apache.log4j.Logger;
 
+/**
+ * CovidaTextComponent
+ *
+ * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
+ */
 public class CovidaTextComponent extends CovidaJMEComponent {
 
     /**
@@ -89,7 +93,7 @@ public class CovidaTextComponent extends CovidaJMEComponent {
     }
 
     public void update() {
-        
+
         txt.setText(text);
         txt.setSize(size);
         txt.setLocalTranslation(0, (float) size / 2.f, 0);
@@ -117,7 +121,6 @@ public class CovidaTextComponent extends CovidaJMEComponent {
     public void fadeOut(float time) {
         txt.setDefaultColor(color);
         TimedLifeController fader = new TimedLifeController(time) {
-
             @Override
             public void updatePercentage(float percentComplete) {
                 color.a = 1 - percentComplete;
@@ -130,7 +133,6 @@ public class CovidaTextComponent extends CovidaJMEComponent {
     public void fadeIn(float time) {
         txt.setDefaultColor(color);
         TimedLifeController fader = new TimedLifeController(time) {
-
             @Override
             public void updatePercentage(float percentComplete) {
                 color.a = percentComplete;

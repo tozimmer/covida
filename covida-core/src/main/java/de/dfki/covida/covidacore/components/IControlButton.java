@@ -17,4 +17,6 @@ public interface IControlButton {
     public void setEnabled(boolean enabled);
     
     public boolean getEnabled();
+    
+    public void toggle();
 }

@@ -48,33 +48,58 @@ import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+/**
+ * Class which handles the {@link Annotation}s.
+ *
+ * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
+ */
 @XmlRootElement(name = "data")
 public class AnnotationData implements Serializable {
 
     /**
-     *
+     * serialVersionUID
      */
     private static final long serialVersionUID = 5408416424492049902L;
+    /**
+     * Video source as {@link String}
+     */
     @XmlElement(name = "videoSource")
     public String videoSource;
+    /**
+     * Video title as {@link String}
+     */
     @XmlElement(name = "title")
     public String title;
-    @XmlElement(name = "annotation")
+    /**
+     * List of {@link Annotation}
+     */
     @XmlElementWrapper(name = "annotations")
+    @XmlElement(name = "annotation")
     public List<Annotation> annotations;
     /**
      * Logger
      */
     private static Logger log = Logger.getLogger(AnnotationData.class);
 
+    /**
+     * Creates a new instance of {@link AnnotationData}
+     */
     public AnnotationData() {
         annotations = new ArrayList<>();
     }
 
+    /**
+     * Returns the amount of {@link Annotation}s.
+     * 
+     * @return amount of {@link Annotation}s.
+     */
     public int size() {
         return annotations.size();
     }
 
+    /**
+     * Exports {@link AnnotationData} to Anvil compatible format
+     */
     public void export() {
         /**
          * Create new document
@@ -139,22 +164,31 @@ public class AnnotationData implements Serializable {
             StringWriter sw_spec = new StringWriter();
             StreamResult result_spec = new StreamResult(sw_spec);
             DOMSource source_spec = new DOMSource(doc);
-            try {
-                trans_spec.transform(source_spec, result_spec);
-            } catch (TransformerException e) {
-                log.error(e);
+            if (trans_spec != null) {
+                try {
+                    trans_spec.transform(source_spec, result_spec);
+                } catch (TransformerException e) {
+                    log.error(e);
+                }
             }
             String xmlString_spec = sw_spec.toString();
             //write xml
+            BufferedWriter out = null;
             try {
                 // Create file 
                 FileWriter fstream = new FileWriter(videoSource + "_spec.xlm");
-                BufferedWriter out = new BufferedWriter(fstream);
+                out = new BufferedWriter(fstream);
                 out.write(xmlString_spec);
-                //Close the output stream
-                out.close();
-            } catch (Exception e) {//Catch exception if any
+            } catch (IOException e) {
                 log.error(e);
+            } finally {
+                if (out != null) {
+                    try {
+                        out.close();
+                    } catch (IOException ex) {
+                        log.error(ex);
+                    }
+                }
             }
 
             /**
@@ -204,7 +238,7 @@ public class AnnotationData implements Serializable {
                 token.setTextContent(annotations.get(i).description);
                 el.appendChild(token);
                 if (annotations.get(i).shapePoints == null) {
-                    ShapePoints points = new ShapePoints();
+                    List<Point> points = new ArrayList<>();
                     points.add(new Point(0, 0));
                     annotations.get(i).shapePoints = points;
                     log.debug(
@@ -222,7 +256,6 @@ public class AnnotationData implements Serializable {
             /**
              * Output to the XML file
              */
-            //set up a transformer
             TransformerFactory transfac = TransformerFactory.newInstance();
             Transformer trans = null;
             try {
@@ -234,72 +267,66 @@ public class AnnotationData implements Serializable {
                 trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
                 trans.setOutputProperty(OutputKeys.INDENT, "yes");
             }
-            //create string from xml tree
             StringWriter sw = new StringWriter();
             StreamResult result = new StreamResult(sw);
             DOMSource source = new DOMSource(doc);
-            try {
-                trans.transform(source, result);
-            } catch (TransformerException e) {
-                log.error(e);
+            if (trans != null) {
+                try {
+                    trans.transform(source, result);
+                } catch (TransformerException e) {
+                    log.error(e);
+                }
             }
             String xmlString = sw.toString();
-            //write XML file
             try {
-                // Create file 
                 FileWriter fstream = new FileWriter(videoSource + ".anvil");
-                BufferedWriter out = new BufferedWriter(fstream);
+                out = new BufferedWriter(fstream);
                 out.write(xmlString);
-                //Close the output stream
-                out.close();
-            } catch (Exception e) {//Catch exception if any
+            } catch (IOException e) {
                 log.error(e);
+            } finally {
+                try {
+                    out.close();
+                } catch (IOException ex) {
+                    log.error("Closing stream failed: ", ex);
+                }
             }
         }
     }
 
+    /**
+     * Savves the annotation data to a XML file.
+     */
     public void save() {
         JAXBContext jc;
         File file = new File(videoSource + ".xml");
         log.debug("Write data to: " + file);
+        FileWriter w = null;
         try {
             jc = JAXBContext.newInstance(AnnotationData.class);
             Marshaller m = jc.createMarshaller();
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-            FileWriter w = new FileWriter(file);
+            w = new FileWriter(file);
             m.marshal(this, w);
-            log.debug("Written data to: " + file);
+            log.debug(
+                    "Written data to: " + file);
         } catch (JAXBException | IOException e) {
             log.error(e);
-        }
-    }
-
-    public static AnnotationData load(File file) {
-        AnnotationData instance;
-        try {
-            if (file != null && file.canRead()) {
-                JAXBContext jc = JAXBContext.newInstance(AnnotationData.class);
-                Unmarshaller u = jc.createUnmarshaller();
-                instance = (AnnotationData) u.unmarshal(file);
-                log.debug("Data file loaded at location: "
-                        + file.getAbsolutePath());
-            } else {
-                log.debug("No data file exists at location: "
-                        + file.getAbsolutePath()+
-                        " create new VideoAnnotationData");
-                instance = new AnnotationData();
+        } finally {
+            if (w != null) {
+                try {
+                    w.close();
+                } catch (IOException ex) {
+                    log.error(ex);
+                }
             }
-        } catch (JAXBException e) {
-            log.debug(e + " create new VideoAnnotationData");
-            instance = new AnnotationData();
         }
-        log.debug(instance);
-        return instance;
     }
 
     /**
-     *
-     * @param id
+     * Removes the {@link Annotation} with the given id.
+     * 
+     * @param id ID of the {@link Annotation}
      * @return true if removing was a success
      */
     public boolean remove(int id) {
@@ -311,6 +338,12 @@ public class AnnotationData implements Serializable {
         }
     }
 
+    /**
+     * Returns the identifier list of {@link Annotation} als {@link List} of
+     * {@link Long}.
+     * 
+     * @return {@link List} of {@link Long}.
+     */
     public ArrayList<Long> getTimeList() {
         ArrayList<Long> list = new ArrayList<>();
         for (Annotation annotation : annotations) {
@@ -318,9 +351,45 @@ public class AnnotationData implements Serializable {
         }
         return list;
     }
-    
-    public List<Annotation> getAnnotations(){
+
+    /**
+     * Returns the {@link List} of {@link Annotation}s
+     * 
+     * @return {@link List} of {@link Annotation}s
+     */
+    public List<Annotation> getAnnotations() {
         return annotations;
+    }
+    
+    /**
+     * Loads {@link AnnotationData} from a XML file.
+     * 
+     * @param file {@link File} which represents the XML file.
+     * @return {@link AnnotationData}
+     */
+    public static AnnotationData load(File file) {
+        AnnotationData instance;
+
+
+        try {
+            if (file != null && file.canRead()) {
+                JAXBContext jc = JAXBContext.newInstance(AnnotationData.class);
+                Unmarshaller u = jc.createUnmarshaller();
+                instance = (AnnotationData) u.unmarshal(file);
+
+                log.debug(
+                        "Data file loaded at location: "
+                        + file.getAbsolutePath());
+            } else {
+                log.debug("No data file exists at location create new VideoAnnotationData");
+                instance = new AnnotationData();
+            }
+        } catch (JAXBException e) {
+            log.debug(e + " create new VideoAnnotationData");
+            instance = new AnnotationData();
+        }
+        log.debug(instance);
+        return instance;
     }
 
     @Override

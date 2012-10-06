@@ -46,6 +46,8 @@ import de.dfki.covida.visualjme2.components.CovidaFieldComponent;
 import de.dfki.covida.visualjme2.components.CovidaTextComponent;
 import de.dfki.covida.visualjme2.utils.AddControllerCallable;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
+import de.dfki.covida.visualjme2.utils.CovidaRootNode;
+import de.dfki.covida.visualjme2.utils.DetachChildCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
 import de.dfki.covida.visualjme2.utils.RemoveControllerCallable;
 import de.dfki.touchandwrite.math.FastMath;
@@ -57,11 +59,10 @@ import java.util.Map;
 /**
  * Component which displays annotation dataList of VideoComponent.
  *
- * @author Tobias Zimmermann
- *
+ * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
  */
-public class AnnotationSearchField extends CovidaFieldComponent implements 
-        IControlableComponent{
+public class AnnotationSearchField extends CovidaFieldComponent implements
+        IControlableComponent {
 
     /**
      * Search field constructor
@@ -350,6 +351,7 @@ public class AnnotationSearchField extends CovidaFieldComponent implements
 
     @Override
     public void close() {
+        GameTaskQueueManager.getManager().update(new DetachChildCallable(CovidaRootNode.node, node));
         detach = true;
         if (node.getControllers().contains(st)) {
             GameTaskQueueManager.getManager().update(new RemoveControllerCallable(node, st));
@@ -361,6 +363,7 @@ public class AnnotationSearchField extends CovidaFieldComponent implements
 
     @Override
     public void open() {
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(CovidaRootNode.node, node));
         detach = false;
         if (node.getControllers().contains(st)) {
             GameTaskQueueManager.getManager().update(new RemoveControllerCallable(node, st));
@@ -373,10 +376,10 @@ public class AnnotationSearchField extends CovidaFieldComponent implements
 
     @Override
     public boolean toggle(ActionName action) {
-        if(isOpen()){
+        if (isOpen()) {
             close();
             return false;
-        }else{
+        } else {
             open();
             return true;
         }

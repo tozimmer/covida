@@ -39,8 +39,7 @@ import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 /**
  * Component to preload videos for dimension detection
  *
- * @author Tobias Zimmermann
- *
+ * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
  */
 public class VideoPreload implements Runnable, MediaPlayerEventListener {
 
@@ -76,7 +75,9 @@ public class VideoPreload implements Runnable, MediaPlayerEventListener {
         this.renderer = new VideoRenderer(1, 1, "");
         mediaPlayer = (new MediaPlayerFactory()).newDirectMediaPlayer(1, 1, renderer);
         mediaPlayer.addMediaPlayerEventListener(this);
+        mediaPlayer.setVolume(0);
         mediaPlayer.playMedia(videoSource);
+        mediaPlayer.setPlaySubItems(true);
     }
 
     @Override
@@ -92,88 +93,116 @@ public class VideoPreload implements Runnable, MediaPlayerEventListener {
         return dimension;
     }
 
+    @Override
     public void mediaChanged(MediaPlayer mp, libvlc_media_t l, String string) {
     }
 
+    @Override
     public void opening(MediaPlayer mp) {
     }
 
+    @Override
     public void buffering(MediaPlayer mp, float f) {
     }
 
+    @Override
     public void playing(MediaPlayer mp) {
     }
 
+    @Override
     public void paused(MediaPlayer mp) {
     }
 
+    @Override
     public void stopped(MediaPlayer mp) {
     }
 
+    @Override
     public void forward(MediaPlayer mp) {
     }
 
+    @Override
     public void backward(MediaPlayer mp) {
     }
 
+    @Override
     public void finished(MediaPlayer mp) {
     }
 
+    @Override
     public void timeChanged(MediaPlayer mp, long l) {
     }
 
+    @Override
     public void positionChanged(MediaPlayer mp, float f) { 
         dimension = mediaPlayer.getVideoDimension();
     }
 
+    @Override
     public void seekableChanged(MediaPlayer mp, int i) {
     }
 
+    @Override
     public void pausableChanged(MediaPlayer mp, int i) {
     }
 
+    @Override
     public void titleChanged(MediaPlayer mp, int i) {
     }
 
+    @Override
     public void snapshotTaken(MediaPlayer mp, String string) {
     }
 
+    @Override
     public void lengthChanged(MediaPlayer mp, long l) {
     }
 
+    @Override
     public void videoOutput(MediaPlayer mp, int i) {
     }
 
+    @Override
     public void error(MediaPlayer mp) {
     }
 
+    @Override
     public void mediaMetaChanged(MediaPlayer mp, int i) {
     }
 
+    @Override
     public void mediaSubItemAdded(MediaPlayer mp, libvlc_media_t l) {
     }
 
+    @Override
     public void mediaDurationChanged(MediaPlayer mp, long l) {
     }
 
+    @Override
     public void mediaParsedChanged(MediaPlayer mp, int i) {
     }
 
+    @Override
     public void mediaFreed(MediaPlayer mp) {
     }
 
+    @Override
     public void mediaStateChanged(MediaPlayer mp, int i) {
     }
 
+    @Override
     public void newMedia(MediaPlayer mp) {
     }
 
+    @Override
     public void subItemPlayed(MediaPlayer mp, int i) {
     }
 
+    @Override
     public void subItemFinished(MediaPlayer mp, int i) {
     }
 
+    @Override
     public void endOfSubItems(MediaPlayer mp) {
     }
 }

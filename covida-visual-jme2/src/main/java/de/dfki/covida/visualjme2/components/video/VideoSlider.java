@@ -39,6 +39,7 @@ import com.jme.system.DisplaySystem;
 import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
 import com.jmex.angelfont.BitmapFont.Align;
+import de.dfki.covida.covidacore.utils.VideoUtils;
 import de.dfki.covida.videovlcj.ISlider;
 import de.dfki.covida.visualjme2.components.CovidaJMEComponent;
 import de.dfki.covida.visualjme2.components.CovidaTextComponent;
@@ -49,8 +50,7 @@ import java.util.ArrayList;
 /**
  * Time slider for VideoComponent
  *
- * @author Tobias Zimmermann
- *
+ * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
  */
 public class VideoSlider extends CovidaJMEComponent implements ISlider {
 
@@ -65,8 +65,8 @@ public class VideoSlider extends CovidaJMEComponent implements ISlider {
     public VideoSlider(VideoComponent video) {
         super("Video " + video.getId() + " Slider");
         setLocalScale(
-                new Vector3f((float) video.getWidth() / ((float) getWidth()*1.5f),
-                (float) video.getWidth() / ((float) getWidth()*1.5f), 1));
+                new Vector3f((float) video.getWidth() / ((float) getWidth() * 1.5f),
+                (float) video.getWidth() / ((float) getWidth() * 1.5f), 1));
         this.video = video;
         timeOverlay = new CovidaTextComponent(this);
         timeOverlay.setLocalTranslation(-getWidth() * 0.45f, getHeight(), 0);
@@ -126,6 +126,29 @@ public class VideoSlider extends CovidaJMEComponent implements ISlider {
 
     public VideoComponent getVideo() {
         return video;
+    }
+    
+    @Override
+    public void touchBirthAction(int id, int x, int y) {
+    }
+    
+    @Override
+    public void touchAliveAction(int id, int x, int y) {
+        Vector3f result = video.getLocal(x, y);
+        if (FastMath.abs(result.x) < (video.getWidth() / 2.0f)) {
+            video.setTimePosition((result.x + video.getWidth() / 2.0f)
+                    / video.getWidth());
+            textOverlay.setSize(16);
+            textOverlay.setText(video.getVideoProgress());
+            timeOverlay.setSize(16);
+            timeOverlay.setText(VideoUtils.getTimeCode(video.getTime()));
+        }
+    }
+
+
+    @Override
+    public void touchDeadAction(int id, int x, int y) {
+        
     }
 
     @Override

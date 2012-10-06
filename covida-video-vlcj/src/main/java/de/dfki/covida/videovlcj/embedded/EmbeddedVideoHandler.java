@@ -27,7 +27,6 @@
  */
 package de.dfki.covida.videovlcj.embedded;
 
-import de.dfki.covida.covidacore.data.ShapePoints;
 import de.dfki.covida.videovlcj.AbstractVideoHandler;
 import de.dfki.covida.videovlcj.VideoType;
 import java.awt.Canvas;
@@ -37,6 +36,7 @@ import java.awt.Window;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.JWindow;
 import org.apache.log4j.Logger;
@@ -57,7 +57,13 @@ public final class EmbeddedVideoHandler extends AbstractVideoHandler {
      * Logger.
      */
     private Logger log = Logger.getLogger(EmbeddedVideoHandler.class);
+    /**
+     * {@link EmbeddedMediaPlayer}
+     */
     private EmbeddedMediaPlayer embeddedMediaPlayer;
+    /**
+     * Video overlay
+     */
     private EmbeddedVideoOverlay overlay;
 
     /**
@@ -78,25 +84,47 @@ public final class EmbeddedVideoHandler extends AbstractVideoHandler {
         setOverlay(overlay);
     }
 
+    /**
+     * Returns the {@link EmbeddedMediaPlayerComponent}
+     *
+     * @return {@link EmbeddedMediaPlayerComponent}
+     */
     public EmbeddedMediaPlayerComponent getMediaPlayerComponent() {
         return mediaPlayerComponent;
     }
 
     /**
-     *
-     *
-     * @return
+     * Sets video overlay
+     * 
+     * @param win {@link JWindow}
      */
+    public void setOverlay(JWindow win) {
+        embeddedMediaPlayer.setOverlay(win);
+    }
+
+    /**
+     * Enables / Disables the video overlay
+     * 
+     * @param b {@link Boolean}
+     */
+    public void enableOverlay(boolean b) {
+        embeddedMediaPlayer.enableOverlay(b);
+    }
+
+    /**
+     * Returns the overlay
+     * 
+     * @return {@link Window}
+     */
+    public Window getOverlay() {
+        return embeddedMediaPlayer.getOverlay();
+    }
+
     @Override
     public BufferedImage getVideoImage() {
         return getSnapshot();
     }
 
-    /**
-     * Makes a snapshot of the video
-     *
-     * @return video snapshot as {@link BufferedImage}
-     */
     @Override
     public BufferedImage getSnapshot() {
         if (mediaPlayerComponent.getMediaPlayer() == null) {
@@ -149,22 +177,22 @@ public final class EmbeddedVideoHandler extends AbstractVideoHandler {
      * @return {@link ShapePoints}
      */
     @Override
-    public ShapePoints getShape() {
+    public List<Point> getShape() {
         return overlay.getSavedShape();
     }
 
     @Override
-    public ShapePoints getDrawing() {
+    public List<Point> getDrawing() {
         return overlay.getDrawing();
     }
 
     /**
      * Sets the shape points to draw on the video.
      *
-     * @param points {@link ShapePoints}
+     * @param points {@link List}
      */
     @Override
-    public void setShape(ShapePoints points) {
+    public void setShape(List<Point> points) {
         overlay.setShape(points);
     }
 
@@ -226,17 +254,5 @@ public final class EmbeddedVideoHandler extends AbstractVideoHandler {
     @Override
     public String getTitle() {
         throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void setOverlay(JWindow win) {
-        embeddedMediaPlayer.setOverlay(win);
-    }
-
-    public void enableOverlay(boolean b) {
-        embeddedMediaPlayer.enableOverlay(b);
-    }
-
-    public Window getOverlay() {
-        return embeddedMediaPlayer.getOverlay();
     }
 }

@@ -28,18 +28,71 @@
 package de.dfki.covida.covidacore.data;
 
 import de.dfki.touchandwrite.shape.ShapeType;
+import java.awt.Point;
+import java.io.Serializable;
+import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-public class Annotation {
+/**
+ * Serializable class which holds data of annotations.
+ *
+ * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
+ */
+@XmlRootElement(name = "annotation")
+public class Annotation implements Serializable {
 
+    /**
+     * serialVersionUID
+     */
+    private static final long serialVersionUID = 5408416424492049933L;
+    /**
+     * Starting time of the {@link Annotation} as {@link Long}.
+     */
     @XmlElement(name = "time_start")
     public Long time_start;
+    /**
+     * Ending time of the {@link Annotation} as {@link Long}.
+     */
     @XmlElement(name = "time_end")
     public Long time_end;
+    /**
+     * {@link ShapeType} of the {@link Annotation} outline.
+     */
     @XmlElement(name = "shapeTypes")
     public ShapeType shapeType;
-    @XmlElement(name = "shapePointsList")
-    public ShapePoints shapePoints;
+    /**
+     * Points of the {@link Annotation} outline.
+     */
+    @XmlElementWrapper(name = "shapePoints")
+    @XmlElement(name = "shapePoint")
+    @XmlJavaTypeAdapter(PointAdapter.class)
+    public List<Point> shapePoints;
+    /**
+     * Annotation label as {@link String}
+     */
     @XmlElement(name = "descriptions")
     public String description;
+}
+
+/**
+ * Adapter for serialize {@link Point} objects.
+ *
+ * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
+ */
+class PointAdapter extends XmlAdapter<String, Point> {
+
+    @Override
+    public String marshal(Point point) throws Exception {
+        return point.x + "," + point.y;
+    }
+
+    @Override
+    public Point unmarshal(String str) throws Exception {
+        String[] res = str.split(",");
+        return new Point(Integer.parseInt(res[0]), Integer.parseInt(res[1]));
+    }
 }

@@ -27,9 +27,7 @@
  */
 package de.dfki.covida.videovlcj;
 
-import com.sun.jna.Memory;
 import com.sun.jna.Platform;
-import de.dfki.covida.covidacore.data.ShapePoints;
 import de.dfki.covida.covidacore.utils.VideoUtils;
 import de.dfki.covida.videovlcj.rendered.RenderedVideoHandler;
 import de.dfki.covida.videovlcj.rendered.VideoRenderer;
@@ -37,7 +35,7 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.logging.Level;
+import java.util.List;
 import org.apache.log4j.Logger;
 import uk.co.caprica.vlcj.binding.internal.libvlc_media_t;
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
@@ -154,6 +152,9 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
         addEventListener();
     }
 
+    /**
+     * Adds the {@link AbstractVideoHandler} as Listener to {@link MediaPlayer}
+     */
     private void addEventListener() {
         if (mediaPlayer != null) {
             mediaPlayer.addMediaPlayerEventListener(this);
@@ -162,20 +163,6 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
         }
     }
     
-    /**
-     * Sets the logging status.
-     *
-     * @param activated if true the logging for {@link uk.co.caprica.vlcj} is
-     * activated.
-     */
-    public final void setLoggin(Boolean activated) {
-        if (!activated) {
-            java.util.logging.Logger.getLogger("uk.co.caprica.vlcj").setLevel(Level.OFF);
-        } else {
-            java.util.logging.Logger.getLogger("uk.co.caprica.vlcj").setLevel(Level.ALL);
-        }
-    }
-
     /**
      * Returns the {@link Dimension} of the video.
      *
@@ -265,16 +252,16 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      *
      * @return {@link ShapePoints}
      */
-    abstract public ShapePoints getShape();
+    abstract public List<Point> getShape();
 
-    abstract public ShapePoints getDrawing();
+    abstract public List<Point> getDrawing();
 
     /**
      * Sets the shape points to draw on the video.
      *
-     * @param points {@link ShapePoints}
+     * @param points {@link List}
      */
-    abstract public void setShape(ShapePoints points);
+    abstract public void setShape(List<Point> points);
 
     /**
      * Sets the video slider for the video {@link ISlider}
@@ -317,7 +304,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     /**
      * Clean up all resources of the {@link AbstractVideoHandler}
      */
-    public void cleanup() {
+    public void cleanUp() {
         if (mediaPlayer != null) {
             mediaPlayer.release();
         }
@@ -409,19 +396,32 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
         }
     }
 
+    /**
+     * Returns the video source as {@link String}.
+     * 
+     * @return video source as {@link String}
+     */
     public String getSource() {
         return source;
     }
 
+    /**
+     * Returns the video width as {@link Integer}.
+     * 
+     * @return video width as {@link Integer}
+     */
     public int getWidth() {
         return width;
     }
 
+    /**
+     * Returns the video height as {@link Integer}.
+     * 
+     * @return video height as {@link Integer}
+     */
     public int getHeight() {
         return height;
     }
-
-    abstract public void setHWR(String hwr);
 
     /**
      * Sets the time position of the video in percentage.
@@ -848,15 +848,41 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     abstract public void draw(Point point);
 
     /**
+     * Renturns the video as {@link BufferedImage}
+     * 
+     * Note that this method only works of its a {@link RenderedVideoHandler}
+     * otherwise this method returns a snapshot of the video as 
+     * {@link BufferedImage}
      *
-     *
-     * @return
+     * @return {@link BufferedImage}
      */
     abstract public BufferedImage getVideoImage();
 
+    /**
+     * Enables / Disables the title overlay.
+     * 
+     * @param enabled if true title overlay will be enabled.
+     */
     abstract public void setTitleOverlayEnabled(boolean enabled);
 
+    /**
+     * Enables the time overlay for {@code timeout} ms.
+     * 
+     * @param timeout ms how long overlay will be shown
+     */
     abstract public void enableTimeCodeOverlay(long timeout);
 
+    /**
+     * Returns the video title.
+     * 
+     * @return {@link String}
+     */
     abstract public String getTitle();
+    
+    /**
+     * Method to sets detected handwritting to the video handler.
+     * 
+     * @param hwr 
+     */
+    abstract public void setHWR(String hwr);
 }

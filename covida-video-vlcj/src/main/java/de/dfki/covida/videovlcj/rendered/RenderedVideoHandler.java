@@ -27,13 +27,13 @@
  */
 package de.dfki.covida.videovlcj.rendered;
 
-import de.dfki.covida.covidacore.data.ShapePoints;
 import de.dfki.covida.videovlcj.AbstractVideoHandler;
 import de.dfki.covida.videovlcj.VideoType;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import javax.imageio.ImageIO;
 import org.apache.log4j.Logger;
 import uk.co.caprica.vlcj.player.MediaPlayer;
@@ -49,8 +49,7 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
     /**
      * Logger.
      */
-    private Logger log = Logger.getLogger(RenderedVideoHandler.class); 
-    
+    private Logger log = Logger.getLogger(RenderedVideoHandler.class);
 
     /**
      * Creates an instance of {@link AbstractVideoHandler}
@@ -59,26 +58,20 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
      * @param height height of the video {@link Quad}
      * @param width width of the video {@link Quad}
      */
-    public RenderedVideoHandler(String source, String title
-            , int height, int width) {
+    public RenderedVideoHandler(String source, String title, int height, int width) {
         super(source, title, height, width, VideoType.RENDERED);
     }
-    
+
     @Override
-    public void enableTimeCodeOverlay(long timeout){
+    public void enableTimeCodeOverlay(long timeout) {
         renderer.enableTimeCodeOverlay(30000);
     }
-    
+
     @Override
-    public void setTitleOverlayEnabled(boolean enabled){
+    public void setTitleOverlayEnabled(boolean enabled) {
         renderer.setTitleOverlayEnabled(enabled);
     }
 
-    /**
-     *
-     *
-     * @return
-     */
     @Override
     public BufferedImage getVideoImage() {
         return renderer.getVideoImage();
@@ -138,7 +131,7 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
         if (renderer == null) {
             return;
         }
-        renderer.getDrawing().add(point);
+        renderer.draw(point);
     }
 
     /**
@@ -147,7 +140,7 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
      * @return {@link ShapePoints}
      */
     @Override
-    public ShapePoints getShape() {
+    public List<Point> getShape() {
         if (renderer == null) {
             return null;
         }
@@ -155,7 +148,7 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
     }
 
     @Override
-    public ShapePoints getDrawing() {
+    public List<Point> getDrawing() {
         if (renderer == null) {
             return null;
         }
@@ -168,7 +161,7 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
      * @param points {@link ShapePoints}
      */
     @Override
-    public void setShape(ShapePoints points) {
+    public void setShape(List<Point> points) {
         if (renderer == null) {
             return;
         }

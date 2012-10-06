@@ -36,10 +36,8 @@ import de.dfki.covida.covidacore.MainImplementation;
  */
 public class Covida {
 
-    public static void main(final String[] args){
+    public static void main(final String[] args) {
         MainImplementation main = new MainImplementation(args);
         main.startApplication(new CovidaApplication(main.getDevice(), "Covida"));
-    }            
-    
-    
+    }
 }

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<data>
+    <videoSource>Robotics Innovation Center 2010.mp4</videoSource>
+    <title>Robotics Innovation</title>
+    <annotations>
+        <annotation>
+            <time_start>455322</time_start>
+            <time_end>456343</time_end>
+            <shapePoints>
+                <shapePoint>24,30</shapePoint>
+                <shapePoint>98,32</shapePoint>
+                <shapePoint>100,121</shapePoint>
+                <shapePoint>22,119</shapePoint>
+                <shapePoint>24,30</shapePoint>
+            </shapePoints>
+            <descriptions>Robot DFKI</descriptions>
+        </annotation>
+    </annotations>
+</data>

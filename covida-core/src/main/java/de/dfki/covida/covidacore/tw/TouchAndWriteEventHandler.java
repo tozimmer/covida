@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Touch&Write SDK event wrapper
  *
- * @author Tobias Zimmermann
+ * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
  */
 public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication implements
         HandwritingListener, TouchEventListener {
@@ -61,8 +61,17 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
      * The logger.
      */
     private static final Logger log = LoggerFactory.getLogger(TouchAndWriteEventHandler.class);
+    /**
+     * Minimal zoom distance
+     */
     private static double MIN_ZOOM_DISTANCE = 150;
+    /**
+     * {@link TouchAndWriteComponentHandler}
+     */
     private TouchAndWriteComponentHandler componentHandler;
+    /**
+     * {@link IApplication}
+     */
     private final IApplication application;
 
     /**
@@ -77,6 +86,9 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
         this.application = application;
     }
 
+    /**
+     * Starts the {@link TouchAndWriteEventHandler}
+     */
     public void start() {
         this.clientManager.addHWRListener(this);
         this.clientManager.addTouchListener(this);
@@ -167,6 +179,11 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
         }
     }
 
+    /**
+     * Action for incomming drag gesture events
+     *
+     * @param event incomming drag gesture event
+     */
     private void dragAction(DragEventImpl event) {
         for (ITouchAndWriteComponent component : componentHandler.getComponents()) {
             int x = (int) (event.getOrigin().getX() * component.getDisplaySize().getWidth());
@@ -240,7 +257,6 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
     public void onPenEvent(String device, int x, int y, float force, PenEventDataType penEventState, long timestamp, String eventPageID) {
         for (ITouchAndWriteComponent component : componentHandler.getComponents()) {
             if (component.inArea(x, y)) {
-                log.debug(x+" "+y);
                 component.draw(x, y);
             }
         }
@@ -252,9 +268,9 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
         for (ITouchAndWriteComponent component : componentHandler.getComponents()) {
             int x = (int) event.getBoundingBox().getCenterOfGravity().x;
             int y = (int) event.getBoundingBox().getCenterOfGravity().y;
-//            if (component.inArea(x, y)) {
-            component.hwrAction(topResult);
-//            }
+            if (component.inArea(x, y)) {
+                component.hwrAction(topResult);
+            }
         }
     }
 }

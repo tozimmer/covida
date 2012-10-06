@@ -27,9 +27,15 @@
  */
 package de.dfki.covida.covidacore.data;
 
+import java.io.Serializable;
 import javax.xml.bind.annotation.XmlElement;
 
-public class VideoMediaData {
+public class VideoMediaData implements Serializable{
+    
+    /**
+     * serialVersionUID
+     */
+    private static final long serialVersionUID = 5408416424492049777L;
 
     @XmlElement(name = "source")
     public String videoSource;

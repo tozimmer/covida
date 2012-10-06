@@ -8,7 +8,6 @@ import com.sun.jna.NativeLibrary;
 import de.dfki.covida.covidacore.tw.IApplication;
 import de.dfki.covida.covidacore.tw.TouchAndWriteSupport;
 import de.dfki.touchandwrite.TouchAndWriteDevice;
-import de.dfki.touchandwrite.conf.TouchAndWriteConfiguration;
 import java.io.File;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
@@ -27,9 +26,8 @@ public class MainImplementation {
     /**
      * Logger
      */
-    protected static Logger log = Logger.getLogger(MainImplementation.class);
-    ;
-    protected static TouchAndWriteDevice device;
+    private static Logger log = Logger.getLogger(MainImplementation.class);
+    private TouchAndWriteDevice device;
     /**
      * Log level, used only if the -Dvlcj.log= system property has not already
      * been set.
@@ -45,72 +43,100 @@ public class MainImplementation {
      * Set to true to dump out native JNA memory structures.
      */
     private static final String DUMP_NATIVE_MEMORY = "false";
-
+    
     public MainImplementation(String[] args) {
         Thread.currentThread().setName("Covida Visual");
         if (null == System.getProperty("vlcj.log")) {
             System.setProperty("vlcj.log", VLCJ_LOG_LEVEL);
         }
-
-        if (null != VLC_SEARCH_PATH) {
+        
+        try {
             File folder = new File(VLC_SEARCH_PATH);
             if (!folder.exists() || !folder.isDirectory()) {
                 log.error("Pleas install vlc in the directory " + VLC_SEARCH_PATH);
-                System.exit(-1);
+                throw new RuntimeException();
             }
             log.info("Adding vlc path: " + VLC_SEARCH_PATH);
             NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), VLC_SEARCH_PATH);
-        } else {
-            log.error("Pleas set vlc directory.");
-            System.exit(-1);
+        } catch (NullPointerException e) {
+            throw new RuntimeException(e + "Please set vlc directory.");
         }
         System.setProperty("jna.dump_memory", DUMP_NATIVE_MEMORY);
-
+        
+        setLoggin(false);
+        
         final CovidaCMDOptions opt = new CovidaCMDOptions();
         CmdLineParser parser = new CmdLineParser(opt);
-
+        
         try {
             parser.parseArgument(args);
         } catch (CmdLineException e) {
-            System.err.println("TouchAndWrite [options...] arguments...");
-            parser.printUsage(System.err);
-            System.exit(-1);
+            log.error("TouchAndWrite [options...] arguments... " + e);
+            throw new RuntimeException();
         }
-
+        
         if (opt.isDebug()) {
             if (new File(opt.getLogfile()).canRead()) {
                 DOMConfigurator.configure(new File(opt.getLogfile()).getAbsolutePath());
             } else {
                 BasicConfigurator.configure();
             }
-            log = Logger.getLogger(MainImplementation.class);
             log.debug("Verbose mode");
             log.debug("Current working directory: " + System.getProperty("user.dir"));
         } else {
             BasicConfigurator.configure();
-            log = Logger.getLogger(MainImplementation.class);
             log.setLevel(Level.OFF);
         }
-        TouchAndWriteConfiguration conf = TouchAndWriteConfiguration.getDefaultEEESlateConfig();
-        if (opt.getDevice() == TouchAndWriteDevice.TW_TABLE) {
-            conf = TouchAndWriteConfiguration.getDefaultTWTableConfig();
-        }
-        MainImplementation.device = opt.getDevice();
+        device = opt.getDevice();
     }
 
+    /**
+     * Returns current TW device
+     *
+     * @return {@link TouchAndWriteDevice}
+     */
     public TouchAndWriteDevice getDevice() {
         return device;
     }
+    
+       /**
+     * Sets the logging status.
+     *
+     * @param activated if true the logging for {@link uk.co.caprica.vlcj} is
+     * activated.
+     */
+    public final void setLoggin(Boolean activated) {
+        if (!activated) {
+            java.util.logging.Logger.getLogger("uk.co.caprica.vlcj").setLevel(java.util.logging.Level.OFF);
+        } else {
+            java.util.logging.Logger.getLogger("uk.co.caprica.vlcj").setLevel(java.util.logging.Level.ALL);
+        }
+    }
 
-    public void startApplication(final IApplication application) {
-        Thread app = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                application.start();
-            }
-        });
+    /**
+     * Starts Application
+     *
+     * @param application {@link IApplication}
+     */
+    public void startApplication(IApplication application) {
+        Thread app;
+        app = new Thread(new ApplicationThread(application));
         app.setName("Application Thread");
         app.start();
         TouchAndWriteSupport.start(application, getDevice());
+    }
+    
+    private static class ApplicationThread implements Runnable{
+        private final IApplication application;
+        
+        private ApplicationThread(IApplication application){
+            this.application = application;
+        }
+
+        @Override
+        public void run() {
+            application.start();
+        }
+        
     }
 }

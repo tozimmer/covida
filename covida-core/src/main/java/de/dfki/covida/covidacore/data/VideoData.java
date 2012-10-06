@@ -27,10 +27,15 @@
  */
 package de.dfki.covida.covidacore.data;
 
+import java.io.Serializable;
 import javax.xml.bind.annotation.XmlElement;
 
-public class VideoData {
+public class VideoData implements Serializable{
 
+    /**
+     * serialVersionUID
+     */
+    private static final long serialVersionUID = 5408416424492049888L;
     /**
      * Size in percentage of display y-axis
      */

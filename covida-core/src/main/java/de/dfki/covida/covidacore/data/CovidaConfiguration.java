@@ -43,25 +43,56 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.log4j.Logger;
 
+/**
+ * Covida configuration class.
+ *
+ * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
+ */
 @XmlRootElement(name = "configuration")
 public class CovidaConfiguration implements Serializable {
 
+    /**
+     * serialVersionUID
+     */
+    private static final long serialVersionUID = 5408416424492049666L;
+    /**
+     * Logger
+     */
     private static final Logger log = Logger.getLogger(CovidaConfiguration.class);
+    /**
+     * Instance of {@link CovidaConfiguration}
+     */
     private static CovidaConfiguration instance;
+    /**
+     * Texture path as {@link String}
+     */
     @XmlElement(name = "path")
     public String texturePath;
+    /**
+     * Paths to the video resources as {@link List} of {@link VideoMediaData}.
+     */
     @XmlElement(name = "videoSource")
     @XmlElementWrapper(name = "videoSourceList")
     public List<VideoMediaData> videoSources = new ArrayList<>();
+    /**
+     * Video data as {@link List} of {@link VideoData}
+     */
     @XmlElement(name = "video")
     @XmlElementWrapper(name = "videoList")
     public List<VideoData> videos = new ArrayList<>();
+    /**
+     * List of pen configurations as {@link List} of {@link PenData}
+     */
     @XmlElement(name = "pen")
     @XmlElementWrapper(name = "penList")
     public List<PenData> pens = new ArrayList<>();
 
+    /**
+     * Private constructor of {@link CovidaConfiguration}.
+     */
     private CovidaConfiguration() {
         texturePath = "media/textures/";
+
         videos.add(new VideoData());
         videos.get(videos.size() - 1).enabled = true;
         videos.get(videos.size() - 1).repeating = true;
@@ -74,35 +105,74 @@ public class CovidaConfiguration implements Serializable {
         videoSources.get(videoSources.size() - 1).videoSource = "..\\covida-res\\videos\\Collaborative Video Annotation.mp4";
         videoSources.get(videoSources.size() - 1).time_start = 0;
         videoSources.get(videoSources.size() - 1).time_end = 0;
+
+        videos.add(new VideoData());
+        videos.get(videos.size() - 1).enabled = true;
+        videos.get(videos.size() - 1).repeating = true;
+        videos.get(videos.size() - 1).position = 0;
+        videos.get(videos.size() - 1).size = 25;
+        videos.get(videos.size() - 1).time_end = 0;
+        videos.get(videos.size() - 1).time_start = 0;
+        videoSources.add(new VideoMediaData());
+        videoSources.get(videoSources.size() - 1).videoName = "RadSpeech";
+        videoSources.get(videoSources.size() - 1).videoSource = "..\\covida-res\\videos\\RadSpeech DFKI(360p_H.264-AAC).mp4";
+        videoSources.get(videoSources.size() - 1).time_start = 0;
+        videoSources.get(videoSources.size() - 1).time_end = 0;
+
         PenData pen = new PenData();
         pen.penColor = Color.WHITE;
         pen.penThickness = 1;
         pens.add(pen);
     }
 
-    public static CovidaConfiguration getInstance() {
+    /**
+     * Returns the instance of {@link CovidaConfiguration}.
+     *
+     * @return {@link CovidaConfiguration}
+     */
+    public synchronized static CovidaConfiguration getInstance() {
         if (instance == null) {
             instance = new CovidaConfiguration();
         }
         return instance;
     }
 
+    /**
+     * Saves the {@link CovidaConfiguration} as XML file.
+     *
+     * Note that the {@link CovidaConfiguration} is saved to "covida.xml"
+     */
     public void save() {
         JAXBContext jc;
         File file = new File("config.xml");
         log.debug("Write data to: " + file);
+        FileWriter w = null;
         try {
             jc = JAXBContext.newInstance(CovidaConfiguration.class);
             Marshaller m = jc.createMarshaller();
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-            FileWriter w = new FileWriter(file);
+            w = new FileWriter(file);
             m.marshal(this, w);
             log.debug("Written data to: " + file);
         } catch (JAXBException | IOException e) {
             log.error(e);
+        } finally {
+            try {
+                if (w != null) {
+                    w.close();
+                }
+            } catch (IOException ex) {
+                log.error("FileWriter closing failed: ", ex);
+            }
         }
     }
 
+    /**
+     * Loads a {@link CovidaConfiguration}.
+     *
+     * @param file {@link File} which represents the configuration XML file.
+     * @return {@link CovidaConfiguration}
+     */
     public static CovidaConfiguration load(File file) {
         try {
             if (file != null && file.canRead()) {
@@ -112,8 +182,7 @@ public class CovidaConfiguration implements Serializable {
                 log.debug("Data file loaded at location: "
                         + file.getAbsolutePath());
             } else {
-                log.debug("No data file exists at location: "
-                        + file.getAbsolutePath());
+                log.debug("No data file exists at given location");
                 instance = CovidaConfiguration.getInstance();
             }
         } catch (JAXBException e) {

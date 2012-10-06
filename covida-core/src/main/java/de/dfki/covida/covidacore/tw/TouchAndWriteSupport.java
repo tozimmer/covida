@@ -40,20 +40,19 @@ public class TouchAndWriteSupport {
     /**
      * Logger
      */
-    private Logger log = Logger.getLogger(TouchAndWriteConfiguration.class);
+    private static Logger log = Logger.getLogger(TouchAndWriteConfiguration.class);
     
     /**
-     *
-     * @param device
-     * @param application
+     * Starts the {@link TouchAndWriteSupport}
+     * 
+     * @param application {@link IApplication}
+     * @param device {@link TouchAndWriteDevice}
      */
-    public TouchAndWriteSupport(){
-    }
-    
     public static void start(IApplication application, TouchAndWriteDevice device){
         TWServer twServer = new TWServer(device);
         twServer.start();
         TouchAndWriteEventHandler touchAndWrite = new TouchAndWriteEventHandler(application);
+        log.debug("Starting Touch&Write support.");
         touchAndWrite.start();
     }
     

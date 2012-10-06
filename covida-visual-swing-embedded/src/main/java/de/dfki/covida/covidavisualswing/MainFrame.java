@@ -207,7 +207,7 @@ public class MainFrame extends JFrame implements IControlableComponent, IApplica
     }
 
     void cleanup() {
-        video.cleanup();
+        video.cleanUp();
     }
 
     @Override

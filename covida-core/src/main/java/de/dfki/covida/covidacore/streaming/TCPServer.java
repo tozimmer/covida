@@ -2,6 +2,7 @@ package de.dfki.covida.covidacore.streaming;
 
 import java.awt.Dimension;
 import java.io.*;
+import java.lang.reflect.Array;
 import java.net.*;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -19,18 +20,39 @@ public class TCPServer extends Thread {
      * Logger
      */
     private static Logger log = Logger.getLogger(TcpThread.class);
+    /**
+     * {@link TCPServer} instance
+     */
     private static TCPServer instance;
-    // the socket used by the server
+    /**
+     * the socket used by the server
+     */
     private ServerSocket serverSocket;
-    // server constructor
+    /**
+     * the port used by the server
+     */
     private static int port = 1500;
+    /**
+     * {@link List} of all active {@link TcpThread}
+     */
     private List<TcpThread> tcpThreads;
+    /**
+     * {@link Dimension} of the image frame.
+     */
     public Dimension dimension;
 
+    /**
+     * Private constructor of {@link TCPServer}
+     */
     private TCPServer() {
         tcpThreads = new ArrayList<>();
     }
 
+    /**
+     * Sends a {@link Array} of {@link Byte}
+     * 
+     * @param bytes {@link Array} of {@link Byte}
+     */
     public synchronized void writeByteBuffer(byte[] bytes) {
         List<TcpThread> deadThreads = new ArrayList<>();
         for (TcpThread tcpThread : tcpThreads) {
@@ -47,6 +69,14 @@ public class TCPServer extends Thread {
         }
     }
 
+    /**
+     * Converts {@link ByteBuffer} to an {@link Array} of {@link Byte}.
+     * 
+     * @param buffer {@link ByteBuffer} which holds the image frame data
+     * @param width Width of the image frame
+     * @param height Height of the image frame
+     * @param depth Color depth of the image
+     */
     public void writeByteBuffer(ByteBuffer buffer, int width, int height, int depth) {
         int buffSize = depth * width * height;
         byte[] bytes = new byte[buffSize];
@@ -69,11 +99,21 @@ public class TCPServer extends Thread {
         buffer.clear();
     }
 
+    /**
+     * Sets the image frame {@link Dimension}
+     * 
+     * @param dimension {@link Dimension}
+     */
     public void setScreenSize(Dimension dimension) {
         this.dimension = dimension;
     }
 
-    public static TCPServer getInstance() {
+    /**
+     * Returns the instance of {@link TCPServer}.
+     * 
+     * @return {@link TCPServer}
+     */
+    public synchronized static TCPServer getInstance() {
         if (instance == null) {
             instance = new TCPServer();
         }
@@ -106,17 +146,35 @@ public class TCPServer extends Thread {
      * One instance of this thread will run for each client
      */
     class TcpThread extends Thread {
-        // the socket where to listen/talk
 
-        Socket socket;
-        public boolean running;
+        /**
+         * the socket where to listen/talk.
+         */
+        private Socket socket;
+        /**
+         * Output stream
+         */
         private ObjectOutputStream Soutput;
+        /**
+         * Indicades if client is running.
+         */
+        public boolean running;
 
-        TcpThread(Socket socket) {
+        /**
+         * Creates an instance of {@link TcpThread}
+         * 
+         * @param socket 
+         */
+        public TcpThread(Socket socket) {
             this.socket = socket;
             this.running = true;
         }
 
+        /**
+         * Sends a {@link Array} of {@link Byte}.
+         *
+         * @param bytes {@link Byte}
+         */
         public void writeByteBuffer(byte[] bytes) {
             try {
                 Soutput.reset();
@@ -147,7 +205,7 @@ public class TCPServer extends Thread {
             }
             while (running) {
                 try {
-                    Thread.sleep(25);
+                    Thread.sleep(50);
                 } catch (InterruptedException ex) {
                     log.error(ex);
                 }

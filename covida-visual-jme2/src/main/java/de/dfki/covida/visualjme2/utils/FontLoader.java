@@ -34,17 +34,22 @@ import java.net.URL;
 import java.util.ArrayList;
 import org.apache.log4j.Logger;
 
+/**
+ * FontLoader
+ *
+ * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
+ */
 public class FontLoader {
-    
+
     private static FontLoader instance;
     private ArrayList<BitmapFont> fnt;
     private static final Logger log = Logger.getLogger(FontLoader.class);
-    
+
     private FontLoader() {
         fnt = new ArrayList<>();
         initializeFonts();
     }
-    
+
     private void initializeFonts() {
         ArrayList<URL> fontFileList = new ArrayList<>();
         ArrayList<URL> textureFileList = new ArrayList<>();
@@ -81,18 +86,18 @@ public class FontLoader {
             }
         }
     }
-    
+
     public int size() {
         return fnt.size();
     }
-    
+
     public static FontLoader getInstance() {
         if (instance == null) {
             instance = new FontLoader();
         }
         return instance;
     }
-    
+
     public BitmapFont getBitmapFont(int font) {
         if (font < fnt.size()) {
             return fnt.get(font);

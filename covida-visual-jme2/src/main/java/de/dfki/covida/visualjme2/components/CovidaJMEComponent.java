@@ -51,9 +51,9 @@ import java.awt.Dimension;
 import org.apache.log4j.Logger;
 
 /**
+ * CovidaJMEComponent
  *
- * @author Tobias Zimmermann
- *
+ * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
  */
 public abstract class CovidaJMEComponent implements ITouchAndWriteComponent {
 
@@ -126,13 +126,25 @@ public abstract class CovidaJMEComponent implements ITouchAndWriteComponent {
     }
 
     public void setLocalTranslation(float x, float y, float z) {
-        setLocalTranslation(new Vector3f(x, y, z));
+        node.setLocalTranslation(new Vector3f(x, y, z));
     }
 
     public Node getParent() {
         return node.getParent();
     }
-
+    
+    /**
+     * Rotate the node from this instance of VideoComponent
+     *
+     * @param angle angle to which the component should be rotated
+     * @param axis the Axis on which the component should be rotated
+     */
+    public void rotate(float angle, Vector3f axis) {
+        Quaternion rotation = new Quaternion();
+        rotation.fromAngleAxis(angle, axis);
+        setLocalRotation(rotation);
+    }
+    
     public void setLocalScale(Vector3f scale) {
         node.setLocalScale(scale);
     }
@@ -198,7 +210,7 @@ public abstract class CovidaJMEComponent implements ITouchAndWriteComponent {
         }
         GameTaskQueueManager.getManager().update(new DetachChildCallable(CovidaRootNode.node, node));
         GameTaskQueueManager.getManager().update(new AttachChildCallable(CovidaRootNode.node, node));
-        
+
     }
 
     public final Vector3f getLocal(Node node, float x, float y) {

@@ -27,27 +27,30 @@
  */
 package de.dfki.covida.covidacore.data;
 
+import java.awt.Point;
+import java.util.ArrayList;
+
 public class DataTest {
 
     /**
      * @param args
      */
     public static void main(String[] args) {
-//		VideoAnnotationData data = new VideoAnnotationData();
-//		VideoAnnotation annotation = new VideoAnnotation();
-//		annotation.description = "Robot DFKI";
-//		annotation.shapePoints = new ShapePoints();
-//		annotation.shapePoints.add(new Point(24,30));
-//		annotation.shapePoints.add(new Point(98,32));
-//		annotation.shapePoints.add(new Point(100,121));
-//		annotation.shapePoints.add(new Point(22,119));
-//		annotation.shapePoints.add(new Point(24,30));
-//		annotation.time_end = (long) 456343;
-//		annotation.time_start = (long) 455322;
-//		data.videoSource = "src\\main\\resources\\media\\videos\\Robotics Innovation Center 2010.mp4";
-//		data.title = "Robotics Innovation";
-//		data.annotations.add(annotation);
-//		data.save();
+        AnnotationData data = new AnnotationData();
+        Annotation annotation = new Annotation();
+        annotation.description = "Robot DFKI";
+        annotation.shapePoints = new ArrayList<>();
+        annotation.shapePoints.add(new Point(24, 30));
+        annotation.shapePoints.add(new Point(98, 32));
+        annotation.shapePoints.add(new Point(100, 121));
+        annotation.shapePoints.add(new Point(22, 119));
+        annotation.shapePoints.add(new Point(24, 30));
+        annotation.time_end = (long) 456343;
+        annotation.time_start = (long) 455322;
+        data.videoSource = "Robotics Innovation Center 2010.mp4";
+        data.title = "Robotics Innovation";
+        data.annotations.add(annotation);
+        data.save();
         CovidaConfiguration conf = CovidaConfiguration.getInstance();
         conf.save();
     }

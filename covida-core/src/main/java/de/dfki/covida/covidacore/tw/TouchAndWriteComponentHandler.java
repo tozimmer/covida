@@ -27,8 +27,8 @@
  */
 package de.dfki.covida.covidacore.tw;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Handles the Touch and Write Components
@@ -36,27 +36,51 @@ import java.util.List;
  * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
  */
 public class TouchAndWriteComponentHandler {
+    /**
+     * Instance of {@link TouchAndWriteComponentHandler}
+     */
     private static TouchAndWriteComponentHandler instance;
-    private List<ITouchAndWriteComponent> components;
+    /**
+     * {@link Collection} of {@link ITouchAndWriteComponent}
+     */
+    private Collection<ITouchAndWriteComponent> components;
     
+    /**
+     * Private constructor of {@link TouchAndWriteComponentHandler}
+     */
     private TouchAndWriteComponentHandler(){
-        components = new ArrayList<>();
+        components = new ConcurrentLinkedQueue<>();
     }
     
-    public static TouchAndWriteComponentHandler getInstance(){
+    /**
+     * Returns the instance of the {@link TouchAndWriteComponentHandler}.
+     * 
+     * @return {@link TouchAndWriteComponentHandler}
+     */
+    public synchronized static TouchAndWriteComponentHandler getInstance(){
         if(instance == null){
             instance = new TouchAndWriteComponentHandler();
         }
         return instance;
     }
     
+    /**
+     * Adds a {@link ITouchAndWriteComponent}
+     * 
+     * @param component {@link ITouchAndWriteComponent}
+     */
     public void addComponent(ITouchAndWriteComponent component){
         if(!components.contains(component)){
             components.add(component);
         }
     }
     
-    public List<ITouchAndWriteComponent> getComponents(){
+    /**
+     * Returns all {@link ITouchAndWriteComponent} as {@link Collection}
+     * 
+     * @return {@link Collection} of {@link ITouchAndWriteComponent}
+     */
+    public Collection<ITouchAndWriteComponent> getComponents(){
         return components;
     }
 }

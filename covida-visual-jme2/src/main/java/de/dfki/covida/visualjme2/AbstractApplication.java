@@ -250,7 +250,6 @@ public abstract class AbstractApplication extends AbstractGame implements IAppli
      */
     @Override
     protected void initSystem() throws JmeException {
-        log = Logger.getLogger(getClass());
         log.info(getVersion());
         try {
             /**
@@ -452,6 +451,7 @@ public abstract class AbstractApplication extends AbstractGame implements IAppli
      */
     @Override
     public final void start() {
+        log = Logger.getLogger(getClass());
         log.info("Application started.");
         try {
             getAttributes();
@@ -473,8 +473,8 @@ public abstract class AbstractApplication extends AbstractGame implements IAppli
                 }
             }
         } catch (Throwable t) {
-            log.error(this.getClass().toString() + "start()" +
-                    "Exception in game loop", t);
+            log.error(this.getClass().toString() + "start()"
+                    + "Exception in game loop", t);
             if (throwableHandler != null) {
                 throwableHandler.handle(t);
             }
@@ -516,8 +516,8 @@ public abstract class AbstractApplication extends AbstractGame implements IAppli
                 }
             }
         } catch (Throwable t) {
-            log.error(this.getClass().toString() + "start()" +
-                    "Exception in game loop", t);
+            log.error(this.getClass().toString() + "start()"
+                    + "Exception in game loop", t);
             if (throwableHandler != null) {
                 throwableHandler.handle(t);
             }

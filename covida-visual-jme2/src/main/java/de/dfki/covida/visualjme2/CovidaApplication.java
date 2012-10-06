@@ -84,6 +84,7 @@ public class CovidaApplication extends ApplicationImpl {
     private TCPServer tcpServer;
     private long snapshotTimer;
     private int sideMenuCount;
+    private final boolean streaming = false;
 
     /**
      * Creates an instance of {@link CovidaApplication}
@@ -98,7 +99,9 @@ public class CovidaApplication extends ApplicationImpl {
         CovidaConfiguration configuration = CovidaConfiguration.getInstance();
         videoSources = configuration.videoSources;
         videos = new ArrayList<>();
-        tcpServer = TCPServer.getInstance();
+        if (streaming) {
+            tcpServer = TCPServer.getInstance();
+        }
         snapshotTimer = System.currentTimeMillis();
         sideMenuCount = 0;
     }
@@ -145,12 +148,12 @@ public class CovidaApplication extends ApplicationImpl {
         GameTaskQueueManager.getManager().update(new DetachChildCallable(CovidaRootNode.node, preloadScreen));
         preloader.cleanUp();
     }
-    
-    public int getWidth(){
+
+    public int getWidth() {
         return display.getWidth();
     }
-    
-    public int getHeight(){
+
+    public int getHeight() {
         return display.getHeight();
     }
 
@@ -162,11 +165,12 @@ public class CovidaApplication extends ApplicationImpl {
     public void addComponent(ITouchAndWriteComponent component) {
         if (component instanceof VideoComponent) {
             VideoComponent video = (VideoComponent) component;
+            int x = (int) (display.getWidth() / 2.25f) + (videos.size()*display.getWidth() / 3);
+            int y = (display.getHeight() / 2 + 150)
+                    - (videos.size()*350);
             videos.add(video);
-            int x = display.getWidth() / 2;
-            int y = display.getHeight() / 2;
+            video.setVolume(0);
             video.setLocalTranslation(x, y, 0);
-
             video.setDefaultPosition();
             video.setRepeat(true);
             video.start();
@@ -174,8 +178,8 @@ public class CovidaApplication extends ApplicationImpl {
         } else if (component instanceof ControlButton) {
             ControlButton button = (ControlButton) component;
             GameTaskQueueManager.getManager().update(
-                            new AttachChildCallable(CovidaRootNode.node,
-                            button.node));
+                    new AttachChildCallable(CovidaRootNode.node,
+                    button.node));
             switch (sideMenuCount) {
                 case 0:
                     button.setLocalTranslation(button.getWidth(),
@@ -212,7 +216,7 @@ public class CovidaApplication extends ApplicationImpl {
                     button.setLocalTranslation(display.getWidth() - button.getWidth(),
                             display.getHeight() / 2, 0);
                     button.rotate(45);
-                    
+
                     break;
                 case 7:
                     button.setLocalTranslation(display.getWidth() / 2,
@@ -220,7 +224,7 @@ public class CovidaApplication extends ApplicationImpl {
                     button.rotate(-45);
                     break;
                 default:
-                     GameTaskQueueManager.getManager().update(
+                    GameTaskQueueManager.getManager().update(
                             new DetachChildCallable(CovidaRootNode.node,
                             button.node));
                     break;
@@ -271,29 +275,33 @@ public class CovidaApplication extends ApplicationImpl {
         super.simpleInitGame();
 //        SceneMonitor.getMonitor().registerNode(rootNode, "Root Node");
 //        SceneMonitor.getMonitor().showViewer(true);
-        tcpServer.start();
-        tcpServer.setScreenSize(new Dimension(display.getWidth(), display.getHeight()));
+        if (streaming) {
+            tcpServer.start();
+            tcpServer.setScreenSize(new Dimension(display.getWidth(), display.getHeight()));
+        }
     }
 
     @Override
     protected void simpleUpdate() {
         super.simpleUpdate();
-        if (System.currentTimeMillis() - snapshotTimer > 500) {
-            snapshotTimer = System.currentTimeMillis();
-            GameTaskQueueManager.getManager().update(new Callable<Void>() {
-                @Override
-                public Void call() throws Exception {
-                    int depth = 3;
-                    ByteBuffer buff = BufferUtils.createByteBuffer(display.getWidth()
-                            * display.getWidth() * depth);
-                    display.getRenderer().grabScreenContents(buff, Image.Format.RGB4, 0, 0, display.getWidth(), display.getWidth());
-                    if (buff != null) {
-                        tcpServer.writeByteBuffer(buff, display.getWidth(), display.getHeight(), depth);
+        if (streaming) {
+            if (System.currentTimeMillis() - snapshotTimer > 500) {
+                snapshotTimer = System.currentTimeMillis();
+                GameTaskQueueManager.getManager().update(new Callable<Void>() {
+                    @Override
+                    public Void call() throws Exception {
+                        int depth = 3;
+                        ByteBuffer buff = BufferUtils.createByteBuffer(display.getWidth()
+                                * display.getWidth() * depth);
+                        display.getRenderer().grabScreenContents(buff, Image.Format.RGB4, 0, 0, display.getWidth(), display.getWidth());
+                        if (buff != null) {
+                            tcpServer.writeByteBuffer(buff, display.getWidth(), display.getHeight(), depth);
+                        }
+                        buff.clear();
+                        return null;
                     }
-                    buff.clear();
-                    return null;
-                }
-            });
+                });
+            }
         }
 //        SceneMonitor.getMonitor().updateViewer(tpf);
     }

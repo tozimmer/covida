@@ -38,6 +38,11 @@ import de.dfki.covida.visualjme2.utils.AttachChildCallable;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * VideoComponentControls
+ *
+ * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
+ */
 public class VideoComponentControls extends CovidaJMEComponent implements IVideoControls {
 
     protected Quad overlayControlsDefault;
@@ -106,8 +111,8 @@ public class VideoComponentControls extends CovidaJMEComponent implements IVideo
             ControlButton control = new ControlButton(controlList.get(texture),
                     controlable, texture, controlActiveList.get(controlList.get(texture)),
                     controlWidth, controlHeight);
-            control.setLocalTranslation((int) (-width/1.85f), 0, 0);
-            if(controlList.get(texture).equals(ActionName.NONE)){
+            control.setLocalTranslation((int) (-width / 1.85f), 0, 0);
+            if (controlList.get(texture).equals(ActionName.NONE)) {
                 control.setEnabled(false);
             }
             GameTaskQueueManager.getManager().update(new AttachChildCallable(node, control.node));
