@@ -99,11 +99,5 @@
             <version>3.4.0</version>
             <type>jar</type>
         </dependency>
-        <dependency>
-            <groupId>com.jme3</groupId>
-            <artifactId>jME3-core</artifactId>
-            <version>3.0</version>
-            <type>jar</type>
-        </dependency>
     </dependencies>
 </project>

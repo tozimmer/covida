@@ -32,7 +32,9 @@ import com.jmex.angelfont.BitmapFontLoader;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * FontLoader
@@ -43,7 +45,7 @@ public class FontLoader {
 
     private static FontLoader instance;
     private ArrayList<BitmapFont> fnt;
-    private static final Logger log = Logger.getLogger(FontLoader.class);
+    private static final Logger log = LoggerFactory.getLogger(FontLoader.class);
 
     private FontLoader() {
         fnt = new ArrayList<>();

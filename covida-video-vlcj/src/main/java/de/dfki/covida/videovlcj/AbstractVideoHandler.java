@@ -36,7 +36,8 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.List;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.co.caprica.vlcj.binding.internal.libvlc_media_t;
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
 import uk.co.caprica.vlcj.player.MediaPlayer;
@@ -55,13 +56,13 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     /**
      * Logger.
      */
-    private Logger log = Logger.getLogger(AbstractVideoHandler.class);
+    private Logger log = LoggerFactory.getLogger(AbstractVideoHandler.class);
     /**
-     * height of the video {@link Quad}
+     * height of the video video
      */
     private final int height;
     /**
-     * width of the video {@link Quad}
+     * width of the video video
      */
     private final int width;
     /**
@@ -162,7 +163,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
             log.warn("Could not set EventListener, mediaPlayer == null!");
         }
     }
-    
+
     /**
      * Returns the {@link Dimension} of the video.
      *
@@ -398,7 +399,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
 
     /**
      * Returns the video source as {@link String}.
-     * 
+     *
      * @return video source as {@link String}
      */
     public String getSource() {
@@ -407,7 +408,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
 
     /**
      * Returns the video width as {@link Integer}.
-     * 
+     *
      * @return video width as {@link Integer}
      */
     public int getWidth() {
@@ -416,7 +417,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
 
     /**
      * Returns the video height as {@link Integer}.
-     * 
+     *
      * @return video height as {@link Integer}
      */
     public int getHeight() {
@@ -451,12 +452,11 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     /**
      * Returns the max time position of the video in ms.
      *
-     * Note that only the part from {@code timeStart) to {
+     * Note that only the part from {@code timeStart) to {@code timeEnd} is considered.
      *
-     * @timeEnd} is considered.
      * @see #setTimeRange(long, long)
      *
-     * @return
+     * @return max time position
      */
     public long getMaxTime() {
         if (mediaPlayer == null) {
@@ -605,7 +605,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      */
     @Override
     public void timeChanged(MediaPlayer mp, long l) {
-        if(renderer != null){
+        if (renderer != null) {
             renderer.setTimecode(VideoUtils.getTimeCode(l));
         }
     }
@@ -840,8 +840,8 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     abstract public void saveShape();
 
     /**
-     * Adds the {@link Point} to the {@link ShapePoints} which should be draw on
-     * the video.
+     * Adds the {@link Point} to the {@link List} which should be draw on the
+     * video.
      *
      * @param point {@link Point}
      */
@@ -849,9 +849,9 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
 
     /**
      * Renturns the video as {@link BufferedImage}
-     * 
+     *
      * Note that this method only works of its a {@link RenderedVideoHandler}
-     * otherwise this method returns a snapshot of the video as 
+     * otherwise this method returns a snapshot of the video as
      * {@link BufferedImage}
      *
      * @return {@link BufferedImage}
@@ -860,29 +860,29 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
 
     /**
      * Enables / Disables the title overlay.
-     * 
+     *
      * @param enabled if true title overlay will be enabled.
      */
     abstract public void setTitleOverlayEnabled(boolean enabled);
 
     /**
      * Enables the time overlay for {@code timeout} ms.
-     * 
+     *
      * @param timeout ms how long overlay will be shown
      */
     abstract public void enableTimeCodeOverlay(long timeout);
 
     /**
      * Returns the video title.
-     * 
+     *
      * @return {@link String}
      */
     abstract public String getTitle();
-    
+
     /**
      * Method to sets detected handwritting to the video handler.
-     * 
-     * @param hwr 
+     *
+     * @param hwr
      */
     abstract public void setHWR(String hwr);
 }

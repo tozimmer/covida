@@ -7,7 +7,9 @@ import java.net.*;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * This is to help people to write Client server application I tried to make it
@@ -19,7 +21,7 @@ public class TCPServer extends Thread {
     /**
      * Logger
      */
-    private static Logger log = Logger.getLogger(TcpThread.class);
+    private static Logger log = LoggerFactory.getLogger(TcpThread.class);
     /**
      * {@link TCPServer} instance
      */
@@ -194,20 +196,20 @@ public class TCPServer extends Thread {
                 Soutput.writeObject(dimension);
                 Soutput.reset();
             } catch (IOException ex) {
-                log.error(ex);
+                log.error("",ex);
                 running = false;
                 try {
                     Soutput.flush();
                     Soutput.close();
                 } catch (IOException ex1) {
-                    log.error(ex1);
+                    log.error("",ex1);
                 }
             }
             while (running) {
                 try {
                     Thread.sleep(50);
                 } catch (InterruptedException ex) {
-                    log.error(ex);
+                    log.error("",ex);
                 }
             }
         }

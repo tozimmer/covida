@@ -30,7 +30,8 @@ package de.dfki.covida.videovlcj.preload;
 import de.dfki.covida.videovlcj.rendered.VideoRenderer;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.co.caprica.vlcj.binding.internal.libvlc_media_t;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.MediaPlayerEventListener;
@@ -46,7 +47,7 @@ public class VideoPreload implements Runnable, MediaPlayerEventListener {
     /**
      * Logger
      */
-    private Logger log = Logger.getLogger(VideoPreload.class);
+    private Logger log = LoggerFactory.getLogger(VideoPreload.class);
     private final String videoSource;
     private Dimension dimension;
     BufferedImage frame;

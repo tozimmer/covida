@@ -9,12 +9,10 @@ import de.dfki.covida.covidacore.tw.IApplication;
 import de.dfki.covida.covidacore.tw.TouchAndWriteSupport;
 import de.dfki.touchandwrite.TouchAndWriteDevice;
 import java.io.File;
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.xml.DOMConfigurator;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
 /**
@@ -26,7 +24,7 @@ public class MainImplementation {
     /**
      * Logger
      */
-    private static Logger log = Logger.getLogger(MainImplementation.class);
+    private static Logger log = LoggerFactory.getLogger(MainImplementation.class);
     private TouchAndWriteDevice device;
     /**
      * Log level, used only if the -Dvlcj.log= system property has not already
@@ -43,13 +41,13 @@ public class MainImplementation {
      * Set to true to dump out native JNA memory structures.
      */
     private static final String DUMP_NATIVE_MEMORY = "false";
-    
+
     public MainImplementation(String[] args) {
         Thread.currentThread().setName("Covida Visual");
         if (null == System.getProperty("vlcj.log")) {
             System.setProperty("vlcj.log", VLCJ_LOG_LEVEL);
         }
-        
+
         try {
             File folder = new File(VLC_SEARCH_PATH);
             if (!folder.exists() || !folder.isDirectory()) {
@@ -62,30 +60,21 @@ public class MainImplementation {
             throw new RuntimeException(e + "Please set vlc directory.");
         }
         System.setProperty("jna.dump_memory", DUMP_NATIVE_MEMORY);
-        
+
         setLoggin(false);
-        
+
         final CovidaCMDOptions opt = new CovidaCMDOptions();
         CmdLineParser parser = new CmdLineParser(opt);
-        
+
         try {
             parser.parseArgument(args);
         } catch (CmdLineException e) {
             log.error("TouchAndWrite [options...] arguments... " + e);
             throw new RuntimeException();
         }
-        
+
         if (opt.isDebug()) {
-            if (new File(opt.getLogfile()).canRead()) {
-                DOMConfigurator.configure(new File(opt.getLogfile()).getAbsolutePath());
-            } else {
-                BasicConfigurator.configure();
-            }
-            log.debug("Verbose mode");
-            log.debug("Current working directory: " + System.getProperty("user.dir"));
         } else {
-            BasicConfigurator.configure();
-            log.setLevel(Level.OFF);
         }
         device = opt.getDevice();
     }
@@ -98,8 +87,8 @@ public class MainImplementation {
     public TouchAndWriteDevice getDevice() {
         return device;
     }
-    
-       /**
+
+    /**
      * Sets the logging status.
      *
      * @param activated if true the logging for {@link uk.co.caprica.vlcj} is
@@ -125,11 +114,12 @@ public class MainImplementation {
         app.start();
         TouchAndWriteSupport.start(application, getDevice());
     }
-    
-    private static class ApplicationThread implements Runnable{
+
+    private static class ApplicationThread implements Runnable {
+
         private final IApplication application;
-        
-        private ApplicationThread(IApplication application){
+
+        private ApplicationThread(IApplication application) {
             this.application = application;
         }
 
@@ -137,6 +127,5 @@ public class MainImplementation {
         public void run() {
             application.start();
         }
-        
     }
 }

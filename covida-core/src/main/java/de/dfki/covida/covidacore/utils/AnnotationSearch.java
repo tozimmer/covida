@@ -11,7 +11,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  *
@@ -22,7 +24,7 @@ public class AnnotationSearch {
     /**
      * Logger
      */
-    private static Logger log = Logger.getLogger(AnnotationSearch.class);
+    private static Logger log = LoggerFactory.getLogger(AnnotationSearch.class);
 
     public static Map<AnnotationData, List<Annotation>> search(List<String> hwrResults, Iterable<AnnotationData> data) {
         Map<AnnotationData, List<Annotation>> searchResult = new HashMap<>();

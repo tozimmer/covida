@@ -6,7 +6,9 @@ package de.dfki.covida.covidacore.tw;
 
 import de.dfki.touchandwrite.TouchAndWriteDevice;
 import de.dfki.touchandwrite.TouchAndWriteServer;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  *
@@ -17,7 +19,7 @@ public class TWServer {
     /**
      * Logger
      */
-    private Logger log = Logger.getLogger(TWServer.class);
+    private Logger log = LoggerFactory.getLogger(TWServer.class);
     
     public TWServer(TouchAndWriteDevice device){
         //Starting touch and write server

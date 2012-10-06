@@ -44,7 +44,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -79,7 +80,7 @@ public class AnnotationData implements Serializable {
     /**
      * Logger
      */
-    private static Logger log = Logger.getLogger(AnnotationData.class);
+    private static Logger log = LoggerFactory.getLogger(AnnotationData.class);
 
     /**
      * Creates a new instance of {@link AnnotationData}
@@ -110,7 +111,7 @@ public class AnnotationData implements Serializable {
         try {
             docBuilder = dbfac.newDocumentBuilder();
         } catch (ParserConfigurationException e) {
-            log.error(e);
+            log.error("",e);
         }
         if (docBuilder != null) {
             doc = docBuilder.newDocument();
@@ -154,7 +155,7 @@ public class AnnotationData implements Serializable {
             try {
                 trans_spec = transfac_spec.newTransformer();
             } catch (TransformerConfigurationException e) {
-                log.error(e);
+                log.error("",e);
             }
             if (trans_spec != null) {
                 trans_spec.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
@@ -168,7 +169,7 @@ public class AnnotationData implements Serializable {
                 try {
                     trans_spec.transform(source_spec, result_spec);
                 } catch (TransformerException e) {
-                    log.error(e);
+                    log.error("",e);
                 }
             }
             String xmlString_spec = sw_spec.toString();
@@ -180,13 +181,13 @@ public class AnnotationData implements Serializable {
                 out = new BufferedWriter(fstream);
                 out.write(xmlString_spec);
             } catch (IOException e) {
-                log.error(e);
+                log.error("",e);
             } finally {
                 if (out != null) {
                     try {
                         out.close();
                     } catch (IOException ex) {
-                        log.error(ex);
+                        log.error("",ex);
                     }
                 }
             }
@@ -198,7 +199,7 @@ public class AnnotationData implements Serializable {
             try {
                 docBuilder = dbfac.newDocumentBuilder();
             } catch (ParserConfigurationException e) {
-                log.error(e);
+                log.error("",e);
             }
             doc = docBuilder.newDocument();
 
@@ -261,7 +262,7 @@ public class AnnotationData implements Serializable {
             try {
                 trans = transfac.newTransformer();
             } catch (TransformerConfigurationException e) {
-                log.error(e);
+                log.error("",e);
             }
             if (trans != null) {
                 trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
@@ -274,7 +275,7 @@ public class AnnotationData implements Serializable {
                 try {
                     trans.transform(source, result);
                 } catch (TransformerException e) {
-                    log.error(e);
+                    log.error("",e);
                 }
             }
             String xmlString = sw.toString();
@@ -283,7 +284,7 @@ public class AnnotationData implements Serializable {
                 out = new BufferedWriter(fstream);
                 out.write(xmlString);
             } catch (IOException e) {
-                log.error(e);
+                log.error("",e);
             } finally {
                 try {
                     out.close();
@@ -311,13 +312,13 @@ public class AnnotationData implements Serializable {
             log.debug(
                     "Written data to: " + file);
         } catch (JAXBException | IOException e) {
-            log.error(e);
+            log.error("",e);
         } finally {
             if (w != null) {
                 try {
                     w.close();
                 } catch (IOException ex) {
-                    log.error(ex);
+                    log.error("",ex);
                 }
             }
         }
@@ -388,7 +389,7 @@ public class AnnotationData implements Serializable {
             log.debug(e + " create new VideoAnnotationData");
             instance = new AnnotationData();
         }
-        log.debug(instance);
+        log.debug("",instance);
         return instance;
     }
 

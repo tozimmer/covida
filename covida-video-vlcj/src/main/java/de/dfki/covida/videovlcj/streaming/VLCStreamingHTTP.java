@@ -4,7 +4,9 @@
  */
 package de.dfki.covida.videovlcj.streaming;
 
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.headless.HeadlessMediaPlayer;
 
@@ -17,7 +19,7 @@ public class VLCStreamingHTTP implements Runnable{
     /**
      * Logger.
      */
-    private Logger log = Logger.getLogger(VLCStreamingHTTP.class);
+    private Logger log = LoggerFactory.getLogger(VLCStreamingHTTP.class);
     private final String media;
     private final String options;
     
@@ -48,7 +50,7 @@ public class VLCStreamingHTTP implements Runnable{
             // Don't exit
             Thread.currentThread().join();
         } catch (InterruptedException ex) {
-            log.debug(ex);
+            log.debug("",ex);
         }
     }
     

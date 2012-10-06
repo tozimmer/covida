@@ -39,7 +39,9 @@ import com.jmex.awt.swingui.ImageGraphics;
 import de.dfki.covida.videovlcj.AbstractVideoHandler;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * VideoQuad
@@ -55,7 +57,7 @@ public class VideoQuad extends Quad {
     /**
      * Logger
      */
-    private Logger log = Logger.getLogger(VideoQuad.class);
+    private Logger log = LoggerFactory.getLogger(VideoQuad.class);
     /**
      * {@link VideoHandler} which plays and renders the video.
      */

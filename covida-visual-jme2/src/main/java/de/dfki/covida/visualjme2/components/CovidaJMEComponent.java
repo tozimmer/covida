@@ -48,7 +48,9 @@ import de.dfki.touchandwrite.analyser.touch.gestures.events.RotationGestureEvent
 import de.dfki.touchandwrite.analyser.touch.gestures.events.ZoomEventImpl;
 import de.dfki.touchandwrite.input.pen.event.ShapeEvent;
 import java.awt.Dimension;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * CovidaJMEComponent
@@ -87,7 +89,7 @@ public abstract class CovidaJMEComponent implements ITouchAndWriteComponent {
 
     public CovidaJMEComponent(String nameOfComponent) {
         node = new Node(nameOfComponent);
-        log = Logger.getLogger(getClass());
+        log = LoggerFactory.getLogger(getClass());
         this.display = new Vector2f(
                 DisplaySystem.getDisplaySystem().getWidth(),
                 DisplaySystem.getDisplaySystem().getHeight());

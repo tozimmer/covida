@@ -20,7 +20,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.co.caprica.vlcj.player.direct.RenderCallbackAdapter;
 
 /**
@@ -32,7 +33,7 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
     /**
      * Logger.
      */
-    private Logger log = Logger.getLogger(VideoRenderer.class);
+    private Logger log = LoggerFactory.getLogger(VideoRenderer.class);
     /**
      * If true the title of the video is displayed
      */

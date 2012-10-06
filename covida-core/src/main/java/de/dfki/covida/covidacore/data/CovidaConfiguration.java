@@ -41,7 +41,9 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * Covida configuration class.
@@ -58,7 +60,7 @@ public class CovidaConfiguration implements Serializable {
     /**
      * Logger
      */
-    private static final Logger log = Logger.getLogger(CovidaConfiguration.class);
+    private static final Logger log = LoggerFactory.getLogger(CovidaConfiguration.class);
     /**
      * Instance of {@link CovidaConfiguration}
      */
@@ -155,7 +157,7 @@ public class CovidaConfiguration implements Serializable {
             m.marshal(this, w);
             log.debug("Written data to: " + file);
         } catch (JAXBException | IOException e) {
-            log.error(e);
+            log.error("",e);
         } finally {
             try {
                 if (w != null) {
@@ -189,7 +191,7 @@ public class CovidaConfiguration implements Serializable {
             log.debug(e + " create new VideoAnnotationData");
             instance = CovidaConfiguration.getInstance();
         }
-        log.debug(instance);
+        log.debug("",instance);
         return instance;
     }
 }

@@ -46,7 +46,9 @@ import com.jme.util.stat.StatCollector;
 import com.jmex.audio.AudioSystem;
 import de.dfki.covida.covidacore.tw.IApplication;
 import de.dfki.covida.visualjme2.utils.CovidaRootNode;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * Abstract application
@@ -447,7 +449,7 @@ public abstract class AbstractApplication extends AbstractGame implements IAppli
      */
     @Override
     public final void start() {
-        log = Logger.getLogger(getClass());
+        log = LoggerFactory.getLogger(getClass());
         log.info("Application started.");
         try {
             getAttributes();

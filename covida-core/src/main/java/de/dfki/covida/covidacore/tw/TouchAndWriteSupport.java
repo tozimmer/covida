@@ -29,7 +29,9 @@ package de.dfki.covida.covidacore.tw;
 
 import de.dfki.touchandwrite.TouchAndWriteDevice;
 import de.dfki.touchandwrite.conf.TouchAndWriteConfiguration;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  *
@@ -40,7 +42,7 @@ public class TouchAndWriteSupport {
     /**
      * Logger
      */
-    private static Logger log = Logger.getLogger(TouchAndWriteConfiguration.class);
+    private static Logger log = LoggerFactory.getLogger(TouchAndWriteConfiguration.class);
     
     /**
      * Starts the {@link TouchAndWriteSupport}

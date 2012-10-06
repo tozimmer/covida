@@ -42,7 +42,9 @@ import de.dfki.covida.visualjme2.utils.CovidaRootNode;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * CovidaApplicationPreloader
@@ -52,7 +54,7 @@ import org.apache.log4j.Logger;
 public class CovidaApplicationPreloader implements Runnable {
 
     private CovidaApplication application;
-    private Logger log = Logger.getLogger(CovidaApplicationPreloader.class);
+    private Logger log = LoggerFactory.getLogger(CovidaApplicationPreloader.class);
     private List<VideoPreload> preloadVideos;
     private List<VideoFormat> videoFormats;
     private List<VideoComponent> videos;
@@ -88,7 +90,7 @@ public class CovidaApplicationPreloader implements Runnable {
                 try {
                     Thread.sleep(50);
                 } catch (InterruptedException e) {
-                    log.error(e);
+                    log.error("",e);
                 }
             }
         }
@@ -151,7 +153,7 @@ public class CovidaApplicationPreloader implements Runnable {
                 try {
                     Thread.sleep(50);
                 } catch (InterruptedException e) {
-                    log.error(e);
+                    log.error("",e);
                 }
             }
             log.debug("Detected dimension: " + preload.getVideoDimension());

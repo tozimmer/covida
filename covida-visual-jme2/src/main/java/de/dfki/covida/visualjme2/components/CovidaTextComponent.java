@@ -101,7 +101,7 @@ public class CovidaTextComponent extends CovidaJMEComponent {
         try {
             txt.update();
         } catch (NullPointerException e) {
-            log.error(e);
+            log.error("",e);
         }
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, txt));
     }

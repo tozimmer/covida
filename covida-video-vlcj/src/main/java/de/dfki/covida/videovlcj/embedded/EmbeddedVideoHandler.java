@@ -39,7 +39,8 @@ import java.io.IOException;
 import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.JWindow;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
@@ -56,7 +57,7 @@ public final class EmbeddedVideoHandler extends AbstractVideoHandler {
     /**
      * Logger.
      */
-    private Logger log = Logger.getLogger(EmbeddedVideoHandler.class);
+    private Logger log = LoggerFactory.getLogger(EmbeddedVideoHandler.class);
     /**
      * {@link EmbeddedMediaPlayer}
      */
@@ -152,7 +153,7 @@ public final class EmbeddedVideoHandler extends AbstractVideoHandler {
                 ImageIO.write(img, "png", new File(getSource() + "."
                         + mediaPlayerComponent.getMediaPlayer().getTime() + ".png"));
             } catch (IOException e) {
-                log.error(e);
+                log.error("",e);
             }
         } else {
             log.warn("Snapshot BufferedImage is null");
