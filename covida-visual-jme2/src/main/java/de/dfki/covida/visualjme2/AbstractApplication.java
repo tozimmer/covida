@@ -343,11 +343,7 @@ public abstract class AbstractApplication extends AbstractGame implements IAppli
      */
     @Override
     protected void initGame() {
-        /**
-         * Create rootNode
-         */
-        rootNode = new Node("rootNode");
-        CovidaRootNode.node = rootNode;
+        rootNode = CovidaRootNode.node;
         rootNode.setRenderQueueMode(Renderer.QUEUE_ORTHO);
 
         /**

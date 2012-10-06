@@ -36,5 +36,8 @@ import com.jme.scene.Node;
  */
 public class CovidaRootNode {
 
-    public static Node node;
+    /**
+     * Covida root node
+     */
+    public final static Node node = new Node("Root node");
 }

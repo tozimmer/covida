@@ -29,7 +29,6 @@ package de.dfki.covida.visualjme2.utils;
 
 import com.jme.scene.state.BlendState;
 import com.jme.system.DisplaySystem;
-import java.awt.AlphaComposite;
 
 /**
  * JMEUtils
@@ -39,12 +38,8 @@ import java.awt.AlphaComposite;
 public class JMEUtils {
 
     private static BlendState alpha = null;
-    public static final AlphaComposite TRANSPARENT = AlphaComposite.getInstance(
-            AlphaComposite.SRC_OVER, 0.0f);
-    public static final AlphaComposite SOLID = AlphaComposite.getInstance(
-            AlphaComposite.SRC_OVER, 1.0f);
 
-    public static BlendState initalizeBlendState() {
+    public synchronized static BlendState initalizeBlendState() {
         if (alpha == null) {
             alpha = DisplaySystem.getDisplaySystem().getRenderer().createBlendState();
             alpha.setEnabled(true);

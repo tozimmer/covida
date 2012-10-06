@@ -64,7 +64,6 @@ import java.awt.Point;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 
 /**

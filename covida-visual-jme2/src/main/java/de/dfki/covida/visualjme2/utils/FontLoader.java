@@ -91,13 +91,19 @@ public class FontLoader {
         return fnt.size();
     }
 
-    public static FontLoader getInstance() {
+    public synchronized static FontLoader getInstance() {
         if (instance == null) {
             instance = new FontLoader();
         }
         return instance;
     }
 
+    /**
+     * Returns {@link BitmapFont} with size of {@code font}
+     * 
+     * @param font Font size
+     * @return {@link BitmapFont}
+     */
     public BitmapFont getBitmapFont(int font) {
         if (font < fnt.size()) {
             return fnt.get(font);

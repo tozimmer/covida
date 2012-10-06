@@ -24,7 +24,7 @@
         <dependency>
             <groupId>com.oracle</groupId>
             <artifactId>javafx</artifactId>
-            <version>2.1</version>
+            <version>2.2</version>
         </dependency>
         <dependency>
             <groupId>org.jfxtras</groupId>
@@ -36,48 +36,87 @@
             <artifactId>plexus-compiler-javafxc</artifactId>
             <version>0.3</version>
         </dependency>
+        <dependency>
+            <groupId>de.dfki.covida</groupId>
+            <artifactId>covida-video-vlcj</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
             <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.1.2</version>
                 <executions>
                     <execution>
-                        <phase>process-test-sources</phase>
-                        <configuration>
-                            <tasks>
-                                <echo>Compiling JavaFX test sources</echo>
-                                <property name="javafx.home" value="${env.JAVAFX_HOME}" />
-                                <path id="javafxc.classpath">
-                                    <fileset dir="${javafx.home}">
-                                        <include name="**/javafxrt.jar" />
-                                        <include name="**/javafxc.jar" />
-                                        <include name="**/toolchain.jar" />
-                                    </fileset>
-                                </path>
-                                <path id="javafx.classpath">
-                                    <fileset dir="${javafx.home}">
-                                        <include name="**/javafxrt.jar" />
-                                        <include name="**/javafxc.jar" />
-                                        <include name="**/toolchain.jar" />
-                                        <include name="**/javafxgui.jar" />
-                                        <include name="**/javafx-swing.jar" />
-                                        <include name="**/Scenario.jar" />
-                                        <include name="**/websvc.jar" />
-                                    </fileset>
-                                </path>
-                                <taskdef classname="com.sun.tools.javafx.ant.JavaFxAntTask" classpathref="javafxc.classpath" name="javafxc" />
-                                <mkdir dir="${project.build.testOutputDirectory}" />
-                                <javafxc destdir="${project.build.testOutputDirectory}" compilerclasspathref="javafxc.classpath" 
-                   debug="true" verbose="true">
-                                    <src path="src/test/javafx" />
-                                    <classpath refid="javafx.classpath" />
-                                </javafxc>
-                            </tasks>
-                        </configuration>
+                        <id>attach-sources</id>
                         <goals>
-                            <goal>run</goal>
+                            <goal>jar</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9</version>
+                <configuration>
+                    <show>private</show>
+                    <nohelp>true</nohelp>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <phase>package</phase>
+                    </execution>
+                </executions>                
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.6</version>
+                <executions>
+                    <execution>
+                        <id>install-javafx-bin</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${settings.localRepository}/com/oracle/javafx</outputDirectory>
+                            <useBuildFilters>false</useBuildFilters>
+                            <resources>
+                                <resource>
+                                    <directory>${env.JAVAFX_RUNTIME}</directory>
+                                    <includes>
+                                        <include>bin/*.dll</include>   
+                                    </includes>
+                                </resource>
+                            </resources>              
+                        </configuration>            
+                    </execution>
+                    <execution>
+                        <id>install-javajre-bin</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${settings.localRepository}/com/oracle/javafx</outputDirectory>
+                            <useBuildFilters>false</useBuildFilters>
+                            <resources>
+                                <resource>
+                                    <directory>${env.JAVA_JRE}</directory>
+                                    <includes>
+                                        <include>bin/glass.dll</include>   
+                                    </includes>
+                                </resource>
+                            </resources>              
+                        </configuration>            
                     </execution>
                 </executions>
             </plugin>
