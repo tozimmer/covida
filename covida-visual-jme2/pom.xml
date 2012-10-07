@@ -37,6 +37,10 @@
                 <configuration>
                     <show>private</show>
                     <nohelp>true</nohelp>
+                    <includeDependencySources>true</includeDependencySources>
+                    <dependencySourceIncludes>
+                        <dependencySourceInclude>de.dfki.covida:*</dependencySourceInclude>
+                    </dependencySourceIncludes>
                 </configuration>
                 <executions>
                     <execution>

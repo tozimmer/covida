@@ -30,6 +30,7 @@ package de.dfki.covida.visualjme2.components.video;
 import com.jme.animation.SpatialTransformer;
 import com.jme.image.Texture;
 import com.jme.image.Texture.WrapMode;
+import com.jme.math.Quaternion;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.scene.shape.Quad;
@@ -57,6 +58,8 @@ import de.dfki.covida.visualjme2.utils.AttachChildCallable;
 import de.dfki.covida.visualjme2.utils.DetachChildCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
 import de.dfki.covida.visualjme2.utils.RemoveControllerCallable;
+import de.dfki.touchandwrite.analyser.touch.gestures.events.RotationGestureEventImpl;
+import de.dfki.touchandwrite.analyser.touch.gestures.events.ZoomEventImpl;
 import de.dfki.touchandwrite.input.pen.event.ShapeEvent;
 import de.dfki.touchandwrite.shape.ShapeType;
 import java.awt.Dimension;
@@ -174,9 +177,9 @@ public final class VideoComponent extends CovidaJMEComponent implements
      * Mehod which holds test method calls
      */
     public void startTests() {
-        DrawTest drawTest = new DrawTest(video);
-        Thread drawTestThread = new Thread(drawTest);
-        drawTestThread.start();
+//        DrawTest drawTest = new DrawTest(video);
+//        Thread drawTestThread = new Thread(drawTest);
+//        drawTestThread.start();
 //        HWRTest hwrTest = new HWRTest(this);
 //        Thread hwrTestThread=  new Thread(hwrTest);
 //        hwrTestThread.start();
@@ -783,6 +786,31 @@ public final class VideoComponent extends CovidaJMEComponent implements
         this.listField.cleanUp();
         this.slider.cleanUp();
         video.cleanUp();
+    }
+    
+    @Override
+    public void zoomAction(ZoomEventImpl event) {
+        float scale = display.x / ((float) getWidth() * node.getLocalScale().x);
+        float ratio = ((event.getZoomRatio() - 1) / scale) + 1;
+        rescale(node.getLocalScale().x * ratio);
+        if (node.getLocalScale().x < 1.5f) {
+            rescale(1.5f);
+        }
+        if (node.getLocalScale().x > 2.5f * scale) {
+            rescale(2.5f * scale);
+        }
+    }
+
+    @Override
+    public void rotateAction(RotationGestureEventImpl event) {
+        node.getLocalTranslation().subtractLocal(
+                event.getPivotPoint().x, event.getPivotPoint().y,
+                0);
+        Quaternion q = new Quaternion();
+        q.fromAngleAxis(event.getRotation(), Vector3f.UNIT_Z);
+        node.getLocalRotation().multLocal(q.inverse());
+        node.getLocalTranslation().addLocal(
+                event.getPivotPoint().x, event.getPivotPoint().y, 0);
     }
 
     @Override

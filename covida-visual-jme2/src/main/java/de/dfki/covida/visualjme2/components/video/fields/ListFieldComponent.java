@@ -37,7 +37,6 @@ import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
-import com.jmex.awt.swingui.ImageGraphics;
 import de.dfki.covida.covidacore.utils.VideoUtils;
 import de.dfki.covida.visualjme2.animations.CloseAnimation;
 import de.dfki.covida.visualjme2.animations.CloseAnimationType;
@@ -52,6 +51,7 @@ import de.dfki.covida.visualjme2.utils.DetachChildCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
 import de.dfki.covida.visualjme2.utils.RemoveControllerCallable;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Component which displays annotation data of VideoComponent.
@@ -61,20 +61,39 @@ import java.util.ArrayList;
 public class ListFieldComponent extends CovidaJMEComponent {
 
     /**
-     * Configuration
+     * Default {@link ColorRGBA}
      */
-    public ColorRGBA color = new ColorRGBA(1, 1, 1, 0);
-    static ColorRGBA defaultColor = new ColorRGBA(1, 1, 1, 1);
-    static ColorRGBA activeColor = new ColorRGBA(1, 0, 0, 1);
-    static ColorRGBA selectedColor = new ColorRGBA(0, 1, 0, 1);
-    static final int ANIMATION_DURATION = 750;
-    private static final int DEFAULT_FONT_SIZE = 18;
-    static final int DEFAULT_WIDTH = 112;
-    static final int DEFAULT_HEIGHT = 250;
-    static int WIDTH = 112;
-    static int HEIGHT = 250;
+    public static final ColorRGBA defaultColor = new ColorRGBA(1, 1, 1, 1);
     /**
-     * image
+     * Active {@link ColorRGBA}
+     */
+    public static final ColorRGBA activeColor = new ColorRGBA(1, 0, 0, 1);
+    /**
+     * Selected {@link ColorRGBA}
+     */
+    public static final ColorRGBA selectedColor = new ColorRGBA(0, 1, 0, 1);
+    /**
+     * Animation duration
+     */
+    public static final int ANIMATION_DURATION = 750;
+    /**
+     * Default font size
+     */
+    private static final int DEFAULT_FONT_SIZE = 18;
+    /**
+     * Default height
+     */
+    private static final int DEFAULT_HEIGHT = 250;
+    /**
+     * Width
+     */
+    private int width = 112;
+    /**
+     * Height
+     */
+    private int height = 250;
+    /**
+     * Background image
      */
     private String image;
     /**
@@ -90,21 +109,40 @@ public class ListFieldComponent extends CovidaJMEComponent {
      */
     protected Quad quad;
     /**
-     * Drawing will be done with Java2D.
+     * Video
      */
-    protected ImageGraphics g2d;
     private VideoComponent video;
-    private ArrayList<CovidaTextComponent> entries;
+    /**
+     * {@link List} of {@link CovidaTextComponent}s
+     */
+    private List<CovidaTextComponent> entries;
+    /**
+     * Texture state of the spacer
+     */
     private TextureState tsSpacer;
+    /**
+     * Texture of the spacer
+     */
     private Texture textureSpacer;
+    /**
+     * Indicates of the list field is open.
+     */
     private boolean open;
-    private ArrayList<Long> times;
+    /**
+     * {@ling List} of {@link Long} which indicates the {@link Annotation}s.
+     */
+    private List<Long> times;
     /*
-     * Overlay
+     * Text overlay
      */
     private CovidaTextComponent textOverlay;
+    /**
+     * Font size
+     */
     private static final int FONT_SIZE = 30;
-    protected Quad overlayDefault;
+    /**
+     * {@link SpatialTransformer} for the open and close animation
+     */
     private SpatialTransformer st;
 
     /**
@@ -118,8 +156,8 @@ public class ListFieldComponent extends CovidaJMEComponent {
     public ListFieldComponent(String resource, VideoComponent video, int width, int height) {
         super("DisplayFieldComponent");
         this.video = video;
-        WIDTH = width;
-        HEIGHT = height;
+        this.width = width;
+        this.height = height;
         defaultScale = new Vector3f(getLocalScale().x, getLocalScale().y, getLocalScale().z);
         defaultRotation = new Quaternion(getLocalRotation().x,
                 getLocalRotation().y, getLocalRotation().z,
@@ -187,7 +225,7 @@ public class ListFieldComponent extends CovidaJMEComponent {
         texture = TextureManager.loadTexture(getClass().getClassLoader().getResource(image));
         ts.setTexture(texture);
 
-        quad = new Quad("Display image quad", WIDTH, HEIGHT);
+        quad = new Quad("Display image quad", width, height);
         quad.setRenderState(ts);
         quad.setRenderState(JMEUtils.initalizeBlendState());
         quad.updateRenderState();
@@ -363,12 +401,12 @@ public class ListFieldComponent extends CovidaJMEComponent {
 
     @Override
     public int getHeight() {
-        return HEIGHT;
+        return height;
     }
 
     @Override
     public int getWidth() {
-        return WIDTH;
+        return width;
     }
 
     @Override

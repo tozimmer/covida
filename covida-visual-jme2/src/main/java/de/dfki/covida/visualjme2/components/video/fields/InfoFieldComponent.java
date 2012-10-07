@@ -71,20 +71,12 @@ import java.util.List;
  */
 public class InfoFieldComponent extends CovidaJMEComponent {
 
-    /**
-     * Configuration
-     */
-    public ColorRGBA color = new ColorRGBA(1, 1, 1, 0);
-    static ColorRGBA defaultColor = new ColorRGBA(1, 1, 1, 1);
-    static ColorRGBA activeColor = new ColorRGBA(1, 0, 0, 1);
-    static ColorRGBA selectedColor = new ColorRGBA(0, 1, 0, 1);
-    static final int ANIMATION_DURATION = 750;
+    private static final int ANIMATION_DURATION = 750;
     private static final int DEFAULT_FONT_SIZE = 18;
-    static final int DEFAULT_WIDTH = 112;
-    static final int DEFAULT_HEIGHT = 250;
+    private static final int DEFAULT_HEIGHT = 250;
     private int textBeginY;
-    static int WIDTH = 112;
-    static int HEIGHT = 250;
+    private int width = 112;
+    private int height = 250;
     private static final int DEFAULT_CHARACTER_LIMIT = 14;
     /**
      * image
@@ -107,10 +99,6 @@ public class InfoFieldComponent extends CovidaJMEComponent {
      */
     private String videoSource;
     private List<Point> shapePoints;
-    /**
-     * Drawing will be done with Java2D.
-     */
-    protected ImageGraphics g2d;
     private VideoComponent video;
     private String title;
     private long time_start;
@@ -149,8 +137,8 @@ public class InfoFieldComponent extends CovidaJMEComponent {
             ListFieldComponent listField, int width, int height) {
         super("DisplayFieldComponent");
         this.video = video;
-        WIDTH = width;
-        HEIGHT = height;
+        this.width = width;
+        this.height = height;
         defaultScale = new Vector3f(getLocalScale().x, getLocalScale().y, getLocalScale().z);
         defaultRotation = new Quaternion(getLocalRotation().x,
                 getLocalRotation().y, getLocalRotation().z,
@@ -234,7 +222,7 @@ public class InfoFieldComponent extends CovidaJMEComponent {
         texture = TextureManager.loadTexture(getClass().getClassLoader().getResource(image));
         ts.setTexture(texture);
 
-        quad = new Quad("Display image quad", WIDTH, HEIGHT);
+        quad = new Quad("Display image quad", width, height);
         quad.setRenderState(ts);
         quad.setRenderState(JMEUtils.initalizeBlendState());
         quad.updateRenderState();
@@ -374,7 +362,6 @@ public class InfoFieldComponent extends CovidaJMEComponent {
         timeOverlay.setFont(1);
         timeOverlay.setSize(getFontSize());
         timeOverlay.setText("Time:");
-        textBeginY = (int) (textBeginY);
         timeTextOverlay = new CovidaTextComponent(this);
         timeTextOverlay.setLocalTranslation(0, textBeginY, 0);
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, timeTextOverlay.node));
@@ -503,11 +490,12 @@ public class InfoFieldComponent extends CovidaJMEComponent {
      * @return Annotation description {@link String}
      */
     public String getDescription() {
-        String descriptions = "";
+        StringBuilder stringBuilder = new StringBuilder("");
         for (CovidaTextComponent description : descriptionText) {
-            descriptions = descriptions + description.getText() + " ";
+            stringBuilder.append(description.getText());
+            stringBuilder.append(" ");
         }
-        return descriptions;
+        return stringBuilder.toString();
     }
 
     /**
@@ -591,12 +579,12 @@ public class InfoFieldComponent extends CovidaJMEComponent {
 
     @Override
     public int getHeight() {
-        return HEIGHT;
+        return height;
     }
 
     @Override
     public int getWidth() {
-        return WIDTH;
+        return width;
     }
 
     @Override

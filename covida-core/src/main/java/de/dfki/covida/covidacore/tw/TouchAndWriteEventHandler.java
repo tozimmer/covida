@@ -45,6 +45,8 @@ import de.dfki.touchandwrite.input.touch.gesture.TouchGestureEvent;
 import de.dfki.touchandwrite.remote.RemoteTouchAndWriteApplication;
 import de.dfki.touchandwrite.remote.event.HandwritingListener;
 import de.dfki.touchandwrite.remote.event.TouchEventListener;
+import de.dfki.touchandwrite.shape.Shape;
+import java.awt.Point;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -155,12 +157,18 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
      * @param event incomming Zoom gesture event
      */
     private void zoomAction(ZoomEventImpl event) {
-        if (distance(event.getFirstTouch(), event.getSecondTouch()) > MIN_ZOOM_DISTANCE) {
-            for (ITouchAndWriteComponent component : componentHandler.getComponents()) {
-                int x = (int) (event.getFirstTouch().getX() * component.getDisplaySize().getWidth());
-                int y = (int) (event.getFirstTouch().getY() * component.getDisplaySize().getHeight());
-                int x2 = (int) (event.getSecondTouch().getX() * component.getDisplaySize().getWidth());
-                int y2 = (int) (event.getSecondTouch().getY() * component.getDisplaySize().getHeight());
+        if (distance(event.getFirstTouch(),
+                event.getSecondTouch()) > MIN_ZOOM_DISTANCE) {
+            for (ITouchAndWriteComponent component :
+                    componentHandler.getComponents()) {
+                int x = (int) (event.getFirstTouch().getX()
+                        * component.getDisplaySize().getWidth());
+                int y = (int) (event.getFirstTouch().getY()
+                        * component.getDisplaySize().getHeight());
+                int x2 = (int) (event.getSecondTouch().getX()
+                        * component.getDisplaySize().getWidth());
+                int y2 = (int) (event.getSecondTouch().getY()
+                        * component.getDisplaySize().getHeight());
                 if (component.inArea(x, y) && component.inArea(x2, y2)) {
                     component.zoomAction(event);
                 }
@@ -174,8 +182,19 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
      * @param event incomming Rotation gesture event
      */
     private void rotateAction(RotationGestureEventImpl event) {
-        for (ITouchAndWriteComponent component : componentHandler.getComponents()) {
-            component.rotateAction(event);
+        for (ITouchAndWriteComponent component :
+                componentHandler.getComponents()) {
+            int x = (int) (event.getFirstTouch().getX()
+                    * component.getDisplaySize().getWidth());
+            int y = (int) (event.getFirstTouch().getY()
+                    * component.getDisplaySize().getHeight());
+            int x2 = (int) (event.getSecondTouch().getX()
+                    * component.getDisplaySize().getWidth());
+            int y2 = (int) (event.getSecondTouch().getY()
+                    * component.getDisplaySize().getHeight());
+            if (component.inArea(x, y) && component.inArea(x2, y2)) {
+                component.rotateAction(event);
+            }
         }
     }
 
@@ -185,13 +204,19 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
      * @param event incomming drag gesture event
      */
     private void dragAction(DragEventImpl event) {
-        for (ITouchAndWriteComponent component : componentHandler.getComponents()) {
-            int x = (int) (event.getOrigin().getX() * component.getDisplaySize().getWidth());
-            int y = (int) (event.getOrigin().getY() * component.getDisplaySize().getHeight());
-            int dx = (int) (event.getTranslation().getX() * component.getDisplaySize().getWidth());
-            int dy = (int) (event.getTranslation().getY() * component.getDisplaySize().getHeight());
+        for (ITouchAndWriteComponent component : 
+                componentHandler.getComponents()) {
+            int x = (int) (event.getOrigin().getX() 
+                    * component.getDisplaySize().getWidth());
+            int y = (int) (event.getOrigin().getY() 
+                    * component.getDisplaySize().getHeight());
+            int dx = (int) (event.getTranslation().getX() 
+                    * component.getDisplaySize().getWidth());
+            int dy = (int) (event.getTranslation().getY() 
+                    * component.getDisplaySize().getHeight());
             if (component.inArea(x, y)) {
-                if (event.getState().equals(TouchGestureEvent.GestureState.GESTURE_END)) {
+                if (event.getState().equals(TouchGestureEvent.GestureState
+                        .GESTURE_END)) {
                     component.dragEndAction(event.getTouchID(), x, y, dx, dy);
                 } else {
                     component.dragAction(event.getTouchID(), x, y, dx, dy);
@@ -249,6 +274,13 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
     @Override
     public void onShapeEvent(ShapeEvent event) {
         for (ITouchAndWriteComponent component : componentHandler.getComponents()) {
+            for (Shape shape : event.getDetectedShapes()) {
+                for (Point point : shape.getPoints()) {
+                    if (!component.inArea(point.x, point.y)) {
+                        return;
+                    }
+                }
+            }
             component.onShapeEvent(event);
         }
     }

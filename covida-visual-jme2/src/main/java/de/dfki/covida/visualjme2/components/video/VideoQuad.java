@@ -42,7 +42,6 @@ import java.awt.RenderingHints;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * VideoQuad
  *
@@ -50,6 +49,10 @@ import org.slf4j.LoggerFactory;
  */
 public class VideoQuad extends Quad {
 
+    /**
+     * serialVersionUID
+     */
+    private static final long serialVersionUID = 5408416424492049111L;
     /**
      * Drawing will be done with Java2D.
      */
@@ -122,14 +125,14 @@ public class VideoQuad extends Quad {
 
     @Override
     public void draw(Renderer r) {
-        try {
-            g2d.drawImage(video.getVideoImage(), null, 0, 0);
-            g2d.update();
-            if (g2d != null && texture.getTextureId() > 0) {
-                g2d.update(texture, false);
-            }
-        } catch (Exception e) {
-            log.error("Draw failed: " + e);
+        if(g2d == null){
+            log.error("Draw failed");
+            return;
+        }
+        g2d.drawImage(video.getVideoImage(), null, 0, 0);
+        g2d.update();
+        if (texture.getTextureId() > 0) {
+            g2d.update(texture, false);
         }
         super.draw(r);
     }
