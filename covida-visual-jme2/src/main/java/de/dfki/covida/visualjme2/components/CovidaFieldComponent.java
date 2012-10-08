@@ -63,6 +63,7 @@ public abstract class CovidaFieldComponent extends CovidaJMEComponent {
     protected static final int FONT_SIZE = 30;
     protected static final int TEXT_SPACER = 2;
     protected int textBeginY;
+    protected boolean open;
     /**
      * image
      */
@@ -92,7 +93,6 @@ public abstract class CovidaFieldComponent extends CovidaJMEComponent {
     protected float penThickness;
     protected TextureState tsSpacer;
     protected Texture textureSpacer;
-    protected boolean detach = true;
     protected ArrayList<CovidaTextComponent> titles;
     protected int selectedTitle = -1;
     /**
@@ -138,6 +138,7 @@ public abstract class CovidaFieldComponent extends CovidaJMEComponent {
         tsSpacer.setEnabled(true);
         textureSpacer = TextureManager.loadTexture(getClass().getClassLoader().getResource("media/textures/info_spacer.png"));
         tsSpacer.setTexture(textureSpacer);
+        open = true;
     }
 
     protected abstract void update();
@@ -162,10 +163,6 @@ public abstract class CovidaFieldComponent extends CovidaJMEComponent {
     @Override
     public int getWidth() {
         return width;
-    }
-
-    public boolean isClosing() {
-        return detach;
     }
 
     /**
@@ -196,7 +193,5 @@ public abstract class CovidaFieldComponent extends CovidaJMEComponent {
         // TODO
     }
 
-    public boolean isOpen() {
-        return !isClosing();
-    }
+    public abstract boolean isOpen();
 }

@@ -189,35 +189,35 @@ public final class VideoComponent extends CovidaJMEComponent implements
 //        RotateTest rotateTest = new RotateTest(this);
 //        Thread rotateThread = new Thread(rotateTest);
 //        rotateThread.start();
-        if (video.getTitle().equals("CoVidA Demo")) {
-            video.draw(new Point(25, 25));
-            video.draw(new Point(25, 50));
-            video.draw(new Point(35, 65));
-            video.draw(new Point(70, 100));
-            video.draw(new Point(20, 85));
-            video.draw(new Point(25, 25));
-            move(getLocalTranslation().x, getLocalTranslation().y + 400);
-            rotate(180.f, new Vector3f(0, 0, 1));
-            attachAnnotation();
-            Annotation annotation = new Annotation();
-            annotation.description = "test";
-            annotation.shapePoints = new ArrayList<>();
-            annotation.shapeType = ShapeType.POLYGON;
-            annotation.time_end = Long.valueOf(200);
-            annotation.time_start = Long.valueOf(200);
-            infoField.setAnnotationData(annotation);
-            infoField.drawHwrResult("Test");
-        } else {
-            attachList();
-            ArrayList<Long> entries = new ArrayList<>();
-            entries.add(Long.valueOf(15000));
-            entries.add(Long.valueOf(550000));
-            entries.add(Long.valueOf(6655000));
-            entries.add(Long.valueOf(7898000));
-            listField.updateEntries(entries);
-            listField.drawEntries();
-            node.setLocalScale(0.75f);
-        }
+//        if (video.getTitle().equals("CoVidA Demo")) {
+//            video.draw(new Point(25, 25));
+//            video.draw(new Point(25, 50));
+//            video.draw(new Point(35, 65));
+//            video.draw(new Point(70, 100));
+//            video.draw(new Point(20, 85));
+//            video.draw(new Point(25, 25));
+//            move(getLocalTranslation().x, getLocalTranslation().y + 400);
+//            rotate(180.f, new Vector3f(0, 0, 1));
+//            attachAnnotation();
+//            Annotation annotation = new Annotation();
+//            annotation.description = "test";
+//            annotation.shapePoints = new ArrayList<>();
+//            annotation.shapeType = ShapeType.POLYGON;
+//            annotation.time_end = Long.valueOf(200);
+//            annotation.time_start = Long.valueOf(200);
+//            infoField.setAnnotationData(annotation);
+//            infoField.drawHwrResult("Test");
+//        } else {
+//            attachList();
+//            ArrayList<Long> entries = new ArrayList<>();
+//            entries.add(Long.valueOf(15000));
+//            entries.add(Long.valueOf(550000));
+//            entries.add(Long.valueOf(6655000));
+//            entries.add(Long.valueOf(7898000));
+//            listField.updateEntries(entries);
+//            listField.drawEntries();
+//            node.setLocalScale(0.75f);
+//        }
     }
 
     /**
@@ -369,11 +369,14 @@ public final class VideoComponent extends CovidaJMEComponent implements
      */
     public void createControls() {
         controls = new VideoComponentControls(this);
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, 
+                controls.node));
         slider = new VideoSlider(this);
         slider.getLocalTranslation().set(
                 new Vector3f(-15, -30 - getHeight() / 2, 0));
         slider.setDefaultPosition();
-        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, slider.node));
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, 
+                slider.node));
     }
 
     /**
@@ -627,14 +630,14 @@ public final class VideoComponent extends CovidaJMEComponent implements
      * Detachs the controls from the video.
      */
     private void detachMenu() {
-        GameTaskQueueManager.getManager().update(new DetachChildCallable(node, controls.node));
+        controls.detach();
     }
 
     /**
      * Attachs the controls from the video.
      */
     private void attachControls() {
-        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, controls.node));
+        controls.attach();
     }
 
     /**
@@ -709,15 +712,6 @@ public final class VideoComponent extends CovidaJMEComponent implements
         return video.getTime();
     }
 
-    /**
-     * Returns video progress as {@link String}
-     *
-     * @return video progress.
-     */
-    public String getVideoProgress() {
-        return video.getVideoProgress();
-    }
-
     @Override
     public void dragAction(int id, int x, int y, int dx, int dy) {
         startDragAnimation();
@@ -781,10 +775,10 @@ public final class VideoComponent extends CovidaJMEComponent implements
     @Override
     public void cleanUp() {
         log.debug("cleanup video (id: " + getId() + ")");
-        this.controls.cleanUp();
-        this.infoField.cleanUp();
-        this.listField.cleanUp();
-        this.slider.cleanUp();
+        controls.cleanUp();
+        infoField.cleanUp();
+        listField.cleanUp();
+        slider.cleanUp();
         video.cleanUp();
     }
     
@@ -827,7 +821,6 @@ public final class VideoComponent extends CovidaJMEComponent implements
 
     @Override
     public boolean toggle(ActionName action) {
-        log.debug(action.toString());
         if (action.equals(ActionName.BACKWARD)) {
             if ((video.getTime() - video.getMaxTime() / 20) > 0) {
                 setTimePosition(video.getTime()
@@ -881,6 +874,11 @@ public final class VideoComponent extends CovidaJMEComponent implements
         } else if (action.equals(ActionName.DELETE)) {
             if (infoField.isOpen()) {
                 this.infoField.close();
+            }
+        } else if (action.equals(ActionName.STOP)){
+            if(video.isPlaying()){
+                video.stop();
+                return true;
             }
         }
         return false;

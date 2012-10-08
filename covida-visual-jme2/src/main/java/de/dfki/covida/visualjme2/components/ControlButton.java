@@ -100,7 +100,8 @@ public class ControlButton extends CovidaJMEComponent
         controlQuad.setRenderState(defaultTextureState);
         controlQuad.setRenderState(JMEUtils.initalizeBlendState());
         controlQuad.updateRenderState();
-        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, controlQuad));
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(node,
+                controlQuad));
     }
 
     @Override
@@ -161,33 +162,36 @@ public class ControlButton extends CovidaJMEComponent
 
     @Override
     public void touchBirthAction(int id, int x, int y) {
-        if (enabled && getParent().getParent() != null) {
+        if (enabled && getParent() != null) {
             if (action.equals(ActionName.LIST)) {
             } else {
-                SpatialTransformer controller = ScaleAnimation.getController(node,
+                SpatialTransformer controller = ScaleAnimation.getController(controlQuad,
                         2.0f, ANIMATIONTIME);
                 GameTaskQueueManager.getManager().update(new AddControllerCallable(
-                        node, controller));
+                        controlQuad, controller));
             }
         }
     }
 
     @Override
     public void touchDeadAction(int id, int x, int y) {
-        if (enabled && getParent().getParent() != null) {
+        if (enabled && getParent() != null) {
             if (action.equals(ActionName.LIST)) {
             } else {
-                SpatialTransformer controller = ScaleAnimation.getController(node,
+                SpatialTransformer controller = ScaleAnimation.getController(controlQuad,
                         1.0f, ANIMATIONTIME);
                 GameTaskQueueManager.getManager().update(new AddControllerCallable(
-                        node, controller));
+                        controlQuad, controller));
             }
-            setActive(controlable.toggle(action));
+            if (inArea(x, y)) {
+                toggle();
+            }
         }
     }
 
     @Override
     public void toggle() {
+        log.debug(action.toString());
         setActive(controlable.toggle(action));
     }
 }

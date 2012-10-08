@@ -184,44 +184,44 @@ public class CovidaApplication extends ApplicationImpl {
                 case 0:
                     button.setLocalTranslation(button.getWidth(),
                             button.getHeight(), 0);
-                    button.rotate(-90);
+                    button.rotate(0);
                     break;
                 case 1:
                     button.setLocalTranslation(display.getWidth()
                             - button.getWidth(), button.getHeight(), 0);
-                    button.rotate(0);
+                    button.rotate(45);
                     break;
                 case 2:
                     button.setLocalTranslation(display.getWidth()
                             - button.getWidth(), display.getHeight()
                             - button.getHeight(), 0);
-                    button.rotate(90);
+                    button.rotate(180);
                     break;
                 case 3:
                     button.setLocalTranslation(button.getWidth(),
                             display.getHeight() - button.getHeight(), 0);
-                    button.rotate(180);
+                    button.rotate(215);
                     break;
                 case 4:
                     button.setLocalTranslation(display.getWidth() / 2,
                             display.getHeight() - button.getHeight(), 0);
-                    button.rotate(-225);
+                    button.rotate(-180);
                     break;
                 case 5:
                     button.setLocalTranslation(button.getWidth(),
                             display.getHeight() / 2, 0);
-                    button.rotate(225);
+                    button.rotate(-90);
                     break;
                 case 6:
                     button.setLocalTranslation(display.getWidth() - button.getWidth(),
                             display.getHeight() / 2, 0);
-                    button.rotate(45);
+                    button.rotate(90);
 
                     break;
                 case 7:
                     button.setLocalTranslation(display.getWidth() / 2,
                             button.getHeight(), 0);
-                    button.rotate(-45);
+                    button.rotate(0);
                     break;
                 default:
                     GameTaskQueueManager.getManager().update(

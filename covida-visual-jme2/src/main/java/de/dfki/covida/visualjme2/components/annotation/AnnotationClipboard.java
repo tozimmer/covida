@@ -40,8 +40,6 @@ import de.dfki.covida.visualjme2.components.CovidaFieldComponent;
 import de.dfki.covida.visualjme2.components.CovidaTextComponent;
 import de.dfki.covida.visualjme2.utils.AddControllerCallable;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
-import de.dfki.covida.visualjme2.utils.CovidaRootNode;
-import de.dfki.covida.visualjme2.utils.DetachChildCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
 import de.dfki.covida.visualjme2.utils.RemoveControllerCallable;
 import de.dfki.touchandwrite.math.FastMath;
@@ -82,7 +80,7 @@ public class AnnotationClipboard extends CovidaFieldComponent implements
         setLocalScale(new Vector3f(1, 1, 1));
         initTextures();
         textBeginY = (int) (quad.getHeight() / 2.75f);
-        int x = (int) (getWidth()/4.f);
+        int x = (int) (getWidth() / 4.f);
         CovidaTextComponent caption = new CovidaTextComponent(this);
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, caption.node));
         caption.setLocalTranslation(x, getTextY(0) - FONT_SIZE / 4.f, 0);
@@ -137,8 +135,7 @@ public class AnnotationClipboard extends CovidaFieldComponent implements
 
     @Override
     public void close() {
-        GameTaskQueueManager.getManager().update(new DetachChildCallable(CovidaRootNode.node, node));
-        detach = true;
+        open = false;
         if (node.getControllers().contains(st)) {
             GameTaskQueueManager.getManager().update(new RemoveControllerCallable(node, st));
         }
@@ -149,8 +146,7 @@ public class AnnotationClipboard extends CovidaFieldComponent implements
 
     @Override
     public void open() {
-        detach = false;
-        GameTaskQueueManager.getManager().update(new AttachChildCallable(CovidaRootNode.node, node));
+        open = true;
         if (node.getControllers().contains(st)) {
             GameTaskQueueManager.getManager().update(new RemoveControllerCallable(node, st));
         }
@@ -169,5 +165,10 @@ public class AnnotationClipboard extends CovidaFieldComponent implements
             open();
             return true;
         }
+    }
+
+    @Override
+    public boolean isOpen() {
+        return open;
     }
 }

@@ -93,8 +93,8 @@ public class CloseAnimation {
         SpatialTransformer st = new SpatialTransformer(1);
         st.setObject(pivot, 0, -1);
         st.setPosition(0, 0.f, new Vector3f(pivot.getLocalTranslation()));
-        st.setPosition(0, 0.5f, new Vector3f(-width / 2.f,
-                -height / 2.f, 0));
+        st.setPosition(0, 0.5f, new Vector3f(0,
+                -height / 1.5f, 0));
         st.interpolateMissing();
         return st;
     }

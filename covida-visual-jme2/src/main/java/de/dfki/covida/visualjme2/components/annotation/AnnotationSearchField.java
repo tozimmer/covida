@@ -46,8 +46,6 @@ import de.dfki.covida.visualjme2.components.CovidaFieldComponent;
 import de.dfki.covida.visualjme2.components.CovidaTextComponent;
 import de.dfki.covida.visualjme2.utils.AddControllerCallable;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
-import de.dfki.covida.visualjme2.utils.CovidaRootNode;
-import de.dfki.covida.visualjme2.utils.DetachChildCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
 import de.dfki.covida.visualjme2.utils.RemoveControllerCallable;
 import de.dfki.touchandwrite.math.FastMath;
@@ -351,8 +349,7 @@ public class AnnotationSearchField extends CovidaFieldComponent implements
 
     @Override
     public void close() {
-        GameTaskQueueManager.getManager().update(new DetachChildCallable(CovidaRootNode.node, node));
-        detach = true;
+        open = false;
         if (node.getControllers().contains(st)) {
             GameTaskQueueManager.getManager().update(new RemoveControllerCallable(node, st));
         }
@@ -363,8 +360,7 @@ public class AnnotationSearchField extends CovidaFieldComponent implements
 
     @Override
     public void open() {
-        GameTaskQueueManager.getManager().update(new AttachChildCallable(CovidaRootNode.node, node));
-        detach = false;
+        open = true;
         if (node.getControllers().contains(st)) {
             GameTaskQueueManager.getManager().update(new RemoveControllerCallable(node, st));
         }
@@ -372,6 +368,11 @@ public class AnnotationSearchField extends CovidaFieldComponent implements
         st = OpenAnimation.getController(node, ANIMATION_DURATION);
         GameTaskQueueManager.getManager().update(new AddControllerCallable(node, st));
         update();
+    }
+    
+    @Override
+    public boolean isOpen() {
+        return open;
     }
 
     @Override

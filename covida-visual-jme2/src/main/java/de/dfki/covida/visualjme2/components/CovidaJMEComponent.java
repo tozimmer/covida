@@ -51,7 +51,6 @@ import java.awt.Dimension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * CovidaJMEComponent
  *
@@ -134,7 +133,7 @@ public abstract class CovidaJMEComponent implements ITouchAndWriteComponent {
     public Node getParent() {
         return node.getParent();
     }
-    
+
     /**
      * Rotate the node from this instance of VideoComponent
      *
@@ -146,7 +145,7 @@ public abstract class CovidaJMEComponent implements ITouchAndWriteComponent {
         rotation.fromAngleAxis(angle, axis);
         setLocalRotation(rotation);
     }
-    
+
     public void setLocalScale(Vector3f scale) {
         node.setLocalScale(scale);
     }
@@ -229,7 +228,25 @@ public abstract class CovidaJMEComponent implements ITouchAndWriteComponent {
      * @return <code>Integer</code>
      */
     public final int getNodeIndex() {
-        return CovidaRootNode.node.getChildren().lastIndexOf(this);
+        if (getParent() != null) {
+            if (getParent().equals(CovidaRootNode.node)) {
+                return CovidaRootNode.node.getChildren().lastIndexOf(node);
+            } else {
+                Node currentNode = node;
+                while (currentNode.getParent() != null
+                        && !currentNode.getParent().equals(CovidaRootNode.node)) {
+                    currentNode = currentNode.getParent();
+                }
+                if (currentNode.getParent() != null) {
+                    return CovidaRootNode.node.getChildren().lastIndexOf(currentNode);
+                }else{
+                    return Integer.MAX_VALUE;
+                }
+            }
+        } else {
+            return Integer.MAX_VALUE;
+        }
+
     }
 
     /**
@@ -241,7 +258,7 @@ public abstract class CovidaJMEComponent implements ITouchAndWriteComponent {
      */
     public Vector3f getLocal(float x, float y) {
         Matrix4f store = new Matrix4f();
-        Vector3f local = new Vector3f(x, y, 0);
+        Vector3f local = new Vector3f(x, display.y-y, 0);
         getLocalToWorldMatrix(store);
         store = store.invert();
         return store.mult(local);
@@ -346,7 +363,7 @@ public abstract class CovidaJMEComponent implements ITouchAndWriteComponent {
 
     @Override
     public boolean inArea(int x, int y) {
-        Vector3f local = getLocal(x, display.y - y);
+        Vector3f local = getLocal(x, y);
         int xAbs = (int) Math.abs(local.x);
         int yAbs = (int) Math.abs(local.y);
         if (xAbs < getWidth() / 2 && yAbs < getHeight() / 2) {

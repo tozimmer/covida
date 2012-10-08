@@ -65,7 +65,7 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
 
     @Override
     public void enableTimeCodeOverlay(long timeout) {
-        renderer.enableTimeCodeOverlay(30000);
+        renderer.enableTimeCodeOverlay(timeout);
     }
 
     @Override

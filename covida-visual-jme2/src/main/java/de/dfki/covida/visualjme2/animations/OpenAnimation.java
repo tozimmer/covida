@@ -52,11 +52,7 @@ public class OpenAnimation {
         Vector3f origin = pivot.getLocalTranslation();
         st.setObject(pivot, 0, -1);
         st.setPosition(0, 0.f, origin);
-        if (origin.y == 0) {
-            st.setPosition(0, 0.5f, new Vector3f(origin.x, origin.y + 75, origin.z));
-        } else {
-            st.setPosition(0, 0.5f, new Vector3f(origin.x + 75, origin.y - 75, origin.z));
-        }
+        st.setPosition(0, 0.5f, Vector3f.ZERO);
         st.interpolateMissing();
         return st;
     }

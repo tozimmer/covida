@@ -103,36 +103,40 @@ public class CovidaApplicationPreloader implements Runnable {
         ControlButton clipboardButton = new ControlButton(ActionName.CLOSE,
                 clipboard, "media/textures/arrow.png",
                 "media/textures/arrow.png", 64, 64);
-        clipboard.open();
-        clipboard.setLocalTranslation(clipboard.getLocalTranslation().x + clipboard.getWidth()/2, 
-                clipboard.getLocalTranslation().y, 0);
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(
+                clipboardButton.node, clipboard.node));
         application.addComponent(clipboardButton);
+        clipboard.close();
         AnnotationSearchField search = new AnnotationSearchField(
                 "media/textures/search_field_color.png",
                 application.getWidth() / 2, (int) (application.getHeight() / 1.5f));
         ControlButton searchButton = new ControlButton(ActionName.CLOSE,
                 search, "media/textures/search.png",
                 "media/textures/search.png", 64, 64);
-        search.rotate(3.75f, new Vector3f(0, 0, 1));
-        search.setLocalTranslation(search.getLocalTranslation().x, 
-                search.getLocalTranslation().y + application.getHeight(), 0);
-        search.setDefaultPosition();
-        search.open();
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(
+                searchButton.node, search.node));
         application.addComponent(searchButton);
+        search.close();
         AnnotationClipboard clipboard2 = new AnnotationClipboard(
                 "media/textures/clipboard_field_color.png",
                 application.getWidth() / 2, (int) (application.getHeight() / 1.5f));
         ControlButton clipboardButton2 = new ControlButton(ActionName.CLOSE,
                 clipboard2, "media/textures/arrow.png",
                 "media/textures/arrow.png", 64, 64);
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(
+                clipboardButton2.node, clipboard2.node));
         application.addComponent(clipboardButton2);
+        clipboard2.close();
         AnnotationSearchField search2 = new AnnotationSearchField(
                 "media/textures/search_field_color.png",
                 application.getWidth() / 2, (int) (application.getHeight() / 1.5f));
         ControlButton searchButton2 = new ControlButton(ActionName.CLOSE,
                 search2, "media/textures/search.png",
                 "media/textures/search.png", 64, 64);
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(
+                searchButton2.node, search2.node));
         application.addComponent(searchButton2);
+        search2.close();
     }
 
     public void cleanUp() {
