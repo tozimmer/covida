@@ -112,7 +112,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/target/binaries/covida-res/hwr-res</outputDirectory>
+                            <outputDirectory>${basedir}/target/binaries/bin/hwr-res</outputDirectory>
                             <resources>          
                                 <resource>
                                     <directory>../covida-res/hwr-res</directory>
