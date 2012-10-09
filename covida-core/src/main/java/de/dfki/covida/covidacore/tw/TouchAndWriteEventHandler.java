@@ -87,8 +87,8 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
      * @param mainFrame UI
      * @param wwPanel Visualization Panel
      */
-    public TouchAndWriteEventHandler(IApplication application) {
-        super(TouchAndWriteConfiguration.getDefaultEEESlateConfig());
+    public TouchAndWriteEventHandler(IApplication application, TouchAndWriteConfiguration config) {
+        super(config);
         this.application = application;
         this.activeTouchComponents = new HashMap<>();
         this.activeGestureComponents = new HashMap<>();

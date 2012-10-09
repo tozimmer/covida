@@ -19,3 +19,4 @@ nb-configuration.xml
 /datasoul/target/
 /covida-flvcreator/target/
 /covida-thirdparty/javafx/target/
+/covida-thirdparty/vlcj-2.1.0/target/

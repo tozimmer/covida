@@ -53,7 +53,9 @@ public class TouchAndWriteSupport {
     public static void start(IApplication application, TouchAndWriteDevice device){
         TWServer twServer = new TWServer(device);
         twServer.start();
-        TouchAndWriteEventHandler touchAndWrite = new TouchAndWriteEventHandler(application);
+        TouchAndWriteConfiguration config = TouchAndWriteConfiguration.getDefaultEEESlateConfig();
+//        config.getEventmanagerConfig().setHost("192.168.83.100");
+        TouchAndWriteEventHandler touchAndWrite = new TouchAndWriteEventHandler(application, config);
         log.debug("Starting Touch&Write support.");
         touchAndWrite.start();
     }
