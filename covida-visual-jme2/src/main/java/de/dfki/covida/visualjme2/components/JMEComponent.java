@@ -1,5 +1,5 @@
 /*
- * CovidaJMEComponent.java
+ * JMEComponent.java
  * 
  * Copyright (c) 2012, Tobias Zimmermann All rights reserved.
  * 
@@ -38,6 +38,7 @@ import com.jme.system.DisplaySystem;
 import com.jme.util.GameTaskQueueManager;
 import de.dfki.covida.covidacore.tw.ITouchAndWriteComponent;
 import de.dfki.covida.covidacore.tw.TouchAndWriteComponentHandler;
+import de.dfki.covida.visualjme2.components.video.VideoComponent;
 import de.dfki.covida.visualjme2.utils.AddControllerCallable;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
 import de.dfki.covida.visualjme2.utils.CovidaRootNode;
@@ -52,11 +53,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * CovidaJMEComponent
+ * JMEComponent
  *
  * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
  */
-public abstract class CovidaJMEComponent implements ITouchAndWriteComponent {
+public abstract class JMEComponent implements ITouchAndWriteComponent {
 
     protected Vector2f display;
     protected boolean newPenAction = false;
@@ -72,6 +73,8 @@ public abstract class CovidaJMEComponent implements ITouchAndWriteComponent {
      * Default translation of the {@link VideoComponent} as {@link Vector3f}
      */
     protected Vector3f defaultTranslation;
+    protected boolean touchable;
+    protected boolean drawable;
     /**
      * Logger
      */
@@ -86,7 +89,7 @@ public abstract class CovidaJMEComponent implements ITouchAndWriteComponent {
     private int id;
     public final Node node;
 
-    public CovidaJMEComponent(String nameOfComponent) {
+    public JMEComponent(String nameOfComponent) {
         node = new Node(nameOfComponent);
         log = LoggerFactory.getLogger(getClass());
         this.display = new Vector2f(
@@ -97,6 +100,31 @@ public abstract class CovidaJMEComponent implements ITouchAndWriteComponent {
 
     public Vector3f getLocalTranslation() {
         return node.getLocalTranslation();
+    }
+
+    @Override
+    public String getName() {
+        return node.getName();
+    }
+
+    @Override
+    public boolean isTouchable() {
+        return touchable;
+    }
+
+    @Override
+    public void setTouchable(boolean touchable) {
+        this.touchable = touchable;
+    }
+
+    @Override
+    public boolean isDrawable() {
+        return drawable;
+    }
+
+    @Override
+    public void setDrawable(boolean drawable) {
+        this.drawable = drawable;
     }
 
     public void setLocalTranslation(Vector3f translation) {
@@ -193,8 +221,7 @@ public abstract class CovidaJMEComponent implements ITouchAndWriteComponent {
     }
 
     /**
-     * Move the node from this instance of {@link CovidaJMEComponent} to
-     * position x,y
+     * Move the node from this instance of {@link JMEComponent} to position x,y
      *
      * @param x
      * @param y
@@ -206,12 +233,15 @@ public abstract class CovidaJMEComponent implements ITouchAndWriteComponent {
     @Override
     public final void toFront() {
         Node n = node;
-        while (getParent() != null && !getParent().equals(CovidaRootNode.node)) {
-            n = node.getParent();
+        if (n.getParent() != null) {
+            while (n.getParent() != null && !n.getParent().equals(CovidaRootNode.node)) {
+                n = n.getParent();
+            }
+            if (n.getParent().equals(CovidaRootNode.node)) {
+                GameTaskQueueManager.getManager().update(new DetachChildCallable(CovidaRootNode.node, n));
+                GameTaskQueueManager.getManager().update(new AttachChildCallable(CovidaRootNode.node, n));
+            }
         }
-        GameTaskQueueManager.getManager().update(new DetachChildCallable(CovidaRootNode.node, node));
-        GameTaskQueueManager.getManager().update(new AttachChildCallable(CovidaRootNode.node, node));
-
     }
 
     public final Vector3f getLocal(Node node, float x, float y) {
@@ -228,25 +258,25 @@ public abstract class CovidaJMEComponent implements ITouchAndWriteComponent {
      * @return <code>Integer</code>
      */
     public final int getNodeIndex() {
-        if (getParent() != null) {
-            if (getParent().equals(CovidaRootNode.node)) {
-                return CovidaRootNode.node.getChildren().lastIndexOf(node);
-            } else {
-                Node currentNode = node;
-                while (currentNode.getParent() != null
-                        && !currentNode.getParent().equals(CovidaRootNode.node)) {
-                    currentNode = currentNode.getParent();
-                }
+
+        if (getParent().equals(CovidaRootNode.node)) {
+            return CovidaRootNode.node.getChildren().lastIndexOf(node);
+        } else {
+            Node currentNode = node;
+            while (currentNode.getParent() != null
+                    && !currentNode.getParent().equals(CovidaRootNode.node)) {
+                currentNode = currentNode.getParent();
+            }
+            if (currentNode.getParent() != null) {
                 if (currentNode.getParent() != null) {
                     return CovidaRootNode.node.getChildren().lastIndexOf(currentNode);
-                }else{
+                } else {
                     return Integer.MAX_VALUE;
                 }
+            } else {
+                return Integer.MAX_VALUE;
             }
-        } else {
-            return Integer.MAX_VALUE;
         }
-
     }
 
     /**
@@ -258,7 +288,7 @@ public abstract class CovidaJMEComponent implements ITouchAndWriteComponent {
      */
     public Vector3f getLocal(float x, float y) {
         Matrix4f store = new Matrix4f();
-        Vector3f local = new Vector3f(x, display.y-y, 0);
+        Vector3f local = new Vector3f(x, display.y - y, 0);
         getLocalToWorldMatrix(store);
         store = store.invert();
         return store.mult(local);
@@ -308,7 +338,7 @@ public abstract class CovidaJMEComponent implements ITouchAndWriteComponent {
     }
 
     /**
-     * Returns the {@link CovidaJMEComponent}s id
+     * Returns the {@link JMEComponent}s id
      *
      * @return the id as {@link Integer}
      */
@@ -337,6 +367,7 @@ public abstract class CovidaJMEComponent implements ITouchAndWriteComponent {
 
     @Override
     public void touchDeadAction(int id, int x, int y) {
+        log.debug("Birth " + getName());
     }
 
     @Override
@@ -363,11 +394,20 @@ public abstract class CovidaJMEComponent implements ITouchAndWriteComponent {
 
     @Override
     public boolean inArea(int x, int y) {
-        Vector3f local = getLocal(x, y);
-        int xAbs = (int) Math.abs(local.x);
-        int yAbs = (int) Math.abs(local.y);
-        if (xAbs < getWidth() / 2 && yAbs < getHeight() / 2) {
-            return true;
+        Node n = node;
+        while (n.getParent() != null && !n.getParent()
+                .equals(CovidaRootNode.node)) {
+            n = n.getParent();
+        }
+        if (n.getParent() != null) {
+            if (n.getParent().equals(CovidaRootNode.node)) {
+                Vector3f local = getLocal(x, y);
+                int xAbs = (int) Math.abs(local.x);
+                int yAbs = (int) Math.abs(local.y);
+                if (xAbs < getWidth() / 2 && yAbs < getHeight() / 2) {
+                    return true;
+                }
+            }
         }
         return false;
     }
@@ -415,10 +455,12 @@ public abstract class CovidaJMEComponent implements ITouchAndWriteComponent {
 
     @Override
     public void touchAliveAction(int id, int x, int y) {
+        log.debug("Alive " + getName());
     }
 
     @Override
     public void touchBirthAction(int id, int x, int y) {
+        log.debug("Birth " + getName());
     }
 
     /**

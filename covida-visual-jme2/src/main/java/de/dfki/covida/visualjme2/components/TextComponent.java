@@ -1,5 +1,5 @@
 /*
- * CovidaTextComponent.java
+ * TextComponent.java
  * 
  * Copyright (c) 2012, Tobias Zimmermann All rights reserved.
  * 
@@ -28,11 +28,17 @@
 package de.dfki.covida.visualjme2.components;
 
 import com.jme.animation.SpatialTransformer;
+import com.jme.math.FastMath;
+import com.jme.math.TransformMatrix;
+import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.util.GameTaskQueueManager;
 import com.jmex.angelfont.BitmapFont.Align;
 import com.jmex.angelfont.BitmapText;
 import com.jmex.scene.TimedLifeController;
+import de.dfki.covida.covidacore.components.IControlButton;
+import de.dfki.covida.covidacore.components.IControlableComponent;
+import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.visualjme2.animations.DragAnimation;
 import de.dfki.covida.visualjme2.animations.ScaleAnimation;
 import de.dfki.covida.visualjme2.utils.AddControllerCallable;
@@ -42,11 +48,11 @@ import de.dfki.covida.visualjme2.utils.FontLoader;
 import de.dfki.covida.visualjme2.utils.RemoveControllerCallable;
 
 /**
- * CovidaTextComponent
+ * TextComponent
  *
  * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
  */
-public class CovidaTextComponent extends CovidaJMEComponent {
+public class TextComponent extends JMEComponent implements IControlButton {
 
     /**
      * Config
@@ -65,21 +71,23 @@ public class CovidaTextComponent extends CovidaJMEComponent {
      * actual displayed string
      */
     private String text = "";
-    private CovidaJMEComponent component;
+    private IControlableComponent component;
     private SpatialTransformer stDrag;
     private SpatialTransformer stScale;
     private FontLoader textOverlayData;
     private BitmapText txt;
     private boolean isDragging;
+    private boolean enabled;
+    private ActionName action;
+    private float ANIMATIONTIME;
 
     /**
      * Displays Text
      *
-     * @param node - Node which the Text should be attached
-     * @param rootNode - rootNode for onTop detection
+     * @param component controlable componnet
      */
-    public CovidaTextComponent(CovidaJMEComponent component) {
-        super(component.node.getName() + " Text Overlay");
+    public TextComponent(IControlableComponent component) {
+        super(component.getName() + " Text Overlay");
         this.component = component;
         textOverlayData = FontLoader.getInstance();
         txt = new BitmapText(textOverlayData.getBitmapFont(font), false);
@@ -101,7 +109,7 @@ public class CovidaTextComponent extends CovidaJMEComponent {
         try {
             txt.update();
         } catch (NullPointerException e) {
-            log.error("",e);
+            log.error("", e);
         }
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, txt));
     }
@@ -211,5 +219,65 @@ public class CovidaTextComponent extends CovidaJMEComponent {
             stScale = ScaleAnimation.getController(node, 2.0f, 2.0f);
         }
         GameTaskQueueManager.getManager().update(new AddControllerCallable(node, stScale));
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    @Override
+    public boolean getEnabled() {
+        return enabled;
+    }
+
+    @Override
+    public void dragAction(int id, int x, int y, int dx, int dy) {
+        Vector3f translation = this.getLocalTranslation();
+        Vector3f d = new Vector3f(dx, -dy, 0);
+//        d.subtract(node.getWorldTranslation(), d);
+        d = d.divideLocal(node.getWorldScale());
+        d = node.getWorldRotation().inverse().mult(d, d);
+        translation = translation.add(d);
+        node.setLocalTranslation(translation);
+    }
+
+    @Override
+    public void touchBirthAction(int id, int x, int y) {
+        if (enabled && getParent() != null) {
+            SpatialTransformer controller = ScaleAnimation.getController(txt,
+                    2.0f, ANIMATIONTIME);
+            GameTaskQueueManager.getManager().update(new AddControllerCallable(
+                    txt, controller));
+        }
+    }
+
+    @Override
+    public void touchDeadAction(int id, int x, int y) {
+        log.debug(getName() + " touch");
+        if (enabled && getParent() != null) {
+            SpatialTransformer controller = ScaleAnimation.getController(txt,
+                    1.0f, ANIMATIONTIME);
+            GameTaskQueueManager.getManager().update(new AddControllerCallable(
+                    txt, controller));
+            if (inArea(x, y)) {
+                toggle();
+            }
+        }
+    }
+
+    @Override
+    public void toggle() {
+        log.debug(action.toString());
+        setActive(component.toggle(action));
+    }
+
+    @Override
+    public void setActive(boolean activated) {
+    }
+
+    @Override
+    public boolean getActive() {
+        return false;
     }
 }

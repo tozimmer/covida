@@ -42,8 +42,8 @@ import de.dfki.covida.visualjme2.animations.CloseAnimation;
 import de.dfki.covida.visualjme2.animations.CloseAnimationType;
 import de.dfki.covida.visualjme2.animations.OpenAnimation;
 import de.dfki.covida.visualjme2.animations.ResetAnimation;
-import de.dfki.covida.visualjme2.components.CovidaJMEComponent;
-import de.dfki.covida.visualjme2.components.CovidaTextComponent;
+import de.dfki.covida.visualjme2.components.JMEComponent;
+import de.dfki.covida.visualjme2.components.TextComponent;
 import de.dfki.covida.visualjme2.components.video.VideoComponent;
 import de.dfki.covida.visualjme2.utils.AddControllerCallable;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
@@ -58,7 +58,7 @@ import java.util.List;
  *
  * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
  */
-public class ListFieldComponent extends CovidaJMEComponent {
+public class ListFieldComponent extends JMEComponent {
 
     /**
      * Default {@link ColorRGBA}
@@ -113,9 +113,9 @@ public class ListFieldComponent extends CovidaJMEComponent {
      */
     private VideoComponent video;
     /**
-     * {@link List} of {@link CovidaTextComponent}s
+     * {@link List} of {@link TextComponent}s
      */
-    private List<CovidaTextComponent> entries;
+    private List<TextComponent> entries;
     /**
      * Texture state of the spacer
      */
@@ -135,7 +135,7 @@ public class ListFieldComponent extends CovidaJMEComponent {
     /*
      * Text overlay
      */
-    private CovidaTextComponent textOverlay;
+    private TextComponent textOverlay;
     /**
      * Font size
      */
@@ -200,11 +200,11 @@ public class ListFieldComponent extends CovidaJMEComponent {
      */
     public void initComponent() {
         initTextures();
-        textOverlay = new CovidaTextComponent(this);
+        textOverlay = new TextComponent(video);
         textOverlay.setSize(FONT_SIZE);
         int x = (int) (0);
         float y = getTextY(0);
-        CovidaTextComponent to = new CovidaTextComponent(this);
+        TextComponent to = new TextComponent(video);
         to.setLocalTranslation(x, y, 0);
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, to.node));
         to.setSize(getFontSize());
@@ -260,7 +260,7 @@ public class ListFieldComponent extends CovidaJMEComponent {
      * Resets textNode
      */
     public void resetInfo() {
-        for (CovidaTextComponent e : entries) {
+        for (TextComponent e : entries) {
             e.setColor(defaultColor);
         }
     }
@@ -294,12 +294,12 @@ public class ListFieldComponent extends CovidaJMEComponent {
         if (times != null) {
             // TODO max limit for list
             log.debug("draw entries: " + times);
-            for (CovidaTextComponent e : entries) {
+            for (TextComponent e : entries) {
                 e.detach();
             }
             entries = new ArrayList<>();
             for (int i = 0; i < times.size(); i++) {
-                CovidaTextComponent entryTextOverlay = new CovidaTextComponent(this);
+                TextComponent entryTextOverlay = new TextComponent(video);
                 entryTextOverlay.setLocalTranslation(0, getTextY(i + 1), 0);
                 GameTaskQueueManager.getManager().update(new AttachChildCallable(node, entryTextOverlay.node));
                 entries.add(entryTextOverlay);
@@ -348,7 +348,7 @@ public class ListFieldComponent extends CovidaJMEComponent {
      */
     public void setActiveEntry(int index) {
         if (index > -1 && index < entries.size()) {
-            for (CovidaTextComponent e : entries) {
+            for (TextComponent e : entries) {
                 e.setColor(defaultColor);
             }
             entries.get(index).setColor(activeColor);
@@ -362,7 +362,7 @@ public class ListFieldComponent extends CovidaJMEComponent {
      */
     public void setSelectedEntry(int index) {
         if (index > -1 && index < entries.size() + 1) {
-            for (CovidaTextComponent e : entries) {
+            for (TextComponent e : entries) {
                 e.setColor(defaultColor);
             }
             entries.get(index).setColor(selectedColor);
@@ -416,7 +416,7 @@ public class ListFieldComponent extends CovidaJMEComponent {
             GameTaskQueueManager.getManager().update(new RemoveControllerCallable(node, st));
         }
         // fade out entry list
-        for (CovidaTextComponent e : entries) {
+        for (TextComponent e : entries) {
             e.fadeOut((float) ANIMATION_DURATION / 1000);
         }
         // Close animation List Field

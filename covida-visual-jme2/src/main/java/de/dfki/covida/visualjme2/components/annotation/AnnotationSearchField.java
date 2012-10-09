@@ -32,26 +32,21 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.shape.Quad;
 import com.jme.util.GameTaskQueueManager;
-import com.jmex.angelfont.BitmapFont.Align;
 import de.dfki.covida.covidacore.components.IControlableComponent;
 import de.dfki.covida.covidacore.data.Annotation;
-import de.dfki.covida.covidacore.data.AnnotationData;
-import de.dfki.covida.covidacore.data.AnnotationStorage;
 import de.dfki.covida.covidacore.utils.ActionName;
-import de.dfki.covida.covidacore.utils.AnnotationSearch;
-import de.dfki.covida.covidacore.utils.VideoUtils;
 import de.dfki.covida.visualjme2.animations.CloseAnimation;
 import de.dfki.covida.visualjme2.animations.OpenAnimation;
-import de.dfki.covida.visualjme2.components.CovidaFieldComponent;
-import de.dfki.covida.visualjme2.components.CovidaTextComponent;
+import de.dfki.covida.visualjme2.components.FieldComponent;
+import de.dfki.covida.visualjme2.components.TextComponent;
 import de.dfki.covida.visualjme2.utils.AddControllerCallable;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
 import de.dfki.covida.visualjme2.utils.RemoveControllerCallable;
 import de.dfki.touchandwrite.math.FastMath;
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -59,41 +54,51 @@ import java.util.Map;
  *
  * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
  */
-public class AnnotationSearchField extends CovidaFieldComponent implements
+public class AnnotationSearchField extends FieldComponent implements
         IControlableComponent {
 
     /**
-     * Search field constructor
-     *
-     * @param resource
-     * @param video
-     * @param listField
-     * @param id
-     * @param node
-     * @param width
-     * @param height
+     * Map with all search results mapped on video ids
+     */
+    protected HashMap<Integer, ArrayList<TextComponent>> entryMap;
+    /**
+     * Map with all search results mapped to annotation ids
+     */
+    protected ArrayList<Map<Integer, Annotation>> entriesMapping;
+    /**
+     * List of entries {@link TextComponent}
+     */
+    protected ArrayList<TextComponent> entries;
+
+    /**
+     * Creates a new instance of {@link AnnotationSearchField}
+     * 
+     * @param resource Image resource location as {@link String}
+     * @param width {@link Integer}
+     * @param height {@link Integer}
      */
     public AnnotationSearchField(String resource, int width, int height) {
         super("AnnotationSearch");
         this.width = width;
         this.height = height;
         this.image = resource;
+        setDrawable(true);
         hwrResults = new ArrayList<>();
-        mapping = new HashMap<>();
         entriesMapping = new ArrayList<>();
         entryMap = new HashMap<>();
-        titles = new ArrayList<>();
+        entries = new ArrayList<>();
         hwr = new ArrayList<>();
         super.setAlwaysOnTop(true);
         setLocalScale(new Vector3f(1, 1, 1));
         initTextures();
         textBeginY = (int) (quad.getHeight() / 2.0f);
         int x = (int) (0);
-        CovidaTextComponent caption = new CovidaTextComponent(this);
+        TextComponent caption = new TextComponent(this);
         caption.setLocalTranslation(x, getTextY(0) - FONT_SIZE / 4.f, 0);
         caption.setSize((int) (FONT_SIZE * 1.5f));
         caption.setText("Write here for annotation search:");
         caption.setFont(2);
+        caption.setTouchable(true);
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, caption.node));
         addSpacer(x, (int) (getTextY(0) - FONT_SIZE), 0,
                 (int) (quad.getWidth() / 1.1f), TEXT_SPACER);
@@ -106,218 +111,6 @@ public class AnnotationSearchField extends CovidaFieldComponent implements
     @Override
     public void clearHwrResults() {
         hwrResults.clear();
-    }
-
-    /**
-     *
-     * @param x
-     * @param y
-     * @return <code>Integer</code> , entryId or -1 if there is no entry on x,y
-     */
-    public int getSelectedEntry(int x, int y) {
-        if (entryMap.containsKey(mapping.get(selectedTitle))) {
-            for (int i = 0; i < entryMap.get(mapping.get(selectedTitle)).size(); i++) {
-                if (entryMap.get(mapping.get(selectedTitle)).get(i).inArea(x, y)) {
-                    return i;
-                }
-            }
-        }
-        return -1;
-    }
-
-    /**
-     *
-     * @param x
-     * @param y
-     * @return <code>Integer</code> , tilteId or -1 if there is no title on x,y
-     */
-    public int getSelectedTitle(int x, int y) {
-        for (int i = 0; i < titles.size(); i++) {
-            if (titles.get(i).inArea(x, y)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    /**
-     * Sets the active entry on the ListField
-     *
-     * @param index
-     */
-    public void setActiveEntry(int index) {
-        if (entryMap.get(mapping.get(selectedTitle)) != null && index > -1
-                && index < entryMap.get(mapping.get(selectedTitle)).size()) {
-            for (CovidaTextComponent entry : entryMap.get(mapping.get(selectedTitle))) {
-                entry.setColor(defaultColor);
-            }
-            entryMap.get(mapping.get(selectedTitle)).get(index).setColor(activeColor);
-            entryMap.get(mapping.get(selectedTitle)).get(index).startScaleAnimation();
-        }
-    }
-
-    /**
-     * Sets the selected entry on the ListField
-     *
-     * @param index
-     */
-    public void setSelectedEntry(int index) {
-//        if (index > -1
-//                && index < entryMap.get(mapping.get(selectedTitle)).size() + 1) {
-//            for (CovidaTextComponent entry : entryMap.get(mapping.get(selectedTitle))) {
-//                entry.setColor(defaultColor);
-//            }
-//            
-//            if (entryMap.size() > selectedTitle) {
-//                if (entryMap.get(mapping.get(selectedTitle)).size() > index) {
-//                    entryMap.get(mapping.get(selectedTitle)).get(index).setColor(selectedColor);
-//                    AnnotationStorage.getInstance().loadAnnotation(entriesMapping.get(index).get(log));
-//                } else {
-//                    log.debug("entries.get(" + selectedTitle + ").size()<"
-//                            + index);
-//                }
-//            } else {
-//                log.debug("entries.size()<=" + selectedTitle);
-//            }
-//
-//        }
-    }
-
-    /**
-     * Sets the active entry on the ListField
-     *
-     * @param titleID
-     */
-    public void setActiveTitle(int titleID) {
-        if (titleID > -1 && titleID < titles.size()) {
-            for (CovidaTextComponent title : titles) {
-                title.setColor(defaultColor);
-            }
-            titles.get(titleID).setColor(activeColor);
-        }
-    }
-
-    @Override
-    protected void update() {
-        if (this.hwrResults != null) {
-            // TODO handle to much entries (display capacity)
-            for (CovidaTextComponent to : hwr) {
-                to.detach();
-            }
-            for (CovidaTextComponent to : titles) {
-                to.detach();
-            }
-            if (entryMap.containsKey(mapping.get(selectedTitle))) {
-                for (CovidaTextComponent entry : entryMap.get(mapping.get(selectedTitle))) {
-                    // TODO detach!
-                    entry.fadeOut(1.f);
-                }
-            }
-            int x = (int) (-width / 2.5f);
-            mapping = new HashMap<>();
-            entriesMapping = new ArrayList<>();
-            entryMap = new HashMap<>();
-            titles = new ArrayList<>();
-            hwr = new ArrayList<>();
-            for (int i = 0; i < hwrResults.size(); i++) {
-                CovidaTextComponent hwrText = new CovidaTextComponent(this);
-                hwrText.setLocalTranslation(x, getTextY(2 + i), 0);
-                GameTaskQueueManager.getManager().update(new AttachChildCallable(node, hwrText.node));
-                hwr.add(hwrText);
-                hwr.get(i).setText(hwrResults.get(i));
-                hwr.get(i).setSize(FONT_SIZE);
-                hwr.get(i).setFont(1);
-                hwr.get(i).setColor(new ColorRGBA(0.75f, 0.75f, 0.75f, 0));
-                hwr.get(i).fadeIn((float) i * 1.f + 1.f);
-            }
-        }
-        // TODO max limit for list
-        int x;
-
-        for (CovidaTextComponent title : titles) {
-            title.detach();
-        }
-        titles = new ArrayList<>();
-        Map<AnnotationData, List<Annotation>> searchResult = AnnotationSearch
-                .search(hwrResults, AnnotationStorage.getInstance().getAnnotationDatas());
-        log.debug("search results: " + searchResult.toString());
-        int index = 0;
-        for (AnnotationData data : AnnotationStorage.getInstance().getAnnotationDatas()) {
-            Map<Integer, Annotation> entriesMap = new HashMap<>();
-            if (searchResult.containsKey(data)) {
-                // display video title
-                String title = data.title;
-                log.debug("draw title: " + title);
-                x = (int) (-quad.getWidth() / 4.15f);
-                CovidaTextComponent titleText = new CovidaTextComponent(this);
-                titleText.setLocalTranslation(x, getTextY(index + 2), 0);
-                GameTaskQueueManager.getManager().update(new AttachChildCallable(node, titleText.node));
-                titles.add(titleText);
-                titles.get(titles.size() - 1).setFont(1);
-                titles.get(titles.size() - 1).setSize(FONT_SIZE);
-                titles.get(titles.size() - 1).setAlign(Align.Left);
-                titles.get(titles.size() - 1).setText(title);
-                // get search results (entries)
-                ArrayList<CovidaTextComponent> resultEntries = new ArrayList<>();
-                for (Annotation annotation : searchResult.get(data)) {
-                    x = (int) (quad.getWidth() / 7.85f);
-                    String entry = VideoUtils.getTimeCode(annotation.time_start);
-                    log.debug("draw entry: " + entry);
-                    CovidaTextComponent textOverlay = new CovidaTextComponent(this);
-                    textOverlay.setLocalTranslation(x, getTextY(resultEntries.size() + 2), 0);
-                    textOverlay.setText(entry);
-                    textOverlay.setFont(1);
-                    textOverlay.setSize(FONT_SIZE);
-                    textOverlay.setAlign(Align.Left);
-                    textOverlay.fadeIn((float) resultEntries.size() * 1.f + 1.f);
-                    resultEntries.add(textOverlay);
-
-                    entriesMap.put(resultEntries.size() - 1, annotation);
-                }
-                entryMap.put(index, resultEntries);
-                mapping.put(index, data);
-                entriesMapping.add(index, entriesMap);
-                index++;
-            }
-        }
-        if (titles.size() > index) {
-            for (int i = index; i < titles.size(); i++) {
-                titles.remove(i);
-            }
-        }
-        if (titles.size() > 0) {
-            setSelectedTitle(0);
-        }
-    }
-
-    /**
-     * Sets the selected title on the SearchField
-     *
-     * @param index
-     */
-    public void setSelectedTitle(int index) {
-        if (index > -1 && index < titles.size() + 1) {
-            if (entryMap.containsKey(mapping.get(index))) {
-                for (CovidaTextComponent title : titles) {
-                    title.setColor(defaultColor);
-                }
-                if (entryMap.containsKey(mapping.get(selectedTitle))) {
-                    for (CovidaTextComponent entry : entryMap.get(mapping.get(selectedTitle))) {
-                        // TODO detach!
-                        entry.fadeOut(1.f);
-                    }
-                }
-                titles.get(index).setColor(selectedColor);
-                selectedTitle = index;
-                for (CovidaTextComponent entry : entryMap.get(mapping.get(index))) {
-                    entry.attach();
-                    entry.fadeIn(1.5f);
-                }
-            } else {
-                log.debug("!(entryMap.containsKey(index)) index: " + index
-                        + ")");
-            }
-        }
     }
 
     @Override
@@ -369,7 +162,7 @@ public class AnnotationSearchField extends CovidaFieldComponent implements
         GameTaskQueueManager.getManager().update(new AddControllerCallable(node, st));
         update();
     }
-    
+
     @Override
     public boolean isOpen() {
         return open;
@@ -383,6 +176,31 @@ public class AnnotationSearchField extends CovidaFieldComponent implements
         } else {
             open();
             return true;
+        }
+    }
+
+    @Override
+    public void hwrAction(String hwr) {
+        if (open) {
+            hwrResults.clear();
+            hwrResults.add(hwr);
+            update();
+        }
+    }
+
+    @Override
+    protected void update() {
+        for (int i = 0; i < hwrResults.size(); i++) {
+            int x = (int) (-width / 2.5f);
+            TextComponent hwrText = new TextComponent(this);
+            hwrText.setLocalTranslation(x, getTextY(2 + i), 0);
+            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, hwrText.node));
+            hwr.add(hwrText);
+            hwr.get(i).setText(hwrResults.get(i));
+            hwr.get(i).setSize(FONT_SIZE);
+            hwr.get(i).setFont(1);
+            hwr.get(i).setColor(new ColorRGBA(0.75f, 0.75f, 0.75f, 0));
+            hwr.get(i).fadeIn((float) i * 1.f + 1.f);
         }
     }
 }

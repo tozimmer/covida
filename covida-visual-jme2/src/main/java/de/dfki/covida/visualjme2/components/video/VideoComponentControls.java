@@ -33,7 +33,7 @@ import de.dfki.covida.covidacore.components.IControlableComponent;
 import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.videovlcj.IVideoControls;
 import de.dfki.covida.visualjme2.components.ControlButton;
-import de.dfki.covida.visualjme2.components.CovidaJMEComponent;
+import de.dfki.covida.visualjme2.components.JMEComponent;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
 import de.dfki.covida.visualjme2.utils.DetachChildCallable;
 import java.util.ArrayList;
@@ -46,7 +46,7 @@ import java.util.Map;
  *
  * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
  */
-public class VideoComponentControls extends CovidaJMEComponent implements IVideoControls {
+public class VideoComponentControls extends JMEComponent implements IVideoControls {
 
     protected Quad overlayControlsDefault;
     private int width;
@@ -60,6 +60,8 @@ public class VideoComponentControls extends CovidaJMEComponent implements IVideo
         this.height = 0;
         this.controlable = controlable;
         initalizeControls();
+        setDrawable(true);
+        setTouchable(true);
     }
 
     private void initalizeControls() {
@@ -90,7 +92,6 @@ public class VideoComponentControls extends CovidaJMEComponent implements IVideo
                     controlWidth, controlHeight);
             control.setLocalTranslation(controlWidth / 2 + (-controlable.getWidth() / 2)
                     + (controls.size() * (controlable.getWidth() / 5)), -controlable.getHeight() / (1.4f), 0);
-            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, control.node));
             controls.put(controlList.get(texture), control);
         }
         controlWidth = (int) (0.15f * controlable.getHeight());
@@ -106,16 +107,15 @@ public class VideoComponentControls extends CovidaJMEComponent implements IVideo
                     controlable, texture, controlActiveList.get(controlList.get(texture)),
                     controlWidth, controlHeight);
             control.setLocalTranslation(start, controlable.getHeight() / (1.7f), 0);
-            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, control.node));
             controls.put(controlList.get(texture), control);
             start -= controlable.getWidth() + controlWidth;
         }
         controlList = new HashMap<>();
-        controlList.put("media/textures/video_controls_list_back.png", ActionName.NONE);
-        controlList.put("media/textures/video_controls_list_front.png", ActionName.LIST);
+        controlList.put("media/textures/video_controls_list_1.png", ActionName.NONE);
+        controlList.put("media/textures/video_controls_list_0.png", ActionName.LIST);
         controlActiveList = new HashMap<>();
-        controlActiveList.put(ActionName.NONE, "media/textures/video_controls_list_back.png");
-        controlActiveList.put(ActionName.LIST, "media/textures/video_controls_list_front.png");
+        controlActiveList.put(ActionName.NONE, "media/textures/video_controls_list_1.png");
+        controlActiveList.put(ActionName.LIST, "media/textures/video_controls_list_0.png");
         for (String texture : controlList.keySet()) {
             ControlButton control = new ControlButton(controlList.get(texture),
                     controlable, texture, controlActiveList.get(controlList.get(texture)),
@@ -124,7 +124,6 @@ public class VideoComponentControls extends CovidaJMEComponent implements IVideo
             if (controlList.get(texture).equals(ActionName.NONE)) {
                 control.setEnabled(false);
             }
-            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, control.node));
             controls.put(controlList.get(texture), control);
             start += controlable.getWidth() + controlWidth;
         }

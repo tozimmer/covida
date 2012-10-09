@@ -77,7 +77,6 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
      */
     private final IApplication application;
     private Map<Integer, ITouchAndWriteComponent> activeTouchComponents;
-    private Map<Integer, ITouchAndWriteComponent> activeGestureComponents;
     private Map<String, ITouchAndWriteComponent> activeDrawComponents;
 
     /**
@@ -91,7 +90,6 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
         super(config);
         this.application = application;
         this.activeTouchComponents = new HashMap<>();
-        this.activeGestureComponents = new HashMap<>();
         this.activeDrawComponents = new HashMap<>();
     }
 
@@ -101,7 +99,6 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
     public void start() {
         this.clientManager.addHWRListener(this);
         this.clientManager.addTouchListener(this);
-
         this.controlManager.triggerEvent(new RegisterWindowEvent(application.getWindowTitle()));
         this.componentHandler = TouchAndWriteComponentHandler.getInstance();
     }
@@ -119,10 +116,8 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
     private double pythagoras(double x1, double y1, double x2, double y2) {
         double oppositeCathetusLenght = (x2 - x1);
         double cathetusLenght = (y2 - y1);
-
         double oppositeCathetusSquare = Math.pow(oppositeCathetusLenght, 2);
         double cathetusSquare = Math.pow(cathetusLenght, 2);
-
         return (Math.abs(Math.sqrt(oppositeCathetusSquare + cathetusSquare)));
     }
 
@@ -147,35 +142,10 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
      * @param event incomming pan gesture event
      */
     private void panAction(PanEventImpl event) {
-        SortedMap<Integer, ITouchAndWriteComponent> components = new TreeMap<>();
         int id = event.getFirstTouch().getID();
-        if (event.getState().equals(GestureState.GESTURE_BEGIN)) {
-            for (ITouchAndWriteComponent component : componentHandler.getComponents()) {
-                int x = (int) (event.getFirstTouch().getX() * component.getDisplaySize().getWidth());
-                int y = (int) (event.getFirstTouch().getY() * component.getDisplaySize().getHeight());
-                int x2 = (int) (event.getSecondTouch().getX() * component.getDisplaySize().getWidth());
-                int y2 = (int) (event.getSecondTouch().getY() * component.getDisplaySize().getHeight());
-                if (component.inArea(x, y) && component.inArea(x2, y2)) {
-                    components.put(component.getZPosition(), component);
-                }
-            }
-            if (!components.isEmpty()) {
-                activeGestureComponents.put(id,
-                        components.get(components.lastKey()));
-                components.get(components.lastKey()).panAction(event);
-            }
-        } else if (event.getState()
-                .equals(TouchGestureEvent.GestureState.GESTURE_END)) {
-            if (activeTouchComponents.containsKey(id)) {
-                ITouchAndWriteComponent component = activeTouchComponents.get(id);
-                component.panAction(event);
-            }
-        } else if (event.getState()
-                .equals(TouchGestureEvent.GestureState.GESTURE_UPDATE)) {
-            if (activeTouchComponents.containsKey(id)) {
-                ITouchAndWriteComponent component = activeTouchComponents.get(id);
-                component.panAction(event);
-            }
+        if (activeTouchComponents.containsKey(id)) {
+            ITouchAndWriteComponent component = activeTouchComponents.get(id);
+            component.panAction(event);
         }
     }
 
@@ -185,39 +155,10 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
      * @param event incomming Zoom gesture event
      */
     private void zoomAction(ZoomEventImpl event) {
-        SortedMap<Integer, ITouchAndWriteComponent> components = new TreeMap<>();
         int id = event.getFirstTouch().getID();
-        if (event.getState().equals(GestureState.GESTURE_BEGIN)) {
-            for (ITouchAndWriteComponent component : componentHandler.getComponents()) {
-                int x = (int) (event.getFirstTouch().getX()
-                        * component.getDisplaySize().getWidth());
-                int y = (int) (event.getFirstTouch().getY()
-                        * component.getDisplaySize().getHeight());
-                int x2 = (int) (event.getSecondTouch().getX()
-                        * component.getDisplaySize().getWidth());
-                int y2 = (int) (event.getSecondTouch().getY()
-                        * component.getDisplaySize().getHeight());
-                if (component.inArea(x, y) && component.inArea(x2, y2)) {
-                    components.put(component.getZPosition(), component);
-                }
-            }
-            if (!components.isEmpty()) {
-                activeGestureComponents.put(id,
-                        components.get(components.lastKey()));
-                components.get(components.lastKey()).zoomAction(event);
-            }
-        } else if (event.getState()
-                .equals(TouchGestureEvent.GestureState.GESTURE_END)) {
-            if (activeTouchComponents.containsKey(id)) {
-                ITouchAndWriteComponent component = activeTouchComponents.get(id);
-                component.zoomAction(event);
-            }
-        } else if (event.getState()
-                .equals(TouchGestureEvent.GestureState.GESTURE_UPDATE)) {
-            if (activeTouchComponents.containsKey(id)) {
-                ITouchAndWriteComponent component = activeTouchComponents.get(id);
-                component.zoomAction(event);
-            }
+        if (activeTouchComponents.containsKey(id)) {
+            ITouchAndWriteComponent component = activeTouchComponents.get(id);
+            component.zoomAction(event);
         }
     }
 
@@ -227,39 +168,10 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
      * @param event incomming Rotation gesture event
      */
     private void rotateAction(RotationGestureEventImpl event) {
-        SortedMap<Integer, ITouchAndWriteComponent> components = new TreeMap<>();
         int id = event.getFirstTouch().getID();
-        if (event.getState().equals(GestureState.GESTURE_BEGIN)) {
-            for (ITouchAndWriteComponent component : componentHandler.getComponents()) {
-                int x = (int) (event.getFirstTouch().getX()
-                        * component.getDisplaySize().getWidth());
-                int y = (int) (event.getFirstTouch().getY()
-                        * component.getDisplaySize().getHeight());
-                int x2 = (int) (event.getSecondTouch().getX()
-                        * component.getDisplaySize().getWidth());
-                int y2 = (int) (event.getSecondTouch().getY()
-                        * component.getDisplaySize().getHeight());
-                if (component.inArea(x, y) && component.inArea(x2, y2)) {
-                    components.put(component.getZPosition(), component);
-                }
-                if (!components.isEmpty()) {
-                    activeGestureComponents.put(id,
-                            components.get(components.lastKey()));
-                    components.get(components.lastKey()).rotateAction(event);
-                }
-            }
-        } else if (event.getState()
-                .equals(TouchGestureEvent.GestureState.GESTURE_UPDATE)) {
-            if (activeTouchComponents.containsKey(id)) {
-                ITouchAndWriteComponent component = activeTouchComponents.get(id);
-                component.rotateAction(event);
-            }
-        } else if (event.getState()
-                .equals(TouchGestureEvent.GestureState.GESTURE_END)) {
-            if (activeTouchComponents.containsKey(id)) {
-                ITouchAndWriteComponent component = activeTouchComponents.get(id);
-                component.rotateAction(event);
-            }
+        if (activeTouchComponents.containsKey(id)) {
+            ITouchAndWriteComponent component = activeTouchComponents.get(id);
+            component.rotateAction(event);
         }
     }
 
@@ -269,57 +181,20 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
      * @param event incomming drag gesture event
      */
     private void dragAction(DragEventImpl event) {
-        SortedMap<Integer, ITouchAndWriteComponent> components = new TreeMap<>();
         int id = event.getTouchID();
-        if (event.getState().equals(GestureState.GESTURE_BEGIN)) {
-            for (ITouchAndWriteComponent component : componentHandler.getComponents()) {
-                int x = (int) (event.getOrigin().getX()
-                        * component.getDisplaySize().getWidth());
-                int y = (int) (event.getOrigin().getY()
-                        * component.getDisplaySize().getHeight());
-                if (component.inArea(x, y)) {
-                    components.put(component.getZPosition(), component);
-                }
-            }
-            if (!components.isEmpty()) {
-                activeGestureComponents.put(id, components.get(components.lastKey()));
-                int x = (int) (event.getOrigin().getX()
-                        * components.get(components.lastKey()).getDisplaySize().getWidth());
-                int y = (int) (event.getOrigin().getY()
-                        * components.get(components.lastKey()).getDisplaySize().getHeight());
-                int dx = (int) (event.getTranslation().getX()
-                        * components.get(components.lastKey()).getDisplaySize().getWidth());
-                int dy = (int) (event.getTranslation().getY()
-                        * components.get(components.lastKey()).getDisplaySize().getHeight());
-                components.get(components.lastKey()).dragAction(id, x, y, dx, dy);
-            }
-        } else if (event.getState()
-                .equals(TouchGestureEvent.GestureState.GESTURE_END)) {
-            if (activeTouchComponents.containsKey(event.getTouchID())) {
-                ITouchAndWriteComponent component = activeTouchComponents.get(id);
-                int x = (int) (event.getOrigin().getX()
-                        * component.getDisplaySize().getWidth());
-                int y = (int) (event.getOrigin().getY()
-                        * component.getDisplaySize().getHeight());
-                int dx = (int) (event.getTranslation().getX()
-                        * component.getDisplaySize().getWidth());
-                int dy = (int) (event.getTranslation().getY()
-                        * component.getDisplaySize().getHeight());
+        if (activeTouchComponents.containsKey(event.getTouchID())) {
+            ITouchAndWriteComponent component = activeTouchComponents.get(id);
+            int x = (int) (event.getOrigin().getX()
+                    * component.getDisplaySize().getWidth());
+            int y = (int) (event.getOrigin().getY()
+                    * component.getDisplaySize().getHeight());
+            int dx = (int) (event.getTranslation().getX()
+                    * component.getDisplaySize().getWidth());
+            int dy = (int) (event.getTranslation().getY()
+                    * component.getDisplaySize().getHeight());
+            if (event.getState().equals(GestureState.GESTURE_END)) {
                 component.dragEndAction(id, x, y, dx, dy);
-                activeGestureComponents.remove(id);
-            }
-        } else if (event.getState()
-                .equals(TouchGestureEvent.GestureState.GESTURE_UPDATE)) {
-            if (activeTouchComponents.containsKey(event.getTouchID())) {
-                ITouchAndWriteComponent component = activeTouchComponents.get(id);
-                int x = (int) (event.getOrigin().getX()
-                        * component.getDisplaySize().getWidth());
-                int y = (int) (event.getOrigin().getY()
-                        * component.getDisplaySize().getHeight());
-                int dx = (int) (event.getTranslation().getX()
-                        * component.getDisplaySize().getWidth());
-                int dy = (int) (event.getTranslation().getY()
-                        * component.getDisplaySize().getHeight());
+            } else {
                 component.dragAction(id, x, y, dx, dy);
             }
         }
@@ -329,37 +204,51 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
     public void newTouchEvent(TouchEvent event) {
         int id = event.getID();
         if (event.getTouchState().equals(TouchState.TOUCH_BIRTH)) {
-            SortedMap<Integer, ITouchAndWriteComponent> components = new TreeMap<>();
-            for (ITouchAndWriteComponent component : componentHandler.getComponents()) {
-                int x = (int) (event.getX() * component.getDisplaySize().getWidth());
-                int y = (int) (event.getY() * component.getDisplaySize().getHeight());
-                if (component.inArea(x, y)) {
-                    components.put(component.getZPosition(), component);
+            SortedMap<Integer, ITouchAndWriteComponent> components =
+                    new TreeMap<>();
+            for (ITouchAndWriteComponent component : componentHandler
+                    .getComponents()) {
+                if (component.isTouchable()) {
+                    int x = (int) (event.getX() * component.getDisplaySize()
+                            .getWidth());
+                    int y = (int) (event.getY() * component.getDisplaySize()
+                            .getHeight());
+                    if (component.inArea(x, y)) {
+                        components.put(component.getZPosition(), component);
+                    }
                 }
             }
             if (!components.isEmpty()) {
-                activeTouchComponents.put(event.getID(), components.get(components.lastKey()));
-                int x = (int) (event.getX() * components.get(components.lastKey()).getDisplaySize().getWidth());
-                int y = (int) (event.getY() * components.get(components.lastKey()).getDisplaySize().getHeight());
-                components.get(components.lastKey()).touchBirthAction(id, x, y);
+                ITouchAndWriteComponent component =
+                        components.get(components.lastKey());
+                int x = (int) (event.getX() * component.getDisplaySize()
+                        .getWidth());
+                int y = (int) (event.getY() * component.getDisplaySize()
+                        .getHeight());
+//                log.debug("Touch on component {} with {}",
+//                        component.getName(), component.getDimension());
+//                log.debug("Position: x: {}, y: {}", component.getPosX(),
+//                        component.getPosY());
+//                log.debug("In Area: {}",component.inArea(x, y));
+                activeTouchComponents.put(event.getID(), component);
             }
-        } else if (event.getTouchState().equals(TouchState.TOUCH_LIVING)) {
-            if (activeTouchComponents.containsKey(event.getID())) {
-                ITouchAndWriteComponent component = activeTouchComponents.get(event.getID());
-                int x = (int) (event.getX() * component.getDisplaySize().getWidth());
-                int y = (int) (event.getY() * component.getDisplaySize().getHeight());
+        }
+        if (activeTouchComponents.containsKey(event.getID())) {
+            ITouchAndWriteComponent component =
+                    activeTouchComponents.get(event.getID());
+            int x = (int) (event.getX() * component.getDisplaySize().getWidth());
+            int y = (int) (event.getY() * component.getDisplaySize().getHeight());
+            if (event.getTouchState().equals(TouchState.TOUCH_LIVING)) {
                 component.touchAliveAction(id, x, y);
-            }
-        } else if (event.getTouchState().equals(TouchState.TOUCH_DEAD)) {
-            if (activeTouchComponents.containsKey(event.getID())) {
-                ITouchAndWriteComponent component = activeTouchComponents.get(event.getID());
-                int x = (int) (event.getX() * component.getDisplaySize().getWidth());
-                int y = (int) (event.getY() * component.getDisplaySize().getHeight());
+            } else if (event.getTouchState().equals(TouchState.TOUCH_DEAD)) {
                 component.touchDeadAction(id, x, y);
                 activeTouchComponents.remove(id);
+            } else if (event.getTouchState().equals(TouchState.TOUCH_BIRTH)) {
+                component.toFront();
+                component.touchBirthAction(id, x, y);
             }
-
         }
+
     }
 
     @Override
@@ -395,10 +284,12 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
     public void onShapeEvent(ShapeEvent event) {
         SortedMap<Integer, ITouchAndWriteComponent> components = new TreeMap<>();
         for (ITouchAndWriteComponent component : componentHandler.getComponents()) {
-            for (Shape shape : event.getDetectedShapes()) {
-                for (Point point : shape.getPoints()) {
-                    if (component.inArea(point.x, point.y)) {
-                        components.put(component.getZPosition(), component);
+            if (component.isDrawable()) {
+                for (Shape shape : event.getDetectedShapes()) {
+                    for (Point point : shape.getPoints()) {
+                        if (component.inArea(point.x, point.y)) {
+                            components.put(component.getZPosition(), component);
+                        }
                     }
                 }
             }
@@ -410,24 +301,24 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
 
     @Override
     public void onPenEvent(String device, int x, int y, float force, PenEventDataType penEventState, long timestamp, String eventPageID) {
+        log.debug("Pen Event: {} / {}", x, y);
         SortedMap<Integer, ITouchAndWriteComponent> components = new TreeMap<>();
         if (penEventState.equals(PenEventDataType.NEW_SESSION)) {
             for (ITouchAndWriteComponent component : componentHandler.getComponents()) {
-                if (component.inArea(x, y)) {
-                    components.put(component.getZPosition(), component);
+                if (component.isDrawable()) {
+                    if (component.inArea(x, y)) {
+                        components.put(component.getZPosition(), component);
+                    }
                 }
             }
             if (!components.isEmpty()) {
                 activeDrawComponents.put(device, components.get(components.lastKey()));
             }
-        } else if (penEventState.equals(PenEventDataType.PEN_UP)) {
-            if (activeDrawComponents.containsKey(device)) {
-                activeDrawComponents.get(device).draw(x, y);
+        }
+        if (activeDrawComponents.containsKey(device)) {
+            activeDrawComponents.get(device).draw(x, y);
+            if (penEventState.equals(PenEventDataType.PEN_UP)) {
                 activeDrawComponents.remove(device);
-            }
-        } else {
-            if (activeDrawComponents.containsKey(device)) {
-                activeDrawComponents.get(device).draw(x, y);
             }
         }
     }
@@ -437,10 +328,12 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
         SortedMap<Integer, ITouchAndWriteComponent> components = new TreeMap<>();
         String topResult = HWRPostProcessing.getResult(event);
         for (ITouchAndWriteComponent component : componentHandler.getComponents()) {
-            int x = (int) event.getBoundingBox().getCenterOfGravity().x;
-            int y = (int) event.getBoundingBox().getCenterOfGravity().y;
-            if (component.inArea(x, y)) {
-                components.put(component.getZPosition(), component);
+            if (component.isDrawable()) {
+                int x = (int) event.getBoundingBox().getCenterOfGravity().x;
+                int y = (int) event.getBoundingBox().getCenterOfGravity().y;
+                if (component.inArea(x, y)) {
+                    components.put(component.getZPosition(), component);
+                }
             }
         }
         if (!components.isEmpty()) {

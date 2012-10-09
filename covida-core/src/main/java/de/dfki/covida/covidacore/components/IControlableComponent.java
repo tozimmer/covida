@@ -20,4 +20,6 @@ public interface IControlableComponent {
     
     public int getId();
     
+    public String getName();
+    
 }

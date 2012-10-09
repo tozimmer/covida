@@ -58,6 +58,24 @@
                 <version>2.6</version>
                 <executions>
                     <execution>
+                        <id>copy-exe</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/binaries/bin</outputDirectory>
+                            <resources>          
+                                <resource>
+                                    <directory>${basedir}</directory>
+                                    <includes>
+                                        <include>readme.txt</include>
+                                    </includes>
+                                </resource>
+                            </resources>              
+                        </configuration>            
+                    </execution>
+                    <execution>
                         <id>copy-videos</id>
                         <phase>validate</phase>
                         <goals>
@@ -128,21 +146,6 @@
                             <resources>          
                                 <resource>
                                     <directory>../covida-res/training-data</directory>
-                                </resource>
-                            </resources>              
-                        </configuration>            
-                    </execution>
-                    <execution>
-                        <id>copy-exe</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${basedir}/target/binaries/bin</outputDirectory>
-                            <resources>          
-                                <resource>
-                                    <directory>${basedir}/target/binaries</directory>
                                 </resource>
                             </resources>              
                         </configuration>            
@@ -372,6 +375,12 @@
             <groupId>log4j</groupId>
             <type>jar</type>
             <version>1.2.13</version>
+        </dependency>
+        <dependency>
+            <groupId>de.dfki.touchandwrite</groupId>
+            <artifactId>touchandwrite-visual</artifactId>
+            <version>0.9</version>
+            <type>jar</type>
         </dependency>
     </dependencies>
 </project>

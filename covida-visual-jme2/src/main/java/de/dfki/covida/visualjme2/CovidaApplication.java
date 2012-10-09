@@ -27,6 +27,7 @@
  */
 package de.dfki.covida.visualjme2;
 
+import com.acarter.scenemonitor.SceneMonitor;
 import com.jme.animation.SpatialTransformer;
 import com.jme.image.Image;
 import com.jme.image.Texture;
@@ -46,6 +47,7 @@ import de.dfki.covida.covidacore.streaming.TCPServer;
 import de.dfki.covida.covidacore.tw.ITouchAndWriteComponent;
 import de.dfki.covida.visualjme2.animations.PreloadAnimation;
 import de.dfki.covida.visualjme2.components.ControlButton;
+import de.dfki.covida.visualjme2.components.JMEComponent;
 import de.dfki.covida.visualjme2.components.video.VideoComponent;
 import de.dfki.covida.visualjme2.utils.AddControllerCallable;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
@@ -67,7 +69,7 @@ import java.util.concurrent.Callable;
 public class CovidaApplication extends ApplicationImpl {
 
     /**
-     * List of all video sources as {@link String
+     * List of all video sources as {@link String}
      */
     private List<VideoMediaData> videoSources;
     /**
@@ -158,7 +160,7 @@ public class CovidaApplication extends ApplicationImpl {
     }
 
     /**
-     * Adds a {@link CovidaJMEComponent} to the {@link CovidaApplication}
+     * Adds a {@link JMEComponent} to the {@link CovidaApplication}
      *
      * @param component
      */
@@ -273,8 +275,8 @@ public class CovidaApplication extends ApplicationImpl {
     @Override
     protected void simpleInitGame() {
         super.simpleInitGame();
-//        SceneMonitor.getMonitor().registerNode(rootNode, "Root Node");
-//        SceneMonitor.getMonitor().showViewer(true);
+        SceneMonitor.getMonitor().registerNode(rootNode, "Root Node");
+        SceneMonitor.getMonitor().showViewer(true);
         if (streaming) {
             tcpServer.start();
             tcpServer.setScreenSize(new Dimension(display.getWidth(), display.getHeight()));
@@ -303,18 +305,18 @@ public class CovidaApplication extends ApplicationImpl {
                 });
             }
         }
-//        SceneMonitor.getMonitor().updateViewer(tpf);
+        SceneMonitor.getMonitor().updateViewer(tpf);
     }
 
     @Override
     protected void simpleRender() {
         super.simpleRender();
-//        SceneMonitor.getMonitor().renderViewer(display.getRenderer());
+        SceneMonitor.getMonitor().renderViewer(display.getRenderer());
     }
 
     @Override
     protected void cleanup() {
         super.cleanup();
-//        SceneMonitor.getMonitor().cleanup();
+        SceneMonitor.getMonitor().cleanup();
     }
 }

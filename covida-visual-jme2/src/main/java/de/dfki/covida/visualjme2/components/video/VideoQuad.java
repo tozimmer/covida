@@ -1,5 +1,5 @@
 /*
- * VideoQuad.java
+ * DrawingQuad.java
  *
  * Copyright (c) 2012, Tobias Zimmermann All rights reserved.
  *
@@ -43,7 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * VideoQuad
+ * DrawingQuad
  *
  * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
  */

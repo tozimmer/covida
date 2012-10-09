@@ -39,7 +39,7 @@ import com.jme.system.DisplaySystem;
 import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
 import de.dfki.covida.videovlcj.ISlider;
-import de.dfki.covida.visualjme2.components.CovidaJMEComponent;
+import de.dfki.covida.visualjme2.components.JMEComponent;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ import java.util.ArrayList;
  *
  * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
  */
-public class VideoSlider extends CovidaJMEComponent implements ISlider {
+public class VideoSlider extends JMEComponent implements ISlider {
 
     private ArrayList<Quad> overlaySlider;
     private static final int WIDTH = 1000;
@@ -64,6 +64,7 @@ public class VideoSlider extends CovidaJMEComponent implements ISlider {
                 (float) video.getWidth() / ((float) getWidth() * 1.1f), 1));
         this.video = video;
         initalizeOverlayQuads(JMEUtils.initalizeBlendState());
+        setTouchable(true);
     }
 
     private void initalizeOverlayQuads(BlendState alpha) {

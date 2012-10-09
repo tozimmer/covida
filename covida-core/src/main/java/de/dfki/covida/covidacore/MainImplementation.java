@@ -9,6 +9,7 @@ import de.dfki.covida.covidacore.tw.IApplication;
 import de.dfki.covida.covidacore.tw.TouchAndWriteSupport;
 import de.dfki.touchandwrite.TouchAndWriteDevice;
 import java.io.File;
+import java.util.logging.Level;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.slf4j.Logger;
@@ -112,6 +113,13 @@ public class MainImplementation {
         app = new Thread(new ApplicationThread(application));
         app.setName("Application Thread");
         app.start();
+        while(!application.isReady()){
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ex) {
+                log.error("", ex);
+            }
+        }
         TouchAndWriteSupport.start(application, getDevice());
     }
 

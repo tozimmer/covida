@@ -49,8 +49,8 @@ import de.dfki.covida.videovlcj.rendered.RenderedVideoHandler;
 import de.dfki.covida.visualjme2.animations.CovidaSpatialController;
 import de.dfki.covida.visualjme2.animations.DragAnimation;
 import de.dfki.covida.visualjme2.animations.ResetAnimation;
-import de.dfki.covida.visualjme2.components.CovidaJMEComponent;
-import de.dfki.covida.visualjme2.components.CovidaTextComponent;
+import de.dfki.covida.visualjme2.components.JMEComponent;
+import de.dfki.covida.visualjme2.components.TextComponent;
 import de.dfki.covida.visualjme2.components.video.fields.InfoFieldComponent;
 import de.dfki.covida.visualjme2.components.video.fields.ListFieldComponent;
 import de.dfki.covida.visualjme2.utils.AddControllerCallable;
@@ -65,7 +65,6 @@ import de.dfki.touchandwrite.shape.ShapeType;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 
@@ -74,7 +73,7 @@ import uk.co.caprica.vlcj.player.MediaPlayer;
  *
  * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
  */
-public final class VideoComponent extends CovidaJMEComponent implements
+public final class VideoComponent extends JMEComponent implements
         IVideoComponent, IControlableComponent {
 
     /**
@@ -110,7 +109,7 @@ public final class VideoComponent extends CovidaJMEComponent implements
     /**
      * Overlay for the video title
      */
-    private CovidaTextComponent textOverlay;
+    private TextComponent textOverlay;
     /**
      * {@link VideoHandler} which plays and renders the video.
      */
@@ -162,6 +161,8 @@ public final class VideoComponent extends CovidaJMEComponent implements
         log.debug("Create video id:" + getId());
         video = new RenderedVideoHandler(source, title, (int) (height * UPSCALE_FACTOR), format.determineWidth((int) (height * UPSCALE_FACTOR)));
         setDefaultPosition();
+        setDrawable(true);
+        setTouchable(true);
     }
 
     /**
@@ -418,7 +419,7 @@ public final class VideoComponent extends CovidaJMEComponent implements
      * Creates overlays
      */
     public void createOverlays() {
-        textOverlay = new CovidaTextComponent(this);
+        textOverlay = new TextComponent(this);
         textOverlay.setLocalTranslation(0, getHeight() / (1.50f) - getFontSize()
                 / 2.f, 0);
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, textOverlay.node));
@@ -716,7 +717,10 @@ public final class VideoComponent extends CovidaJMEComponent implements
     public void dragAction(int id, int x, int y, int dx, int dy) {
         startDragAnimation();
         Vector3f translation = this.getLocalTranslation();
-        move(translation.x + dx, translation.y - dy);
+        Vector3f d = new Vector3f(dx, -dy, 0);
+        d = d.divideLocal(node.getWorldScale());
+        translation = translation.add(d);
+        move(translation.x, translation.y);
     }
 
     @Override
@@ -883,4 +887,5 @@ public final class VideoComponent extends CovidaJMEComponent implements
         }
         return false;
     }
+    
 }

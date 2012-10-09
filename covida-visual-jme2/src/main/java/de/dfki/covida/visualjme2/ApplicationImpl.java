@@ -40,6 +40,7 @@ public class ApplicationImpl extends AbstractApplication {
      * {@link TouchAndWriteDevice}
      */
     private final TouchAndWriteDevice device;
+    protected boolean ready;
 
     /**
      * Creates an instance of {@link ApplicationImpl}
@@ -63,8 +64,8 @@ public class ApplicationImpl extends AbstractApplication {
 
     @Override
     protected void simpleInitGame() {
-
         loadingAnimation();
+        ready = true;
     }
 
     @Override
@@ -74,5 +75,10 @@ public class ApplicationImpl extends AbstractApplication {
     @Override
     public String getWindowTitle() {
         return windowtitle;
+    }
+
+    @Override
+    public boolean isReady() {
+        return ready;
     }
 }

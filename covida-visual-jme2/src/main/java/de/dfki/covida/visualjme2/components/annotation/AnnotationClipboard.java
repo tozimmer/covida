@@ -36,65 +36,58 @@ import de.dfki.covida.covidacore.components.IControlableComponent;
 import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.visualjme2.animations.CloseAnimation;
 import de.dfki.covida.visualjme2.animations.OpenAnimation;
-import de.dfki.covida.visualjme2.components.CovidaFieldComponent;
-import de.dfki.covida.visualjme2.components.CovidaTextComponent;
+import de.dfki.covida.visualjme2.components.FieldComponent;
+import de.dfki.covida.visualjme2.components.TextComponent;
 import de.dfki.covida.visualjme2.utils.AddControllerCallable;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
 import de.dfki.covida.visualjme2.utils.RemoveControllerCallable;
 import de.dfki.touchandwrite.math.FastMath;
+import java.awt.Point;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Component which displays annotation dataList of VideoComponent.
  *
  * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
  */
-public class AnnotationClipboard extends CovidaFieldComponent implements
+public class AnnotationClipboard extends FieldComponent implements
         IControlableComponent {
 
     /**
-     * Search field constructor
-     *
-     * @param resource
-     * @param video
-     * @param listField
-     * @param id
-     * @param node
-     * @param width
-     * @param height
+     * Creates a new instance of {@link AnnotationClipboard}
+     * 
+     * @param resource Image resource location as {@link String}
+     * @param width {@link Integer}
+     * @param height {@link Integer}
      */
     public AnnotationClipboard(String resource, int width, int height) {
         super("AnnotationSearch");
         this.width = width;
         this.height = height;
         this.image = resource;
+        setDrawable(true);
         hwrResults = new ArrayList<>();
-        mapping = new HashMap<>();
-        entriesMapping = new ArrayList<>();
-        entryMap = new HashMap<>();
-        titles = new ArrayList<>();
         hwr = new ArrayList<>();
         super.setAlwaysOnTop(true);
         setLocalScale(new Vector3f(1, 1, 1));
         initTextures();
         textBeginY = (int) (quad.getHeight() / 2.75f);
         int x = (int) (getWidth() / 4.f);
-        CovidaTextComponent caption = new CovidaTextComponent(this);
+        TextComponent caption = new TextComponent(this);
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, caption.node));
         caption.setLocalTranslation(x, getTextY(0) - FONT_SIZE / 4.f, 0);
         caption.setSize((int) (FONT_SIZE * 1.5f));
         caption.setText("Clipboard:");
         caption.setFont(2);
-        hwrResults.add("Test");
+        update();
     }
 
     @Override
-    public void update() {
-        int x = (int) (-width / 4.0f);
+    public final void update() {
+        int x = (int) (+width / 4.0f);
         for (int i = 0; i < hwrResults.size(); i++) {
-            CovidaTextComponent textOverlay = new CovidaTextComponent(this);
+            TextComponent textOverlay = new TextComponent(this);
             textOverlay.setLocalTranslation(x, getTextY(2 + i), 0);
             GameTaskQueueManager.getManager().update(new AttachChildCallable(node, textOverlay.node));
             textOverlay.setText(hwrResults.get(i));
@@ -112,14 +105,6 @@ public class AnnotationClipboard extends CovidaFieldComponent implements
                 - (float) FONT_SIZE / 2.f;
     }
 
-    /**
-     *
-     * @param x
-     * @param y
-     * @param angle - angle in degree
-     * @param width
-     * @param height
-     */
     @Override
     protected void addSpacer(int x, int y, float angle, int width, int height) {
         Quaternion q = new Quaternion();
@@ -170,5 +155,13 @@ public class AnnotationClipboard extends CovidaFieldComponent implements
     @Override
     public boolean isOpen() {
         return open;
+    }
+    
+    @Override
+    public void hwrAction(String hwr) {
+        if(open){
+            hwrResults.add(hwr);
+            update();
+        }
     }
 }

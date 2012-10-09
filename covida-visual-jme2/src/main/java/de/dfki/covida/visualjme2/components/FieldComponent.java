@@ -1,5 +1,5 @@
 /*
- * CovidaFieldComponent.java
+ * FieldComponent.java
  * 
  * Copyright (c) 2012, Tobias Zimmermann All rights reserved.
  * 
@@ -37,20 +37,17 @@ import com.jme.system.DisplaySystem;
 import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
 import com.jmex.awt.swingui.ImageGraphics;
-import de.dfki.covida.covidacore.data.Annotation;
-import de.dfki.covida.covidacore.data.AnnotationData;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
 import de.dfki.covida.visualjme2.utils.DetachChildCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
-import java.awt.Color;
 import java.util.*;
 
 /**
- * CovidaFieldComponent
+ * FieldComponent
  *
  * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
  */
-public abstract class CovidaFieldComponent extends CovidaJMEComponent {
+public abstract class FieldComponent extends JMEComponent {
 
     /**
      * Config
@@ -77,46 +74,50 @@ public abstract class CovidaFieldComponent extends CovidaJMEComponent {
      */
     protected Texture texture;
     /**
-     * Quad for image
+     * Background quad
      */
     protected Quad quad;
+    /**
+     * Width
+     */
     protected int width;
+    /**
+     * Height
+     */
     protected int height;
     /**
      * Drawing will be done with Java2D.
      */
     protected ImageGraphics g2d;
+    /**
+     * List of hwr results
+     */
     protected List<String> hwrResults;
-    @SuppressWarnings("unused")
-    protected Color currentPenColor;
-    protected boolean penPressure;
-    protected float penThickness;
+    /**
+     * Texture state for spacer
+     */
     protected TextureState tsSpacer;
+    /**
+     * Texture for spacer
+     */
     protected Texture textureSpacer;
-    protected ArrayList<CovidaTextComponent> titles;
-    protected int selectedTitle = -1;
+    
     /**
-     * maps index to video id
+     * selected entry
      */
-    protected Map<Integer, AnnotationData> mapping;
-    /**
-     * Map with all search results mapped on video ids
-     */
-    protected HashMap<Integer, ArrayList<CovidaTextComponent>> entryMap;
-    /**
-     * Map with all search results mapped to annotation ids
-     */
-    protected ArrayList<Map<Integer, Annotation>> entriesMapping;
+    protected int selectedEntry = -1;
+
     /**
      * HWR TextOverlays
      */
-    protected ArrayList<CovidaTextComponent> hwr;
+    protected ArrayList<TextComponent> hwr;
     protected Map<Integer, Vector2f> lastTouch = new HashMap<>();
     protected float yDrag = 0;
     protected float xDrag = 0;
     protected SpatialTransformer st;
+    protected DrawingOverlay overlay;
 
-    public CovidaFieldComponent(String name) {
+    public FieldComponent(String name) {
         super(name);
     }
 
@@ -132,6 +133,14 @@ public abstract class CovidaFieldComponent extends CovidaJMEComponent {
         quad.setRenderState(JMEUtils.initalizeBlendState());
         quad.updateRenderState();
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, quad));
+
+        overlay = new DrawingOverlay("Drawing", width, height);
+        
+        for (int i = 0; i < 200; i++) {
+            overlay.updateImage(i, i, 1);
+        }
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, overlay));
+        
         // Spacer
         tsSpacer = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
         tsSpacer.setCorrectionType(TextureState.CorrectionType.Perspective);
@@ -139,30 +148,6 @@ public abstract class CovidaFieldComponent extends CovidaJMEComponent {
         textureSpacer = TextureManager.loadTexture(getClass().getClassLoader().getResource("media/textures/info_spacer.png"));
         tsSpacer.setTexture(textureSpacer);
         open = true;
-    }
-
-    protected abstract void update();
-
-    protected abstract float getTextY(int position);
-
-    protected abstract void addSpacer(int x, int y, float angle, int width, int height);
-
-    /**
-     *
-     * @return
-     */
-    @Override
-    public int getHeight() {
-        return height;
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Override
-    public int getWidth() {
-        return width;
     }
 
     /**
@@ -173,12 +158,6 @@ public abstract class CovidaFieldComponent extends CovidaJMEComponent {
             GameTaskQueueManager.getManager().update(new DetachChildCallable(getParent(), node));
         }
     }
-
-    /**
-     * Closes the DisplayInfoComponent
-     */
-    @Override
-    public abstract void close();
 
     /**
      * Open animation of the DisplayInfoComponent
@@ -192,6 +171,49 @@ public abstract class CovidaFieldComponent extends CovidaJMEComponent {
     public void reset() {
         // TODO
     }
+    
+    @Override
+    public final void draw(int x, int y) {
+        log.debug("Draw : {},{}",x,y);
+        int localX = x + getPosX();
+        int localY = (int) display.getY() - y;
+        localY += getPosY();
+        localX += getDimension().getWidth() / 2;
+        localY += getDimension().getHeight() / 2;
+        overlay.updateImage(localX, localY, 1);
+    }
+    
+    /**
+     * Returns the height of the {@link FieldComponent}
+     * 
+     * @return Height of the {@link FieldComponent}
+     */
+    @Override
+    public int getHeight() {
+        return height;
+    }
+
+    /**
+     * Returns the width of the {@link FieldComponent}
+     * 
+     * @return width of the {@link FieldComponent}
+     */
+    @Override
+    public int getWidth() {
+        return width;
+    }
 
     public abstract boolean isOpen();
+    
+    protected abstract void update();
+
+    protected abstract float getTextY(int position);
+
+    protected abstract void addSpacer(int x, int y, float angle, int width, int height);
+    
+    /**
+     * Closes the DisplayInfoComponent
+     */
+    @Override
+    public abstract void close();
 }

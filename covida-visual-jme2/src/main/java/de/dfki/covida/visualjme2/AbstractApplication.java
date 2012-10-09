@@ -569,6 +569,8 @@ public abstract class AbstractApplication extends AbstractGame implements IAppli
     }
 
     public abstract void setBackground();
+    
+    public abstract boolean isReady();
 
     /**
      * A PropertiesGameSettings which defaults Fullscreen to TRUE.

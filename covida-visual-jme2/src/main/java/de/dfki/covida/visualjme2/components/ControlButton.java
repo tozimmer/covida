@@ -52,7 +52,7 @@ import de.dfki.covida.visualjme2.utils.JMEUtils;
  *
  * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
  */
-public class ControlButton extends CovidaJMEComponent
+public class ControlButton extends JMEComponent
         implements IControlButton {
 
     private final Quad controlQuad;
@@ -66,11 +66,14 @@ public class ControlButton extends CovidaJMEComponent
     private final static float ANIMATIONTIME = 0.5f;
 
     /**
+     * Creates a new instance of {@link ControlButton}
      *
-     * @param actionName
-     * @param textureSource
-     * @param width
-     * @param height
+     * @param actionName Action identifier {@link ActionName}
+     * @param controlable Controlable component
+     * @param texScr Button texture location
+     * @param activeTexSrc Active button texture location
+     * @param width width as {@link Integer}
+     * @param height height as {@link Integer}
      */
     public ControlButton(ActionName actionName, IControlableComponent controlable,
             String texScr, String activeTexSrc, int width, int height) {
@@ -80,6 +83,11 @@ public class ControlButton extends CovidaJMEComponent
         this.height = height;
         this.enabled = true;
         this.controlable = controlable;
+        if (actionName.equals(ActionName.NONE)) {
+            setTouchable(false);
+        } else {
+            setTouchable(true);
+        }
         Texture defaultTexture = TextureManager.loadTexture(
                 getClass().getClassLoader().getResource(texScr),
                 Texture.MinificationFilter.BilinearNearestMipMap,
@@ -104,6 +112,17 @@ public class ControlButton extends CovidaJMEComponent
                 controlQuad));
     }
 
+    /**
+     * Rotates the {@link ControlButton}
+     *
+     * @param angle Rotation angle as {@link Float}
+     */
+    public void rotate(float angle) {
+        Quaternion q = new Quaternion();
+        q.fromAngleAxis(FastMath.DEG_TO_RAD * (angle), new Vector3f(0, 0, 1));
+        setLocalRotation(q);
+    }
+
     @Override
     public int getWidth() {
         return width;
@@ -112,12 +131,6 @@ public class ControlButton extends CovidaJMEComponent
     @Override
     public int getHeight() {
         return height;
-    }
-
-    public void rotate(float angle) {
-        Quaternion q = new Quaternion();
-        q.fromAngleAxis(FastMath.DEG_TO_RAD * (angle), new Vector3f(0, 0, 1));
-        setLocalRotation(q);
     }
 
     @Override

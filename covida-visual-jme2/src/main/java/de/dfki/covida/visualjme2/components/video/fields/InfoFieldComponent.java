@@ -32,14 +32,12 @@ import com.jme.image.Texture;
 import com.jme.image.Texture.WrapMode;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
-import com.jme.renderer.ColorRGBA;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.state.BlendState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
-import com.jmex.awt.swingui.ImageGraphics;
 import de.dfki.covida.covidacore.data.Annotation;
 import de.dfki.covida.covidacore.data.AnnotationStorage;
 import de.dfki.covida.covidacore.utils.ActionName;
@@ -50,8 +48,8 @@ import de.dfki.covida.visualjme2.animations.OpenAnimation;
 import de.dfki.covida.visualjme2.animations.ResetAnimation;
 import de.dfki.covida.visualjme2.animations.SaveAnimation;
 import de.dfki.covida.visualjme2.components.ControlButton;
-import de.dfki.covida.visualjme2.components.CovidaJMEComponent;
-import de.dfki.covida.visualjme2.components.CovidaTextComponent;
+import de.dfki.covida.visualjme2.components.JMEComponent;
+import de.dfki.covida.visualjme2.components.TextComponent;
 import de.dfki.covida.visualjme2.components.video.VideoComponent;
 import de.dfki.covida.visualjme2.utils.AddControllerCallable;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
@@ -69,7 +67,7 @@ import java.util.List;
  *
  * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
  */
-public class InfoFieldComponent extends CovidaJMEComponent {
+public class InfoFieldComponent extends JMEComponent {
 
     private static final int ANIMATION_DURATION = 750;
     private static final int DEFAULT_FONT_SIZE = 18;
@@ -104,20 +102,20 @@ public class InfoFieldComponent extends CovidaJMEComponent {
     private long time_start;
     private long time_end;
     private ListFieldComponent listField;
-    private ArrayList<CovidaTextComponent> descriptionText;
+    private ArrayList<TextComponent> descriptionText;
     private TextureState tsSpacer;
     private Texture textureSpacer;
     private ShapeType shapeType;
-    private CovidaTextComponent titleTextOverlay;
-    private CovidaTextComponent timeOverlay;
-    private CovidaTextComponent timeTextOverlay;
-    private CovidaTextComponent descriptionOverlay;
+    private TextComponent titleTextOverlay;
+    private TextComponent timeOverlay;
+    private TextComponent timeTextOverlay;
+    private TextComponent descriptionOverlay;
     private boolean open;
     private int descriptionBeginY;
     /*
      * Overlay
      */
-    private CovidaTextComponent textOverlay;
+    private TextComponent textOverlay;
     private static final int FONT_SIZE = 30;
     protected Quad overlayDefault;
     private SpatialTransformer st;
@@ -289,7 +287,7 @@ public class InfoFieldComponent extends CovidaJMEComponent {
     private void saveData() {
         String descriptions = "";
         boolean first = true;
-        for (CovidaTextComponent description : descriptionText) {
+        for (TextComponent description : descriptionText) {
             if (first) {
                 descriptions = description.getText();
                 first = false;
@@ -345,10 +343,10 @@ public class InfoFieldComponent extends CovidaJMEComponent {
     public void initComponent() {
         initTextures();
         textBeginY = (int) (quad.getHeight()/2 - FONT_SIZE);
-        textOverlay = new CovidaTextComponent(this);
+        textOverlay = new TextComponent(video);
         textOverlay.setSize(FONT_SIZE);
         initalizeListOverlayQuads(JMEUtils.initalizeBlendState());
-        titleTextOverlay = new CovidaTextComponent(this);
+        titleTextOverlay = new TextComponent(video);
         titleTextOverlay.setFont(1);
         titleTextOverlay.setSize(getFontSize());
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, titleTextOverlay.node));
@@ -356,13 +354,13 @@ public class InfoFieldComponent extends CovidaJMEComponent {
 //        int y = (int) (titleTextOverlay.getLocalTranslation().y + ((float) titleTextOverlay.getFontSize() / 2.f));
 //        addSpacer(0, y, (int) (quad.getWidth() / 1.1f), getTextSpacer());
         textBeginY = (int) (textBeginY - (float) getFontSpacer() * 1.25f - getTextSpacer());
-        timeOverlay = new CovidaTextComponent(this);
+        timeOverlay = new TextComponent(video);
         timeOverlay.setLocalTranslation(0, textBeginY + FONT_SIZE, 0);
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, timeOverlay.node));
         timeOverlay.setFont(1);
         timeOverlay.setSize(getFontSize());
         timeOverlay.setText("Time:");
-        timeTextOverlay = new CovidaTextComponent(this);
+        timeTextOverlay = new TextComponent(video);
         timeTextOverlay.setLocalTranslation(0, textBeginY, 0);
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, timeTextOverlay.node));
         timeTextOverlay.setFont(1);
@@ -370,7 +368,7 @@ public class InfoFieldComponent extends CovidaJMEComponent {
         int y = (int) (timeTextOverlay.getLocalTranslation().y + ((float) timeTextOverlay.getFontSize() / 2.f));
         addSpacer(0, y, (int) (quad.getWidth() / 1.1f), getTextSpacer());
         textBeginY = (int) (textBeginY - (float) getFontSpacer() * 1.25f - getTextSpacer());
-        descriptionOverlay = new CovidaTextComponent(this);
+        descriptionOverlay = new TextComponent(video);
         descriptionOverlay.setLocalTranslation(0, textBeginY, 0);
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, descriptionOverlay.node));
         descriptionOverlay.setFont(1);
@@ -418,7 +416,7 @@ public class InfoFieldComponent extends CovidaJMEComponent {
                 descriptionBeginY = (int) (textBeginY - (float) getFontSpacer());
             }
             descriptionBeginY = (int) (descriptionBeginY - (float) getFontSpacer() * 0.9f);
-            CovidaTextComponent descriptionTextOverlay = new CovidaTextComponent(this);
+            TextComponent descriptionTextOverlay = new TextComponent(video);
             descriptionTextOverlay.setLocalTranslation(0, descriptionBeginY, 0);
             GameTaskQueueManager.getManager().update(new AttachChildCallable(node, descriptionTextOverlay.node));
             descriptionText.add(descriptionTextOverlay);
@@ -491,7 +489,7 @@ public class InfoFieldComponent extends CovidaJMEComponent {
      */
     public String getDescription() {
         StringBuilder stringBuilder = new StringBuilder("");
-        for (CovidaTextComponent description : descriptionText) {
+        for (TextComponent description : descriptionText) {
             stringBuilder.append(description.getText());
             stringBuilder.append(" ");
         }
