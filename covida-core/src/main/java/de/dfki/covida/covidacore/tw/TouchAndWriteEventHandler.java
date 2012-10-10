@@ -282,11 +282,15 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
 
     @Override
     public void onShapeEvent(ShapeEvent event) {
+        for(Shape shape : event.getDetectedShapes()){
+            log.debug("Shape: {}",shape.getShapeType());
+        }
         SortedMap<Integer, ITouchAndWriteComponent> components = new TreeMap<>();
         for (ITouchAndWriteComponent component : componentHandler.getComponents()) {
             if (component.isDrawable()) {
                 for (Shape shape : event.getDetectedShapes()) {
                     for (Point point : shape.getPoints()) {
+                        log.debug("Shape point : {},{}",point.x,point.y);
                         if (component.inArea(point.x, point.y)) {
                             components.put(component.getZPosition(), component);
                         }
@@ -303,17 +307,17 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
     public void onPenEvent(String device, int x, int y, float force, PenEventDataType penEventState, long timestamp, String eventPageID) {
 //        log.debug("Pen Event: {} / {}", x, y);
         SortedMap<Integer, ITouchAndWriteComponent> components = new TreeMap<>();
-        if (penEventState.equals(PenEventDataType.NEW_SESSION)) {
+        if (penEventState.equals(PenEventDataType.PEN_DOWN)) {
             for (ITouchAndWriteComponent component : componentHandler.getComponents()) {
                 if (component.isDrawable()) {
                     if (component.inArea(x, y)) {
-                        log.debug(component.getName());
-                        log.debug("Pen Event: {} / {}", x, y);
+                        
                         components.put(component.getZPosition(), component);
                     }
                 }
             }
             if (!components.isEmpty()) {
+                log.debug("Put: {}",components.get(components.lastKey()));
                 activeDrawComponents.put(device, components.get(components.lastKey()));
             }
         }

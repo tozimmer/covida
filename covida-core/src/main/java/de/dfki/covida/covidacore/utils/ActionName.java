@@ -91,7 +91,15 @@ public enum ActionName {
     /**
      * Load annotation list action.
      */
-    LOADLIST;
+    LOADLIST, 
+    /**
+     * Garbadge
+     */
+    GARBADGE, 
+    /**
+     * Opens new video component
+     */
+    OPEN;
 
     @Override
     public String toString() {

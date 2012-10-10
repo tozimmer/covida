@@ -133,11 +133,20 @@ public class AnnotationStorage {
 
     public void load(UUID uuid) {
         for (IVideoComponent video : dataList.keySet()) {
-            for (Annotation annotation : dataList.get(video).getAnnotations()) {
+            Annotation load = null;
+            AnnotationData data = dataList.get(video);
+            for (Annotation annotation : data.getAnnotations()) {
                 if (annotation.uuid.equals(uuid)) {
-                    video.load(annotation);
+                    load = annotation;
+                    break;
                 }
             }
+            if(load != null){
+                video.load(load);
+                data.annotations.remove(load);
+                break;
+            }
         }
+        
     }
 }

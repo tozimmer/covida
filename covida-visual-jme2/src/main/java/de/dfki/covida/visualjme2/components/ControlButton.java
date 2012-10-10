@@ -122,6 +122,10 @@ public class ControlButton extends JMEComponent
         q.fromAngleAxis(FastMath.DEG_TO_RAD * (angle), new Vector3f(0, 0, 1));
         setLocalRotation(q);
     }
+    
+    public ActionName getAction(){
+        return action;
+    }
 
     @Override
     public int getWidth() {
@@ -190,6 +194,8 @@ public class ControlButton extends JMEComponent
     public void touchDeadAction(int id, int x, int y) {
         if (enabled && getParent() != null) {
             if (action.equals(ActionName.LIST)) {
+            } else if (action.equals(ActionName.NONE)) {
+            } else if (action.equals(ActionName.OPEN)) {
             } else {
                 SpatialTransformer controller = ScaleAnimation.getController(controlQuad,
                         1.0f, ANIMATIONTIME);
@@ -205,6 +211,8 @@ public class ControlButton extends JMEComponent
     @Override
     public void toggle() {
         log.debug(action.toString());
-        setActive(controlable.toggle(action));
+        if (controlable != null) {
+            setActive(controlable.toggle(action));
+        }
     }
 }

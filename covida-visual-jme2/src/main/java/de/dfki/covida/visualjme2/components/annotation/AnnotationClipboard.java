@@ -168,4 +168,9 @@ public class AnnotationClipboard extends FieldComponent implements
             update();
         }
     }
+
+    public void deleteDescription(TextComponent aThis) {
+        hwrResults.remove(aThis);
+        aThis.detach();
+    }
 }

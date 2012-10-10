@@ -171,10 +171,10 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
                 lastPoint = point;
             } else {
                 g2d.setColor(Color.black);
-                g2d.drawLine(lastPoint.x + 1, lastPoint.y + 1, point.x + 1, point.y + 1);
-                g2d.drawLine(lastPoint.x - 1, lastPoint.y + 1, point.x - 1, point.y + 1);
-                g2d.drawLine(lastPoint.x + 1, lastPoint.y - 1, point.x + 1, point.y - 1);
-                g2d.drawLine(lastPoint.x - 1, lastPoint.y - 1, point.x - 1, point.y - 1);
+                g2d.drawLine(lastPoint.x + 2, lastPoint.y + 2, point.x + 2, point.y + 2);
+                g2d.drawLine(lastPoint.x - 2, lastPoint.y + 2, point.x - 2, point.y + 2);
+                g2d.drawLine(lastPoint.x + 2, lastPoint.y - 2, point.x + 2, point.y - 2);
+                g2d.drawLine(lastPoint.x - 2, lastPoint.y - 2, point.x - 2, point.y - 2);
                 g2d.setColor(defaultG2DColor);
                 g2d.drawLine(lastPoint.x, lastPoint.y, point.x, point.y);
                 lastPoint = point;
@@ -245,7 +245,7 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
         preloadFrame.setRGB(0, 0, width, height, data, 0, width);
         Graphics2D g2d = preloadFrame.createGraphics();
         g2d.setColor(defaultG2DColor);
-        BasicStroke bs = new BasicStroke(1);
+        BasicStroke bs = new BasicStroke(2);
         g2d.setStroke(bs);
         drawPoints(g2d);
         d = new Dimension(width, height);
@@ -274,7 +274,7 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
         }
         if (hwrOverlayEnabled) {
             if (hwr != null) {
-                drawString(hwr, g2d, false, height - 70);
+//                drawString(hwr, g2d, false, height - 70);
                 drawString(hwr, g2d, true, height - 70);
             } else {
                 log.warn("Can not render hwr result: hwr == null");

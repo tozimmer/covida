@@ -34,16 +34,16 @@
                 <shapedetection>
                     <combineStrokes>false</combineStrokes>
                     <enabled>true</enabled>
-                    <weightCircle>0</weightCircle>
-                    <weightCurvedArrow>0</weightCurvedArrow>
-                    <weightEllipticArc>0</weightEllipticArc>
-                    <weightEllispe>0</weightEllispe>
-                    <weightLine>0</weightLine>
-                    <weightParallelogram>0</weightParallelogram>
-                    <weightRectangle>0</weightRectangle>
-                    <weightRhombus>0</weightRhombus>
-                    <weightStroke>0</weightStroke>
-                    <weightTriangle>0</weightTriangle>
+                    <weightCircle>1</weightCircle>
+                    <weightCurvedArrow>1</weightCurvedArrow>
+                    <weightEllipticArc>1</weightEllipticArc>
+                    <weightEllispe>1</weightEllispe>
+                    <weightLine>1</weightLine>
+                    <weightParallelogram>1</weightParallelogram>
+                    <weightRectangle>1</weightRectangle>
+                    <weightRhombus>1</weightRhombus>
+                    <weightStroke>1</weightStroke>
+                    <weightTriangle>1</weightTriangle>
                 </shapedetection>
                 <trainingData>../covida-res/training-data</trainingData>
             </modeconfig>

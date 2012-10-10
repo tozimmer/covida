@@ -27,7 +27,6 @@
  */
 package de.dfki.covida.visualjme2;
 
-import com.jme.math.Vector3f;
 import com.jme.util.GameTaskQueueManager;
 import de.dfki.covida.covidacore.data.VideoFormat;
 import de.dfki.covida.covidacore.data.VideoMediaData;
@@ -117,26 +116,37 @@ public class CovidaApplicationPreloader implements Runnable {
                 searchButton.node, search.node));
         application.addComponent(searchButton);
         search.close();
-        AnnotationClipboard clipboard2 = new AnnotationClipboard(
-                "media/textures/clipboard_field_color.png",
-                application.getWidth() / 2, (int) (application.getHeight() / 1.5f));
-        ControlButton clipboardButton2 = new ControlButton(ActionName.CLOSE,
-                clipboard2, "media/textures/arrow.png",
-                "media/textures/arrow.png", 64, 64);
-        GameTaskQueueManager.getManager().update(new AttachChildCallable(
-                clipboardButton2.node, clipboard2.node));
-        application.addComponent(clipboardButton2);
-        clipboard2.close();
-        AnnotationSearchField search2 = new AnnotationSearchField(
-                "media/textures/search_field_color.png",
-                application.getWidth() / 2, (int) (application.getHeight() / 1.5f));
-        ControlButton searchButton2 = new ControlButton(ActionName.CLOSE,
-                search2, "media/textures/search.png",
-                "media/textures/search.png", 64, 64);
-        GameTaskQueueManager.getManager().update(new AttachChildCallable(
-                searchButton2.node, search2.node));
-        application.addComponent(searchButton2);
-        search2.close();
+//        AnnotationClipboard clipboard2 = new AnnotationClipboard(
+//                "media/textures/clipboard_field_color.png",
+//                application.getWidth() / 2, (int) (application.getHeight() / 1.5f));
+//        ControlButton clipboardButton2 = new ControlButton(ActionName.CLOSE,
+//                clipboard2, "media/textures/arrow.png",
+//                "media/textures/arrow.png", 64, 64);
+//        GameTaskQueueManager.getManager().update(new AttachChildCallable(
+//                clipboardButton2.node, clipboard2.node));
+//        application.addComponent(clipboardButton2);
+//        clipboard2.close();
+//        AnnotationSearchField search2 = new AnnotationSearchField(
+//                "media/textures/search_field_color.png",
+//                application.getWidth() / 2, (int) (application.getHeight() / 1.5f));
+//        ControlButton searchButton2 = new ControlButton(ActionName.CLOSE,
+//                search2, "media/textures/search.png",
+//                "media/textures/search.png", 64, 64);
+//        GameTaskQueueManager.getManager().update(new AttachChildCallable(
+//                searchButton2.node, search2.node));
+//        application.addComponent(searchButton2);
+//        search2.close();
+        
+        ControlButton garbadge = new ControlButton(ActionName.NONE,
+                null, "media/textures/garbadge.png",
+                "media/textures/garbadge.png", 64, 64);
+        application.addComponent(garbadge);
+        
+        ControlButton openNew = new ControlButton(ActionName.OPEN,
+                null, "media/textures/new.png",
+                "media/textures/new.png", 64, 64);
+        application.addComponent(openNew);
+
     }
 
     public void cleanUp() {

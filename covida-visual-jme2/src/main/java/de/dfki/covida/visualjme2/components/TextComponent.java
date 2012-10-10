@@ -46,7 +46,6 @@ import de.dfki.covida.visualjme2.animations.ResetAnimation;
 import de.dfki.covida.visualjme2.animations.ScaleAnimation;
 import de.dfki.covida.visualjme2.components.annotation.AnnotationClipboard;
 import de.dfki.covida.visualjme2.components.annotation.AnnotationSearchField;
-import de.dfki.covida.visualjme2.components.annotation.GarbadgeComponent;
 import de.dfki.covida.visualjme2.components.video.VideoComponent;
 import de.dfki.covida.visualjme2.components.video.fields.InfoFieldComponent;
 import de.dfki.covida.visualjme2.utils.AddControllerCallable;
@@ -140,7 +139,7 @@ public class TextComponent extends JMEComponent implements IControlButton {
 
     /**
      * Sets uuid of object which should be loaded on touch dead
-     * 
+     *
      * @param uuid {@link UUID} of {@link Annotation} / {@link VideoComponent}
      */
     public void setLoadUUID(UUID uuid) {
@@ -319,7 +318,8 @@ public class TextComponent extends JMEComponent implements IControlButton {
                     new TreeMap<>();
             for (ITouchAndWriteComponent comp : components) {
                 if (comp.inArea((int) dragEndPosition.x,
-                        (int) (display.y - dragEndPosition.y))) {
+                        (int) (dragEndPosition.y))) {
+                    log.debug("Comp {}",comp);
                     inAreacomponents.put(comp.getZPosition(), comp);
                 }
             }
@@ -331,37 +331,45 @@ public class TextComponent extends JMEComponent implements IControlButton {
                         && !(comp instanceof VideoComponent)
                         && !(comp instanceof AnnotationClipboard)
                         && !(comp instanceof AnnotationSearchField)
-                        && !(comp instanceof GarbadgeComponent)) {
+                        && !(comp instanceof ControlButton)) {
                     inAreacomponents.remove(inAreacomponents.lastKey());
                     if (!inAreacomponents.isEmpty()) {
                         comp = inAreacomponents.get(inAreacomponents.lastKey());
-                        if (comp instanceof VideoComponent) {
-                            VideoComponent video = (VideoComponent) comp;
-                            video.hwrAction(text);
-                        } else if (comp instanceof InfoFieldComponent) {
-                            InfoFieldComponent info = (InfoFieldComponent) comp;
-                            info.getVideo().hwrAction(text);
-                        } else if (comp instanceof AnnotationClipboard) {
-                            AnnotationClipboard clipboard = (AnnotationClipboard) comp;
-                            clipboard.hwrAction(text);
-                        } else if (comp instanceof GarbadgeComponent) {
+                    }
+                }
+                if (!inAreacomponents.isEmpty()) {
+                    comp = inAreacomponents.get(inAreacomponents.lastKey());
+                    if (comp instanceof VideoComponent) {
+                        VideoComponent video = (VideoComponent) comp;
+                        video.hwrAction(text);
+                    } else if (comp instanceof InfoFieldComponent) {
+                        InfoFieldComponent info = (InfoFieldComponent) comp;
+                        info.getVideo().hwrAction(text);
+                    } else if (comp instanceof AnnotationClipboard) {
+                        AnnotationClipboard clipboard = (AnnotationClipboard) comp;
+                        clipboard.hwrAction(text);
+                    } else if (comp instanceof ControlButton) {
+                        ControlButton button = (ControlButton) comp;
+                        if (button.getAction().equals(ActionName.GARBADGE)) {
                             if (component instanceof VideoComponent) {
+                                VideoComponent video = (VideoComponent) component;
+                                video.deleteDescription(this);
                             } else if (component instanceof AnnotationClipboard) {
+                                AnnotationClipboard clipboard = (AnnotationClipboard) component;
+                                clipboard.deleteDescription(this);
                             }
-                        } else if (comp instanceof AnnotationSearchField) {
-                            AnnotationSearchField search 
-                                    = (AnnotationSearchField) comp;
-                            search.hwrAction(text);
                         }
+                    } else if (comp instanceof AnnotationSearchField) {
+                        AnnotationSearchField search = (AnnotationSearchField) comp;
+                        search.hwrAction(text);
                     }
                 }
             }
         } else if (action.equals(ActionName.LOAD)) {
             AnnotationStorage.getInstance().load(uuid);
         } else if (action.equals(ActionName.LOADLIST)) {
-            if(component instanceof AnnotationSearchField){
-                AnnotationSearchField search 
-                        = (AnnotationSearchField) component;
+            if (component instanceof AnnotationSearchField) {
+                AnnotationSearchField search = (AnnotationSearchField) component;
                 search.displayAnnotationList(uuid);
             }
         }

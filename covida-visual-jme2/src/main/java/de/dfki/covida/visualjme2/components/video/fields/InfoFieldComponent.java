@@ -391,7 +391,7 @@ public class InfoFieldComponent extends JMEComponent {
         setShapePoints(annotation.shapePoints);
         setShapeType(annotation.shapeType);
         String[] split = annotation.description.split(" ");
-        for(String part : split){
+        for (String part : split) {
             drawHwrResult(part);
         }
     }
@@ -577,14 +577,19 @@ public class InfoFieldComponent extends JMEComponent {
         }
         title = null;
         time_start = 0;
-        resetInfo();
+        video.clearAnnotation();
         listField.drawEntries();
     }
-    
+
     public void delete() {
         // Delete animation (Info Field)
         st = CloseAnimation.getController(node, ANIMATION_DURATION, CloseAnimationType.INFO_FIELD);
         GameTaskQueueManager.getManager().update(new AddControllerCallable(node, st));
         close();
+    }
+
+    public void deleteDescription(TextComponent aThis) {
+        descriptionText.remove(aThis);
+        aThis.detach();
     }
 }

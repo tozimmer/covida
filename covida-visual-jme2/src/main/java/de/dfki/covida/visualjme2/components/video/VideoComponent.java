@@ -724,31 +724,27 @@ public final class VideoComponent extends JMEComponent implements
 
     @Override
     public void draw(int x, int y) {
-        int localX = x + getPosX();
-        int localY = (int) display.getY() - y;
-        localY += getPosY();
-        localX += getDimension().getWidth() / 2;
-        localY += getDimension().getHeight() / 2;
+        video.pause();
+        Vector3f local = getLocal(x, y);
+        int localX = (int) local.x;
+        int localY = (int) local.y;
+//        localY += getPosY();
+//        localX += getDimension().getWidth() / 2;
+//        localY -= getDimension().getHeight() / 2;
         video.draw(new Point(localX, localY));
     }
 
     @Override
     public void hwrAction(String hwr) {
         if (video.getShape().isEmpty()) {
-            if (video.getDrawing().isEmpty()) {
-                List<Point> points = new ArrayList<>();
-                points.add(new Point(0, 0));
-                points.add(new Point(0, getHeight()));
-                points.add(new Point(getWidth(), getHeight()));
-                points.add(new Point(getWidth(), 0));
-                points.add(new Point(0, 0));
-                video.setShape(points);
-                setNewAnnotationData();
-            } else {
-                video.setShape(video.getDrawing());
-                video.clearDrawing();
-                setNewAnnotationData();
-            }
+            List<Point> points = new ArrayList<>();
+            points.add(new Point(5, 5));
+            points.add(new Point(5, getHeight()-5));
+            points.add(new Point(getWidth()-5, getHeight()-5));
+            points.add(new Point(getWidth()-5, 5));
+            points.add(new Point(5, 5));
+            video.setShape(points);
+            setNewAnnotationData();
         }
         video.setHWR(hwr);
         infoField.drawHwrResult(hwr);
@@ -905,9 +901,15 @@ public final class VideoComponent extends JMEComponent implements
         return video.isPlaying();
     }
 
-    private void clearAnnotation() {
+    public void clearAnnotation() {
         video.clearDrawing();
         video.clearShape();
         infoField.resetInfo();
+        video.resumeAndPause();
     }
+
+    public void deleteDescription(TextComponent aThis) {
+        infoField.deleteDescription(aThis);
+    }
+
 }
