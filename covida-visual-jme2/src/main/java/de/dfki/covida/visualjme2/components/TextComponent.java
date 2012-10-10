@@ -128,7 +128,6 @@ public class TextComponent extends JMEComponent implements IControlButton {
     public void update() {
         txt.setText(text);
         txt.setSize(size);
-        txt.setLocalTranslation(0, (float) size / 2.f, 0);
         txt.setAlignment(align);
         try {
             txt.update();
@@ -281,20 +280,20 @@ public class TextComponent extends JMEComponent implements IControlButton {
     @Override
     public void touchBirthAction(int id, int x, int y) {
         if (!action.equals(ActionName.COPY) && getParent() != null) {
-            SpatialTransformer controller = ScaleAnimation.getController(node,
+            SpatialTransformer controller = ScaleAnimation.getController(txt,
                     2.0f, ANIMATIONTIME);
             GameTaskQueueManager.getManager().update(new AddControllerCallable(
-                    node, controller));
+                    txt, controller));
         }
     }
 
     @Override
     public void touchDeadAction(int id, int x, int y) {
         if (!action.equals(ActionName.COPY) && getParent() != null) {
-            SpatialTransformer controller = ScaleAnimation.getController(node,
+            SpatialTransformer controller = ScaleAnimation.getController(txt,
                     1.0f, ANIMATIONTIME);
             GameTaskQueueManager.getManager().update(new AddControllerCallable(
-                    node, controller));
+                    txt, controller));
             if(action.equals(ActionName.COPY)){
                 dragEndPosition = new Vector3f(x, y, 0);
                 toggle();

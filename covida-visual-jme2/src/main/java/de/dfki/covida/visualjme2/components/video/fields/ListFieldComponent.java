@@ -191,7 +191,7 @@ public class ListFieldComponent extends JMEComponent {
         to.setSize(getFontSize());
         to.setText("Entries:");
         to.setFont(1);
-        addSpacer(x, (int) (y - (float) getFontSpacer() / 2.f),
+        addSpacer(x, (int) (y - (float) getFontSize()),
                 (int) (quad.getWidth() / 1.1f), getTextSpacer());
     }
 

@@ -96,13 +96,13 @@ public class AnnotationSearchField extends FieldComponent implements
         textBeginY = (int) (quad.getHeight() / 2.0f);
         int x = (int) (0);
         TextComponent caption = new TextComponent(this, ActionName.NONE);
-        caption.setLocalTranslation(x, getTextY(0) - FONT_SIZE / 4.f, 0);
+        caption.setLocalTranslation(x, getTextY(0), 0);
         caption.setDefaultPosition();
         caption.setSize((int) (FONT_SIZE * 1.5f));
         caption.setText("Write here for annotation search:");
         caption.setFont(2);
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, caption.node));
-        addSpacer(x, (int) (getTextY(0) - FONT_SIZE), 0,
+        addSpacer(x, (int) (getTextY(0) - FONT_SIZE*1.4f), 0,
                 (int) (quad.getWidth() / 1.1f), TEXT_SPACER);
         x = (int) (getWidth() / 9.f);
         addSpacer(x, 0, 90, (int) (quad.getHeight() / 1.1f), TEXT_SPACER);
@@ -117,8 +117,7 @@ public class AnnotationSearchField extends FieldComponent implements
 
     @Override
     protected final float getTextY(int position) {
-        return textBeginY - TEXT_SPACER - FONT_SIZE * (position)
-                - (float) FONT_SIZE / 2.f;
+        return textBeginY - TEXT_SPACER - FONT_SIZE * (position);
     }
 
     /**
