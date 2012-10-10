@@ -43,7 +43,6 @@ import de.dfki.covida.visualjme2.utils.AttachChildCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
 import de.dfki.covida.visualjme2.utils.RemoveControllerCallable;
 import de.dfki.touchandwrite.math.FastMath;
-import java.awt.Point;
 import java.util.ArrayList;
 
 /**
@@ -56,13 +55,13 @@ public class AnnotationClipboard extends FieldComponent implements
 
     /**
      * Creates a new instance of {@link AnnotationClipboard}
-     * 
+     *
      * @param resource Image resource location as {@link String}
      * @param width {@link Integer}
      * @param height {@link Integer}
      */
     public AnnotationClipboard(String resource, int width, int height) {
-        super("AnnotationSearch");
+        super("AnnotationClipboard");
         this.width = width;
         this.height = height;
         this.image = resource;
@@ -74,7 +73,7 @@ public class AnnotationClipboard extends FieldComponent implements
         initTextures();
         textBeginY = (int) (quad.getHeight() / 2.75f);
         int x = (int) (getWidth() / 4.f);
-        TextComponent caption = new TextComponent(this);
+        TextComponent caption = new TextComponent(this, ActionName.NONE);
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, caption.node));
         caption.setLocalTranslation(x, getTextY(0) - FONT_SIZE / 4.f, 0);
         caption.setSize((int) (FONT_SIZE * 1.5f));
@@ -87,14 +86,17 @@ public class AnnotationClipboard extends FieldComponent implements
     public final void update() {
         int x = (int) (+width / 4.0f);
         for (int i = 0; i < hwrResults.size(); i++) {
-            TextComponent textOverlay = new TextComponent(this);
+            TextComponent textOverlay = new TextComponent(this, ActionName.COPY);
             textOverlay.setLocalTranslation(x, getTextY(2 + i), 0);
+            textOverlay.setDefaultPosition();
+            textOverlay.setTouchable(true);
             GameTaskQueueManager.getManager().update(new AttachChildCallable(node, textOverlay.node));
             textOverlay.setText(hwrResults.get(i));
             textOverlay.setSize(FONT_SIZE);
             textOverlay.setFont(1);
             textOverlay.setColor(new ColorRGBA(0.75f, 0.75f, 0.75f, 0));
             textOverlay.fadeIn((float) i * 1.f + 1.f);
+            setTouchable(true);
             hwr.add(textOverlay);
         }
     }
@@ -143,23 +145,26 @@ public class AnnotationClipboard extends FieldComponent implements
 
     @Override
     public boolean toggle(ActionName action) {
-        if (isOpen()) {
-            close();
-            return false;
-        } else {
-            open();
-            return true;
+        if (action.equals(ActionName.CLOSE)) {
+            if (isOpen()) {
+                close();
+                return false;
+            } else {
+                open();
+                return true;
+            }
         }
+        return false;
     }
 
     @Override
     public boolean isOpen() {
         return open;
     }
-    
+
     @Override
     public void hwrAction(String hwr) {
-        if(open){
+        if (open) {
             hwrResults.add(hwr);
             update();
         }

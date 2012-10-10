@@ -87,6 +87,7 @@ public class CovidaApplication extends ApplicationImpl {
     private long snapshotTimer;
     private int sideMenuCount;
     private final boolean streaming = false;
+    private final boolean scenemonitor = false;
 
     /**
      * Creates an instance of {@link CovidaApplication}
@@ -167,9 +168,9 @@ public class CovidaApplication extends ApplicationImpl {
     public void addComponent(ITouchAndWriteComponent component) {
         if (component instanceof VideoComponent) {
             VideoComponent video = (VideoComponent) component;
-            int x = (int) (display.getWidth() / 2.25f) + (videos.size()*display.getWidth() / 3);
+            int x = (int) (display.getWidth() / 2.25f) + (videos.size() * display.getWidth() / 3);
             int y = (display.getHeight() / 2 + 150)
-                    - (videos.size()*350);
+                    - (videos.size() * 350);
             videos.add(video);
             video.setVolume(0);
             video.setLocalTranslation(x, y, 0);
@@ -275,8 +276,10 @@ public class CovidaApplication extends ApplicationImpl {
     @Override
     protected void simpleInitGame() {
         super.simpleInitGame();
-        SceneMonitor.getMonitor().registerNode(rootNode, "Root Node");
-        SceneMonitor.getMonitor().showViewer(true);
+        if (scenemonitor) {
+            SceneMonitor.getMonitor().registerNode(rootNode, "Root Node");
+            SceneMonitor.getMonitor().showViewer(true);
+        }
         if (streaming) {
             tcpServer.start();
             tcpServer.setScreenSize(new Dimension(display.getWidth(), display.getHeight()));
@@ -305,18 +308,24 @@ public class CovidaApplication extends ApplicationImpl {
                 });
             }
         }
-        SceneMonitor.getMonitor().updateViewer(tpf);
+        if (scenemonitor) {
+            SceneMonitor.getMonitor().updateViewer(tpf);
+        }
     }
 
     @Override
     protected void simpleRender() {
         super.simpleRender();
-        SceneMonitor.getMonitor().renderViewer(display.getRenderer());
+        if (scenemonitor) {
+            SceneMonitor.getMonitor().renderViewer(display.getRenderer());
+        }
     }
 
     @Override
     protected void cleanup() {
         super.cleanup();
-        SceneMonitor.getMonitor().cleanup();
+        if (scenemonitor) {
+            SceneMonitor.getMonitor().cleanup();
+        }
     }
 }

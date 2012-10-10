@@ -96,6 +96,7 @@ public abstract class JMEComponent implements ITouchAndWriteComponent {
                 DisplaySystem.getDisplaySystem().getWidth(),
                 DisplaySystem.getDisplaySystem().getHeight());
         registerComponent();
+        setDefaultPosition();
     }
 
     public Vector3f getLocalTranslation() {
@@ -367,7 +368,6 @@ public abstract class JMEComponent implements ITouchAndWriteComponent {
 
     @Override
     public void touchDeadAction(int id, int x, int y) {
-        log.debug("Birth " + getName());
     }
 
     @Override
@@ -455,12 +455,10 @@ public abstract class JMEComponent implements ITouchAndWriteComponent {
 
     @Override
     public void touchAliveAction(int id, int x, int y) {
-        log.debug("Alive " + getName());
     }
 
     @Override
     public void touchBirthAction(int id, int x, int y) {
-        log.debug("Birth " + getName());
     }
 
     /**

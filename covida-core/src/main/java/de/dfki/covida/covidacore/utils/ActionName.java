@@ -79,7 +79,15 @@ public enum ActionName {
     /**
      * Delete action.
      */
-    DELETE;
+    DELETE,
+    /**
+     * Copy annotation action.
+     */
+    COPY,
+    /**
+     * Load annotation action.
+     */
+    LOAD;
 
     @Override
     public String toString() {

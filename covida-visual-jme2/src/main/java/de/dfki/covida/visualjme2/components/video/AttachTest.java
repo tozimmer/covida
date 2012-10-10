@@ -39,7 +39,6 @@ public class AttachTest implements Runnable {
             } catch (InterruptedException ex) {
                 Logger.getLogger(DrawTest.class.getName()).log(Level.SEVERE, null, ex);
             }
-            video.detachAnnotation();
             try {
                 Thread.sleep(650);
             } catch (InterruptedException ex) {

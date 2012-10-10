@@ -56,6 +56,7 @@ public class VideoSlider extends JMEComponent implements ISlider {
     private static final int HEIGHT = 100;
     private VideoComponent video;
     private Node sliderNode;
+    private boolean toPause;
 
     public VideoSlider(VideoComponent video) {
         super("Video " + video.getId() + " Slider");
@@ -115,12 +116,15 @@ public class VideoSlider extends JMEComponent implements ISlider {
     public VideoComponent getVideo() {
         return video;
     }
-    
+
     @Override
     public void touchBirthAction(int id, int x, int y) {
-//        video.pause();
+        if (!video.isPlaying()) {
+            video.resume();
+            toPause = true;
+        }
     }
-    
+
     @Override
     public void touchAliveAction(int id, int x, int y) {
         Vector3f result = getLocal(x, y);
@@ -130,10 +134,12 @@ public class VideoSlider extends JMEComponent implements ISlider {
         }
     }
 
-
     @Override
     public void touchDeadAction(int id, int x, int y) {
-//        video.resume();
+        if(toPause){
+            video.pause();
+            toPause = false;
+        }
     }
 
     @Override

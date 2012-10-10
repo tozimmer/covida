@@ -326,7 +326,11 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
             return;
         }
         if (isReady()) {
+            setTimePostion(0);
             mediaPlayer.stop();
+            isPlaying = false;
+            controls.highlightStop();
+            controls.highlightPlay();
         }
     }
 
@@ -347,15 +351,16 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * Pauses the video.
      */
     public void pause() {
-        isPlaying = false;
         if (mediaPlayer == null) {
             return;
         }
         if (isReady()) {
             if (this.mediaPlayer.isPlaying()) {
                 this.mediaPlayer.pause();
+                isPlaying = false;
             }
         }
+        isPlaying = false;
     }
 
     /**
@@ -368,6 +373,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
         if (isReady()) {
             if (!isPlaying) {
                 this.mediaPlayer.play();
+                isPlaying = true;
             }
         }
     }

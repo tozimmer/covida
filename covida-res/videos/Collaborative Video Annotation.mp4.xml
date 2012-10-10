@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<data>
+    <videoSource>../covida-res/videos/Collaborative Video Annotation.mp4</videoSource>
+    <title>Covida Demo</title>
+    <annotations>
+        <annotation>
+            <uuid>097a5683-bd8e-415a-b569-ca44bb217e5b</uuid>
+            <time_start>455322</time_start>
+            <time_end>456343</time_end>
+            <shapePoints>
+                <shapePoint>24,30</shapePoint>
+                <shapePoint>98,32</shapePoint>
+                <shapePoint>100,121</shapePoint>
+                <shapePoint>22,119</shapePoint>
+                <shapePoint>24,30</shapePoint>
+            </shapePoints>
+            <descriptions>Data Test DFKI</descriptions>
+        </annotation>
+        <annotation>
+            <uuid>4a992dcf-90c0-49de-be08-112cf1f381b3</uuid>
+            <time_start>455322</time_start>
+            <time_end>456343</time_end>
+            <shapePoints>
+                <shapePoint>24,30</shapePoint>
+                <shapePoint>98,32</shapePoint>
+                <shapePoint>100,121</shapePoint>
+                <shapePoint>22,119</shapePoint>
+                <shapePoint>24,30</shapePoint>
+            </shapePoints>
+            <descriptions>Data Test DFKI</descriptions>
+        </annotation>
+        <annotation>
+            <uuid>bdf91dd7-7383-4783-9c9a-61a08b5ec263</uuid>
+            <time_start>455322</time_start>
+            <time_end>456343</time_end>
+            <shapePoints>
+                <shapePoint>24,30</shapePoint>
+                <shapePoint>98,32</shapePoint>
+                <shapePoint>100,121</shapePoint>
+                <shapePoint>22,119</shapePoint>
+                <shapePoint>24,30</shapePoint>
+            </shapePoints>
+            <descriptions>Data Test DFKI</descriptions>
+        </annotation>
+    </annotations>
+</data>

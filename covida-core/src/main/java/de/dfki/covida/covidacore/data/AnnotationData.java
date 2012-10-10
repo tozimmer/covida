@@ -27,6 +27,7 @@
  */
 package de.dfki.covida.covidacore.data;
 
+import de.dfki.covida.covidacore.components.IVideoComponent;
 import java.awt.Point;
 import java.io.*;
 import java.util.ArrayList;
@@ -85,13 +86,13 @@ public class AnnotationData implements Serializable {
     /**
      * Creates a new instance of {@link AnnotationData}
      */
-    public AnnotationData() {
+    private AnnotationData() {
         annotations = new ArrayList<>();
     }
 
     /**
      * Returns the amount of {@link Annotation}s.
-     * 
+     *
      * @return amount of {@link Annotation}s.
      */
     public int size() {
@@ -111,7 +112,7 @@ public class AnnotationData implements Serializable {
         try {
             docBuilder = dbfac.newDocumentBuilder();
         } catch (ParserConfigurationException e) {
-            log.error("",e);
+            log.error("", e);
         }
         if (docBuilder != null) {
             doc = docBuilder.newDocument();
@@ -155,7 +156,7 @@ public class AnnotationData implements Serializable {
             try {
                 trans_spec = transfac_spec.newTransformer();
             } catch (TransformerConfigurationException e) {
-                log.error("",e);
+                log.error("", e);
             }
             if (trans_spec != null) {
                 trans_spec.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
@@ -169,7 +170,7 @@ public class AnnotationData implements Serializable {
                 try {
                     trans_spec.transform(source_spec, result_spec);
                 } catch (TransformerException e) {
-                    log.error("",e);
+                    log.error("", e);
                 }
             }
             String xmlString_spec = sw_spec.toString();
@@ -181,13 +182,13 @@ public class AnnotationData implements Serializable {
                 out = new BufferedWriter(fstream);
                 out.write(xmlString_spec);
             } catch (IOException e) {
-                log.error("",e);
+                log.error("", e);
             } finally {
                 if (out != null) {
                     try {
                         out.close();
                     } catch (IOException ex) {
-                        log.error("",ex);
+                        log.error("", ex);
                     }
                 }
             }
@@ -199,7 +200,7 @@ public class AnnotationData implements Serializable {
             try {
                 docBuilder = dbfac.newDocumentBuilder();
             } catch (ParserConfigurationException e) {
-                log.error("",e);
+                log.error("", e);
             }
             doc = docBuilder.newDocument();
 
@@ -262,7 +263,7 @@ public class AnnotationData implements Serializable {
             try {
                 trans = transfac.newTransformer();
             } catch (TransformerConfigurationException e) {
-                log.error("",e);
+                log.error("", e);
             }
             if (trans != null) {
                 trans.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
@@ -275,7 +276,7 @@ public class AnnotationData implements Serializable {
                 try {
                     trans.transform(source, result);
                 } catch (TransformerException e) {
-                    log.error("",e);
+                    log.error("", e);
                 }
             }
             String xmlString = sw.toString();
@@ -284,7 +285,7 @@ public class AnnotationData implements Serializable {
                 out = new BufferedWriter(fstream);
                 out.write(xmlString);
             } catch (IOException e) {
-                log.error("",e);
+                log.error("", e);
             } finally {
                 try {
                     out.close();
@@ -312,13 +313,13 @@ public class AnnotationData implements Serializable {
             log.debug(
                     "Written data to: " + file);
         } catch (JAXBException | IOException e) {
-            log.error("",e);
+            log.error("", e);
         } finally {
             if (w != null) {
                 try {
                     w.close();
                 } catch (IOException ex) {
-                    log.error("",ex);
+                    log.error("", ex);
                 }
             }
         }
@@ -326,7 +327,7 @@ public class AnnotationData implements Serializable {
 
     /**
      * Removes the {@link Annotation} with the given id.
-     * 
+     *
      * @param id ID of the {@link Annotation}
      * @return true if removing was a success
      */
@@ -342,7 +343,7 @@ public class AnnotationData implements Serializable {
     /**
      * Returns the identifier list of {@link Annotation} als {@link List} of
      * {@link Long}.
-     * 
+     *
      * @return {@link List} of {@link Long}.
      */
     public ArrayList<Long> getTimeList() {
@@ -355,41 +356,42 @@ public class AnnotationData implements Serializable {
 
     /**
      * Returns the {@link List} of {@link Annotation}s
-     * 
+     *
      * @return {@link List} of {@link Annotation}s
      */
     public List<Annotation> getAnnotations() {
         return annotations;
     }
-    
+
     /**
      * Loads {@link AnnotationData} from a XML file.
-     * 
+     *
      * @param file {@link File} which represents the XML file.
      * @return {@link AnnotationData}
      */
-    public static AnnotationData load(File file) {
+    public static AnnotationData load(IVideoComponent component) {
+        File file = new File(component.getSource() + ".xml");
         AnnotationData instance;
-
-
         try {
             if (file != null && file.canRead()) {
                 JAXBContext jc = JAXBContext.newInstance(AnnotationData.class);
                 Unmarshaller u = jc.createUnmarshaller();
                 instance = (AnnotationData) u.unmarshal(file);
 
-                log.debug(
-                        "Data file loaded at location: "
-                        + file.getAbsolutePath());
+                log.debug("Data file loaded at location: {}",
+                        file.getAbsolutePath());
             } else {
-                log.debug("No data file exists at location create new VideoAnnotationData");
+                log.debug("No data file exists, create new VideoAnnotationData");
                 instance = new AnnotationData();
+                instance.videoSource = component.getSource();
+                instance.title = component.getTitle();
             }
         } catch (JAXBException e) {
-            log.debug(e + " create new VideoAnnotationData");
+            log.debug("XML parsing error: {}, create new VideoAnnotationData", e);
             instance = new AnnotationData();
+            instance.videoSource = component.getSource();
+            instance.title = component.getTitle();
         }
-        log.debug("",instance);
         return instance;
     }
 

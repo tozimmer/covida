@@ -287,6 +287,10 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
     @Override
     public synchronized void setShape(List<Point> points) {
         this.shapePoints = points;
+        this.pointsToDraw.clear();
+        for(Point point : points){
+            pointsToDraw.add(point);
+        }
     }
 
     @Override

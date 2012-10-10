@@ -33,7 +33,9 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.shape.Quad;
 import com.jme.util.GameTaskQueueManager;
 import de.dfki.covida.covidacore.components.IControlableComponent;
+import de.dfki.covida.covidacore.components.IVideoComponent;
 import de.dfki.covida.covidacore.data.Annotation;
+import de.dfki.covida.covidacore.data.AnnotationStorage;
 import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.visualjme2.animations.CloseAnimation;
 import de.dfki.covida.visualjme2.animations.OpenAnimation;
@@ -44,9 +46,9 @@ import de.dfki.covida.visualjme2.utils.AttachChildCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
 import de.dfki.covida.visualjme2.utils.RemoveControllerCallable;
 import de.dfki.touchandwrite.math.FastMath;
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -93,12 +95,12 @@ public class AnnotationSearchField extends FieldComponent implements
         initTextures();
         textBeginY = (int) (quad.getHeight() / 2.0f);
         int x = (int) (0);
-        TextComponent caption = new TextComponent(this);
+        TextComponent caption = new TextComponent(this, ActionName.NONE);
         caption.setLocalTranslation(x, getTextY(0) - FONT_SIZE / 4.f, 0);
+        caption.setDefaultPosition();
         caption.setSize((int) (FONT_SIZE * 1.5f));
         caption.setText("Write here for annotation search:");
         caption.setFont(2);
-        caption.setTouchable(true);
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, caption.node));
         addSpacer(x, (int) (getTextY(0) - FONT_SIZE), 0,
                 (int) (quad.getWidth() / 1.1f), TEXT_SPACER);
@@ -192,10 +194,12 @@ public class AnnotationSearchField extends FieldComponent implements
     protected void update() {
         for (int i = 0; i < hwrResults.size(); i++) {
             int x = (int) (-width / 2.5f);
-            TextComponent hwrText = new TextComponent(this);
+            TextComponent hwrText = new TextComponent(this, ActionName.LOAD);
             hwrText.setLocalTranslation(x, getTextY(2 + i), 0);
             GameTaskQueueManager.getManager().update(new AttachChildCallable(node, hwrText.node));
             hwr.add(hwrText);
+            Map<IVideoComponent, List<Annotation>> result = 
+                    AnnotationStorage.getInstance().search(hwrResults.get(i));
             hwr.get(i).setText(hwrResults.get(i));
             hwr.get(i).setSize(FONT_SIZE);
             hwr.get(i).setFont(1);

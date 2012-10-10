@@ -31,6 +31,7 @@ import de.dfki.touchandwrite.shape.ShapeType;
 import java.awt.Point;
 import java.io.Serializable;
 import java.util.List;
+import java.util.UUID;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -45,10 +46,18 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @XmlRootElement(name = "annotation")
 public class Annotation implements Serializable {
 
+    public Annotation() {
+        this.uuid = UUID.randomUUID();
+    }
     /**
      * serialVersionUID
      */
     private static final long serialVersionUID = 5408416424492049933L;
+    /**
+     * Unique id
+     */
+    @XmlElement(name = "uuid")
+    public final UUID uuid;
     /**
      * Starting time of the {@link Annotation} as {@link Long}.
      */

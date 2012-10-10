@@ -28,8 +28,6 @@
 package de.dfki.covida.visualjme2.components;
 
 import com.jme.animation.SpatialTransformer;
-import com.jme.math.FastMath;
-import com.jme.math.TransformMatrix;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.util.GameTaskQueueManager;
@@ -38,14 +36,27 @@ import com.jmex.angelfont.BitmapText;
 import com.jmex.scene.TimedLifeController;
 import de.dfki.covida.covidacore.components.IControlButton;
 import de.dfki.covida.covidacore.components.IControlableComponent;
+import de.dfki.covida.covidacore.data.AnnotationStorage;
+import de.dfki.covida.covidacore.tw.ITouchAndWriteComponent;
+import de.dfki.covida.covidacore.tw.TouchAndWriteComponentHandler;
 import de.dfki.covida.covidacore.utils.ActionName;
+import de.dfki.covida.visualjme2.animations.CovidaSpatialController;
 import de.dfki.covida.visualjme2.animations.DragAnimation;
+import de.dfki.covida.visualjme2.animations.ResetAnimation;
 import de.dfki.covida.visualjme2.animations.ScaleAnimation;
+import de.dfki.covida.visualjme2.components.annotation.AnnotationClipboard;
+import de.dfki.covida.visualjme2.components.annotation.GarbadgeComponent;
+import de.dfki.covida.visualjme2.components.video.VideoComponent;
+import de.dfki.covida.visualjme2.components.video.fields.InfoFieldComponent;
 import de.dfki.covida.visualjme2.utils.AddControllerCallable;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
 import de.dfki.covida.visualjme2.utils.DetachChildCallable;
 import de.dfki.covida.visualjme2.utils.FontLoader;
 import de.dfki.covida.visualjme2.utils.RemoveControllerCallable;
+import java.util.Collection;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.UUID;
 
 /**
  * TextComponent
@@ -77,18 +88,32 @@ public class TextComponent extends JMEComponent implements IControlButton {
     private FontLoader textOverlayData;
     private BitmapText txt;
     private boolean isDragging;
-    private boolean enabled;
     private ActionName action;
     private float ANIMATIONTIME;
+    private Vector3f dragEndPosition;
+    private UUID uuid;
+        /**
+     * Default {@link ColorRGBA}
+     */
+    public static final ColorRGBA defaultColor = new ColorRGBA(1, 1, 1, 1);
+    /**
+     * Active {@link ColorRGBA}
+     */
+    public static final ColorRGBA activeColor = new ColorRGBA(1, 0, 0, 1);
+    /**
+     * Selected {@link ColorRGBA}
+     */
+    public static final ColorRGBA selectedColor = new ColorRGBA(0, 1, 0, 1);
 
     /**
      * Displays Text
      *
      * @param component controlable componnet
      */
-    public TextComponent(IControlableComponent component) {
+    public TextComponent(IControlableComponent component, ActionName action) {
         super(component.getName() + " Text Overlay");
         this.component = component;
+        this.action = action;
         textOverlayData = FontLoader.getInstance();
         txt = new BitmapText(textOverlayData.getBitmapFont(font), false);
         init();
@@ -101,7 +126,6 @@ public class TextComponent extends JMEComponent implements IControlButton {
     }
 
     public void update() {
-
         txt.setText(text);
         txt.setSize(size);
         txt.setLocalTranslation(0, (float) size / 2.f, 0);
@@ -113,11 +137,19 @@ public class TextComponent extends JMEComponent implements IControlButton {
         }
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, txt));
     }
+    
+    public void setAnnotationUUID(UUID uuid){
+        this.uuid = uuid;
+    }
 
     public void detach() {
+        setTouchable(false);
+        setDrawable(false);
         if (node.hasChild(txt)) {
             GameTaskQueueManager.getManager().update(new DetachChildCallable(node, txt));
         }
+        txt.setText("");
+        txt.clearTextureBuffers();
     }
 
     public void attach() {
@@ -222,44 +254,51 @@ public class TextComponent extends JMEComponent implements IControlButton {
     }
 
     @Override
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    @Override
-    public boolean getEnabled() {
-        return enabled;
-    }
-
-    @Override
     public void dragAction(int id, int x, int y, int dx, int dy) {
-        Vector3f translation = this.getLocalTranslation();
-        Vector3f d = new Vector3f(dx, -dy, 0);
-//        d.subtract(node.getWorldTranslation(), d);
-        d = d.divideLocal(node.getWorldScale());
-        d = node.getWorldRotation().inverse().mult(d, d);
-        translation = translation.add(d);
-        node.setLocalTranslation(translation);
+        if (action.equals(ActionName.COPY)) {
+            Vector3f translation = this.getLocalTranslation();
+            Vector3f d = new Vector3f(dx, -dy, 0);
+            d = d.divideLocal(node.getWorldScale());
+            d = node.getWorldRotation().inverse().mult(d, d);
+            translation = translation.add(d);
+            node.setLocalTranslation(translation);
+        }
+    }
+
+    @Override
+    public void dragEndAction(int id, int x, int y, int dx, int dy) {
+        if (action.equals(ActionName.COPY)) {
+            dragEndPosition = node.getWorldTranslation();
+            toggle();
+            CovidaSpatialController controller =
+                    ResetAnimation.getController(node, defaultScale,
+                    defaultRotation, defaultTranslation);
+            GameTaskQueueManager.getManager().update(new AddControllerCallable(
+                    node, controller));
+        }
     }
 
     @Override
     public void touchBirthAction(int id, int x, int y) {
-        if (enabled && getParent() != null) {
-            SpatialTransformer controller = ScaleAnimation.getController(txt,
+        if (!action.equals(ActionName.COPY) && getParent() != null) {
+            SpatialTransformer controller = ScaleAnimation.getController(node,
                     2.0f, ANIMATIONTIME);
             GameTaskQueueManager.getManager().update(new AddControllerCallable(
-                    txt, controller));
+                    node, controller));
         }
     }
 
     @Override
     public void touchDeadAction(int id, int x, int y) {
-        log.debug(getName() + " touch");
-        if (enabled && getParent() != null) {
-            SpatialTransformer controller = ScaleAnimation.getController(txt,
+        if (!action.equals(ActionName.COPY) && getParent() != null) {
+            SpatialTransformer controller = ScaleAnimation.getController(node,
                     1.0f, ANIMATIONTIME);
             GameTaskQueueManager.getManager().update(new AddControllerCallable(
-                    txt, controller));
+                    node, controller));
+            if(action.equals(ActionName.COPY)){
+                dragEndPosition = new Vector3f(x, y, 0);
+                toggle();
+            }
             if (inArea(x, y)) {
                 toggle();
             }
@@ -268,8 +307,50 @@ public class TextComponent extends JMEComponent implements IControlButton {
 
     @Override
     public void toggle() {
-        log.debug(action.toString());
-        setActive(component.toggle(action));
+        if (action.equals(ActionName.COPY) && dragEndPosition != null) {
+            Collection<ITouchAndWriteComponent> components =
+                    TouchAndWriteComponentHandler.getInstance().getComponents();
+            SortedMap<Integer, ITouchAndWriteComponent> inAreacomponents =
+                    new TreeMap<>();
+            for (ITouchAndWriteComponent comp : components) {
+                if (comp.inArea((int) dragEndPosition.x,
+                        (int) (display.y - dragEndPosition.y))) {
+                    inAreacomponents.put(comp.getZPosition(), comp);
+                }
+            }
+            if (!inAreacomponents.isEmpty()) {
+                ITouchAndWriteComponent comp = inAreacomponents
+                        .get(inAreacomponents.lastKey());
+                while (!inAreacomponents.isEmpty()
+                        && !(comp instanceof InfoFieldComponent)
+                        && !(comp instanceof VideoComponent)
+                        && !(comp instanceof AnnotationClipboard)
+                        && !(comp instanceof GarbadgeComponent)) {
+                    inAreacomponents.remove(inAreacomponents.lastKey());
+                    if (!inAreacomponents.isEmpty()) {
+                        comp = inAreacomponents.get(inAreacomponents.lastKey());
+                    }
+                }
+                if (comp instanceof VideoComponent) {
+                    VideoComponent video = (VideoComponent) comp;
+                    video.hwrAction(text);
+                } else if (comp instanceof InfoFieldComponent) {
+                    InfoFieldComponent info = (InfoFieldComponent) comp;
+                    info.getVideo().hwrAction(text);
+                } else if (comp instanceof AnnotationClipboard) {
+                    AnnotationClipboard clipboard = (AnnotationClipboard) comp;
+                    clipboard.hwrAction(text);
+                } else if (comp instanceof GarbadgeComponent){
+                    if(component instanceof VideoComponent){
+                        
+                    }else if(component instanceof AnnotationClipboard){
+                        
+                    }
+                }
+            }
+        }else if(action.equals(ActionName.LOAD)){
+            AnnotationStorage.getInstance().load(uuid);
+        }
     }
 
     @Override
@@ -279,5 +360,15 @@ public class TextComponent extends JMEComponent implements IControlButton {
     @Override
     public boolean getActive() {
         return false;
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        touchable = enabled;
+    }
+
+    @Override
+    public boolean getEnabled() {
+        return touchable;
     }
 }

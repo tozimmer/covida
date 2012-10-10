@@ -43,6 +43,7 @@ import com.jme.util.TextureManager;
 import de.dfki.covida.covidacore.components.IControlableComponent;
 import de.dfki.covida.covidacore.components.IVideoComponent;
 import de.dfki.covida.covidacore.data.*;
+import de.dfki.covida.covidacore.tw.TouchAndWriteComponentHandler;
 import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.videovlcj.AbstractVideoHandler;
 import de.dfki.covida.videovlcj.rendered.RenderedVideoHandler;
@@ -65,6 +66,7 @@ import de.dfki.touchandwrite.shape.ShapeType;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 
@@ -147,6 +149,10 @@ public final class VideoComponent extends JMEComponent implements
      * Timer to determine how long video component was dragged
      */
     private long dragTimer;
+    /**
+     * Video title
+     */
+    private final String title;
 
     /**
      * Creates an instance of {@link VideoComponent}
@@ -159,10 +165,13 @@ public final class VideoComponent extends JMEComponent implements
     public VideoComponent(String source, String title, int height, VideoFormat format) {
         super("Video Component ");
         log.debug("Create video id:" + getId());
+        this.title = title;
         video = new RenderedVideoHandler(source, title, (int) (height * UPSCALE_FACTOR), format.determineWidth((int) (height * UPSCALE_FACTOR)));
         setDefaultPosition();
         setDrawable(true);
         setTouchable(true);
+        AnnotationStorage.getInstance().getAnnotationData(this).title = title;
+        AnnotationStorage.getInstance().getAnnotationData(this).videoSource = source;
     }
 
     /**
@@ -199,15 +208,8 @@ public final class VideoComponent extends JMEComponent implements
 //            video.draw(new Point(25, 25));
 //            move(getLocalTranslation().x, getLocalTranslation().y + 400);
 //            rotate(180.f, new Vector3f(0, 0, 1));
-//            attachAnnotation();
-//            Annotation annotation = new Annotation();
-//            annotation.description = "test";
-//            annotation.shapePoints = new ArrayList<>();
-//            annotation.shapeType = ShapeType.POLYGON;
-//            annotation.time_end = Long.valueOf(200);
-//            annotation.time_start = Long.valueOf(200);
-//            infoField.setAnnotationData(annotation);
-//            infoField.drawHwrResult("Test");
+//            hwrAction("Test");
+//            hwrAction("Check");
 //        } else {
 //            attachList();
 //            ArrayList<Long> entries = new ArrayList<>();
@@ -228,7 +230,6 @@ public final class VideoComponent extends JMEComponent implements
         // attach info field to video and make it visible
         attachAnnotation();
         pause();
-        listField.resetInfo();
         long time = video.getTime();
         Annotation annotation = new Annotation();
         annotation.description = "";
@@ -370,13 +371,13 @@ public final class VideoComponent extends JMEComponent implements
      */
     public void createControls() {
         controls = new VideoComponentControls(this);
-        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, 
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(node,
                 controls.node));
         slider = new VideoSlider(this);
         slider.getLocalTranslation().set(
-                new Vector3f(-15, -30 - getHeight() / 2, 0));
+                new Vector3f(-15, -22 - getHeight() / 2, 0));
         slider.setDefaultPosition();
-        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, 
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(node,
                 slider.node));
     }
 
@@ -419,7 +420,7 @@ public final class VideoComponent extends JMEComponent implements
      * Creates overlays
      */
     public void createOverlays() {
-        textOverlay = new TextComponent(this);
+        textOverlay = new TextComponent(this, ActionName.NONE);
         textOverlay.setLocalTranslation(0, getHeight() / (1.50f) - getFontSize()
                 / 2.f, 0);
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, textOverlay.node));
@@ -567,15 +568,6 @@ public final class VideoComponent extends JMEComponent implements
         if (!hasInfoField()) {
             GameTaskQueueManager.getManager().update(new AttachChildCallable(node, infoField.node));
             infoField.open();
-        }
-    }
-
-    /**
-     * Detaches AnnotationField
-     */
-    public void detachAnnotation() {
-        if (hasInfoField()) {
-            infoField.close();
         }
     }
 
@@ -752,9 +744,34 @@ public final class VideoComponent extends JMEComponent implements
 
     @Override
     public void hwrAction(String hwr) {
-        video.clearDrawing();
+        if (video.getShape().isEmpty()) {
+            if (video.getDrawing().isEmpty()) {
+                List<Point> points = new ArrayList<>();
+                points.add(new Point(0, 0));
+                points.add(new Point(0, getHeight()));
+                points.add(new Point(getWidth(), getHeight()));
+                points.add(new Point(getWidth(), 0));
+                points.add(new Point(0, 0));
+                video.setShape(points);
+                setNewAnnotationData();
+            } else {
+                video.setShape(video.getDrawing());
+                video.clearDrawing();
+                setNewAnnotationData();
+            }
+        }
         video.setHWR(hwr);
         infoField.drawHwrResult(hwr);
+    }
+    
+     @Override
+    public void load(Annotation annotation) {
+        attachAnnotation();
+        pause();
+        infoField.setAnnotationData(annotation);
+        video.setTimePosition(annotation.time_start);
+        video.clearDrawing();
+        video.setShape(annotation.shapePoints);
     }
 
     /**
@@ -779,13 +796,14 @@ public final class VideoComponent extends JMEComponent implements
     @Override
     public void cleanUp() {
         log.debug("cleanup video (id: " + getId() + ")");
+        TouchAndWriteComponentHandler.getInstance().removeComponent(this);
         controls.cleanUp();
         infoField.cleanUp();
         listField.cleanUp();
         slider.cleanUp();
         video.cleanUp();
     }
-    
+
     @Override
     public void zoomAction(ZoomEventImpl event) {
         float scale = display.x / ((float) getWidth() * node.getLocalScale().x);
@@ -877,15 +895,23 @@ public final class VideoComponent extends JMEComponent implements
             }
         } else if (action.equals(ActionName.DELETE)) {
             if (infoField.isOpen()) {
-                this.infoField.close();
+                this.infoField.delete();
             }
-        } else if (action.equals(ActionName.STOP)){
-            if(video.isPlaying()){
+        } else if (action.equals(ActionName.STOP)) {
+            if (video.isPlaying()) {
                 video.stop();
                 return true;
             }
         }
         return false;
     }
-    
+
+    @Override
+    public String getTitle() {
+        return title;
+    }
+
+    boolean isPlaying() {
+        return video.isPlaying();
+    }
 }

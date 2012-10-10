@@ -301,12 +301,14 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
 
     @Override
     public void onPenEvent(String device, int x, int y, float force, PenEventDataType penEventState, long timestamp, String eventPageID) {
-        log.debug("Pen Event: {} / {}", x, y);
+//        log.debug("Pen Event: {} / {}", x, y);
         SortedMap<Integer, ITouchAndWriteComponent> components = new TreeMap<>();
         if (penEventState.equals(PenEventDataType.NEW_SESSION)) {
             for (ITouchAndWriteComponent component : componentHandler.getComponents()) {
                 if (component.isDrawable()) {
                     if (component.inArea(x, y)) {
+                        log.debug(component.getName());
+                        log.debug("Pen Event: {} / {}", x, y);
                         components.put(component.getZPosition(), component);
                     }
                 }

@@ -112,13 +112,11 @@ public class InfoFieldComponent extends JMEComponent {
     private TextComponent descriptionOverlay;
     private boolean open;
     private int descriptionBeginY;
-    /*
-     * Overlay
-     */
-    private TextComponent textOverlay;
     private static final int FONT_SIZE = 30;
     protected Quad overlayDefault;
     private SpatialTransformer st;
+    private ControlButton save;
+    private ControlButton delete;
 
     /**
      * Info field constructor
@@ -285,25 +283,18 @@ public class InfoFieldComponent extends JMEComponent {
      * Save annotation data to binary and XML files
      */
     private void saveData() {
-        String descriptions = "";
-        boolean first = true;
+        StringBuilder descriptions = new StringBuilder();
         for (TextComponent description : descriptionText) {
-            if (first) {
-                descriptions = description.getText();
-                first = false;
-            } else {
-                descriptions = descriptions + " " + description.getText();
-            }
+            descriptions.append(description.getText());
+            descriptions.append(" ");
         }
         // TODO new annotation data if media has changed!
-        AnnotationStorage.getInstance().getAnnotationData(video).title = title;
-        AnnotationStorage.getInstance().getAnnotationData(video).videoSource = videoSource;
         Annotation annotation = new Annotation();
         annotation.time_start = time_start;
         annotation.time_end = time_end;
         annotation.shapeType = shapeType;
         annotation.shapePoints = shapePoints;
-        annotation.description = descriptions;
+        annotation.description = descriptions.toString();
         AnnotationStorage.getInstance().getAnnotationData(video).annotations.add(annotation);
         clearDescriptionText();
         AnnotationStorage.getInstance().getAnnotationData(video).save();
@@ -342,11 +333,9 @@ public class InfoFieldComponent extends JMEComponent {
      */
     public void initComponent() {
         initTextures();
-        textBeginY = (int) (quad.getHeight()/2 - FONT_SIZE);
-        textOverlay = new TextComponent(video);
-        textOverlay.setSize(FONT_SIZE);
+        textBeginY = (int) (quad.getHeight() / 2 - FONT_SIZE);
         initalizeListOverlayQuads(JMEUtils.initalizeBlendState());
-        titleTextOverlay = new TextComponent(video);
+        titleTextOverlay = new TextComponent(video, ActionName.NONE);
         titleTextOverlay.setFont(1);
         titleTextOverlay.setSize(getFontSize());
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, titleTextOverlay.node));
@@ -354,13 +343,13 @@ public class InfoFieldComponent extends JMEComponent {
 //        int y = (int) (titleTextOverlay.getLocalTranslation().y + ((float) titleTextOverlay.getFontSize() / 2.f));
 //        addSpacer(0, y, (int) (quad.getWidth() / 1.1f), getTextSpacer());
         textBeginY = (int) (textBeginY - (float) getFontSpacer() * 1.25f - getTextSpacer());
-        timeOverlay = new TextComponent(video);
+        timeOverlay = new TextComponent(video, ActionName.NONE);
         timeOverlay.setLocalTranslation(0, textBeginY + FONT_SIZE, 0);
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, timeOverlay.node));
         timeOverlay.setFont(1);
         timeOverlay.setSize(getFontSize());
         timeOverlay.setText("Time:");
-        timeTextOverlay = new TextComponent(video);
+        timeTextOverlay = new TextComponent(video, ActionName.NONE);
         timeTextOverlay.setLocalTranslation(0, textBeginY, 0);
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, timeTextOverlay.node));
         timeTextOverlay.setFont(1);
@@ -368,22 +357,21 @@ public class InfoFieldComponent extends JMEComponent {
         int y = (int) (timeTextOverlay.getLocalTranslation().y + ((float) timeTextOverlay.getFontSize() / 2.f));
         addSpacer(0, y, (int) (quad.getWidth() / 1.1f), getTextSpacer());
         textBeginY = (int) (textBeginY - (float) getFontSpacer() * 1.25f - getTextSpacer());
-        descriptionOverlay = new TextComponent(video);
+        descriptionOverlay = new TextComponent(video, ActionName.NONE);
         descriptionOverlay.setLocalTranslation(0, textBeginY, 0);
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, descriptionOverlay.node));
         descriptionOverlay.setFont(1);
         descriptionOverlay.setSize(getFontSize());
         descriptionText = new ArrayList<>();
         if (AnnotationStorage.getInstance().getAnnotationData(video).size() > 0) {
-            listField.updateEntries(AnnotationStorage
-                    .getInstance().getAnnotationData(video).getTimeList());
+            listField.drawEntries();
         }
-        ControlButton save = new ControlButton(ActionName.SAVE, video,
+        save = new ControlButton(ActionName.SAVE, video,
                 "media/textures/video_controls_save.png",
                 "media/textures/video_controls_save.png", 64, 64);
         save.setLocalTranslation(-getWidth() / 2 + 32, -getHeight() / 2 + 32, 0);
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, save.node));
-        ControlButton delete = new ControlButton(ActionName.DELETE, video,
+        delete = new ControlButton(ActionName.DELETE, video,
                 "media/textures/video_control_delete.png",
                 "media/textures/video_control_delete.png", 64, 64);
         delete.setLocalTranslation(getWidth() / 2 - 32, -getHeight() / 2 + 32, 0);
@@ -416,8 +404,10 @@ public class InfoFieldComponent extends JMEComponent {
                 descriptionBeginY = (int) (textBeginY - (float) getFontSpacer());
             }
             descriptionBeginY = (int) (descriptionBeginY - (float) getFontSpacer() * 0.9f);
-            TextComponent descriptionTextOverlay = new TextComponent(video);
+            TextComponent descriptionTextOverlay = new TextComponent(video, ActionName.COPY);
             descriptionTextOverlay.setLocalTranslation(0, descriptionBeginY, 0);
+            descriptionTextOverlay.setDefaultPosition();
+            descriptionTextOverlay.setTouchable(true);
             GameTaskQueueManager.getManager().update(new AttachChildCallable(node, descriptionTextOverlay.node));
             descriptionText.add(descriptionTextOverlay);
             descriptionText.get(descriptionText.size() - 1).setText(hwrResults);
@@ -468,18 +458,10 @@ public class InfoFieldComponent extends JMEComponent {
      */
     public void save() {
         log.debug("Save begin");
-        open = false;
-        if (node.getControllers().contains(st)) {
-            GameTaskQueueManager.getManager().update(new RemoveControllerCallable(node, st));
-        }
         saveData();
-        listField.updateEntries(AnnotationStorage.getInstance()
-                .getAnnotationData(video).getTimeList());
-        listField.drawEntries();
-        // Save animation
         st = SaveAnimation.getController(node, ANIMATION_DURATION, CloseAnimationType.INFO_FIELD);
         GameTaskQueueManager.getManager().update(new AddControllerCallable(node, st));
-        resetInfo();
+        close();
     }
 
     /**
@@ -497,20 +479,15 @@ public class InfoFieldComponent extends JMEComponent {
     }
 
     /**
-     * Detach DisplayInfoComponent
-     */
-    public void detach() {
-        if (this.getParent() != null) {
-            GameTaskQueueManager.getManager().update(new DetachChildCallable(getParent(), node));
-            resetNode();
-        }
-    }
-
-    /**
      * Open animation of the DisplayInfoComponent
      */
     public void open() {
         open = true;
+        save.setTouchable(true);
+        delete.setTouchable(true);
+        for (TextComponent text : descriptionText) {
+            text.setTouchable(true);
+        }
         st = OpenAnimation.getController(node, ANIMATION_DURATION, defaultScale);
         GameTaskQueueManager.getManager().update(new AddControllerCallable(node, st));
     }
@@ -588,17 +565,21 @@ public class InfoFieldComponent extends JMEComponent {
     @Override
     public void close() {
         open = false;
-        if (node.getControllers().contains(st)) {
-            GameTaskQueueManager.getManager().update(new RemoveControllerCallable(node, st));
+        save.setTouchable(false);
+        delete.setTouchable(false);
+        for (TextComponent text : descriptionText) {
+            text.setTouchable(false);
         }
         title = null;
         time_start = 0;
         resetInfo();
-        listField.updateEntries(AnnotationStorage.getInstance().getAnnotationData(video).getTimeList());
         listField.drawEntries();
-        // Close animation (Info Field)
+    }
+    
+    public void delete() {
+        // Delete animation (Info Field)
         st = CloseAnimation.getController(node, ANIMATION_DURATION, CloseAnimationType.INFO_FIELD);
         GameTaskQueueManager.getManager().update(new AddControllerCallable(node, st));
-        resetInfo();
+        close();
     }
 }

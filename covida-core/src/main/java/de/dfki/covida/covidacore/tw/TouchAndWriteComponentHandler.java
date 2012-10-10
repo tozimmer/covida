@@ -83,4 +83,10 @@ public class TouchAndWriteComponentHandler {
     public Collection<ITouchAndWriteComponent> getComponents(){
         return components;
     }
+
+    public void removeComponent(ITouchAndWriteComponent component) {
+        if(components.contains(component)){
+           components.remove(component);
+        }
+    }
 }

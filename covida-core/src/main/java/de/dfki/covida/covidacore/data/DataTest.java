@@ -36,9 +36,9 @@ public class DataTest {
      * @param args
      */
     public static void main(String[] args) {
-        AnnotationData data = new AnnotationData();
+        AnnotationData data = AnnotationData.load(new DataTestVideoComponent());
         Annotation annotation = new Annotation();
-        annotation.description = "Robot DFKI";
+        annotation.description = "Data Test DFKI";
         annotation.shapePoints = new ArrayList<>();
         annotation.shapePoints.add(new Point(24, 30));
         annotation.shapePoints.add(new Point(98, 32));
@@ -47,8 +47,6 @@ public class DataTest {
         annotation.shapePoints.add(new Point(24, 30));
         annotation.time_end = (long) 456343;
         annotation.time_start = (long) 455322;
-        data.videoSource = "Robotics Innovation Center 2010.mp4";
-        data.title = "Robotics Innovation";
         data.annotations.add(annotation);
         data.save();
         CovidaConfiguration conf = CovidaConfiguration.getInstance();

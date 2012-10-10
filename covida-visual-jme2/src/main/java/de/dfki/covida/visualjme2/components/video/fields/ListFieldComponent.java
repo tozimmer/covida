@@ -31,12 +31,15 @@ import com.jme.animation.SpatialTransformer;
 import com.jme.image.Texture;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
-import com.jme.renderer.ColorRGBA;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
+import de.dfki.covida.covidacore.data.Annotation;
+import de.dfki.covida.covidacore.data.AnnotationData;
+import de.dfki.covida.covidacore.data.AnnotationStorage;
+import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.covidacore.utils.VideoUtils;
 import de.dfki.covida.visualjme2.animations.CloseAnimation;
 import de.dfki.covida.visualjme2.animations.CloseAnimationType;
@@ -47,7 +50,6 @@ import de.dfki.covida.visualjme2.components.TextComponent;
 import de.dfki.covida.visualjme2.components.video.VideoComponent;
 import de.dfki.covida.visualjme2.utils.AddControllerCallable;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
-import de.dfki.covida.visualjme2.utils.DetachChildCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
 import de.dfki.covida.visualjme2.utils.RemoveControllerCallable;
 import java.util.ArrayList;
@@ -60,18 +62,6 @@ import java.util.List;
  */
 public class ListFieldComponent extends JMEComponent {
 
-    /**
-     * Default {@link ColorRGBA}
-     */
-    public static final ColorRGBA defaultColor = new ColorRGBA(1, 1, 1, 1);
-    /**
-     * Active {@link ColorRGBA}
-     */
-    public static final ColorRGBA activeColor = new ColorRGBA(1, 0, 0, 1);
-    /**
-     * Selected {@link ColorRGBA}
-     */
-    public static final ColorRGBA selectedColor = new ColorRGBA(0, 1, 0, 1);
     /**
      * Animation duration
      */
@@ -129,14 +119,6 @@ public class ListFieldComponent extends JMEComponent {
      */
     private boolean open;
     /**
-     * {@ling List} of {@link Long} which indicates the {@link Annotation}s.
-     */
-    private List<Long> times;
-    /*
-     * Text overlay
-     */
-    private TextComponent textOverlay;
-    /**
      * Font size
      */
     private static final int FONT_SIZE = 30;
@@ -144,6 +126,7 @@ public class ListFieldComponent extends JMEComponent {
      * {@link SpatialTransformer} for the open and close animation
      */
     private SpatialTransformer st;
+    private AnnotationData data;
 
     /**
      * List field component constructer.
@@ -200,11 +183,9 @@ public class ListFieldComponent extends JMEComponent {
      */
     public void initComponent() {
         initTextures();
-        textOverlay = new TextComponent(video);
-        textOverlay.setSize(FONT_SIZE);
         int x = (int) (0);
         float y = getTextY(0);
-        TextComponent to = new TextComponent(video);
+        TextComponent to = new TextComponent(video, ActionName.NONE);
         to.setLocalTranslation(x, y, 0);
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, to.node));
         to.setSize(getFontSize());
@@ -257,77 +238,57 @@ public class ListFieldComponent extends JMEComponent {
     }
 
     /**
-     * Resets textNode
-     */
-    public void resetInfo() {
-        for (TextComponent e : entries) {
-            e.setColor(defaultColor);
-        }
-    }
-
-    /**
-     * Saves annotation data from the InfoField
-     */
-    public void save() {
-        log.debug("Save begin");
-        open = false;
-        if (node.getControllers().contains(st)) {
-            GameTaskQueueManager.getManager().update(new RemoveControllerCallable(node, st));
-        }
-    }
-
-    /**
      * Returns y position for text.
      *
      * @param position Position index as {@link Integer}
      * @return y position as {@link Float}
      */
     private float getTextY(int position) {
-        return quad.getHeight() / 2.1f
-                - ((float) getFontSize() * ((float) (position + 1) * 1.1f));
+        return quad.getHeight() / 2.f
+                - ((float) getFontSize() * ((float) (position) * 1.1f));
     }
 
     /**
      * Draw entries
      */
     public void drawEntries() {
-        if (times != null) {
+        if (isOpen()) {
             // TODO max limit for list
-            log.debug("draw entries: " + times);
+            data = AnnotationStorage.getInstance().getAnnotationData(video);
+            log.debug("Draw {} entries.", data.getAnnotations().size());
             for (TextComponent e : entries) {
                 e.detach();
             }
             entries = new ArrayList<>();
-            for (int i = 0; i < times.size(); i++) {
-                TextComponent entryTextOverlay = new TextComponent(video);
+            for (int i = 0; i < data.getAnnotations().size(); i++) {
+                TextComponent entryTextOverlay = new TextComponent(video, ActionName.LOAD);
                 entryTextOverlay.setLocalTranslation(0, getTextY(i + 1), 0);
+                Annotation annotation = data.getAnnotations().get(i);
+                String timeCode = VideoUtils.getTimeCode(annotation.time_start);
+                entryTextOverlay.setText(timeCode);
+                entryTextOverlay.setFont(1);
+                entryTextOverlay.setTouchable(true);
+                entryTextOverlay.setAnnotationUUID(annotation.uuid);
+                entryTextOverlay.setSize((int) (getFontSize()));
+                entryTextOverlay.fadeIn((float) ANIMATION_DURATION / 125.f);
                 GameTaskQueueManager.getManager().update(new AttachChildCallable(node, entryTextOverlay.node));
                 entries.add(entryTextOverlay);
-                log.debug("draw Entry: " + VideoUtils.getTimeCode(times.get(i)));
-                entries.get(i).setText(VideoUtils.getTimeCode(times.get(i)));
-                entries.get(i).setFont(1);
-                entries.get(i).setSize((int) (getFontSize()));
-                entries.get(i).fadeIn((float) ANIMATION_DURATION / 125.f);
+                entryTextOverlay = new TextComponent(video, ActionName.LOAD);
+                entryTextOverlay.setLocalTranslation(0, getTextY(i + 1) - getFontSize() / 2, 0);
+                String[] split = annotation.description.split(" ");
+                if (split.length > 0) {
+                    entryTextOverlay.setText(split[0]);
+                } else if (split.length > 1) {
+                    entryTextOverlay.setText(split[0] + " ...");
+                }
+                entryTextOverlay.setFont(1);
+                entryTextOverlay.setSize((int) (getFontSize() / 2));
+                entryTextOverlay.setTouchable(true);
+                entryTextOverlay.setAnnotationUUID(annotation.uuid);
+                entryTextOverlay.fadeIn((float) ANIMATION_DURATION / 125.f);
+                GameTaskQueueManager.getManager().update(new AttachChildCallable(node, entryTextOverlay.node));
+                entries.add(entryTextOverlay);
             }
-        }
-    }
-
-    /**
-     * Updates the entries of the list field.
-     *
-     * @param times {@link List} of annotations identifier as {@link Long}
-     */
-    public void updateEntries(ArrayList<Long> times) {
-        this.times = times;
-    }
-
-    /**
-     * Detach DisplayInfoComponent
-     */
-    public void detach() {
-        if (this.getParent() != null) {
-            GameTaskQueueManager.getManager().update(new DetachChildCallable(getParent(), node));
-            resetNode();
         }
     }
 
@@ -342,41 +303,9 @@ public class ListFieldComponent extends JMEComponent {
     }
 
     /**
-     * Sets the active entry on the ListField
-     *
-     * @param index Index of active entry
-     */
-    public void setActiveEntry(int index) {
-        if (index > -1 && index < entries.size()) {
-            for (TextComponent e : entries) {
-                e.setColor(defaultColor);
-            }
-            entries.get(index).setColor(activeColor);
-        }
-    }
-
-    /**
-     * Sets the selected entry on the ListField.
-     *
-     * @param index Index of selected entry.
-     */
-    public void setSelectedEntry(int index) {
-        if (index > -1 && index < entries.size() + 1) {
-            for (TextComponent e : entries) {
-                e.setColor(defaultColor);
-            }
-            entries.get(index).setColor(selectedColor);
-            video.loadAnnotationData(index);
-        }
-    }
-
-    /**
      * Resets the position and scale of the list field component.
      */
     public void reset() {
-        if (node.getControllers().contains(st)) {
-            GameTaskQueueManager.getManager().update(new RemoveControllerCallable(node, st));
-        }
         st = ResetAnimation.getController(node, defaultScale, defaultRotation, defaultTranslation);
         GameTaskQueueManager.getManager().update(new AddControllerCallable(node, st));
     }
@@ -418,10 +347,10 @@ public class ListFieldComponent extends JMEComponent {
         // fade out entry list
         for (TextComponent e : entries) {
             e.fadeOut((float) ANIMATION_DURATION / 1000);
+            e.setTouchable(false);
         }
         // Close animation List Field
         st = CloseAnimation.getController(node, ANIMATION_DURATION, CloseAnimationType.LIST_FIELD);
         GameTaskQueueManager.getManager().update(new AddControllerCallable(node, st));
-        resetInfo();
     }
 }

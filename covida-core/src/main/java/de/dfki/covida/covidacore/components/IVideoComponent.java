@@ -4,6 +4,8 @@
  */
 package de.dfki.covida.covidacore.components;
 
+import de.dfki.covida.covidacore.data.Annotation;
+
 /**
  *
  * @author Tobias
@@ -11,6 +13,10 @@ package de.dfki.covida.covidacore.components;
 public interface IVideoComponent {
     
     public String getSource();
+
+    public String getTitle();
+
+    public void load(Annotation annotation);
     
     
 }
