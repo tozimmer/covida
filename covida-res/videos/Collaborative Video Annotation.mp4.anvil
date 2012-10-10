@@ -1,0 +1,58 @@
+<annotation>
+<head>
+<specification src="..\covida-res\videos\Collaborative Video Annotation.mp4_spec.xml"/>
+<video src="..\covida-res\videos\Collaborative Video Annotation.mp4"/>
+</head>
+<body>
+<track name="main" type="primary">
+<el end="456343" index="0" start="455322">
+<token>Data Test DFKI</token>
+<point>24,30</point>
+<point>98,32</point>
+<point>100,121</point>
+<point>22,119</point>
+<point>24,30</point>
+</el>
+<el end="456343" index="1" start="455322">
+<token>Data Test DFKI</token>
+<point>24,30</point>
+<point>98,32</point>
+<point>100,121</point>
+<point>22,119</point>
+<point>24,30</point>
+</el>
+<el end="456343" index="2" start="455322">
+<token>Data Test DFKI</token>
+<point>24,30</point>
+<point>98,32</point>
+<point>100,121</point>
+<point>22,119</point>
+<point>24,30</point>
+</el>
+<el end="455332" index="3" start="455322">
+<token>Data Test DFKI </token>
+<point>24,30</point>
+<point>98,32</point>
+<point>100,121</point>
+<point>22,119</point>
+<point>24,30</point>
+</el>
+<el end="455332" index="4" start="455322">
+<token>Data Test DFKI Data Test DFKI </token>
+<point>24,30</point>
+<point>98,32</point>
+<point>100,121</point>
+<point>22,119</point>
+<point>24,30</point>
+</el>
+<el end="455332" index="5" start="455322">
+<token>Data Test DFKI </token>
+<point>24,30</point>
+<point>98,32</point>
+<point>100,121</point>
+<point>22,119</point>
+<point>24,30</point>
+</el>
+</track>
+</body>
+</annotation>

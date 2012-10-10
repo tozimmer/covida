@@ -45,6 +45,7 @@ import de.dfki.covida.visualjme2.animations.DragAnimation;
 import de.dfki.covida.visualjme2.animations.ResetAnimation;
 import de.dfki.covida.visualjme2.animations.ScaleAnimation;
 import de.dfki.covida.visualjme2.components.annotation.AnnotationClipboard;
+import de.dfki.covida.visualjme2.components.annotation.AnnotationSearchField;
 import de.dfki.covida.visualjme2.components.annotation.GarbadgeComponent;
 import de.dfki.covida.visualjme2.components.video.VideoComponent;
 import de.dfki.covida.visualjme2.components.video.fields.InfoFieldComponent;
@@ -92,7 +93,7 @@ public class TextComponent extends JMEComponent implements IControlButton {
     private float ANIMATIONTIME;
     private Vector3f dragEndPosition;
     private UUID uuid;
-        /**
+    /**
      * Default {@link ColorRGBA}
      */
     public static final ColorRGBA defaultColor = new ColorRGBA(1, 1, 1, 1);
@@ -136,8 +137,13 @@ public class TextComponent extends JMEComponent implements IControlButton {
         }
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, txt));
     }
-    
-    public void setAnnotationUUID(UUID uuid){
+
+    /**
+     * Sets uuid of object which should be loaded on touch dead
+     * 
+     * @param uuid {@link UUID} of {@link Annotation} / {@link VideoComponent}
+     */
+    public void setLoadUUID(UUID uuid) {
         this.uuid = uuid;
     }
 
@@ -294,7 +300,7 @@ public class TextComponent extends JMEComponent implements IControlButton {
                     1.0f, ANIMATIONTIME);
             GameTaskQueueManager.getManager().update(new AddControllerCallable(
                     txt, controller));
-            if(action.equals(ActionName.COPY)){
+            if (action.equals(ActionName.COPY)) {
                 dragEndPosition = new Vector3f(x, y, 0);
                 toggle();
             }
@@ -324,31 +330,40 @@ public class TextComponent extends JMEComponent implements IControlButton {
                         && !(comp instanceof InfoFieldComponent)
                         && !(comp instanceof VideoComponent)
                         && !(comp instanceof AnnotationClipboard)
+                        && !(comp instanceof AnnotationSearchField)
                         && !(comp instanceof GarbadgeComponent)) {
                     inAreacomponents.remove(inAreacomponents.lastKey());
                     if (!inAreacomponents.isEmpty()) {
                         comp = inAreacomponents.get(inAreacomponents.lastKey());
-                    }
-                }
-                if (comp instanceof VideoComponent) {
-                    VideoComponent video = (VideoComponent) comp;
-                    video.hwrAction(text);
-                } else if (comp instanceof InfoFieldComponent) {
-                    InfoFieldComponent info = (InfoFieldComponent) comp;
-                    info.getVideo().hwrAction(text);
-                } else if (comp instanceof AnnotationClipboard) {
-                    AnnotationClipboard clipboard = (AnnotationClipboard) comp;
-                    clipboard.hwrAction(text);
-                } else if (comp instanceof GarbadgeComponent){
-                    if(component instanceof VideoComponent){
-                        
-                    }else if(component instanceof AnnotationClipboard){
-                        
+                        if (comp instanceof VideoComponent) {
+                            VideoComponent video = (VideoComponent) comp;
+                            video.hwrAction(text);
+                        } else if (comp instanceof InfoFieldComponent) {
+                            InfoFieldComponent info = (InfoFieldComponent) comp;
+                            info.getVideo().hwrAction(text);
+                        } else if (comp instanceof AnnotationClipboard) {
+                            AnnotationClipboard clipboard = (AnnotationClipboard) comp;
+                            clipboard.hwrAction(text);
+                        } else if (comp instanceof GarbadgeComponent) {
+                            if (component instanceof VideoComponent) {
+                            } else if (component instanceof AnnotationClipboard) {
+                            }
+                        } else if (comp instanceof AnnotationSearchField) {
+                            AnnotationSearchField search 
+                                    = (AnnotationSearchField) comp;
+                            search.hwrAction(text);
+                        }
                     }
                 }
             }
-        }else if(action.equals(ActionName.LOAD)){
+        } else if (action.equals(ActionName.LOAD)) {
             AnnotationStorage.getInstance().load(uuid);
+        } else if (action.equals(ActionName.LOADLIST)) {
+            if(component instanceof AnnotationSearchField){
+                AnnotationSearchField search 
+                        = (AnnotationSearchField) component;
+                search.displayAnnotationList(uuid);
+            }
         }
     }
 
@@ -369,5 +384,9 @@ public class TextComponent extends JMEComponent implements IControlButton {
     @Override
     public boolean getEnabled() {
         return touchable;
+    }
+
+    public UUID getLoadUUID() {
+        return uuid;
     }
 }

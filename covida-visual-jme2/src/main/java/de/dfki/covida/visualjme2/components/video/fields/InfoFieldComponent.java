@@ -390,6 +390,10 @@ public class InfoFieldComponent extends JMEComponent {
         setVideoSource(AnnotationStorage.getInstance().getAnnotationData(video).videoSource);
         setShapePoints(annotation.shapePoints);
         setShapeType(annotation.shapeType);
+        String[] split = annotation.description.split(" ");
+        for(String part : split){
+            drawHwrResult(part);
+        }
     }
 
     /**

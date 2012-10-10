@@ -87,7 +87,11 @@ public enum ActionName {
     /**
      * Load annotation action.
      */
-    LOAD;
+    LOAD,
+    /**
+     * Load annotation list action.
+     */
+    LOADLIST;
 
     @Override
     public String toString() {

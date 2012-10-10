@@ -532,16 +532,6 @@ public final class VideoComponent extends JMEComponent implements
     }
 
     /**
-     * Loads annotation data into InfoField.
-     *
-     * @param index Index of the annotation to load.
-     */
-    public void loadAnnotationData(int index) {
-        infoField.loadData(index);
-        attachAnnotation();
-    }
-
-    /**
      * Shows AnnotationList from this instance of VideoComponent.
      *
      */
@@ -763,15 +753,15 @@ public final class VideoComponent extends JMEComponent implements
         video.setHWR(hwr);
         infoField.drawHwrResult(hwr);
     }
-    
-     @Override
+
+    @Override
     public void load(Annotation annotation) {
         attachAnnotation();
-        pause();
+        clearAnnotation();
         infoField.setAnnotationData(annotation);
         video.setTimePosition(annotation.time_start);
-        video.clearDrawing();
         video.setShape(annotation.shapePoints);
+        video.resumeAndPause();
     }
 
     /**
@@ -913,5 +903,11 @@ public final class VideoComponent extends JMEComponent implements
 
     boolean isPlaying() {
         return video.isPlaying();
+    }
+
+    private void clearAnnotation() {
+        video.clearDrawing();
+        video.clearShape();
+        infoField.resetInfo();
     }
 }

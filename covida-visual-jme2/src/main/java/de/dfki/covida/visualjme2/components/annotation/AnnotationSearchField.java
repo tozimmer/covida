@@ -32,11 +32,14 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.shape.Quad;
 import com.jme.util.GameTaskQueueManager;
+import com.jmex.angelfont.BitmapFont.Align;
 import de.dfki.covida.covidacore.components.IControlableComponent;
 import de.dfki.covida.covidacore.components.IVideoComponent;
 import de.dfki.covida.covidacore.data.Annotation;
+import de.dfki.covida.covidacore.data.AnnotationData;
 import de.dfki.covida.covidacore.data.AnnotationStorage;
 import de.dfki.covida.covidacore.utils.ActionName;
+import de.dfki.covida.covidacore.utils.VideoUtils;
 import de.dfki.covida.visualjme2.animations.CloseAnimation;
 import de.dfki.covida.visualjme2.animations.OpenAnimation;
 import de.dfki.covida.visualjme2.components.FieldComponent;
@@ -50,6 +53,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Component which displays annotation dataList of VideoComponent.
@@ -71,10 +75,12 @@ public class AnnotationSearchField extends FieldComponent implements
      * List of entries {@link TextComponent}
      */
     protected ArrayList<TextComponent> entries;
+    private Map<AnnotationData, List<Annotation>> result;
+    private ArrayList<TextComponent> annotationList;
 
     /**
      * Creates a new instance of {@link AnnotationSearchField}
-     * 
+     *
      * @param resource Image resource location as {@link String}
      * @param width {@link Integer}
      * @param height {@link Integer}
@@ -85,11 +91,11 @@ public class AnnotationSearchField extends FieldComponent implements
         this.height = height;
         this.image = resource;
         setDrawable(true);
-        hwrResults = new ArrayList<>();
         entriesMapping = new ArrayList<>();
         entryMap = new HashMap<>();
         entries = new ArrayList<>();
         hwr = new ArrayList<>();
+        annotationList = new ArrayList<>();
         super.setAlwaysOnTop(true);
         setLocalScale(new Vector3f(1, 1, 1));
         initTextures();
@@ -102,17 +108,12 @@ public class AnnotationSearchField extends FieldComponent implements
         caption.setText("Write here for annotation search:");
         caption.setFont(2);
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, caption.node));
-        addSpacer(x, (int) (getTextY(0) - FONT_SIZE*1.4f), 0,
+        addSpacer(x, (int) (getTextY(0) - FONT_SIZE * 1.4f), 0,
                 (int) (quad.getWidth() / 1.1f), TEXT_SPACER);
         x = (int) (getWidth() / 9.f);
         addSpacer(x, 0, 90, (int) (quad.getHeight() / 1.1f), TEXT_SPACER);
         x = (int) -(getWidth() / 4.f);
         addSpacer(x, 0, 90, (int) (quad.getHeight() / 1.1f), TEXT_SPACER);
-    }
-
-    @Override
-    public void clearHwrResults() {
-        hwrResults.clear();
     }
 
     @Override
@@ -184,26 +185,88 @@ public class AnnotationSearchField extends FieldComponent implements
     public void hwrAction(String hwr) {
         if (open) {
             hwrResults.clear();
-            hwrResults.add(hwr);
-            update();
+            for (String part : hwr.split(" ")) {
+                hwrResults.add(part);
+                update();
+            }
         }
     }
 
     @Override
     protected void update() {
-        for (int i = 0; i < hwrResults.size(); i++) {
-            int x = (int) (-width / 2.5f);
-            TextComponent hwrText = new TextComponent(this, ActionName.LOAD);
+        result = AnnotationStorage.getInstance().search(hwrResults);
+        int i = 0;
+        int x = (int) (-width / 2.5f);
+        for (String part : hwrResults) {
+
+            TextComponent hwrText = new TextComponent(this, ActionName.NONE);
             hwrText.setLocalTranslation(x, getTextY(2 + i), 0);
             GameTaskQueueManager.getManager().update(new AttachChildCallable(node, hwrText.node));
             hwr.add(hwrText);
-            Map<IVideoComponent, List<Annotation>> result = 
-                    AnnotationStorage.getInstance().search(hwrResults.get(i));
-            hwr.get(i).setText(hwrResults.get(i));
+            hwr.get(i).setText(part);
             hwr.get(i).setSize(FONT_SIZE);
             hwr.get(i).setFont(1);
             hwr.get(i).setColor(new ColorRGBA(0.75f, 0.75f, 0.75f, 0));
             hwr.get(i).fadeIn((float) i * 1.f + 1.f);
+            i++;
+        }
+        for (TextComponent text : entries) {
+            text.detach();
+        }
+        entries = new ArrayList<>();
+        x = (int) (-quad.getWidth() / 4.15f);
+        i = 0;
+        for (AnnotationData data : result.keySet()) {
+            String title = data.title;
+            log.debug("draw title: " + title);
+            TextComponent titleText = new TextComponent(this, ActionName.LOADLIST);
+            titleText.setLocalTranslation(x, getTextY(i + 2), 0);
+            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, titleText.node));
+            titleText.setFont(1);
+            titleText.setSize(FONT_SIZE);
+            titleText.setAlign(Align.Left);
+            titleText.setText(title);
+            titleText.setTouchable(true);
+            titleText.setLoadUUID(data.uuid);
+            entries.add(titleText);
+        }
+        if (!entries.isEmpty()) {
+            displayAnnotationList(entries.get(0).getLoadUUID());
+        } else {
+            TextComponent titleText = new TextComponent(this, ActionName.NONE);
+            titleText.setLocalTranslation(x, getTextY(i + 2), 0);
+            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, titleText.node));
+            titleText.setFont(1);
+            titleText.setSize(FONT_SIZE);
+            titleText.setAlign(Align.Left);
+            titleText.setText("Nothing found.");
+            entries.add(titleText);
+        }
+    }
+
+    public void displayAnnotationList(UUID uuid) {
+        int x = (int) (quad.getWidth() / 7.85f);
+        for (TextComponent text : annotationList) {
+            text.detach();
+        }
+        annotationList = new ArrayList<>();
+        for (AnnotationData data : result.keySet()) {
+            if (data.uuid.equals(uuid)) {
+                for (Annotation annotation : result.get(data)) {
+                    String entry = VideoUtils.getTimeCode(annotation.time_start);
+                    TextComponent textOverlay = new TextComponent(this, ActionName.LOAD);
+                    textOverlay.setLocalTranslation(x, getTextY(annotationList.size() + 2), 0);
+                    GameTaskQueueManager.getManager().update(new AttachChildCallable(node, textOverlay.node));
+                    textOverlay.setText(entry);
+                    textOverlay.setFont(1);
+                    textOverlay.setSize(FONT_SIZE);
+                    textOverlay.setAlign(Align.Left);
+                    textOverlay.fadeIn((float) annotationList.size() * 1.f + 1.f);
+                    textOverlay.setLoadUUID(annotation.uuid);
+                    textOverlay.setTouchable(true);
+                    annotationList.add(textOverlay);
+                }
+            }
         }
     }
 }

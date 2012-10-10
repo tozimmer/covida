@@ -88,7 +88,7 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
 
     /**
      * Draws {@link String} on the {@link Graphics2D}
-     * 
+     *
      * @param str {@link String}
      * @param g2d {@link Graphics2D}
      * @param centered {@link Boolean}
@@ -132,7 +132,7 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
 
     /**
      * Draws {@link String} on the {@link Graphics2D}
-     * 
+     *
      * @param g2d {@link Graphics2D}
      * @param line {@link String}
      * @param lineW {@link Integer}
@@ -161,7 +161,7 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
 
     /**
      * Draws {@code pointsToDraw} on {@link Graphics2D}
-     * 
+     *
      * @param g2d {@link Graphics2D}
      */
     private void drawPoints(Graphics2D g2d) {
@@ -184,7 +184,7 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
 
     /**
      * Enables / disables time code overlay
-     * 
+     *
      * @param timeout ms how long the overlay is displayed
      */
     public void enableTimeCodeOverlay(long timeout) {
@@ -193,7 +193,7 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
 
     /**
      * Enables / disables the tile overlay
-     * 
+     *
      * @param enabled if true the title overlay is enabled
      */
     public void setTitleOverlayEnabled(boolean enabled) {
@@ -202,7 +202,7 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
 
     /**
      * Sets the timecode
-     * 
+     *
      * @param timecode {@link String}
      */
     public synchronized void setTimecode(String timecode) {
@@ -211,7 +211,7 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
 
     /**
      * Adds a point to {@code pointsToDraw}
-     * 
+     *
      * @param point {@link Point}
      */
     public void draw(Point point) {
@@ -221,7 +221,7 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
 
     /**
      * Return the video title as {@link String}
-     * 
+     *
      * @return video title
      */
     public String getTitle() {
@@ -230,7 +230,7 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
 
     /**
      * Returns the video image
-     * 
+     *
      * @return {@link BufferedImage}
      */
     public BufferedImage getVideoImage() {
@@ -288,7 +288,7 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
     public synchronized void setShape(List<Point> points) {
         this.shapePoints = points;
         this.pointsToDraw.clear();
-        for(Point point : points){
+        for (Point point : points) {
             pointsToDraw.add(point);
         }
     }

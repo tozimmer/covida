@@ -124,6 +124,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * {@link MediaPlayer}
      */
     protected final MediaPlayerFactory mediaPlayerFactory;
+    private boolean toPause;
 
     /**
      * Creates an instance of {@link AbstractVideoHandler}
@@ -404,6 +405,31 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     }
 
     /**
+     * Sets the time position of the video in percentage.
+     *
+     * Note that only the part from {@code timeStart) to {
+     *
+     * @timeEnd} is considered.
+     * @see #setTimeRange(long, long)
+     *
+     * @param percentage
+     */
+    public void setTimePostion(float percentage) {
+        if (mediaPlayer == null) {
+            return;
+        }
+        if (isTimeRanged) {
+            if (isReady()) {
+                mediaPlayer.setTime((long) ((percentage * (getMaxTime() - timeStart)) + timeStart));
+            }
+        } else {
+            if (isReady()) {
+                mediaPlayer.setTime((long) (percentage * getMaxTime()));
+            }
+        }
+    }
+
+    /**
      * Returns the video source as {@link String}.
      *
      * @return video source as {@link String}
@@ -428,31 +454,6 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      */
     public int getHeight() {
         return height;
-    }
-
-    /**
-     * Sets the time position of the video in percentage.
-     *
-     * Note that only the part from {@code timeStart) to {
-     *
-     * @timeEnd} is considered.
-     * @see #setTimeRange(long, long)
-     *
-     * @param percentage
-     */
-    public void setTimePostion(float percentage) {
-        if (mediaPlayer == null) {
-            return;
-        }
-        if (isTimeRanged) {
-            if (isReady()) {
-                mediaPlayer.setTime((long) ((percentage * (getMaxTime() - timeStart)) + timeStart));
-            }
-        } else {
-            if (isReady()) {
-                mediaPlayer.setTime((long) (percentage * getMaxTime()));
-            }
-        }
     }
 
     /**
@@ -628,10 +629,12 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
         if (slider != null) {
             slider.setSlider(f);
         }
-//        if (controls != null) {
-//            controls.highlightPlay();
-//        }
-        isPlaying = true;
+        if (toPause) {
+            pause();
+            isPlaying = false;
+        } else {
+            isPlaying = true;
+        }
     }
 
     /**
@@ -815,6 +818,11 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
         if (isRepeat()) {
             mediaPlayer.playMedia(getSource());
         }
+    }
+
+    public void resumeAndPause() {
+        resume();
+        toPause = true;
     }
 
     /**

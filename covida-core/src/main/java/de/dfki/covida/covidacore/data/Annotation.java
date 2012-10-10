@@ -45,10 +45,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  */
 @XmlRootElement(name = "annotation")
 public class Annotation implements Serializable {
-
-    public Annotation() {
-        this.uuid = UUID.randomUUID();
-    }
+    
     /**
      * serialVersionUID
      */
@@ -85,6 +82,10 @@ public class Annotation implements Serializable {
      */
     @XmlElement(name = "descriptions")
     public String description;
+    
+    public Annotation() {
+        this.uuid = UUID.randomUUID();
+    }
 }
 
 /**

@@ -66,7 +66,6 @@ public class AnnotationClipboard extends FieldComponent implements
         this.height = height;
         this.image = resource;
         setDrawable(true);
-        hwrResults = new ArrayList<>();
         hwr = new ArrayList<>();
         super.setAlwaysOnTop(true);
         setLocalScale(new Vector3f(1, 1, 1));
@@ -165,7 +164,7 @@ public class AnnotationClipboard extends FieldComponent implements
     @Override
     public void hwrAction(String hwr) {
         if (open) {
-            hwrResults.add(hwr);
+            hwrResults.add(hwr); 
             update();
         }
     }

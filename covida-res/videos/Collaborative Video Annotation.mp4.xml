@@ -1,46 +1,86 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <data>
-    <videoSource>../covida-res/videos/Collaborative Video Annotation.mp4</videoSource>
-    <title>Covida Demo</title>
+    <uuid>9c674f2d-947e-457d-a2e1-1576866a99bf</uuid>
+    <videoSource>..\covida-res\videos\Collaborative Video Annotation.mp4</videoSource>
+    <title>CoVidA Demo</title>
     <annotations>
         <annotation>
             <uuid>097a5683-bd8e-415a-b569-ca44bb217e5b</uuid>
-            <time_start>455322</time_start>
-            <time_end>456343</time_end>
+            <time_start>4553220</time_start>
+            <time_end>4563430</time_end>
             <shapePoints>
                 <shapePoint>24,30</shapePoint>
                 <shapePoint>98,32</shapePoint>
-                <shapePoint>100,121</shapePoint>
-                <shapePoint>22,119</shapePoint>
+                <shapePoint>100,245</shapePoint>
+                <shapePoint>300,119</shapePoint>
                 <shapePoint>24,30</shapePoint>
             </shapePoints>
             <descriptions>Data Test DFKI</descriptions>
         </annotation>
         <annotation>
             <uuid>4a992dcf-90c0-49de-be08-112cf1f381b3</uuid>
-            <time_start>455322</time_start>
-            <time_end>456343</time_end>
+            <time_start>55550000</time_start>
+            <time_end>55550000</time_end>
             <shapePoints>
                 <shapePoint>24,30</shapePoint>
-                <shapePoint>98,32</shapePoint>
+                <shapePoint>390,32</shapePoint>
                 <shapePoint>100,121</shapePoint>
-                <shapePoint>22,119</shapePoint>
+                <shapePoint>22,299</shapePoint>
                 <shapePoint>24,30</shapePoint>
             </shapePoints>
             <descriptions>Data Test DFKI</descriptions>
         </annotation>
         <annotation>
             <uuid>bdf91dd7-7383-4783-9c9a-61a08b5ec263</uuid>
-            <time_start>455322</time_start>
-            <time_end>456343</time_end>
+            <time_start>250000</time_start>
+            <time_end>250000</time_end>
             <shapePoints>
-                <shapePoint>24,30</shapePoint>
+                <shapePoint>50,30</shapePoint>
+                <shapePoint>98,32</shapePoint>
+                <shapePoint>100,121</shapePoint>
+                <shapePoint>22,119</shapePoint>
+                <shapePoint>50,30</shapePoint>
+            </shapePoints>
+            <descriptions>Data Test DFKI</descriptions>
+        </annotation>
+        <annotation>
+            <uuid>919f7c6b-eef2-43ab-aedb-ec34e72d75bf</uuid>
+            <time_start>0</time_start>
+            <time_end>0</time_end>
+            <shapePoints>
+                <shapePoint>24,333</shapePoint>
+                <shapePoint>98,32</shapePoint>
+                <shapePoint>100,121</shapePoint>
+                <shapePoint>22,119</shapePoint>
+                <shapePoint>24,333</shapePoint>
+            </shapePoints>
+            <descriptions>Data Test DFKI </descriptions>
+        </annotation>
+        <annotation>
+            <uuid>e91ec754-e9ac-4296-b480-6be41fb2e84b</uuid>
+            <time_start>8000000</time_start>
+            <time_end>8000000</time_end>
+            <shapePoints>
+                <shapePoint>200,400</shapePoint>
                 <shapePoint>98,32</shapePoint>
                 <shapePoint>100,121</shapePoint>
                 <shapePoint>22,119</shapePoint>
                 <shapePoint>24,30</shapePoint>
             </shapePoints>
-            <descriptions>Data Test DFKI</descriptions>
+            <descriptions>Data Test DFKI Data Test DFKI </descriptions>
+        </annotation>
+        <annotation>
+            <uuid>67b11465-7769-444f-9f11-39cf03986238</uuid>
+            <time_start>10000000</time_start>
+            <time_end>10000000</time_end>
+            <shapePoints>
+                <shapePoint>24,30</shapePoint>
+                <shapePoint>98,451</shapePoint>
+                <shapePoint>100,121</shapePoint>
+                <shapePoint>22,119</shapePoint>
+                <shapePoint>24,30</shapePoint>
+            </shapePoints>
+            <descriptions>Data Test DFKI </descriptions>
         </annotation>
     </annotations>
 </data>

@@ -32,6 +32,7 @@ import java.awt.Point;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -63,6 +64,11 @@ public class AnnotationData implements Serializable {
      */
     private static final long serialVersionUID = 5408416424492049902L;
     /**
+     * Unique id
+     */
+    @XmlElement(name = "uuid")
+    public final UUID uuid;
+    /**
      * Video source as {@link String}
      */
     @XmlElement(name = "videoSource")
@@ -88,6 +94,7 @@ public class AnnotationData implements Serializable {
      */
     private AnnotationData() {
         annotations = new ArrayList<>();
+        this.uuid = UUID.randomUUID();
     }
 
     /**

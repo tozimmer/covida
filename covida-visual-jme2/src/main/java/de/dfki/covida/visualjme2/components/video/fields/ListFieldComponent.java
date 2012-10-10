@@ -268,7 +268,7 @@ public class ListFieldComponent extends JMEComponent {
                 entryTextOverlay.setText(timeCode);
                 entryTextOverlay.setFont(1);
                 entryTextOverlay.setTouchable(true);
-                entryTextOverlay.setAnnotationUUID(annotation.uuid);
+                entryTextOverlay.setLoadUUID(annotation.uuid);
                 entryTextOverlay.setSize((int) (getFontSize()));
                 entryTextOverlay.fadeIn((float) ANIMATION_DURATION / 125.f);
                 GameTaskQueueManager.getManager().update(new AttachChildCallable(node, entryTextOverlay.node));
@@ -284,7 +284,7 @@ public class ListFieldComponent extends JMEComponent {
                 entryTextOverlay.setFont(1);
                 entryTextOverlay.setSize((int) (getFontSize() / 2));
                 entryTextOverlay.setTouchable(true);
-                entryTextOverlay.setAnnotationUUID(annotation.uuid);
+                entryTextOverlay.setLoadUUID(annotation.uuid);
                 entryTextOverlay.fadeIn((float) ANIMATION_DURATION / 125.f);
                 GameTaskQueueManager.getManager().update(new AttachChildCallable(node, entryTextOverlay.node));
                 entries.add(entryTextOverlay);

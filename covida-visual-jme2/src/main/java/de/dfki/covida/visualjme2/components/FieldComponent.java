@@ -119,6 +119,7 @@ public abstract class FieldComponent extends JMEComponent {
 
     public FieldComponent(String name) {
         super(name);
+        hwrResults = new ArrayList<>();
     }
 
     protected final void initTextures() {
@@ -135,10 +136,6 @@ public abstract class FieldComponent extends JMEComponent {
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, quad));
 
         overlay = new DrawingOverlay("Drawing", width, height);
-        
-        for (int i = 0; i < 200; i++) {
-            overlay.updateImage(i, i, 1);
-        }
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, overlay));
         
         // Spacer
@@ -163,10 +160,6 @@ public abstract class FieldComponent extends JMEComponent {
      * Open animation of the DisplayInfoComponent
      */
     public abstract void open();
-
-    public void clearHwrResults() {
-        hwrResults.clear();
-    }
 
     public void reset() {
         // TODO
