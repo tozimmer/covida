@@ -631,6 +631,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
         }
         if (toPause) {
             pause();
+            toPause = false;
             isPlaying = false;
         } else {
             isPlaying = true;

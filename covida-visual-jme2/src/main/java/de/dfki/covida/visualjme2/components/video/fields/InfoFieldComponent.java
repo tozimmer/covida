@@ -392,7 +392,9 @@ public class InfoFieldComponent extends JMEComponent {
         setShapeType(annotation.shapeType);
         String[] split = annotation.description.split(" ");
         for (String part : split) {
-            drawHwrResult(part);
+            if (!part.equals("") && !part.equals(" ")) {
+                drawHwrResult(part);
+            }
         }
     }
 
@@ -506,8 +508,7 @@ public class InfoFieldComponent extends JMEComponent {
         if (AnnotationStorage.getInstance().getAnnotationData(video).size() > index) {
             resetInfo();
             video.draw(AnnotationStorage.getInstance().getAnnotationData(video).annotations.get(index).shapePoints);
-            video.setTimePosition(AnnotationStorage.getInstance()
-                    .getAnnotationData(video).annotations.get(index).time_start);
+            video.setTimePosition(AnnotationStorage.getInstance().getAnnotationData(video).annotations.get(index).time_start);
             setTime(AnnotationStorage.getInstance().getAnnotationData(video).annotations.get(index).time_start);
             video.pause();
             setTitle(AnnotationStorage.getInstance().getAnnotationData(video).title);
@@ -515,7 +516,9 @@ public class InfoFieldComponent extends JMEComponent {
             descriptions.addAll(Arrays.asList(
                     AnnotationStorage.getInstance().getAnnotationData(video).annotations.get(index).description.split(" ")));
             for (String description : descriptions) {
-                drawHwrResult(description);
+                if (!description.equals("") && !description.equals(" ")) {
+                    drawHwrResult(description);
+                }
             }
             AnnotationStorage.getInstance().getAnnotationData(video).annotations.remove(index);
         } else {

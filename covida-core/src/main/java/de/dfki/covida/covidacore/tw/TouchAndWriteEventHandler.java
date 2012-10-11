@@ -290,9 +290,10 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
             if (component.isDrawable()) {
                 for (Shape shape : event.getDetectedShapes()) {
                     for (Point point : shape.getPoints()) {
-                        log.debug("Shape point : {},{}",point.x,point.y);
+//                        log.debug("Shape point : {},{}",point.x,point.y);
                         if (component.inArea(point.x, point.y)) {
                             components.put(component.getZPosition(), component);
+                            break;
                         }
                     }
                 }

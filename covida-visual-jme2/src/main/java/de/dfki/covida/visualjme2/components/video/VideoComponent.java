@@ -747,7 +747,9 @@ public final class VideoComponent extends JMEComponent implements
             video.setShape(points);
             setNewAnnotationData();
         }
-        video.setHWR(hwr);
+        video.clearDrawing();
+        video.resumeAndPause();
+//        video.setHWR(hwr);
         infoField.drawHwrResult(hwr);
     }
 
