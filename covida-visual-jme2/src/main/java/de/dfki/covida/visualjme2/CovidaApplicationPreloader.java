@@ -137,15 +137,15 @@ public class CovidaApplicationPreloader implements Runnable {
 //        application.addComponent(searchButton2);
 //        search2.close();
         
-        ControlButton garbadge = new ControlButton(ActionName.NONE,
+        ControlButton garbadge = new ControlButton(ActionName.GARBADGE,
                 null, "media/textures/garbadge.png",
                 "media/textures/garbadge.png", 64, 64);
         application.addComponent(garbadge);
         
-        ControlButton openNew = new ControlButton(ActionName.OPEN,
-                null, "media/textures/new.png",
-                "media/textures/new.png", 64, 64);
-        application.addComponent(openNew);
+//        ControlButton openNew = new ControlButton(ActionName.OPEN,
+//                null, "media/textures/new.png",
+//                "media/textures/new.png", 64, 64);
+//        application.addComponent(openNew);
 
     }
 

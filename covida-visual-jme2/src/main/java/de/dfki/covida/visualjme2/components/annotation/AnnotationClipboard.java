@@ -70,7 +70,7 @@ public class AnnotationClipboard extends FieldComponent implements
         super.setAlwaysOnTop(true);
         setLocalScale(new Vector3f(1, 1, 1));
         initTextures();
-        textBeginY = (int) (quad.getWidth() / 2.0f - FONT_SIZE);
+        textBeginY = (int) (quad.getWidth() / 2.2f - FONT_SIZE);
         int x = (int) (getWidth() / 4.f);
         TextComponent caption = new TextComponent(this, ActionName.NONE);
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, caption.node));

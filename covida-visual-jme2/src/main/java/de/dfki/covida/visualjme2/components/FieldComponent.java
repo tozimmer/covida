@@ -30,6 +30,7 @@ package de.dfki.covida.visualjme2.components;
 import com.jme.animation.SpatialTransformer;
 import com.jme.image.Texture;
 import com.jme.math.Vector2f;
+import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.state.TextureState;
@@ -40,6 +41,7 @@ import com.jmex.awt.swingui.ImageGraphics;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
 import de.dfki.covida.visualjme2.utils.DetachChildCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
+import java.awt.Point;
 import java.util.*;
 
 /**
@@ -167,12 +169,11 @@ public abstract class FieldComponent extends JMEComponent {
     
     @Override
     public final void draw(int x, int y) {
-        log.debug("Draw : {},{}",x,y);
-        int localX = x + getPosX();
-        int localY = (int) display.getY() - y;
-        localY += getPosY();
-        localX += getDimension().getWidth() / 2;
-        localY += getDimension().getHeight() / 2;
+        Vector3f local = getLocal(x, y);
+        int localX = (int) local.x;
+        int localY = (int) local.y;
+        localX += getDimension().getWidth();
+        localY += getDimension().getHeight();
         overlay.updateImage(localX, localY, 1);
     }
     

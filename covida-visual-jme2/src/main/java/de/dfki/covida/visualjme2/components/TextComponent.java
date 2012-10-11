@@ -165,6 +165,7 @@ public class TextComponent extends JMEComponent implements IControlButton {
     public void fadeOut(float time) {
         txt.setDefaultColor(color);
         TimedLifeController fader = new TimedLifeController(time) {
+
             @Override
             public void updatePercentage(float percentComplete) {
                 color.a = 1 - percentComplete;
@@ -177,6 +178,7 @@ public class TextComponent extends JMEComponent implements IControlButton {
     public void fadeIn(float time) {
         txt.setDefaultColor(color);
         TimedLifeController fader = new TimedLifeController(time) {
+
             @Override
             public void updatePercentage(float percentComplete) {
                 color.a = percentComplete;
@@ -273,7 +275,6 @@ public class TextComponent extends JMEComponent implements IControlButton {
     public void dragEndAction(int id, int x, int y, int dx, int dy) {
         if (action.equals(ActionName.COPY)) {
             dragEndPosition = node.getWorldTranslation();
-            toggle();
             CovidaSpatialController controller =
                     ResetAnimation.getController(node, defaultScale,
                     defaultRotation, defaultTranslation);
@@ -294,7 +295,7 @@ public class TextComponent extends JMEComponent implements IControlButton {
 
     @Override
     public void touchDeadAction(int id, int x, int y) {
-        if (!action.equals(ActionName.COPY) && getParent() != null) {
+        if (getParent() != null) {
             SpatialTransformer controller = ScaleAnimation.getController(txt,
                     1.0f, ANIMATIONTIME);
             GameTaskQueueManager.getManager().update(new AddControllerCallable(
@@ -302,8 +303,7 @@ public class TextComponent extends JMEComponent implements IControlButton {
             if (action.equals(ActionName.COPY)) {
                 dragEndPosition = new Vector3f(x, y, 0);
                 toggle();
-            }
-            if (inArea(x, y)) {
+            } else if (inArea(x, y)) {
                 toggle();
             }
         }
@@ -317,52 +317,41 @@ public class TextComponent extends JMEComponent implements IControlButton {
             SortedMap<Integer, ITouchAndWriteComponent> inAreacomponents =
                     new TreeMap<>();
             for (ITouchAndWriteComponent comp : components) {
-                if (comp.inArea((int) dragEndPosition.x,
+                if (((comp instanceof InfoFieldComponent)
+                        || (comp instanceof VideoComponent)
+                        || (comp instanceof AnnotationClipboard)
+                        || (comp instanceof AnnotationSearchField)
+                        || (comp instanceof ControlButton))
+                        && comp.inArea((int) dragEndPosition.x,
                         (int) (dragEndPosition.y))) {
-                    log.debug("Comp {}",comp);
                     inAreacomponents.put(comp.getZPosition(), comp);
                 }
             }
             if (!inAreacomponents.isEmpty()) {
-                ITouchAndWriteComponent comp = inAreacomponents
-                        .get(inAreacomponents.lastKey());
-                while (!inAreacomponents.isEmpty()
-                        && !(comp instanceof InfoFieldComponent)
-                        && !(comp instanceof VideoComponent)
-                        && !(comp instanceof AnnotationClipboard)
-                        && !(comp instanceof AnnotationSearchField)
-                        && !(comp instanceof ControlButton)) {
-                    inAreacomponents.remove(inAreacomponents.lastKey());
-                    if (!inAreacomponents.isEmpty()) {
-                        comp = inAreacomponents.get(inAreacomponents.lastKey());
-                    }
-                }
-                if (!inAreacomponents.isEmpty()) {
-                    comp = inAreacomponents.get(inAreacomponents.lastKey());
-                    if (comp instanceof VideoComponent) {
-                        VideoComponent video = (VideoComponent) comp;
-                        video.hwrAction(text);
-                    } else if (comp instanceof InfoFieldComponent) {
-                        InfoFieldComponent info = (InfoFieldComponent) comp;
-                        info.getVideo().hwrAction(text);
-                    } else if (comp instanceof AnnotationClipboard) {
-                        AnnotationClipboard clipboard = (AnnotationClipboard) comp;
-                        clipboard.hwrAction(text);
-                    } else if (comp instanceof ControlButton) {
-                        ControlButton button = (ControlButton) comp;
-                        if (button.getAction().equals(ActionName.GARBADGE)) {
-                            if (component instanceof VideoComponent) {
-                                VideoComponent video = (VideoComponent) component;
-                                video.deleteDescription(this);
-                            } else if (component instanceof AnnotationClipboard) {
-                                AnnotationClipboard clipboard = (AnnotationClipboard) component;
-                                clipboard.deleteDescription(this);
-                            }
+                ITouchAndWriteComponent comp = inAreacomponents.get(inAreacomponents.lastKey());
+                if (comp instanceof VideoComponent) {
+                    VideoComponent video = (VideoComponent) comp;
+                    video.hwrAction(text);
+                } else if (comp instanceof InfoFieldComponent) {
+                    InfoFieldComponent info = (InfoFieldComponent) comp;
+                    info.getVideo().hwrAction(text);
+                } else if (comp instanceof AnnotationClipboard) {
+                    AnnotationClipboard clipboard = (AnnotationClipboard) comp;
+                    clipboard.hwrAction(text);
+                } else if (comp instanceof ControlButton) {
+                    ControlButton button = (ControlButton) comp;
+                    if (button.getAction().equals(ActionName.GARBADGE)) {
+                        if (component instanceof VideoComponent) {
+                            VideoComponent video = (VideoComponent) component;
+                            video.deleteDescription(this);
+                        } else if (component instanceof AnnotationClipboard) {
+                            AnnotationClipboard clipboard = (AnnotationClipboard) component;
+                            clipboard.deleteDescription(this);
                         }
-                    } else if (comp instanceof AnnotationSearchField) {
-                        AnnotationSearchField search = (AnnotationSearchField) comp;
-                        search.hwrAction(text);
                     }
+                } else if (comp instanceof AnnotationSearchField) {
+                    AnnotationSearchField search = (AnnotationSearchField) comp;
+                    search.hwrAction(text);
                 }
             }
         } else if (action.equals(ActionName.LOAD)) {

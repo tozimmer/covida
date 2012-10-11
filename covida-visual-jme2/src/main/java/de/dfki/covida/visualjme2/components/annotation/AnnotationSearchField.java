@@ -198,7 +198,6 @@ public class AnnotationSearchField extends FieldComponent implements
         int i = 0;
         int x = (int) (-width / 2.5f);
         for (String part : hwrResults) {
-
             TextComponent hwrText = new TextComponent(this, ActionName.NONE);
             hwrText.setLocalTranslation(x, getTextY(2 + i), 0);
             GameTaskQueueManager.getManager().update(new AttachChildCallable(node, hwrText.node));
@@ -232,7 +231,7 @@ public class AnnotationSearchField extends FieldComponent implements
         }
         if (!entries.isEmpty()) {
             displayAnnotationList(entries.get(0).getLoadUUID());
-        } else {
+        } else if(!hwrResults.isEmpty()){
             TextComponent titleText = new TextComponent(this, ActionName.NONE);
             titleText.setLocalTranslation(x, getTextY(i + 2), 0);
             GameTaskQueueManager.getManager().update(new AttachChildCallable(node, titleText.node));

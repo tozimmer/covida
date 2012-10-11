@@ -729,8 +729,9 @@ public final class VideoComponent extends JMEComponent implements
         int localX = (int) local.x;
         int localY = (int) local.y;
 //        localY += getPosY();
-//        localX += getDimension().getWidth() / 2;
-//        localY -= getDimension().getHeight() / 2;
+        localX += getDimension().getWidth() / 2;
+        localY = (int) (getDimension().getHeight() 
+                - (localY + getDimension().getHeight() /2));
         video.draw(new Point(localX, localY));
     }
 

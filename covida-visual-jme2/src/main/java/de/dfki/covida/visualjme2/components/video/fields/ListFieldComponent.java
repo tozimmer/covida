@@ -274,7 +274,7 @@ public class ListFieldComponent extends JMEComponent {
                 GameTaskQueueManager.getManager().update(new AttachChildCallable(node, entryTextOverlay.node));
                 entries.add(entryTextOverlay);
                 entryTextOverlay = new TextComponent(video, ActionName.LOAD);
-                entryTextOverlay.setLocalTranslation(0, getTextY(i + 1) - getFontSize() / 2, 0);
+                entryTextOverlay.setLocalTranslation(0, getTextY(i + 1) - getFontSize() / 1.5f, 0);
                 String[] split = annotation.description.split(" ");
                 if (split.length > 0) {
                     entryTextOverlay.setText(split[0]);
@@ -282,7 +282,7 @@ public class ListFieldComponent extends JMEComponent {
                     entryTextOverlay.setText(split[0] + " ...");
                 }
                 entryTextOverlay.setFont(1);
-                entryTextOverlay.setSize((int) (getFontSize() / 2));
+                entryTextOverlay.setSize((int) (getFontSize() / 1.5f));
                 entryTextOverlay.setTouchable(true);
                 entryTextOverlay.setLoadUUID(annotation.uuid);
                 entryTextOverlay.fadeIn((float) ANIMATION_DURATION / 125.f);
