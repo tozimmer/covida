@@ -51,6 +51,7 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
     private List<Point> drawedPoints;
     private List<Point> shapePoints;
     private Collection<Point> pointsToDraw;
+    private Collection<Point> shapeToDraw;
     private BufferedImage preloadFrame;
     private Dimension d;
     private Font f = new Font("Arial", Font.PLAIN, 20);
@@ -76,6 +77,7 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
         this.drawedPoints = new ArrayList<>();
         this.shapePoints = new ArrayList<>();
         this.pointsToDraw = new ConcurrentLinkedQueue<>();
+        shapeToDraw = new ConcurrentLinkedQueue<>();
         this.frame = GraphicsEnvironment.getLocalGraphicsEnvironment()
                 .getDefaultScreenDevice().getDefaultConfiguration()
                 .createCompatibleImage(width, height);
@@ -289,7 +291,7 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
         this.shapePoints = points;
         this.pointsToDraw.clear();
         for (Point point : points) {
-            pointsToDraw.add(point);
+            shapeToDraw.add(point);
         }
     }
 
@@ -306,12 +308,13 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
     @Override
     public synchronized void clearShape() {
         shapePoints = new ArrayList<>();
-        pointsToDraw.clear();
+        shapeToDraw.clear();
     }
 
     @Override
     public synchronized void clearDrawing() {
         drawedPoints = new ArrayList<>();
+        pointsToDraw.clear();
     }
 
     @Override
