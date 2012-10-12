@@ -249,7 +249,12 @@ public abstract class JMEComponent implements ITouchAndWriteComponent {
         Matrix4f store = new Matrix4f();
         node.getLocalToWorldMatrix(store);
         store = store.invert();
-        return store.mult(new Vector3f(x, y, 0));
+        Vector3f result = store.mult(new Vector3f(x, y, 0));
+        if(this instanceof TextComponent){
+            TextComponent text = (TextComponent) this;
+            result = result.add(new Vector3f(0,-text.getFontSize(),0));
+        }
+        return result;
     }
 
     /**
