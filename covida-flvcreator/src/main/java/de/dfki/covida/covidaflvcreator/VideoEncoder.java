@@ -4,14 +4,7 @@
  */
 package de.dfki.covida.covidaflvcreator;
 
-import com.xuggle.xuggler.ICodec;
-import com.xuggle.xuggler.IContainer;
-import com.xuggle.xuggler.IPacket;
-import com.xuggle.xuggler.IPixelFormat;
-import com.xuggle.xuggler.IRational;
-import com.xuggle.xuggler.IStream;
-import com.xuggle.xuggler.IStreamCoder;
-import com.xuggle.xuggler.IVideoPicture;
+import com.xuggle.xuggler.*;
 import com.xuggle.xuggler.video.ConverterFactory;
 import com.xuggle.xuggler.video.IConverter;
 import de.dfki.covida.covidaflvcreator.utils.ImageUtils;
@@ -23,19 +16,17 @@ import org.slf4j.LoggerFactory;
  *
  * @author Tobias
  */
-public class FLVCreator {
+public class VideoEncoder {
     /**
      * Logger
      */
-    private static final Logger log = LoggerFactory.getLogger(FLVCreator.class);
+    private static final Logger log = LoggerFactory.getLogger(VideoEncoder.class);
     private final IRational frameRate;
     private final IContainer outContainer;
     private final IStream outStream;
     private final IStreamCoder outStreamCoder;
-    private long firstTimeStamp;
 
-    public FLVCreator(String outFile, int width, int height) {
-        firstTimeStamp = -1;
+    public VideoEncoder(String outFile, int width, int height) {
          // Change this to change the frame rate you record at
         frameRate = IRational.make(3, 1);
 
@@ -89,28 +80,21 @@ public class FLVCreator {
      *
      * @param originalImage source image
      */
-    public void encodeImage(BufferedImage originalImage) {
+    public void encodeImage(BufferedImage originalImage, long timestamp) {
         BufferedImage worksWithXugglerBufferedImage = ImageUtils.convertToType(
                 originalImage, BufferedImage.TYPE_3BYTE_BGR);
         IPacket packet = IPacket.make();
-
-        long now = System.currentTimeMillis();
-        if (firstTimeStamp == -1) {
-            firstTimeStamp = now;
-        }
 
         IConverter converter = null;
         try {
             converter = ConverterFactory.createConverter(
                     worksWithXugglerBufferedImage, IPixelFormat.Type.YUV420P);
         } catch (UnsupportedOperationException e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace(System.out);
+            log.error("",e);
         }
 
-        long timeStamp = (now - firstTimeStamp) * 1000; // convert to microseconds
-        IVideoPicture outFrame = converter.toPicture(worksWithXugglerBufferedImage,
-                timeStamp);
+        IVideoPicture outFrame = converter.toPicture(
+                worksWithXugglerBufferedImage, timestamp);
 
         outFrame.setQuality(0);
         int retval = outStreamCoder.encodeVideo(packet, outFrame, 0);
