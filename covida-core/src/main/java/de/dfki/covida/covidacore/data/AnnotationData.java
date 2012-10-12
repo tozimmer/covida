@@ -83,7 +83,7 @@ public class AnnotationData implements Serializable {
      */
     @XmlElementWrapper(name = "annotations")
     @XmlElement(name = "annotation")
-    public List<Annotation> annotations;
+    private List<Annotation> annotations;
     /**
      * Logger
      */
@@ -335,16 +335,27 @@ public class AnnotationData implements Serializable {
     /**
      * Removes the {@link Annotation} with the given id.
      *
-     * @param id ID of the {@link Annotation}
+     * @param id {@link UUID} of the {@link Annotation}
      * @return true if removing was a success
      */
-    public boolean remove(int id) {
-        if (id > -1 && annotations.size() > id) {
-            annotations.remove(id);
-            return true;
-        } else {
-            return false;
+    public boolean remove(UUID id) {
+        for (Annotation annotation : annotations) {
+            if (annotation.uuid.equals(id)) {
+                annotations.remove(annotation);
+                return true;
+            }
         }
+        return false;
+    }
+    
+    /**
+     * Remove {@link Annotation}
+     * 
+     * @param annotation {@link Annotation}
+     * @return true if removing was successfull
+     */
+    public boolean remove(Annotation annotation){
+        return annotations.remove(annotation);
     }
 
     /**
@@ -379,13 +390,18 @@ public class AnnotationData implements Serializable {
     public static AnnotationData load(IVideoComponent component) {
         File file = new File(component.getSource() + ".xml");
         AnnotationData instance;
+
+
+
+
         try {
             if (file != null && file.canRead()) {
                 JAXBContext jc = JAXBContext.newInstance(AnnotationData.class);
                 Unmarshaller u = jc.createUnmarshaller();
                 instance = (AnnotationData) u.unmarshal(file);
 
-                log.debug("Data file loaded at location: {}",
+                log.debug(
+                        "Data file loaded at location: {}",
                         file.getAbsolutePath());
             } else {
                 log.debug("No data file exists, create new VideoAnnotationData");
@@ -422,5 +438,13 @@ public class AnnotationData implements Serializable {
             buffer.append("\n");
         }
         return buffer.toString();
+    }
+
+    public void save(Annotation annotation) {
+        for (Annotation entry : annotations) {
+            if (entry.uuid.equals(annotation.uuid)) {
+                entry = annotation;
+            }
+        }
     }
 }

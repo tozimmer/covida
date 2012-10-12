@@ -68,6 +68,7 @@ import java.awt.Point;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 
 /**

@@ -5,6 +5,7 @@
 package de.dfki.covida.covidacore.components;
 
 import de.dfki.covida.covidacore.data.Annotation;
+import java.util.UUID;
 
 /**
  *

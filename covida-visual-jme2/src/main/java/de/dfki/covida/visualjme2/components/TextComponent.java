@@ -263,11 +263,6 @@ public class TextComponent extends JMEComponent implements IControlButton {
             node.setLocalTranslation(translation);
         }
     }
-    
-//     @Override
-//    public boolean inArea(int x, int y) {
-//         return super.inArea(x, y-getFontSize()/2);
-//     }
 
     @Override
     public void dragEndAction(int id, int x, int y, int dx, int dy) {

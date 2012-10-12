@@ -64,22 +64,6 @@ public class AnnotationStorage {
     }
 
     /**
-     * Adds {@link AnnotationData} to the storage.
-     *
-     * @param component {@link IVideoComponent} which is linked to this
-     * {@link AnnotationData}
-     * @param annotation {@link Annotation}
-     */
-    public void addAnnotation(IVideoComponent component, Annotation annotation) {
-        if (dataList.containsKey(component)) {
-            dataList.get(component).annotations.add(annotation);
-        } else {
-            addNewComponent(component);
-            dataList.get(component).annotations.add(annotation);
-        }
-    }
-
-    /**
      * Returns the to the given {@link IVideoComponent} linked
      * {@link AnnotationData}
      *
@@ -144,11 +128,20 @@ public class AnnotationStorage {
     }
     
     public void remove(UUID uuid){
+        for(IVideoComponent video : dataList.keySet()){
+            if(dataList.get(video).uuid.equals(uuid)){
+                dataList.remove(video);
+                return;
+            }
+        }
+    }
+    
+    public void removeAnnotation(UUID uuid){
         for (IVideoComponent video : dataList.keySet()) {
             AnnotationData data = dataList.get(video);
             for (Annotation annotation : data.getAnnotations()) {
                 if (annotation.uuid.equals(uuid)) {
-                    data.annotations.remove(annotation);
+                    data.remove(annotation);
                     break;
                 }
             }

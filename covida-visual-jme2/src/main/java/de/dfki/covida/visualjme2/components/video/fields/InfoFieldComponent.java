@@ -42,25 +42,17 @@ import de.dfki.covida.covidacore.data.Annotation;
 import de.dfki.covida.covidacore.data.AnnotationStorage;
 import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.covidacore.utils.VideoUtils;
-import de.dfki.covida.visualjme2.animations.CloseAnimation;
-import de.dfki.covida.visualjme2.animations.CloseAnimationType;
-import de.dfki.covida.visualjme2.animations.OpenAnimation;
-import de.dfki.covida.visualjme2.animations.ResetAnimation;
-import de.dfki.covida.visualjme2.animations.SaveAnimation;
+import de.dfki.covida.visualjme2.animations.*;
 import de.dfki.covida.visualjme2.components.ControlButton;
 import de.dfki.covida.visualjme2.components.JMEComponent;
 import de.dfki.covida.visualjme2.components.TextComponent;
 import de.dfki.covida.visualjme2.components.video.VideoComponent;
-import de.dfki.covida.visualjme2.utils.AddControllerCallable;
-import de.dfki.covida.visualjme2.utils.AttachChildCallable;
-import de.dfki.covida.visualjme2.utils.DetachChildCallable;
-import de.dfki.covida.visualjme2.utils.JMEUtils;
-import de.dfki.covida.visualjme2.utils.RemoveControllerCallable;
+import de.dfki.covida.visualjme2.utils.*;
 import de.dfki.touchandwrite.shape.ShapeType;
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Component which displays annotation data of VideoComponent.
@@ -95,17 +87,12 @@ public class InfoFieldComponent extends JMEComponent {
     /**
      * Temporary variables
      */
-    private String videoSource;
-    private List<Point> shapePoints;
+    private Annotation annotation;
     private VideoComponent video;
-    private String title;
-    private long time_start;
-    private long time_end;
     private ListFieldComponent listField;
     private ArrayList<TextComponent> descriptionText;
     private TextureState tsSpacer;
     private Texture textureSpacer;
-    private ShapeType shapeType;
     private TextComponent titleTextOverlay;
     private TextComponent timeOverlay;
     private TextComponent timeTextOverlay;
@@ -239,7 +226,6 @@ public class InfoFieldComponent extends JMEComponent {
      */
     private void setTitle(String title) {
         if (titleTextOverlay != null && title != null) {
-            this.title = title;
             titleTextOverlay.setText(title);
             titleTextOverlay.setSize(getFontSize());
             if (title.length() > getCharacterLimit()) {
@@ -256,8 +242,8 @@ public class InfoFieldComponent extends JMEComponent {
      */
     private void setTime(long time) {
         if (timeOverlay != null && timeTextOverlay != null) {
-            this.time_start = time;
-            this.time_end = time + 10;
+            this.annotation.time_start = time;
+            this.annotation.time_end = time + 10;
             timeTextOverlay.setText(VideoUtils.getTimeCode(time));
         }
     }
@@ -288,14 +274,8 @@ public class InfoFieldComponent extends JMEComponent {
             descriptions.append(description.getText());
             descriptions.append(" ");
         }
-        // TODO new annotation data if media has changed!
-        Annotation annotation = new Annotation();
-        annotation.time_start = time_start;
-        annotation.time_end = time_end;
-        annotation.shapeType = shapeType;
-        annotation.shapePoints = shapePoints;
         annotation.description = descriptions.toString();
-        AnnotationStorage.getInstance().getAnnotationData(video).annotations.add(annotation);
+        AnnotationStorage.getInstance().getAnnotationData(video).save(annotation);
         clearDescriptionText();
         AnnotationStorage.getInstance().getAnnotationData(video).save();
         AnnotationStorage.getInstance().getAnnotationData(video).export();
@@ -307,16 +287,7 @@ public class InfoFieldComponent extends JMEComponent {
      * @param shapePoints
      */
     private void setShapePoints(List<Point> shapePoints) {
-        this.shapePoints = shapePoints;
-    }
-
-    /**
-     * Sets the video source of the current annotation.
-     *
-     * @param videoSource
-     */
-    private void setVideoSource(String videoSource) {
-        this.videoSource = videoSource;
+        this.annotation.shapePoints = shapePoints;
     }
 
     /**
@@ -325,7 +296,7 @@ public class InfoFieldComponent extends JMEComponent {
      * @param shapeType {@link ShapeType}
      */
     private void setShapeType(ShapeType shapeType) {
-        this.shapeType = shapeType;
+        this.annotation.shapeType = shapeType;
     }
 
     /**
@@ -385,9 +356,9 @@ public class InfoFieldComponent extends JMEComponent {
      * @param annotation {@link Annotation} to set.
      */
     public void setAnnotationData(Annotation annotation) {
+        this.annotation = annotation;
         setTime(annotation.time_start);
         setTitle(AnnotationStorage.getInstance().getAnnotationData(video).title);
-        setVideoSource(AnnotationStorage.getInstance().getAnnotationData(video).videoSource);
         setShapePoints(annotation.shapePoints);
         setShapeType(annotation.shapeType);
         String[] split = annotation.description.split(" ");
@@ -500,38 +471,6 @@ public class InfoFieldComponent extends JMEComponent {
     }
 
     /**
-     * Loads and removes annoation data from {@link AnnotationStorage}.
-     *
-     * @param index {@link Annotation} index
-     */
-    public void loadData(int index) {
-        if (AnnotationStorage.getInstance().getAnnotationData(video).size() > index) {
-            resetInfo();
-            video.draw(AnnotationStorage.getInstance().getAnnotationData(video).annotations.get(index).shapePoints);
-            video.setTimePosition(AnnotationStorage.getInstance().getAnnotationData(video).annotations.get(index).time_start);
-            setTime(AnnotationStorage.getInstance().getAnnotationData(video).annotations.get(index).time_start);
-            video.pause();
-            setTitle(AnnotationStorage.getInstance().getAnnotationData(video).title);
-            ArrayList<String> descriptions = new ArrayList<>();
-            descriptions.addAll(Arrays.asList(
-                    AnnotationStorage.getInstance().getAnnotationData(video).annotations.get(index).description.split(" ")));
-            for (String description : descriptions) {
-                if (!description.equals("") && !description.equals(" ")) {
-                    drawHwrResult(description);
-                }
-            }
-            AnnotationStorage.getInstance().getAnnotationData(video).annotations.remove(index);
-        } else {
-            log.debug("VideoAnnotationData has not enough entries VideoId: "
-                    + video.getId()
-                    + " title: "
-                    + video.node.getName()
-                    + " "
-                    + AnnotationStorage.getInstance().getAnnotationData(video));
-        }
-    }
-
-    /**
      * Resets the info fields position and scale.
      */
     public void reset() {
@@ -578,8 +517,6 @@ public class InfoFieldComponent extends JMEComponent {
         for (TextComponent text : descriptionText) {
             text.setTouchable(false);
         }
-        title = null;
-        time_start = 0;
         video.clearAnnotation();
         listField.drawEntries();
     }
@@ -588,6 +525,7 @@ public class InfoFieldComponent extends JMEComponent {
         // Delete animation (Info Field)
         st = CloseAnimation.getController(node, ANIMATION_DURATION, CloseAnimationType.INFO_FIELD);
         GameTaskQueueManager.getManager().update(new AddControllerCallable(node, st));
+        AnnotationStorage.getInstance().getAnnotationData(video).remove(annotation);
         close();
     }
 

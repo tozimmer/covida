@@ -47,7 +47,7 @@ public class DataTest {
         annotation.shapePoints.add(new Point(24, 30));
         annotation.time_end = (long) 456343;
         annotation.time_start = (long) 455322;
-        data.annotations.add(annotation);
+        data.save(annotation);
         data.save();
         CovidaConfiguration conf = CovidaConfiguration.getInstance();
         conf.save();
