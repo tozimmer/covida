@@ -34,7 +34,6 @@ import com.jme.scene.shape.Quad;
 import com.jme.util.GameTaskQueueManager;
 import com.jmex.angelfont.BitmapFont.Align;
 import de.dfki.covida.covidacore.components.IControlableComponent;
-import de.dfki.covida.covidacore.components.IVideoComponent;
 import de.dfki.covida.covidacore.data.Annotation;
 import de.dfki.covida.covidacore.data.AnnotationData;
 import de.dfki.covida.covidacore.data.AnnotationStorage;
@@ -49,11 +48,7 @@ import de.dfki.covida.visualjme2.utils.AttachChildCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
 import de.dfki.covida.visualjme2.utils.RemoveControllerCallable;
 import de.dfki.touchandwrite.math.FastMath;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Component which displays annotation dataList of VideoComponent.
@@ -228,6 +223,7 @@ public class AnnotationSearchField extends FieldComponent implements
             titleText.setTouchable(true);
             titleText.setLoadUUID(data.uuid);
             entries.add(titleText);
+            i++;
         }
         if (!entries.isEmpty()) {
             displayAnnotationList(entries.get(0).getLoadUUID());

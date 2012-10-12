@@ -48,11 +48,7 @@ import de.dfki.covida.visualjme2.components.annotation.AnnotationClipboard;
 import de.dfki.covida.visualjme2.components.annotation.AnnotationSearchField;
 import de.dfki.covida.visualjme2.components.video.VideoComponent;
 import de.dfki.covida.visualjme2.components.video.fields.InfoFieldComponent;
-import de.dfki.covida.visualjme2.utils.AddControllerCallable;
-import de.dfki.covida.visualjme2.utils.AttachChildCallable;
-import de.dfki.covida.visualjme2.utils.DetachChildCallable;
-import de.dfki.covida.visualjme2.utils.FontLoader;
-import de.dfki.covida.visualjme2.utils.RemoveControllerCallable;
+import de.dfki.covida.visualjme2.utils.*;
 import java.util.Collection;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -267,6 +263,11 @@ public class TextComponent extends JMEComponent implements IControlButton {
             node.setLocalTranslation(translation);
         }
     }
+    
+//     @Override
+//    public boolean inArea(int x, int y) {
+//         return super.inArea(x, y-getFontSize()/2);
+//     }
 
     @Override
     public void dragEndAction(int id, int x, int y, int dx, int dy) {

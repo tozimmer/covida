@@ -29,7 +29,6 @@ package de.dfki.covida.covidacore.data;
 
 import de.dfki.covida.covidacore.components.IVideoComponent;
 import de.dfki.covida.covidacore.utils.AnnotationSearch;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -133,20 +132,26 @@ public class AnnotationStorage {
 
     public void load(UUID uuid) {
         for (IVideoComponent video : dataList.keySet()) {
-            Annotation load = null;
             AnnotationData data = dataList.get(video);
             for (Annotation annotation : data.getAnnotations()) {
                 if (annotation.uuid.equals(uuid)) {
-                    load = annotation;
+                    video.load(annotation);
                     break;
                 }
             }
-            if(load != null){
-                video.load(load);
-                data.annotations.remove(load);
-                break;
-            }
         }
         
+    }
+    
+    public void remove(UUID uuid){
+        for (IVideoComponent video : dataList.keySet()) {
+            AnnotationData data = dataList.get(video);
+            for (Annotation annotation : data.getAnnotations()) {
+                if (annotation.uuid.equals(uuid)) {
+                    data.annotations.remove(annotation);
+                    break;
+                }
+            }
+        }
     }
 }
