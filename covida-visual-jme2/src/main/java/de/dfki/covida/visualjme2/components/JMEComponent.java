@@ -245,18 +245,6 @@ public abstract class JMEComponent implements ITouchAndWriteComponent {
         }
     }
 
-    public final Vector3f getLocal(Node node, float x, float y) {
-        Matrix4f store = new Matrix4f();
-        node.getLocalToWorldMatrix(store);
-        store = store.invert();
-        Vector3f result = store.mult(new Vector3f(x, y, 0));
-        if(this instanceof TextComponent){
-            TextComponent text = (TextComponent) this;
-            result = result.add(new Vector3f(0,-text.getFontSize(),0));
-        }
-        return result;
-    }
-
     /**
      * Returns the index in the list of Children of the root
      * <code>Node</code>
@@ -297,7 +285,12 @@ public abstract class JMEComponent implements ITouchAndWriteComponent {
         Vector3f local = new Vector3f(x, display.y - y, 0);
         getLocalToWorldMatrix(store);
         store = store.invert();
-        return store.mult(local);
+        Vector3f result = store.mult(local);
+        if(this instanceof TextComponent){
+            TextComponent text = (TextComponent) this;
+            result = result.add(new Vector3f(0,+text.getFontSize(),0));
+        }
+        return result;
     }
 
     /**
@@ -309,9 +302,9 @@ public abstract class JMEComponent implements ITouchAndWriteComponent {
      */
     public Vector3f getWorld(float x, float y) {
         Matrix4f store = new Matrix4f();
-        Vector3f local = new Vector3f(x, y, 0);
         getLocalToWorldMatrix(store);
-        return store.mult(local);
+        Vector3f result = store.mult(new Vector3f(x, y, 0));
+        return result;
     }
 
     /**
