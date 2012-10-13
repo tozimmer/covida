@@ -44,7 +44,7 @@ public class VideoCreatorTest {
 
         AnnotatedVideoCreator decodeAndCaptureFrames = new AnnotatedVideoCreator(
                 "../covida-res/videos/Collaborative Video Annotation.mp4", 
-                5000000, 15000000, shape);
+                20000000, 25000000, shape);
         Thread creatorThread = new Thread(decodeAndCaptureFrames);
         creatorThread.setName("Annotated video creator");
         creatorThread.start();

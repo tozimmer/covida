@@ -28,7 +28,10 @@
 package de.dfki.covida.videovlcj;
 
 import com.sun.jna.Platform;
+import de.dfki.covida.covidacore.components.IVideoComponent;
 import de.dfki.covida.covidacore.utils.VideoUtils;
+import de.dfki.covida.videovlcj.embedded.EmbeddedVideoHandler;
+import de.dfki.covida.videovlcj.preload.VideoPreload;
 import de.dfki.covida.videovlcj.rendered.RenderedVideoHandler;
 import de.dfki.covida.videovlcj.rendered.VideoRenderer;
 import java.awt.Dimension;
@@ -60,11 +63,11 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     /**
      * height of the video video
      */
-    private final int height;
+    private int height;
     /**
      * width of the video video
      */
-    private final int width;
+    private int width;
     /**
      * video source as {@link String}
      */
@@ -123,8 +126,10 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * The {@link MediaPlayerFactory} to crate {@link VideoSurface} or
      * {@link MediaPlayer}
      */
-    protected final MediaPlayerFactory mediaPlayerFactory;
+    protected MediaPlayerFactory mediaPlayerFactory;
     private boolean toPause;
+    private final String title;
+    private final IVideoComponent video;
 
     /**
      * Creates an instance of {@link AbstractVideoHandler}
@@ -133,7 +138,18 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * @param height height of the video {@link Quad}
      * @param width width of the video {@link Quad}
      */
-    public AbstractVideoHandler(String source, String title, int height, int width, VideoType videoType) {
+    public AbstractVideoHandler(String source, String title,
+            IVideoComponent video) {
+        this.title = title;
+        this.source = source;
+        this.video = video;
+        VideoPreload preload = new VideoPreload(source, this);
+        Thread preloadThread = new Thread(preload);
+        preloadThread.setName(title + " preload");
+        preloadThread.start();
+    }
+
+    public void create(int width, int height) {
         String[] args;
         if (Platform.isMac()) {
             args = new String[]{"--no-video-title-show", "--vout=macosx"};
@@ -141,17 +157,18 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
             args = new String[]{"--no-video-title-show"};
         }
         this.mediaPlayerFactory = new MediaPlayerFactory(args);
-        if (videoType == VideoType.EMBEDDED) {
+        if (this instanceof EmbeddedVideoHandler) {
             mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
             mediaPlayer = mediaPlayerComponent.getMediaPlayer();
-        } else if (videoType == VideoType.RENDERED) {
+            ((EmbeddedVideoHandler) this).setOveray(width, height);
+        } else if (this instanceof RenderedVideoHandler) {
             this.renderer = new VideoRenderer(width, height, title);
             mediaPlayer = mediaPlayerFactory.newDirectMediaPlayer(width, height, renderer);
         }
-        this.source = source;
         this.height = height;
         this.width = width;
         addEventListener();
+        video.create();
     }
 
     /**

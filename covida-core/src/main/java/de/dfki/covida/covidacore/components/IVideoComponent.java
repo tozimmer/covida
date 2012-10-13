@@ -16,6 +16,8 @@ public interface IVideoComponent {
     public String getSource();
 
     public String getTitle();
+    
+    public void create();
 
     public void load(Annotation annotation);
     

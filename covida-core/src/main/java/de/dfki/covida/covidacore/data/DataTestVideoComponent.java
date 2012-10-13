@@ -25,4 +25,8 @@ public class DataTestVideoComponent implements IVideoComponent {
     @Override
     public void load(Annotation annotation) {
     }
+
+    @Override
+    public void create() {
+    }
 }

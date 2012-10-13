@@ -65,24 +65,12 @@ public class CovidaApplicationPreloader implements Runnable {
         this.videos = new ArrayList<>();
     }
 
-    private void preloadVideo(String source) {
-        VideoPreload preload = new VideoPreload(source);
-        preload.run();
-        preloadVideos.add(preload);
-    }
-
     private void createVideoInstances(List<VideoMediaData> videoData) {
         for (int i = 0; i < videoData.size(); i++) {
             VideoComponent video = new VideoComponent(
-                    videoData.get(i).videoSource, videoData.get(i).videoName,
-                    250, videoFormats.get(i));
+                    videoData.get(i).videoSource, videoData.get(i).videoName);
             videos.add(video);
             GameTaskQueueManager.getManager().update(new AttachChildCallable(CovidaRootNode.node, video.node));
-            video.createControls();
-            video.createVideo();
-            video.createFields();
-            video.createOverlays();
-            video.startTests();
         }
         for (VideoComponent video : videos) {
             while (!video.isReady()) {
@@ -159,25 +147,6 @@ public class CovidaApplicationPreloader implements Runnable {
     public void run() {
         Thread.currentThread().setName(this.getClass().getName() + " Thread");
         List<VideoMediaData> videoData = application.getVideoSources();
-        for (VideoMediaData videoDatum : videoData) {
-            preloadVideo(videoDatum.videoSource);
-        }
-        for (VideoPreload preload : preloadVideos) {
-            while (preload.getVideoDimension() == null) {
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException e) {
-                    log.error("",e);
-                }
-            }
-            log.debug("Detected dimension: " + preload.getVideoDimension());
-            Dimension dimension = preload.getVideoDimension();
-            videoFormats.add(new VideoFormat((float) dimension.width
-                    / (float) dimension.height));
-        }
-        log.info("Temp videos (" + videoData.size() + ") "
-                + "loaded and video dimensions detected ("
-                + videoFormats.size() + ")");
         createVideoInstances(videoData);
         log.info("Initialization complete");
         application.endLoadingAnimation();

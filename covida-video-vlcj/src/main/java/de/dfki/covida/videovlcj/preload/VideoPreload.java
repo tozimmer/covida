@@ -27,6 +27,7 @@
  */
 package de.dfki.covida.videovlcj.preload;
 
+import de.dfki.covida.videovlcj.AbstractVideoHandler;
 import de.dfki.covida.videovlcj.rendered.VideoRenderer;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
@@ -53,6 +54,7 @@ public class VideoPreload implements Runnable, MediaPlayerEventListener {
     BufferedImage frame;
     private MediaPlayer mediaPlayer;
     private VideoRenderer renderer;
+    private final AbstractVideoHandler video;
 
     /**
      * VideoComponent Constructor
@@ -66,7 +68,8 @@ public class VideoPreload implements Runnable, MediaPlayerEventListener {
      * @param repeating
      * @param node
      */
-    public VideoPreload(String source) {
+    public VideoPreload(String source, AbstractVideoHandler video) {
+        this.video = video;
         dimension = null;
         videoSource = source;
     }
@@ -135,8 +138,13 @@ public class VideoPreload implements Runnable, MediaPlayerEventListener {
     }
 
     @Override
-    public void positionChanged(MediaPlayer mp, float f) { 
-        dimension = mediaPlayer.getVideoDimension();
+    public void positionChanged(MediaPlayer mp, float f) {
+        if (dimension == null) {
+            dimension = mediaPlayer.getVideoDimension();
+            video.create(dimension.width, dimension.height);
+        } else {
+            cleanUp();
+        }
     }
 
     @Override

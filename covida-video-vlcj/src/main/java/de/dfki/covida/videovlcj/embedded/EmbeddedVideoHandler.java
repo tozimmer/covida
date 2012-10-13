@@ -27,6 +27,7 @@
  */
 package de.dfki.covida.videovlcj.embedded;
 
+import de.dfki.covida.covidacore.components.IVideoComponent;
 import de.dfki.covida.videovlcj.AbstractVideoHandler;
 import de.dfki.covida.videovlcj.VideoType;
 import java.awt.Canvas;
@@ -74,16 +75,22 @@ public final class EmbeddedVideoHandler extends AbstractVideoHandler {
      * @param height height of the video {@link Quad}
      * @param width width of the video {@link Quad}
      */
-    public EmbeddedVideoHandler(String source, String title, Canvas canvas, int height, int width) {
-        super(source, title, height, width, VideoType.EMBEDDED);
+    public EmbeddedVideoHandler(String source, String title, Canvas canvas, 
+            IVideoComponent video) {
+        super(source, title, video);
         CanvasVideoSurface videoSurface = mediaPlayerFactory.newVideoSurface(canvas);
         if (mediaPlayer instanceof EmbeddedMediaPlayer) {
             embeddedMediaPlayer = (EmbeddedMediaPlayer) mediaPlayer;
             embeddedMediaPlayer.setVideoSurface(videoSurface);
         }
+    }
+    
+    public void setOveray(int width, int height){
         overlay = new EmbeddedVideoOverlay(width, height);
         setOverlay(overlay);
     }
+    
+    
 
     /**
      * Returns the {@link EmbeddedMediaPlayerComponent}

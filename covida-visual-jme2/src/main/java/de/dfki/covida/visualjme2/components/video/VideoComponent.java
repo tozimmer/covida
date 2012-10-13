@@ -160,19 +160,26 @@ public final class VideoComponent extends JMEComponent implements
      *
      * @param source video source location as {@link String}
      * @param title video title as {@link String}
-     * @param height video height as {@link Integer}
      * @param format {@link VideoFormat} to determine width of the video
      */
-    public VideoComponent(String source, String title, int height, VideoFormat format) {
+    public VideoComponent(String source, String title) {
         super("Video Component ");
         log.debug("Create video id:" + getId());
         this.title = title;
-        video = new RenderedVideoHandler(source, title, (int) (height * UPSCALE_FACTOR), format.determineWidth((int) (height * UPSCALE_FACTOR)));
+        video = new RenderedVideoHandler(source, title, this);
         setDefaultPosition();
         setDrawable(true);
         setTouchable(true);
         AnnotationStorage.getInstance().getAnnotationData(this).title = title;
         AnnotationStorage.getInstance().getAnnotationData(this).videoSource = source;
+    }
+
+    public void create() {
+        createControls();
+        createVideo();
+        createFields();
+        createOverlays();
+        startTests();
     }
 
     /**
@@ -701,7 +708,7 @@ public final class VideoComponent extends JMEComponent implements
         startDragAnimation();
         Vector3f translation = this.getLocalTranslation();
         Vector3f d = new Vector3f(dx, -dy, 0);
-        d = d.divideLocal(node.getWorldScale());
+//        d = d.divideLocal(node.getWorldScale());
         translation = translation.add(d);
         move(translation.x, translation.y);
     }
@@ -731,8 +738,8 @@ public final class VideoComponent extends JMEComponent implements
         int localY = (int) local.y;
 //        localY += getPosY();
         localX += getDimension().getWidth() / 2;
-        localY = (int) (getDimension().getHeight() 
-                - (localY + getDimension().getHeight() /2));
+        localY = (int) (getDimension().getHeight()
+                - (localY + getDimension().getHeight() / 2));
         video.draw(new Point(localX, localY));
     }
 
@@ -741,9 +748,9 @@ public final class VideoComponent extends JMEComponent implements
         if (video.getShape().isEmpty()) {
             List<Point> points = new ArrayList<>();
             points.add(new Point(5, 5));
-            points.add(new Point(5, getHeight()-5));
-            points.add(new Point(getWidth()-5, getHeight()-5));
-            points.add(new Point(getWidth()-5, 5));
+            points.add(new Point(5, getHeight() - 5));
+            points.add(new Point(getWidth() - 5, getHeight() - 5));
+            points.add(new Point(getWidth() - 5, 5));
             points.add(new Point(5, 5));
             video.setShape(points);
             setNewAnnotationData();
@@ -799,11 +806,13 @@ public final class VideoComponent extends JMEComponent implements
         float scale = display.x / ((float) getWidth() * node.getLocalScale().x);
         float ratio = ((event.getZoomRatio() - 1) / scale) + 1;
         rescale(node.getLocalScale().x * ratio);
-        if (node.getLocalScale().x < 1.5f) {
-            rescale(1.5f);
+        float minScale = ((getDisplaySize().width / 10) / getWidth());
+        float maxScale = ((getDisplaySize().width / 1.2f) / getWidth());
+        if (node.getLocalScale().x < minScale) {
+            rescale(minScale);
         }
-        if (node.getLocalScale().x > 2.5f * scale) {
-            rescale(2.5f * scale);
+        if (node.getLocalScale().x > maxScale) {
+            rescale(maxScale);
         }
     }
 
@@ -915,5 +924,4 @@ public final class VideoComponent extends JMEComponent implements
     public void deleteDescription(TextComponent aThis) {
         infoField.deleteDescription(aThis);
     }
-
 }

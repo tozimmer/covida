@@ -27,6 +27,7 @@
  */
 package de.dfki.covida.videovlcj.rendered;
 
+import de.dfki.covida.covidacore.components.IVideoComponent;
 import de.dfki.covida.videovlcj.AbstractVideoHandler;
 import de.dfki.covida.videovlcj.VideoType;
 import java.awt.Point;
@@ -59,8 +60,9 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
      * @param height height of the video {@link Quad}
      * @param width width of the video {@link Quad}
      */
-    public RenderedVideoHandler(String source, String title, int height, int width) {
-        super(source, title, height, width, VideoType.RENDERED);
+    public RenderedVideoHandler(String source, String title,
+            IVideoComponent video) {
+        super(source, title, video);
     }
 
     @Override
@@ -113,7 +115,7 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
                 ImageIO.write(img, "png", new File(getSource() + "."
                         + mediaPlayer.getTime() + ".png"));
             } catch (IOException e) {
-                log.error("",e);
+                log.error("", e);
             }
         } else {
             log.warn("Snapshot BufferedImage is null");
