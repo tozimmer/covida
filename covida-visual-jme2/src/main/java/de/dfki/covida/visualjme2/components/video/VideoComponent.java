@@ -168,18 +168,19 @@ public final class VideoComponent extends JMEComponent implements
         this.title = title;
         video = new RenderedVideoHandler(source, title, this);
         setDefaultPosition();
-        setDrawable(true);
-        setTouchable(true);
         AnnotationStorage.getInstance().getAnnotationData(this).title = title;
         AnnotationStorage.getInstance().getAnnotationData(this).videoSource = source;
     }
 
+    @Override
     public void create() {
         createControls();
-        createVideo();
         createFields();
         createOverlays();
         startTests();
+        createVideo();
+        setDrawable(true);
+        setTouchable(true);
     }
 
     /**
@@ -734,6 +735,7 @@ public final class VideoComponent extends JMEComponent implements
     public void draw(int x, int y) {
         video.pause();
         Vector3f local = getLocal(x, y);
+        local = local.mult(node.getWorldScale());
         int localX = (int) local.x;
         int localY = (int) local.y;
 //        localY += getPosY();

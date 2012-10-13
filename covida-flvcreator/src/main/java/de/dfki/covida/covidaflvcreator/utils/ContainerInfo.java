@@ -6,6 +6,7 @@ package de.dfki.covida.covidaflvcreator.utils;
 
 import com.xuggle.xuggler.*;
 import de.dfki.covida.covidaflvcreator.VideoCreatorTest;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -86,5 +87,27 @@ public class ContainerInfo {
             }
         }
         log.debug("Container info retrieval duration: {}ms", System.currentTimeMillis() - start);
+    }
+    
+    public static Dimension getDimension(String filename){
+        long start = System.currentTimeMillis();
+        // Create a Xuggler container object
+        IContainer container = IContainer.make();
+        // Open up the container
+        if (container.open(filename, IContainer.Type.READ, null) < 0) {
+            log.error("Could not open file: {}." + filename);
+            return null;
+        }
+        for (int i = 0; i < container.getNumStreams(); i++) {
+            // Find the stream object
+            IStream stream = container.getStream(i);
+            // Get the pre-configured decoder that can decode this stream;
+            IStreamCoder coder = stream.getStreamCoder();
+            if (coder.getCodecType() == ICodec.Type.CODEC_TYPE_VIDEO) {
+                log.debug("Container info retrieval duration: {}ms", System.currentTimeMillis() - start);
+                return new Dimension(coder.getWidth(), coder.getHeight());
+            }
+        }
+        return null;
     }
 }

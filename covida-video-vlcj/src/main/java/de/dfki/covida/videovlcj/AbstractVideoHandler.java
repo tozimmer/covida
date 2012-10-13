@@ -143,6 +143,10 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
         this.title = title;
         this.source = source;
         this.video = video;
+        preload();
+    }
+
+    private void preload() {
         VideoPreload preload = new VideoPreload(source, this);
         Thread preloadThread = new Thread(preload);
         preloadThread.setName(title + " preload");

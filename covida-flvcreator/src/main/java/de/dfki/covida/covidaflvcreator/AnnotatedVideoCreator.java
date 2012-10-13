@@ -83,13 +83,7 @@ public class AnnotatedVideoCreator extends MediaListenerAdapter implements Runna
         this.timeStart = timeStart;
         this.timeEnd = timeEnd;
         this.inFile = inFile;
-        ContainerInfo info = new ContainerInfo(inFile);
-        for (StreamInfo si : info.streamInfo) {
-            if (si instanceof VideoStreamInfo) {
-                VideoStreamInfo vsi = (VideoStreamInfo) si;
-                this.dim = new Dimension(vsi.width, vsi.height);
-            }
-        }
+        this.dim = ContainerInfo.getDimension(inFile);
         if (dim != null) {
             shapeToDraw = new ConcurrentLinkedQueue<>();
             for (Point point : shape) {

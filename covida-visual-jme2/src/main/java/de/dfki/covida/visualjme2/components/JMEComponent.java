@@ -282,10 +282,6 @@ public abstract class JMEComponent implements ITouchAndWriteComponent {
      */
     public Vector3f getLocal(float x, float y) {
         Vector3f local = new Vector3f(x, display.y - y, 0);
-//        Matrix4f store = new Matrix4f();
-//        getLocalToWorldMatrix(store);
-//        store = store.invert();
-//        Vector3f result = store.mult(local);
         Vector3f result = new Vector3f();
         result = node.worldToLocal(local, result);
         if (this instanceof TextComponent) {
