@@ -1,6 +1,29 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * AnnotatedVideoCreator.java
+ *
+ * Copyright (c) 2012, Tobias Zimmermann All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification, are
+ * permitted provided that the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice, this list of
+ * conditions and the following disclaimer. Redistributions in binary form must reproduce the
+ * above copyright notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
+ *
+ * Neither the name of the author nor the names of its contributors may be used to endorse or
+ * promote products derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS
+ * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
+ * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+ * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
  */
 package de.dfki.covida.covidaflvcreator;
 
@@ -9,43 +32,69 @@ import com.xuggle.mediatool.MediaListenerAdapter;
 import com.xuggle.mediatool.ToolFactory;
 import com.xuggle.mediatool.event.IVideoPictureEvent;
 import de.dfki.covida.covidaflvcreator.utils.ContainerInfo;
-import de.dfki.covida.covidaflvcreator.utils.StreamInfo;
-import de.dfki.covida.covidaflvcreator.utils.VideoStreamInfo;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Using {@link IMediaReader}, takes a media container, finds the first video
- * stream, decodes that stream, and then writes video frames out to a PNG image
- * file every 5 seconds, based on the video presentation timestamps.
+ * Class which creates the annotated video file.
  *
- * @author aclarke
- * @author trebor
+ * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
  */
 public class AnnotatedVideoCreator extends MediaListenerAdapter implements Runnable {
 
-    private static Color defaultG2DColor = Color.WHITE;
-    private static Collection<Point> shapeToDraw;
+    /**
+     * Default color for the text overlay
+     */
+    private Color defaultG2DColor = Color.WHITE;
+    /**
+     * Points of the spape to render in the video
+     */
+    private List<Point> shapeToDraw;
+    /**
+     * {@link FontMetrics} for the text overlay
+     */
     private FontMetrics fm;
+    /**
+     * Space between the rows of the text overlay
+     */
     private int ascent;
+    /**
+     * Space between the rows of the text overlay
+     */
     private int fh;
+    /**
+     * Space between the words on the text overlay
+     */
     private int space;
-    private boolean titleOverlayEnabled;
-    private String title;
-    private boolean hwrOverlayEnabled;
-    private String hwr;
+    /**
+     * If true text overlay is rendered into the video
+     */
+    private boolean textOverlayEnabled;
+    /**
+     * {@link String} for the text overlay
+     */
+    private String text;
+    /**
+     * {@link VideoEncoder}
+     */
     private VideoEncoder creator;
-    private String timecode;
-    private long timeCodeKillTime;
-    private final long timeStart;
-    private final long timeEnd;
-    private static Font f = new Font("Arial", Font.PLAIN, 20);
+    /**
+     * Start time stamp
+     */
+    private long timeStart;
+    /**
+     * End time stamp
+     */
+    private long timeEnd;
+    /**
+     * Font for text overlay
+     */
+    private Font f = new Font("Arial", Font.PLAIN, 20);
     /**
      * Logger
      */
@@ -56,9 +105,13 @@ public class AnnotatedVideoCreator extends MediaListenerAdapter implements Runna
      */
     private int mVideoStreamIndex = -1;
     /**
-     * Output file in which the annotated frames shoould be encoded.
+     * Output file in which the annotated frames should be encoded.
      */
     private String outFile;
+    /**
+     * Output file in which the annotated frames is encoded.
+     */
+    private String outputFile;
     /**
      * Indicates if encoding is completed and stream is closed.
      */
@@ -66,11 +119,19 @@ public class AnnotatedVideoCreator extends MediaListenerAdapter implements Runna
     /**
      * Input file from which the frames should be decoded.
      */
-    private final String inFile;
+    private final String inputFile;
     /**
      * Video dimension
      */
     private Dimension dim;
+    /**
+     * Requesting class
+     */
+    private final IVideoReceiver request;
+    /**
+     * Indicates if {@link AnnotatedVideoCreator} is currently encoding
+     */
+    private boolean encoding;
 
     /**
      * Construct a DecodeAndCaptureFrames which reads and captures frames from a
@@ -78,35 +139,80 @@ public class AnnotatedVideoCreator extends MediaListenerAdapter implements Runna
      *
      * @param inFile the name of the media file to read
      */
-    public AnnotatedVideoCreator(String inFile,
-            long timeStart, long timeEnd, List<Point> shape) {
-        this.timeStart = timeStart;
-        this.timeEnd = timeEnd;
-        this.inFile = inFile;
+    public AnnotatedVideoCreator(String inFile, IVideoReceiver request) {
+        this.inputFile = inFile;
         this.dim = ContainerInfo.getDimension(inFile);
-        if (dim != null) {
-            shapeToDraw = new ConcurrentLinkedQueue<>();
-            for (Point point : shape) {
-                shapeToDraw.add(point);
-            }
-            timecode = "FOO";
-            timeCodeKillTime = 4000;
-            titleOverlayEnabled = true;
-            hwrOverlayEnabled = true;
-            hwr = "Test";
-            title = "Title";
-            outFile = inFile + "_" + timeStart + "_" + timeEnd + ".flv";
-            creator = new VideoEncoder(outFile, dim.width,
-                    dim.height);
+        this.shapeToDraw = new ArrayList<>();
+        this.request = request;
+    }
+
+    public String getInputFile() {
+        return inputFile;
+    }
+
+    /**
+     * If {@link AnnotatedVideoCreator} is currently not encoding this metod
+     * sets the shape which will be rendered in the video.
+     *
+     * @param shape {@link List} of {@link Point}s
+     */
+    public void setShape(List<Point> shape) {
+        if (!encoding) {
+            shapeToDraw = shape;
         }
     }
 
+    /**
+     * If {@link AnnotatedVideoCreator} is currently not encoding this metod
+     * sets the time intervall for the video creation
+     *
+     * @param timeStart start time in microseconds {@link Long}
+     * @param timeEnd end time in microseconds as {@link Long}
+     */
+    public void setIntervall(long timeStart, long timeEnd) {
+        if (!encoding) {
+            this.outFile = inputFile + "_" + timeStart + "_" + timeEnd + ".flv";
+            this.timeStart = timeStart;
+            this.timeEnd = timeEnd;
+        }
+    }
+
+    /**
+     * If {@link AnnotatedVideoCreator} is currently not encoding this metod
+     * sets the text which will be displayed on the encoded video.
+     *
+     * Note that if the parameter is {@code null} or equals "" the text overlay
+     * will be disabled.
+     *
+     * @param text {@link String} which should be rendered
+     */
+    public void setText(String text) {
+        if (!encoding) {
+            if (text != null && !text.equals("")) {
+                textOverlayEnabled = true;
+                this.text = text;
+            } else {
+                textOverlayEnabled = false;
+                text = "";
+            }
+        }
+    }
+
+    /**
+     * Returns true if the last video creation process is completed
+     *
+     * @return true
+     */
     public boolean isCompleted() {
         return completed;
     }
 
     public String getOutfile() {
-        return outFile;
+        if (completed) {
+            return outputFile;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -244,29 +350,12 @@ public class AnnotatedVideoCreator extends MediaListenerAdapter implements Runna
                     fh = ascent + fm.getDescent();
                     space = fm.stringWidth(" ");
                 }
-                if (timeCodeKillTime > System.currentTimeMillis()) {
-                    if (timecode != null) {
-                        drawString(timecode, g2d, true, dim.width / 2);
-                    } else {
-                        log.warn("Can not render time code overlay: timecode == null");
-                        timeCodeKillTime = System.currentTimeMillis();
-                    }
-                }
-                if (titleOverlayEnabled) {
-                    if (title != null) {
-                        drawString(title, g2d, true, 0);
+                if (textOverlayEnabled) {
+                    if (text != null) {
+                        drawString(text, g2d, true, 0);
                     } else {
                         log.warn("Can not render title overlay: tile == null");
-                        titleOverlayEnabled = false;
-                    }
-                }
-                if (hwrOverlayEnabled) {
-                    if (hwr != null) {
-//                drawString(hwr, g2d, false, height - 70);
-                        drawString(hwr, g2d, true, dim.width - 70);
-                    } else {
-                        log.warn("Can not render hwr result: hwr == null");
-                        hwrOverlayEnabled = false;
+                        textOverlayEnabled = false;
                     }
                 }
                 creator.encodeImage(image, event.getTimeStamp());
@@ -279,7 +368,10 @@ public class AnnotatedVideoCreator extends MediaListenerAdapter implements Runna
     @Override
     public void run() {
         if (dim != null) {
-            IMediaReader reader = ToolFactory.makeReader(inFile);
+            creator = new VideoEncoder(outFile, dim.width,
+                    dim.height);
+            this.encoding = true;
+            IMediaReader reader = ToolFactory.makeReader(inputFile);
 
             // stipulate that we want BufferedImages created in BGR 24bit color space
             reader.setBufferedImageTypeToGenerate(BufferedImage.TYPE_3BYTE_BGR);
@@ -308,5 +400,8 @@ public class AnnotatedVideoCreator extends MediaListenerAdapter implements Runna
             outFile = null;
         }
         completed = true;
+        encoding = false;
+        outputFile = outFile;
+        request.setVideoFile(outputFile);
     }
 }

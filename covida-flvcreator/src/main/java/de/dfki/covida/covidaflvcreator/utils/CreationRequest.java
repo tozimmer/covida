@@ -1,19 +1,19 @@
 /*
- * VideoData.java
- * 
+ * CreationRequest.java
+ *
  * Copyright (c) 2012, Tobias Zimmermann All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
- * 
+ *
  * Redistributions of source code must retain the above copyright notice, this list of
  * conditions and the following disclaimer. Redistributions in binary form must reproduce the
  * above copyright notice, this list of conditions and the following disclaimer in the
  * documentation and/or other materials provided with the distribution.
- * 
+ *
  * Neither the name of the author nor the names of its contributors may be used to endorse or
  * promote products derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS
  * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
@@ -23,52 +23,32 @@
  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  */
-package de.dfki.covida.covidacore.data;
+package de.dfki.covida.covidaflvcreator.utils;
 
+import java.awt.Point;
 import java.io.Serializable;
-import javax.xml.bind.annotation.XmlElement;
+import java.util.List;
 
 /**
- * Video data class.
+ * Class which holds the creation request data.
  *
  * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
  */
-public class VideoData implements Serializable{
+public class CreationRequest implements Serializable{
+    public final String filename;
+    public final long timeStart;
+    public final long timeEnd;
+    public final List<Point> shape;
+    public final String label;
 
-    /**
-     * serialVersionUID
-     */
-    private static final long serialVersionUID = 5408416424492049888L;
-    /**
-     * Size in percentage of display y-axis
-     */
-    @XmlElement(name = "size")
-    public int size;
-    /**
-     * Position in the 3x2 grid (0-5)
-     */
-    @XmlElement(name = "position")
-    public int position;
-    /**
-     * {@link Boolean} which indicates if video should be repeated
-     */
-    @XmlElement(name = "repeating")
-    public boolean repeating;
-    /**
-     * {@link Boolean} which indicates if video is enabled
-     */
-    @XmlElement(name = "enabled")
-    public boolean enabled;
-    /**
-     * Start time in ms
-     */
-    @XmlElement(name = "time_start")
-    public long time_start;
-    /**
-     * End time in ms
-     */
-    @XmlElement(name = "time_end")
-    public long time_end;
+    public CreationRequest(String filename, long timeStart, long timeEnd, 
+            List<Point> shape, String label) {
+        this.filename = filename;
+        this.timeStart = timeStart;
+        this.timeEnd = timeEnd;
+        this.shape = shape;
+        this.label = label;
+    }
 }

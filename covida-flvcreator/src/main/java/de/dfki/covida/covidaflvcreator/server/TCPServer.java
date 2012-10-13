@@ -1,19 +1,19 @@
 /*
  * TCPServer.java
- * 
+ *
  * Copyright (c) 2012, Tobias Zimmermann All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
- * 
+ *
  * Redistributions of source code must retain the above copyright notice, this list of
  * conditions and the following disclaimer. Redistributions in binary form must reproduce the
  * above copyright notice, this list of conditions and the following disclaimer in the
  * documentation and/or other materials provided with the distribution.
- * 
+ *
  * Neither the name of the author nor the names of its contributors may be used to endorse or
  * promote products derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS
  * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
@@ -23,11 +23,13 @@
  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  */
-package de.dfki.covida.covidacore.streaming;
+package de.dfki.covida.covidaflvcreator.server;
 
-import java.awt.Dimension;
+import de.dfki.covida.covidaflvcreator.AnnotatedVideoCreator;
+import de.dfki.covida.covidaflvcreator.IVideoReceiver;
+import de.dfki.covida.covidaflvcreator.utils.CreationRequest;
 import java.io.*;
 import java.lang.reflect.Array;
 import java.net.*;
@@ -38,7 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TCP Server
+ * TCP server
  *
  * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
  */
@@ -49,44 +51,36 @@ public class TCPServer extends Thread {
      */
     private static Logger log = LoggerFactory.getLogger(TcpThread.class);
     /**
-     * {@link TCPServer} instance
-     */
-    private static TCPServer instance;
-    /**
      * the socket used by the server
      */
     private ServerSocket serverSocket;
     /**
      * the port used by the server
      */
-    private static int port = 1500;
+    private int port;
     /**
      * {@link List} of all active {@link TcpThread}
      */
     private List<TcpThread> tcpThreads;
-    /**
-     * {@link Dimension} of the image frame.
-     */
-    public Dimension dimension;
 
     /**
      * Private constructor of {@link TCPServer}
      */
-    private TCPServer() {
+    public TCPServer(int port) {
+        this.port = port;
         tcpThreads = new ArrayList<>();
     }
 
     /**
-     * Sends a {@link Array} of {@link Byte}
-     * 
-     * @param bytes {@link Array} of {@link Byte}
+     * Sends the file location as {@link String}
+     *
+     * @param filename file location as {@link String}
      */
-    public synchronized void writeByteBuffer(byte[] bytes) {
+    public void sendFileName(String filename) {
         List<TcpThread> deadThreads = new ArrayList<>();
         for (TcpThread tcpThread : tcpThreads) {
             if (tcpThread.running) {
-                tcpThread.writeByteBuffer(bytes);
-                bytes = null;
+                tcpThread.writeFileName(filename);
             } else {
                 deadThreads.add(tcpThread);
             }
@@ -95,57 +89,6 @@ public class TCPServer extends Thread {
             tcpThreads.remove(deadThread);
             deadThread = null;
         }
-    }
-
-    /**
-     * Converts {@link ByteBuffer} to an {@link Array} of {@link Byte}.
-     * 
-     * @param buffer {@link ByteBuffer} which holds the image frame data
-     * @param width Width of the image frame
-     * @param height Height of the image frame
-     * @param depth Color depth of the image
-     */
-    public void writeByteBuffer(ByteBuffer buffer, int width, int height, int depth) {
-        int buffSize = depth * width * height;
-        byte[] bytes = new byte[buffSize];
-        for (int i = 0; i < buffSize; i++) {
-            bytes[i] = buffer.get(i);
-        }
-        List<TcpThread> deadThreads = new ArrayList<>();
-        for (TcpThread tcpThread : tcpThreads) {
-            if (tcpThread.running) {
-                tcpThread.writeByteBuffer(bytes);
-                bytes = null;
-            } else {
-                deadThreads.add(tcpThread);
-            }
-        }
-        for (TcpThread deadThread : deadThreads) {
-            tcpThreads.remove(deadThread);
-            deadThread = null;
-        }
-        buffer.clear();
-    }
-
-    /**
-     * Sets the image frame {@link Dimension}
-     * 
-     * @param dimension {@link Dimension}
-     */
-    public void setScreenSize(Dimension dimension) {
-        this.dimension = dimension;
-    }
-
-    /**
-     * Returns the instance of {@link TCPServer}.
-     * 
-     * @return {@link TCPServer}
-     */
-    public synchronized static TCPServer getInstance() {
-        if (instance == null) {
-            instance = new TCPServer();
-        }
-        return instance;
     }
 
     @Override
@@ -173,7 +116,7 @@ public class TCPServer extends Thread {
     /**
      * One instance of this thread will run for each client
      */
-    class TcpThread extends Thread {
+    class TcpThread extends Thread implements IVideoReceiver {
 
         /**
          * the socket where to listen/talk.
@@ -187,11 +130,12 @@ public class TCPServer extends Thread {
          * Indicades if client is running.
          */
         public boolean running;
+        private ObjectInputStream Sinput;
 
         /**
          * Creates an instance of {@link TcpThread}
-         * 
-         * @param socket 
+         *
+         * @param socket
          */
         public TcpThread(Socket socket) {
             this.socket = socket;
@@ -199,16 +143,16 @@ public class TCPServer extends Thread {
         }
 
         /**
-         * Sends a {@link Array} of {@link Byte}.
+         * Sends a String
          *
-         * @param bytes {@link Byte}
+         * @param filename {@link String}
          */
-        public void writeByteBuffer(byte[] bytes) {
+        public void writeFileName(String filename) {
             try {
                 Soutput.reset();
-                Soutput.writeObject(bytes);
+                Soutput.writeObject(filename);
             } catch (IOException e) {
-                log.error("Exception writing  Image: " + e);
+                log.error("Exception writing  String: " + e);
                 log.error("Closing connection");
                 running = false;
             }
@@ -219,25 +163,46 @@ public class TCPServer extends Thread {
             Thread.currentThread().setName("TCP-Server");
             try {
                 Soutput = new ObjectOutputStream(socket.getOutputStream());
-                Soutput.writeObject(dimension);
-                Soutput.reset();
+                Sinput = new ObjectInputStream(socket.getInputStream());
             } catch (IOException ex) {
-                log.error("",ex);
+                log.error("", ex);
                 running = false;
                 try {
                     Soutput.flush();
                     Soutput.close();
                 } catch (IOException ex1) {
-                    log.error("",ex1);
+                    log.error("", ex1);
                 }
             }
             while (running) {
                 try {
+                    Object object = Sinput.readObject();
+                    if (object instanceof CreationRequest) {
+                        CreationRequest request = (CreationRequest) object;
+                        AnnotatedVideoCreator creator =
+                                new AnnotatedVideoCreator(request.filename,
+                                this);
+                        creator.setIntervall(request.timeStart, request.timeEnd);
+                        creator.setShape(request.shape);
+                        creator.setText(request.label);
+                        Thread creatorThread = new Thread(creator);
+                        creatorThread.setName("Creator Thread");
+                        creatorThread.start();
+                    }
+                } catch (IOException | ClassNotFoundException e) {
+                    log.error(" " + e);
+                }
+                try {
                     Thread.sleep(50);
                 } catch (InterruptedException ex) {
-                    log.error("",ex);
+                    log.error("", ex);
                 }
             }
+        }
+
+        @Override
+        public void setVideoFile(String file) {
+            writeFileName(file);
         }
     }
 }

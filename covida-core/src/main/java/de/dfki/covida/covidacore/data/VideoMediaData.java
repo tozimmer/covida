@@ -30,6 +30,11 @@ package de.dfki.covida.covidacore.data;
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlElement;
 
+/**
+ * Video media data
+ *
+ * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
+ */
 public class VideoMediaData implements Serializable{
     
     /**
@@ -37,12 +42,24 @@ public class VideoMediaData implements Serializable{
      */
     private static final long serialVersionUID = 5408416424492049777L;
 
+    /**
+     * Video source as {@link String}
+     */
     @XmlElement(name = "source")
     public String videoSource;
+    /**
+     * Video name as {@link String}
+     */
     @XmlElement(name = "name")
     public String videoName;
+    /**
+     * Time start in ms
+     */
     @XmlElement(name = "time_start")
     public long time_start;
+    /**
+     * Time end in ms
+     */
     @XmlElement(name = "time_end")
     public long time_end;
 }

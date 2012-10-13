@@ -41,7 +41,13 @@ import java.util.UUID;
  */
 public class AnnotationStorage {
 
+    /**
+     * Instance of the {@link AnnotationStorage}
+     */
     private static AnnotationStorage instance;
+    /**
+     * Data list
+     */
     private Map<IVideoComponent, AnnotationData> dataList;
 
     /**
@@ -77,6 +83,11 @@ public class AnnotationStorage {
         return dataList.get(component);
     }
 
+    /**
+     * Adds a new {@link IVideoComponent}
+     * 
+     * @param component {@link IVideoComponent} to add
+     */
     private void addNewComponent(IVideoComponent component) {
         AnnotationData data = AnnotationData.load(component);
         dataList.put(component, data);
@@ -110,6 +121,13 @@ public class AnnotationStorage {
         return null;
     }
 
+    /**
+     * Search after ocurrence of the search terms in the annoatations.
+     * 
+     * @param terms search terms
+     * @return {@link Map} which contains the search results as mapping of 
+     * {@link AnnotationData} to {@link List} of {@link Annotation}s
+     */
     public Map<AnnotationData, List<Annotation>> search(List<String> terms) {
         return AnnotationSearch.search(terms, getAnnotationDatas());
     }
@@ -124,19 +142,29 @@ public class AnnotationStorage {
                 }
             }
         }
-        
+
     }
-    
-    public void remove(UUID uuid){
-        for(IVideoComponent video : dataList.keySet()){
-            if(dataList.get(video).uuid.equals(uuid)){
+
+    /**
+     * Removes the annotation data which is refered by the {@link UUID}
+     * 
+     * @param uuid {@link UUID} which represents the {@link AnnotationData}
+     */
+    public void remove(UUID uuid) {
+        for (IVideoComponent video : dataList.keySet()) {
+            if (dataList.get(video).uuid.equals(uuid)) {
                 dataList.remove(video);
                 return;
             }
         }
     }
-    
-    public void removeAnnotation(UUID uuid){
+
+    /**
+     * Removes the annotation which is refered by the {@link UUID}
+     * 
+     * @param uuid {@link UUID} which represents the {@link Annotation}
+     */
+    public void removeAnnotation(UUID uuid) {
         for (IVideoComponent video : dataList.keySet()) {
             AnnotationData data = dataList.get(video);
             for (Annotation annotation : data.getAnnotations()) {

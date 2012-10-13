@@ -34,7 +34,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
- * Covida configuration class.
+ * Covida pen configuration class.
  *
  * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
  */

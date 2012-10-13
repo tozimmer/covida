@@ -347,14 +347,14 @@ public class AnnotationData implements Serializable {
         }
         return false;
     }
-    
+
     /**
      * Remove {@link Annotation}
-     * 
+     *
      * @param annotation {@link Annotation}
      * @return true if removing was successfull
      */
-    public boolean remove(Annotation annotation){
+    public boolean remove(Annotation annotation) {
         return annotations.remove(annotation);
     }
 

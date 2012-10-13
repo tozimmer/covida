@@ -33,8 +33,7 @@ import org.kohsuke.args4j.Option;
 /**
  * Options for VideoTouch.
  *
- * @author Tobias Zimmermann
- *
+ * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
  */
 public class CovidaCMDOptions {
 
