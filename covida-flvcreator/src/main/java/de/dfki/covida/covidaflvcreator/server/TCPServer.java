@@ -31,9 +31,7 @@ import de.dfki.covida.covidaflvcreator.AnnotatedVideoCreator;
 import de.dfki.covida.covidaflvcreator.IVideoReceiver;
 import de.dfki.covida.covidaflvcreator.utils.CreationRequest;
 import java.io.*;
-import java.lang.reflect.Array;
 import java.net.*;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -49,7 +47,7 @@ public class TCPServer extends Thread {
     /**
      * Logger
      */
-    private static Logger log = LoggerFactory.getLogger(TcpThread.class);
+    private static Logger log = LoggerFactory.getLogger(TCPServer.class);
     /**
      * the socket used by the server
      */
@@ -96,9 +94,9 @@ public class TCPServer extends Thread {
         /* create socket server and wait for connection requests */
         try {
             serverSocket = new ServerSocket(port);
-            log.debug("#########################################################");
+            log.debug("####################################################");
             log.debug("# Server waiting for client on port " + serverSocket.getLocalPort() + " #");
-            log.debug("#########################################################");
+            log.debug("####################################################");
 
             while (true) {
                 Socket socket = serverSocket.accept();  // accept connection
@@ -170,6 +168,7 @@ public class TCPServer extends Thread {
                 try {
                     Soutput.flush();
                     Soutput.close();
+                    Sinput.close();
                 } catch (IOException ex1) {
                     log.error("", ex1);
                 }
@@ -191,11 +190,13 @@ public class TCPServer extends Thread {
                     }
                 } catch (IOException | ClassNotFoundException e) {
                     log.error(" " + e);
+                    running = false;
                 }
                 try {
                     Thread.sleep(50);
                 } catch (InterruptedException ex) {
                     log.error("", ex);
+                    running = false;
                 }
             }
         }

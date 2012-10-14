@@ -27,6 +27,9 @@
  */
 package de.dfki.covida.covidaflvcreator.server;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * TCP Server Standalone
  *
@@ -34,10 +37,26 @@ package de.dfki.covida.covidaflvcreator.server;
  */
 public class TCPServerStandalone {
 
+    /**
+     * Logger
+     */
+    private static Logger log = LoggerFactory.getLogger(TCPServerStandalone.class);
+    
+    /**
+     * Starts a TCP Server.
+     * 
+     * @param args first argument will be interpreted as socket port number e.g.
+     * argument 2345 will set the socket port number to 2345
+     */
     public static void main(String[] args) {
         int port;
-        if(args.length > 0 &&  Integer.getInteger(args[0]) != null){
-            port = Integer.getInteger(args[0]);
+        if(args.length > 0){
+            try{
+            port = Integer.parseInt(args[0]);
+            } catch(NumberFormatException e){
+                log.error("",e);
+                port = 1500;
+            }
         }else{
             port = 1500;
         }

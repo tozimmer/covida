@@ -41,8 +41,16 @@ public interface IApplication {
      */
     public String getWindowTitle();
     
+    /**
+     * Starts the application
+     */
     public void start();
 
+    /**
+     * Returns true if the application is ready.
+     * 
+     * @return true if application is ready
+     */
     public boolean isReady();
     
 }

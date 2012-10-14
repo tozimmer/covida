@@ -46,8 +46,25 @@ public class ClientDemo {
      */
     private static org.slf4j.Logger log = LoggerFactory.getLogger(ClientDemo.class);
     
+    /**
+     * Starts a TCP Client.
+     * 
+     * @param args first argument will be interpreted as socket port number e.g.
+     * argument 2345 will set the socket port number to 2345
+     */
     public static void main(String[] args) {
-        TCPClient client = new TCPClientImplDemo(1500);
+        int port;
+        if(args.length > 0){
+            try{
+            port = Integer.parseInt(args[0]);
+            } catch(NumberFormatException e){
+                log.error("",e);
+                port = 1500;
+            }
+        }else{
+            port = 1500;
+        }
+        TCPClient client = new TCPClientImplDemo(port);
         Thread clientThread = new Thread(client);
         clientThread.setName("Client Thread");
         clientThread.start();
