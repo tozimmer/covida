@@ -40,6 +40,7 @@ import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
 import de.dfki.covida.covidacore.data.Annotation;
 import de.dfki.covida.covidacore.data.AnnotationStorage;
+import de.dfki.covida.covidacore.data.ShapePoints;
 import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.covidacore.utils.VideoUtils;
 import de.dfki.covida.visualjme2.animations.*;
@@ -283,7 +284,7 @@ public class InfoFieldComponent extends JMEComponent {
      *
      * @param shapePoints
      */
-    private void setShapePoints(List<Point> shapePoints) {
+    private void setShapePoints(List<ShapePoints> shapePoints) {
         this.annotation.shapePoints = shapePoints;
     }
 

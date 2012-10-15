@@ -27,6 +27,7 @@
  */
 package de.dfki.covida.videovlcj.embedded;
 
+import de.dfki.covida.covidacore.data.ShapePoints;
 import de.dfki.covida.videovlcj.IVideoGraphicsHandler;
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -120,22 +121,22 @@ public class EmbeddedVideoOverlay extends JWindow implements IVideoGraphicsHandl
     }
 
     @Override
-    public List<Point> getDrawing() {
+    public List<ShapePoints> getDrawings() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public void clearShape() {
+    public void clearShapes() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public List<Point> getSavedShape() {
+    public List<ShapePoints> getSavedShapes() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public void setShape(List<Point> points) {
+    public void addShape(List<Point> points) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -147,5 +148,9 @@ public class EmbeddedVideoOverlay extends JWindow implements IVideoGraphicsHandl
     @Override
     public void clearDrawing() {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    void draw(Point point) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 }

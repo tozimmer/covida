@@ -243,4 +243,12 @@ public interface ITouchAndWriteComponent {
      * @return name as {@link String}
      */
     public String getName();
+
+    /**
+     * Pen up draw event, last point of stroke.
+     * 
+     * @param x x coordinate on the display as {@link Integer}
+     * @param y y coordinate on the display as {@link Integer}
+     */
+    public void drawEnd(int x, int y);
 }

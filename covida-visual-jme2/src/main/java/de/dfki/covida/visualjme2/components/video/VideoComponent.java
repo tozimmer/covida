@@ -42,7 +42,9 @@ import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
 import de.dfki.covida.covidacore.components.IControlableComponent;
 import de.dfki.covida.covidacore.components.IVideoComponent;
-import de.dfki.covida.covidacore.data.*;
+import de.dfki.covida.covidacore.data.Annotation;
+import de.dfki.covida.covidacore.data.AnnotationStorage;
+import de.dfki.covida.covidacore.data.ShapePoints;
 import de.dfki.covida.covidacore.tw.TouchAndWriteComponentHandler;
 import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.videovlcj.AbstractVideoHandler;
@@ -54,11 +56,7 @@ import de.dfki.covida.visualjme2.components.JMEComponent;
 import de.dfki.covida.visualjme2.components.TextComponent;
 import de.dfki.covida.visualjme2.components.video.fields.InfoFieldComponent;
 import de.dfki.covida.visualjme2.components.video.fields.ListFieldComponent;
-import de.dfki.covida.visualjme2.utils.AddControllerCallable;
-import de.dfki.covida.visualjme2.utils.AttachChildCallable;
-import de.dfki.covida.visualjme2.utils.DetachChildCallable;
-import de.dfki.covida.visualjme2.utils.JMEUtils;
-import de.dfki.covida.visualjme2.utils.RemoveControllerCallable;
+import de.dfki.covida.visualjme2.utils.*;
 import de.dfki.touchandwrite.analyser.touch.gestures.events.RotationGestureEventImpl;
 import de.dfki.touchandwrite.analyser.touch.gestures.events.ZoomEventImpl;
 import de.dfki.touchandwrite.input.pen.event.ShapeEvent;
@@ -68,7 +66,6 @@ import java.awt.Point;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 
 /**
@@ -241,7 +238,7 @@ public final class VideoComponent extends JMEComponent implements
         long time = video.getTime();
         Annotation annotation = new Annotation();
         annotation.description = "";
-        annotation.shapePoints = video.getShape();
+        annotation.shapePoints = video.getShapes();
         annotation.shapeType = ShapeType.POLYGON;
         annotation.time_end = time;
         annotation.time_start = time;
@@ -286,20 +283,17 @@ public final class VideoComponent extends JMEComponent implements
         overlay.setRenderState(overlayDefaultState);
         overlay.setRenderState(alpha);
         overlay.updateRenderState();
-        Texture overlayDragTexture = TextureManager.loadTexture(getClass().getClassLoader()
-                .getResource("media/textures/overlay_drag.png"),
+        Texture overlayDragTexture = TextureManager.loadTexture(getClass().getClassLoader().getResource("media/textures/overlay_drag.png"),
                 Texture.MinificationFilter.BilinearNearestMipMap,
                 Texture.MagnificationFilter.Bilinear);
         overlayDragTexture.setWrap(Texture.WrapMode.Clamp);
         overlayDragState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
         overlayDragState.setTexture(overlayDragTexture);
-        Texture overlayBlankTexture = TextureManager.loadTexture(getClass()
-                .getClassLoader().getResource("media/textures/bg_info_blank.png"),
+        Texture overlayBlankTexture = TextureManager.loadTexture(getClass().getClassLoader().getResource("media/textures/bg_info_blank.png"),
                 Texture.MinificationFilter.BilinearNearestMipMap,
                 Texture.MagnificationFilter.Bilinear);
         overlayDragTexture.setWrap(Texture.WrapMode.Clamp);
-        overlayDragBlankState = DisplaySystem.getDisplaySystem().getRenderer()
-                .createTextureState();
+        overlayDragBlankState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
         overlayDragBlankState.setTexture(overlayBlankTexture);
         overlayDrag = new Quad("Overlay-Drag-Image-Quad", (1.15f) * getWidth(),
                 (1.35f) * getHeight());
@@ -435,15 +429,6 @@ public final class VideoComponent extends JMEComponent implements
         initalizeOverlayQuads(JMEUtils.initalizeBlendState());
         stDrag = DragAnimation.getController(overlayDrag);
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, overlay));
-    }
-
-    /**
-     * Adds points to shape which will be drawn on the video
-     *
-     * @param points {@link List} which contains the point data.
-     */
-    public void draw(List<Point> points) {
-        video.setShape(points);
     }
 
     /**
@@ -733,30 +718,35 @@ public final class VideoComponent extends JMEComponent implements
     public void draw(int x, int y) {
         video.pause();
         Vector3f local = getLocal(x, y);
-        local = local.mult(node.getWorldScale());
         int localX = (int) local.x;
         int localY = (int) local.y;
-        localX += getDimension().getWidth() / 2;
-        localY = (int) (getDimension().getHeight()
-                - (localY + getDimension().getHeight() / 2));
+        localX += (getDimension().getWidth() / 2) / node.getLocalScale().x;
+        localY = (int) ((getDimension().getHeight() / node.getLocalScale().y)
+                - ((localY + (getDimension().getHeight() / 2)
+                / node.getLocalScale().y)));
         video.draw(new Point(localX, localY));
     }
 
     @Override
+    public void drawEnd(int x, int y) {
+        draw(x, y);
+        video.endDrawStroke();
+    }
+
+    @Override
     public void hwrAction(String hwr) {
-        if (video.getShape().isEmpty()) {
+        if (video.getShapes().isEmpty()) {
             List<Point> points = new ArrayList<>();
             points.add(new Point(5, 5));
             points.add(new Point(5, getHeight() - 5));
             points.add(new Point(getWidth() - 5, getHeight() - 5));
             points.add(new Point(getWidth() - 5, 5));
             points.add(new Point(5, 5));
-            video.setShape(points);
+            video.addShape(points);
             setNewAnnotationData();
         }
         video.clearDrawing();
         video.resumeAndPause();
-//        video.setHWR(hwr);
         infoField.drawHwrResult(hwr);
     }
 
@@ -766,7 +756,9 @@ public final class VideoComponent extends JMEComponent implements
         clearAnnotation();
         infoField.setAnnotationData(annotation);
         video.setTimePosition(annotation.time_start);
-        video.setShape(annotation.shapePoints);
+        for (ShapePoints shape : annotation.shapePoints) {
+            video.addShape(shape.points);
+        }
         video.resumeAndPause();
     }
 
@@ -829,7 +821,7 @@ public final class VideoComponent extends JMEComponent implements
 
     @Override
     public void onShapeEvent(ShapeEvent event) {
-        video.setShape(video.getDrawing());
+        video.setShapes(video.getDrawings());
         video.clearDrawing();
         setNewAnnotationData();
     }

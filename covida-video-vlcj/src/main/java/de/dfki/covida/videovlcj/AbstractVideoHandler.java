@@ -29,6 +29,7 @@ package de.dfki.covida.videovlcj;
 
 import com.sun.jna.Platform;
 import de.dfki.covida.covidacore.components.IVideoComponent;
+import de.dfki.covida.covidacore.data.ShapePoints;
 import de.dfki.covida.covidacore.utils.VideoUtils;
 import de.dfki.covida.videovlcj.embedded.EmbeddedVideoHandler;
 import de.dfki.covida.videovlcj.preload.VideoPreload;
@@ -298,23 +299,23 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     /**
      * Returns the shape points.
      *
-     * @return {@link List} of {@link Point}s
+     * @return {@link List} of {@link ShapePoints}
      */
-    abstract public List<Point> getShape();
+    abstract public List<ShapePoints> getShapes();
 
     /**
      * Returns drawing points.
      * 
-     * @return {@link List} of {@link Point}s
+     * @return {@link List} of {@link ShapePoints}
      */
-    abstract public List<Point> getDrawing();
+    abstract public List<ShapePoints> getDrawings();
 
     /**
      * Sets the shape points to draw on the video.
      *
      * @param points {@link List} of {@link Point}s
      */
-    abstract public void setShape(List<Point> points);
+    abstract public void addShape(List<Point> points);
 
     /**
      * Sets the video slider for the video {@link ISlider}
@@ -907,7 +908,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * Saves the video frame including the shape to {@link File}
      * {@code source + "."+ mediaPlayer.getTime() + ".png"}
      */
-    abstract public void saveShape();
+    abstract public void saveAnnotatedFrame();
 
     /**
      * Adds the {@link Point} to the {@link List} which should be draw on the
@@ -916,6 +917,8 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * @param point {@link Point}
      */
     abstract public void draw(Point point);
+    
+    abstract public void endDrawStroke();
 
     /**
      * Renturns the video as {@link BufferedImage}
@@ -955,4 +958,10 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * @param hwr
      */
     abstract public void setHWR(String hwr);
+
+    public void setShapes(List<ShapePoints> drawings) {
+        for(ShapePoints shape : drawings){
+            addShape(shape.points);
+        }
+    }
 }

@@ -48,11 +48,7 @@ import de.dfki.touchandwrite.remote.event.HandwritingListener;
 import de.dfki.touchandwrite.remote.event.TouchEventListener;
 import de.dfki.touchandwrite.shape.Shape;
 import java.awt.Point;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -323,9 +319,11 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
             }
         }
         if (activeDrawComponents.containsKey(device)) {
-            activeDrawComponents.get(device).draw(x, y);
             if (penEventState.equals(PenEventDataType.PEN_UP)) {
+                activeDrawComponents.get(device).drawEnd(x, y);
                 activeDrawComponents.remove(device);
+            }else if(penEventState.equals(PenEventDataType.PEN_MOVE)) {
+                activeDrawComponents.get(device).draw(x, y);
             }
         }
     }

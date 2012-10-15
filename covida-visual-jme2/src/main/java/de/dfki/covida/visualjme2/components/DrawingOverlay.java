@@ -224,4 +224,12 @@ public class DrawingOverlay extends Node {
         }
         super.draw(r);
     }
+
+    /**
+     * Ends current draw stroke
+     */
+    void endDrawStroke() {
+        lastX.clear();
+        lastY.clear();
+    }
 }

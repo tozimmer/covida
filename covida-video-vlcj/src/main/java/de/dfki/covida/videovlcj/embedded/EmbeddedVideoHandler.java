@@ -28,6 +28,7 @@
 package de.dfki.covida.videovlcj.embedded;
 
 import de.dfki.covida.covidacore.components.IVideoComponent;
+import de.dfki.covida.covidacore.data.ShapePoints;
 import de.dfki.covida.videovlcj.AbstractVideoHandler;
 import java.awt.Canvas;
 import java.awt.Color;
@@ -150,14 +151,8 @@ public final class EmbeddedVideoHandler extends AbstractVideoHandler {
      * {@code source + "."+ mediaPlayer.getTime() + ".png"}
      */
     @Override
-    public void saveShape() {
+    public void saveAnnotatedFrame() {
         // draw and save new shapes
-        if (overlay.getDrawing().size() < 2) {
-            log.debug("shapePoints.size()<2");
-            overlay.getDrawing().add(new Point(0, 0));
-            overlay.getDrawing().add(new Point(0, 0));
-        }
-
         BufferedImage img = getSnapshot();
         if (img != null) {
             try {
@@ -169,27 +164,27 @@ public final class EmbeddedVideoHandler extends AbstractVideoHandler {
         } else {
             log.warn("Snapshot BufferedImage is null");
         }
-        overlay.clearShape();
+        overlay.clearShapes();
     }
 
     @Override
     public void draw(Point point) {
-        overlay.getDrawing().add(point);
+        overlay.draw(point);
     }
 
     @Override
-    public List<Point> getShape() {
-        return overlay.getSavedShape();
+    public List<ShapePoints> getShapes() {
+        return overlay.getSavedShapes();
     }
 
     @Override
-    public List<Point> getDrawing() {
-        return overlay.getDrawing();
+    public List<ShapePoints> getDrawings() {
+        return overlay.getDrawings();
     }
 
     @Override
-    public void setShape(List<Point> points) {
-        overlay.setShape(points);
+    public void addShape(List<Point> points) {
+        overlay.addShape(points);
     }
 
     @Override
@@ -202,7 +197,7 @@ public final class EmbeddedVideoHandler extends AbstractVideoHandler {
      */
     @Override
     public void clearShape() {
-        overlay.clearShape();
+        overlay.clearShapes();
     }
 
     /**
@@ -249,6 +244,11 @@ public final class EmbeddedVideoHandler extends AbstractVideoHandler {
 
     @Override
     public String getTitle() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void endDrawStroke() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 }

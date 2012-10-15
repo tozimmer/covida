@@ -28,6 +28,7 @@
 package de.dfki.covida.videovlcj.rendered;
 
 import de.dfki.covida.covidacore.components.IVideoComponent;
+import de.dfki.covida.covidacore.data.ShapePoints;
 import de.dfki.covida.videovlcj.AbstractVideoHandler;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
@@ -97,17 +98,10 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
      * {@code source + "."+ mediaPlayer.getTime() + ".png"}
      */
     @Override
-    public void saveShape() {
+    public void saveAnnotatedFrame() {
         if (renderer == null) {
             return;
         }
-        // draw and save new shapes
-        if (renderer.getDrawing().size() < 2) {
-            log.debug("shapePoints.size()<2");
-            renderer.getDrawing().add(new Point(0, 0));
-            renderer.getDrawing().add(new Point(0, 0));
-        }
-
         BufferedImage img = getSnapshot();
         if (img != null) {
             try {
@@ -119,7 +113,7 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
         } else {
             log.warn("Snapshot BufferedImage is null");
         }
-        renderer.clearShape();
+        renderer.clearShapes();
     }
 
     @Override
@@ -131,27 +125,27 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
     }
 
     @Override
-    public List<Point> getShape() {
+    public List<ShapePoints> getShapes() {
         if (renderer == null) {
             return null;
         }
-        return renderer.getSavedShape();
+        return renderer.getSavedShapes();
     }
 
     @Override
-    public List<Point> getDrawing() {
+    public List<ShapePoints> getDrawings() {
         if (renderer == null) {
             return null;
         }
-        return renderer.getDrawing();
+        return renderer.getDrawings();
     }
 
     @Override
-    public void setShape(List<Point> points) {
+    public void addShape(List<Point> points) {
         if (renderer == null) {
             return;
         }
-        renderer.setShape(points);
+        renderer.addShape(points);
     }
 
     @Override
@@ -171,7 +165,7 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
         if (renderer == null) {
             return;
         }
-        renderer.clearShape();
+        renderer.clearShapes();
     }
 
     /**
@@ -188,5 +182,10 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
     @Override
     public String getTitle() {
         return renderer.getTitle();
+    }
+
+    @Override
+    public void endDrawStroke() {
+        renderer.endDrawStroke();
     }
 }

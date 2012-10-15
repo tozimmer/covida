@@ -41,8 +41,11 @@ import com.jmex.awt.swingui.ImageGraphics;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
 import de.dfki.covida.visualjme2.utils.DetachChildCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
-import java.awt.Point;
-import java.util.*;
+import de.dfki.touchandwrite.input.pen.event.ShapeEvent;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * FieldComponent
@@ -177,6 +180,17 @@ public abstract class FieldComponent extends JMEComponent {
         localY = (int) (getDimension().getHeight()
                 - (localY + getDimension().getHeight() / 2));
         overlay.updateImage(localX, localY, 1);
+    }
+    
+    @Override
+    public void drawEnd(int x, int y) {
+        draw(x, y);
+        overlay.endDrawStroke();
+    }
+    
+    @Override
+    public void onShapeEvent(ShapeEvent event) {
+        overlay.clear();
     }
     
     /**

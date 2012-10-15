@@ -436,6 +436,10 @@ public abstract class JMEComponent implements ITouchAndWriteComponent {
     @Override
     public void draw(int x, int y) {
     }
+    
+    @Override
+    public void drawEnd(int x, int y) {
+    }
 
     @Override
     public void rotateAction(RotationGestureEventImpl event) {

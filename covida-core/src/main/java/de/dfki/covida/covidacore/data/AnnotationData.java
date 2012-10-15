@@ -247,18 +247,21 @@ public class AnnotationData implements Serializable {
                 token.setTextContent(annotations.get(i).description);
                 el.appendChild(token);
                 if (annotations.get(i).shapePoints == null) {
-                    List<Point> points = new ArrayList<>();
-                    points.add(new Point(0, 0));
-                    annotations.get(i).shapePoints = points;
+                    ShapePoints points = new ShapePoints();
+                    List<ShapePoints> shapes = new ArrayList<>();
+                    points.points.add(new Point(0, 0));
+                    shapes.add(points);
+                    annotations.get(i).shapePoints = shapes;
                     log.debug(
                             "data.shapePointsList.get(i) == null - Annotation: "
                             + i + "Video: " + videoSource);
                 }
-                for (int j = 0; j < annotations.get(i).shapePoints.size(); j++) {
-                    point = doc.createElement("point");
-                    point.setTextContent(annotations.get(i).shapePoints.get(j).x
-                            + "," + annotations.get(i).shapePoints.get(j).y);
-                    el.appendChild(point);
+                for (ShapePoints points : annotations.get(i).shapePoints) {
+                    for (Point p : points.points) {
+                        point = doc.createElement("point");
+                        point.setTextContent(p.x  + "," + p.y);
+                        el.appendChild(point);
+                    }
                 }
 
             }

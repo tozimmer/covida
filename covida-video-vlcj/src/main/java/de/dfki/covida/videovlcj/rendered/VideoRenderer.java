@@ -27,6 +27,7 @@
  */
 package de.dfki.covida.videovlcj.rendered;
 
+import de.dfki.covida.covidacore.data.ShapePoints;
 import de.dfki.covida.covidacore.utils.ImageUtils;
 import de.dfki.covida.videovlcj.IVideoGraphicsHandler;
 import java.awt.BasicStroke;
@@ -38,10 +39,7 @@ import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,10 +70,10 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
     private BufferedImage frame;
     private final int width;
     private final int height;
-    private List<Point> drawedPoints;
-    private List<Point> shapePoints;
-    private Collection<Point> pointsToDraw;
-    private Collection<Point> shapeToDraw;
+    private List<ShapePoints> drawedPoints;
+    private List<ShapePoints> shapePoints;
+    private Collection<Collection<Point>> pointsToDraw;
+    private Collection<Collection<Point>> shapeToDraw;
     private BufferedImage preloadFrame;
     private Dimension d;
     private Font f = new Font("Arial", Font.PLAIN, 20);
@@ -102,13 +100,9 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
         this.shapePoints = new ArrayList<>();
         this.pointsToDraw = new ConcurrentLinkedQueue<>();
         shapeToDraw = new ConcurrentLinkedQueue<>();
-        this.frame = GraphicsEnvironment.getLocalGraphicsEnvironment()
-                .getDefaultScreenDevice().getDefaultConfiguration()
-                .createCompatibleImage(width, height);
+        this.frame = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration().createCompatibleImage(width, height);
         this.frame.setAccelerationPriority(1.0f);
-        this.preloadFrame = GraphicsEnvironment.getLocalGraphicsEnvironment()
-                .getDefaultScreenDevice().getDefaultConfiguration()
-                .createCompatibleImage(width, height);
+        this.preloadFrame = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration().createCompatibleImage(width, height);
         this.preloadFrame.setAccelerationPriority(1.0f);
     }
 
@@ -191,33 +185,38 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
      * @param g2d {@link Graphics2D}
      */
     private void drawPoints(Graphics2D g2d) {
-        Point lastPoint = null;
-        for (Point point : pointsToDraw) {
-            if (lastPoint == null) {
-                lastPoint = point;
-            } else {
-                g2d.setColor(Color.black);
-                g2d.drawLine(lastPoint.x + 2, lastPoint.y + 2, point.x + 2, point.y + 2);
-                g2d.drawLine(lastPoint.x - 2, lastPoint.y + 2, point.x - 2, point.y + 2);
-                g2d.drawLine(lastPoint.x + 2, lastPoint.y - 2, point.x + 2, point.y - 2);
-                g2d.drawLine(lastPoint.x - 2, lastPoint.y - 2, point.x - 2, point.y - 2);
-                g2d.setColor(defaultG2DColor);
-                g2d.drawLine(lastPoint.x, lastPoint.y, point.x, point.y);
-                lastPoint = point;
+        for (Collection<Point> points : pointsToDraw) {
+            Point lastPoint = null;
+            for (Point point : points) {
+                if (lastPoint == null) {
+                    lastPoint = point;
+                } else {
+                    g2d.setColor(Color.black);
+                    g2d.drawLine(lastPoint.x + 2, lastPoint.y + 2, point.x + 2, point.y + 2);
+                    g2d.drawLine(lastPoint.x - 2, lastPoint.y + 2, point.x - 2, point.y + 2);
+                    g2d.drawLine(lastPoint.x + 2, lastPoint.y - 2, point.x + 2, point.y - 2);
+                    g2d.drawLine(lastPoint.x - 2, lastPoint.y - 2, point.x - 2, point.y - 2);
+                    g2d.setColor(defaultG2DColor);
+                    g2d.drawLine(lastPoint.x, lastPoint.y, point.x, point.y);
+                    lastPoint = point;
+                }
             }
         }
-        for (Point point : shapeToDraw) {
-            if (lastPoint == null) {
-                lastPoint = point;
-            } else {
-                g2d.setColor(Color.black);
-                g2d.drawLine(lastPoint.x + 2, lastPoint.y + 2, point.x + 2, point.y + 2);
-                g2d.drawLine(lastPoint.x - 2, lastPoint.y + 2, point.x - 2, point.y + 2);
-                g2d.drawLine(lastPoint.x + 2, lastPoint.y - 2, point.x + 2, point.y - 2);
-                g2d.drawLine(lastPoint.x - 2, lastPoint.y - 2, point.x - 2, point.y - 2);
-                g2d.setColor(Color.yellow);
-                g2d.drawLine(lastPoint.x, lastPoint.y, point.x, point.y);
-                lastPoint = point;
+        for (Collection<Point> points : shapeToDraw) {
+            Point lastPoint = null;
+            for (Point point : points) {
+                if (lastPoint == null) {
+                    lastPoint = point;
+                } else {
+                    g2d.setColor(Color.black);
+                    g2d.drawLine(lastPoint.x + 2, lastPoint.y + 2, point.x + 2, point.y + 2);
+                    g2d.drawLine(lastPoint.x - 2, lastPoint.y + 2, point.x - 2, point.y + 2);
+                    g2d.drawLine(lastPoint.x + 2, lastPoint.y - 2, point.x + 2, point.y - 2);
+                    g2d.drawLine(lastPoint.x - 2, lastPoint.y - 2, point.x - 2, point.y - 2);
+                    g2d.setColor(Color.yellow);
+                    g2d.drawLine(lastPoint.x, lastPoint.y, point.x, point.y);
+                    lastPoint = point;
+                }
             }
         }
     }
@@ -255,8 +254,27 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
      * @param point {@link Point}
      */
     public void draw(Point point) {
-        drawedPoints.add(point);
-        pointsToDraw.add(point);
+        if (drawedPoints.isEmpty()) {
+            ShapePoints shape = new ShapePoints();
+            drawedPoints.add(shape);
+        }
+        drawedPoints.get(drawedPoints.size() - 1).points.add(point);
+        Iterator<Collection<Point>> iterator = pointsToDraw.iterator();
+        Collection<Point> last = null;
+        while (iterator.hasNext()) {
+            last = iterator.next();
+        }
+        if (last == null) {
+            last = new ConcurrentLinkedQueue<>();
+        }
+        last.add(point);
+        pointsToDraw.add(last);
+    }
+
+    public void endDrawStroke() {
+        drawedPoints.add(new ShapePoints());
+        Collection<Point> newStroke = new ConcurrentLinkedQueue<>();
+        pointsToDraw.add(newStroke);
     }
 
     /**
@@ -325,26 +343,30 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
     }
 
     @Override
-    public synchronized void setShape(List<Point> points) {
-        this.shapePoints = points;
+    public synchronized void addShape(List<Point> points) {
+        ShapePoints shape = new ShapePoints();
+        shape.points = points;
+        this.shapePoints.add(shape);
         this.pointsToDraw.clear();
+        Collection<Point> newShape = new ConcurrentLinkedQueue<>();
         for (Point point : points) {
-            shapeToDraw.add(point);
+            newShape.add(point);
         }
+        shapeToDraw.add(newShape);
     }
 
     @Override
-    public List<Point> getDrawing() {
+    public List<ShapePoints> getDrawings() {
         return drawedPoints;
     }
 
     @Override
-    public List<Point> getSavedShape() {
+    public List<ShapePoints> getSavedShapes() {
         return shapePoints;
     }
 
     @Override
-    public synchronized void clearShape() {
+    public synchronized void clearShapes() {
         shapePoints = new ArrayList<>();
         shapeToDraw.clear();
     }

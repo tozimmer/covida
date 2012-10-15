@@ -73,10 +73,9 @@ public class Annotation implements Serializable {
     /**
      * Points of the {@link Annotation} outline.
      */
-    @XmlElementWrapper(name = "shapePoints")
-    @XmlElement(name = "shapePoint")
-    @XmlJavaTypeAdapter(PointAdapter.class)
-    public List<Point> shapePoints;
+    @XmlElementWrapper(name = "shapes")
+    @XmlElement(name = "shape")
+    public List<ShapePoints> shapePoints;
     /**
      * Annotation label as {@link String}
      */
@@ -85,24 +84,5 @@ public class Annotation implements Serializable {
 
     public Annotation() {
         this.uuid = UUID.randomUUID();
-    }
-}
-
-/**
- * Adapter for serialize {@link Point} objects.
- *
- * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
- */
-class PointAdapter extends XmlAdapter<String, Point> {
-
-    @Override
-    public String marshal(Point point) throws Exception {
-        return point.x + "," + point.y;
-    }
-
-    @Override
-    public Point unmarshal(String str) throws Exception {
-        String[] res = str.split(",");
-        return new Point(Integer.parseInt(res[0]), Integer.parseInt(res[1]));
     }
 }
