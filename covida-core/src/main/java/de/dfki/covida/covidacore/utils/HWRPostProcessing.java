@@ -30,11 +30,18 @@ package de.dfki.covida.covidacore.utils;
 import de.dfki.touchandwrite.input.pen.hwr.HandwritingRecognitionEvent;
 
 /**
+ * Handwriting post processing
  *
- * @author Tobias Zimmermann
+ * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
  */
 public class HWRPostProcessing {
     
+    /**
+     * Returns top result of the result set.
+     * 
+     * @param event {@link HandwritingRecognitionEvent}
+     * @return {@link String}
+     */
     public static String getResult(HandwritingRecognitionEvent event){
         return event.getHWRResultSet().topResult();
     }

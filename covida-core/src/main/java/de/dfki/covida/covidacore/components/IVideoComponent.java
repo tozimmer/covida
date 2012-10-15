@@ -1,5 +1,5 @@
 /*
- * AnnotatedVideoCreator.java
+ * IVideoComponent.java
  *
  * Copyright (c) 2012, Tobias Zimmermann All rights reserved.
  *
@@ -36,11 +36,29 @@ import de.dfki.covida.covidacore.data.Annotation;
  */
 public interface IVideoComponent {
 
+    /**
+     * Returns video source location as {@link String}
+     *
+     * @return video resource location as {@link String}
+     */
     public String getSource();
 
+    /**
+     * Returns video title
+     *
+     * @return video title as {@link String}
+     */
     public String getTitle();
 
+    /**
+     * Initiates the creation of the video player and e.g. control elements etc.
+     */
     public void create();
 
+    /**
+     * Loads the {@link Annotation}
+     *
+     * @param annotation {@link Annotation}
+     */
     public void load(Annotation annotation);
 }

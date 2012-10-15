@@ -39,35 +39,35 @@ public enum ActionName {
     /**
      * Non action.
      */
-    NONE, 
+    NONE,
     /**
      * Backward action.
      */
-    BACKWARD, 
+    BACKWARD,
     /**
      * Stop action.
      */
-    STOP, 
+    STOP,
     /**
      * Play / Pause action.
      */
-    PLAYPAUSE, 
+    PLAYPAUSE,
     /**
      * Forward action.
      */
-    FORWARD, 
+    FORWARD,
     /**
      * Close action.
      */
-    CLOSE, 
+    CLOSE,
     /**
      * Change media action.
      */
-    CHANGEMEDIA, 
+    CHANGEMEDIA,
     /**
      * Sound on / off action.
      */
-    SOUND, 
+    SOUND,
     /**
      * List attach / detach action.
      */
@@ -75,7 +75,7 @@ public enum ActionName {
     /**
      * Save action.
      */
-    SAVE, 
+    SAVE,
     /**
      * Delete action.
      */
@@ -91,11 +91,11 @@ public enum ActionName {
     /**
      * Load annotation list action.
      */
-    LOADLIST, 
+    LOADLIST,
     /**
      * Garbadge
      */
-    GARBADGE, 
+    GARBADGE,
     /**
      * Opens new video component
      */

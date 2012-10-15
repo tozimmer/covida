@@ -115,8 +115,7 @@ public class MainImplementation {
     /**
      * Sets the logging status.
      *
-     * @param activated if true the logging for {@link uk.co.caprica.vlcj} is
-     * activated.
+     * @param activated if true the logging for vlcj is activated.
      */
     public final void setLoggin(Boolean activated) {
         if (!activated) {

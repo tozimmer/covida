@@ -36,13 +36,40 @@ import de.dfki.covida.covidacore.utils.ActionName;
  */
 public interface IControlableComponent {
 
+    /**
+     * This method should be define the action which should be performed an
+     * {@link ActionName} action recieval.
+     *
+     * @param action {@link ActionName}
+     * @return true if the {@link IControlableComponent} is in active state
+     */
     public boolean toggle(ActionName action);
 
+    /**
+     * Returns width
+     *
+     * @return {@link Integer}
+     */
     public int getWidth();
 
+    /**
+     * Returns height
+     *
+     * @return {@link Integer}
+     */
     public int getHeight();
 
+    /**
+     * Returns the {@link IControlableComponent}s id
+     *
+     * @return id as {@link Integer}
+     */
     public int getId();
 
+    /**
+     * Returns name of {@link IControlableComponent}
+     *
+     * @return name as {@link String}
+     */
     public String getName();
 }

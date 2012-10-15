@@ -45,9 +45,9 @@ import javax.imageio.ImageIO;
 public class ImageUtils {
 
     /**
-     * Creates a new instance of {@link BufferedImage} of the given 
+     * Creates a new instance of {@link BufferedImage} of the given
      * {@link BufferedImage}
-     * 
+     *
      * @param bi {@link BufferedImage}
      * @return {@link BufferedImage}
      */
@@ -59,15 +59,14 @@ public class ImageUtils {
     }
 
     /**
-     * Converts a {@link BufferedImage} in an {@link Array} of {@link Byte}.
-     * 
+     * Converts a {@link BufferedImage} in an Array of {@link Byte}.
+     *
      * @param bufferedImage {@link BufferedImage}
-     * @return {@link Array} of {@link Byte}
+     * @return Array of {@link Byte}
      */
     public static byte[] getImageDataFromImage(BufferedImage bufferedImage) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream(1000);
         try {
-            //FileOutputStream outImg = new FileOutputStream(tempimg);
             ImageIO.write(bufferedImage, "png", baos);
         } catch (IOException ex) {
             Logger.getLogger(ImageUtils.class.getName()).log(Level.SEVERE, null, ex);
@@ -78,7 +77,7 @@ public class ImageUtils {
 
     /**
      * Converts {@link ByteBuffer} and width / height to {@link BufferedImage}
-     * 
+     *
      * @param pixelsRGB {@link ByteBuffer}
      * @param width {@link Integer}
      * @param height {@link Integer}
@@ -90,10 +89,9 @@ public class ImageUtils {
          */
         int[] pixelInts = new int[width * height];
         /**
-         * Convert RGB bytes to ARGB ints with no transparency. 
-         * Flip image vertically by reading the
-         * rows of pixels in the byte buffer in reverse 
-         * - (0,0) is at bottom left in OpenGL.
+         * Convert RGB bytes to ARGB ints with no transparency. Flip image
+         * vertically by reading the rows of pixels in the byte buffer in
+         * reverse - (0,0) is at bottom left in OpenGL.
          *
          * Points to first byte (red) in each row.
          */
@@ -119,9 +117,9 @@ public class ImageUtils {
                 int iB = pixelsRGB.get(q++);
                 int a = pixelsRGB.get(q++);
                 pixelInts[i++] = ((a & 0xFF) << 24) //a
-                       | ((iR & 0xFF) << 16) //r
-                         | ((iG & 0xFF) << 8)  //g
-                         | ((iB & 0xFF));      //b
+                        | ((iR & 0xFF) << 16) //r
+                        | ((iG & 0xFF) << 8) //g
+                        | ((iB & 0xFF));      //b
             }
         }
         // Create a new BufferedImage from the pixeldata.

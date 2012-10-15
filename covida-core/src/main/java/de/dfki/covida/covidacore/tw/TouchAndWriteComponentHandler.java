@@ -36,6 +36,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
  */
 public class TouchAndWriteComponentHandler {
+
     /**
      * Instance of {@link TouchAndWriteComponentHandler}
      */
@@ -44,49 +45,49 @@ public class TouchAndWriteComponentHandler {
      * {@link Collection} of {@link ITouchAndWriteComponent}
      */
     private Collection<ITouchAndWriteComponent> components;
-    
+
     /**
      * Private constructor of {@link TouchAndWriteComponentHandler}
      */
-    private TouchAndWriteComponentHandler(){
+    private TouchAndWriteComponentHandler() {
         components = new ConcurrentLinkedQueue<>();
     }
-    
+
     /**
      * Returns the instance of the {@link TouchAndWriteComponentHandler}.
-     * 
+     *
      * @return {@link TouchAndWriteComponentHandler}
      */
-    public synchronized static TouchAndWriteComponentHandler getInstance(){
-        if(instance == null){
+    public synchronized static TouchAndWriteComponentHandler getInstance() {
+        if (instance == null) {
             instance = new TouchAndWriteComponentHandler();
         }
         return instance;
     }
-    
+
     /**
      * Adds a {@link ITouchAndWriteComponent}
-     * 
+     *
      * @param component {@link ITouchAndWriteComponent}
      */
-    public void addComponent(ITouchAndWriteComponent component){
-        if(!components.contains(component)){
+    public void addComponent(ITouchAndWriteComponent component) {
+        if (!components.contains(component)) {
             components.add(component);
         }
     }
-    
+
     /**
      * Returns all {@link ITouchAndWriteComponent} as {@link Collection}
-     * 
+     *
      * @return {@link Collection} of {@link ITouchAndWriteComponent}
      */
-    public Collection<ITouchAndWriteComponent> getComponents(){
+    public Collection<ITouchAndWriteComponent> getComponents() {
         return components;
     }
 
     public void removeComponent(ITouchAndWriteComponent component) {
-        if(components.contains(component)){
-           components.remove(component);
+        if (components.contains(component)) {
+            components.remove(component);
         }
     }
 }

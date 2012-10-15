@@ -34,13 +34,40 @@ package de.dfki.covida.covidacore.components;
  */
 public interface IControlButton {
 
+    /**
+     * Sets the {@link IControlButton} activated / inactivated
+     *
+     * Note that this method does not disable the button, it only changes the
+     * internal state e.g. change the texture of the button.
+     *
+     * @param activated if true button is activated
+     */
     public void setActive(boolean activated);
 
+    /**
+     * Returns the active state of the {@link IControlButton}
+     *
+     * @return true if button is in active state
+     */
     public boolean getActive();
 
+    /**
+     * Disables / enables the {@link IControlButton}
+     *
+     * @param enabled if true {@link IControlButton} will be enabled
+     */
     public void setEnabled(boolean enabled);
 
+    /**
+     * Returns the status of the {@link IControlButton}
+     *
+     * @return true if button is enabled
+     */
     public boolean getEnabled();
 
+    /**
+     * Method which should be overwritten whitch theaction which should be
+     * performed on a button click.
+     */
     public void toggle();
 }

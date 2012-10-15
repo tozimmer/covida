@@ -83,8 +83,8 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
      * Creates an instance of the TouchAndWriteEventHandler class wich wraps the
      * touch and pen events from the Touch and Write SDK
      *
-     * @param mainFrame UI
-     * @param wwPanel Visualization Panel
+     * @param application {@link IApplication}
+     * @param config {@link TouchAndWriteConfiguration}
      */
     public TouchAndWriteEventHandler(IApplication application, TouchAndWriteConfiguration config) {
         super(config);
@@ -282,8 +282,8 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
 
     @Override
     public void onShapeEvent(ShapeEvent event) {
-        for(Shape shape : event.getDetectedShapes()){
-            log.debug("Shape: {}",shape.getShapeType());
+        for (Shape shape : event.getDetectedShapes()) {
+            log.debug("Shape: {}", shape.getShapeType());
         }
         SortedMap<Integer, ITouchAndWriteComponent> components = new TreeMap<>();
         for (ITouchAndWriteComponent component : componentHandler.getComponents()) {
@@ -312,13 +312,13 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
             for (ITouchAndWriteComponent component : componentHandler.getComponents()) {
                 if (component.isDrawable()) {
                     if (component.inArea(x, y)) {
-                        
+
                         components.put(component.getZPosition(), component);
                     }
                 }
             }
             if (!components.isEmpty()) {
-                log.debug("Put: {}",components.get(components.lastKey()));
+                log.debug("Put: {}", components.get(components.lastKey()));
                 activeDrawComponents.put(device, components.get(components.lastKey()));
             }
         }

@@ -1,19 +1,19 @@
 /*
  * TCPServer.java
- * 
+ *
  * Copyright (c) 2012, Tobias Zimmermann All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
- * 
+ *
  * Redistributions of source code must retain the above copyright notice, this list of
  * conditions and the following disclaimer. Redistributions in binary form must reproduce the
  * above copyright notice, this list of conditions and the following disclaimer in the
  * documentation and/or other materials provided with the distribution.
- * 
+ *
  * Neither the name of the author nor the names of its contributors may be used to endorse or
  * promote products derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS
  * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
@@ -23,7 +23,7 @@
  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  */
 package de.dfki.covida.covidacore.streaming;
 
@@ -78,7 +78,7 @@ public class TCPServer extends Thread {
 
     /**
      * Sends a {@link Array} of {@link Byte}
-     * 
+     *
      * @param bytes {@link Array} of {@link Byte}
      */
     public synchronized void writeByteBuffer(byte[] bytes) {
@@ -99,13 +99,14 @@ public class TCPServer extends Thread {
 
     /**
      * Converts {@link ByteBuffer} to an {@link Array} of {@link Byte}.
-     * 
+     *
      * @param buffer {@link ByteBuffer} which holds the image frame data
      * @param width Width of the image frame
      * @param height Height of the image frame
      * @param depth Color depth of the image
      */
-    public void writeByteBuffer(ByteBuffer buffer, int width, int height, int depth) {
+    public void writeByteBuffer(ByteBuffer buffer, int width, int height,
+            int depth) {
         int buffSize = depth * width * height;
         byte[] bytes = new byte[buffSize];
         for (int i = 0; i < buffSize; i++) {
@@ -129,7 +130,7 @@ public class TCPServer extends Thread {
 
     /**
      * Sets the image frame {@link Dimension}
-     * 
+     *
      * @param dimension {@link Dimension}
      */
     public void setScreenSize(Dimension dimension) {
@@ -138,7 +139,7 @@ public class TCPServer extends Thread {
 
     /**
      * Returns the instance of {@link TCPServer}.
-     * 
+     *
      * @return {@link TCPServer}
      */
     public synchronized static TCPServer getInstance() {
@@ -148,19 +149,20 @@ public class TCPServer extends Thread {
         return instance;
     }
 
+    /**
+     * Create socket server and wait for connection requests
+     */
     @Override
     public void run() {
-        /* create socket server and wait for connection requests */
         try {
             serverSocket = new ServerSocket(port);
-            log.debug("#########################################################");
-            log.debug("# Server waiting for client on port " + serverSocket.getLocalPort() + " #");
-            log.debug("#########################################################");
+            log.debug("Streaming TCP Server waiting for client on port "
+                    + serverSocket.getLocalPort() + " #");
 
             while (true) {
-                Socket socket = serverSocket.accept();  // accept connection
+                Socket socket = serverSocket.accept();
                 log.debug("New client asked for a connection");
-                TcpThread t = new TcpThread(socket);    // make a thread of it
+                TcpThread t = new TcpThread(socket);
                 log.debug("Starting a thread for a new Client");
                 t.start();
                 tcpThreads.add(t);
@@ -190,8 +192,8 @@ public class TCPServer extends Thread {
 
         /**
          * Creates an instance of {@link TcpThread}
-         * 
-         * @param socket 
+         *
+         * @param socket
          */
         public TcpThread(Socket socket) {
             this.socket = socket;
@@ -222,20 +224,20 @@ public class TCPServer extends Thread {
                 Soutput.writeObject(dimension);
                 Soutput.reset();
             } catch (IOException ex) {
-                log.error("",ex);
+                log.error("", ex);
                 running = false;
                 try {
                     Soutput.flush();
                     Soutput.close();
                 } catch (IOException ex1) {
-                    log.error("",ex1);
+                    log.error("", ex1);
                 }
             }
             while (running) {
                 try {
                     Thread.sleep(50);
                 } catch (InterruptedException ex) {
-                    log.error("",ex);
+                    log.error("", ex);
                 }
             }
         }

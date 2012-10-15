@@ -201,13 +201,46 @@ public interface ITouchAndWriteComponent {
      */
     public void panAction(PanEventImpl event);
 
+    /**
+     * Returns the touchable status of the {@link ITouchAndWriteComponent}, if
+     * {@code true} this {@link ITouchAndWriteComponent} will receive touch
+     * events.
+     *
+     * @return true if {@link ITouchAndWriteComponent} is touchable.
+     */
     public boolean isTouchable();
 
+    /**
+     * Sets the touchable status.
+     *
+     * @param touchable if true the {@link ITouchAndWriteComponent} will be set
+     * to touchable
+     * @see #isTouchable()
+     */
     public void setTouchable(boolean touchable);
 
+    /**
+     * Returns the drawable status of the {@link ITouchAndWriteComponent}, if
+     * {@code true} this {@link ITouchAndWriteComponent} will receive pen / hwr
+     * and shape events.
+     *
+     * @return true if {@link ITouchAndWriteComponent} is drawable.
+     */
     public boolean isDrawable();
 
+    /**
+     * Sets the drawable status.
+     *
+     * @param drawable if true the {@link ITouchAndWriteComponent} will be set
+     * to drawable
+     * @see #isDrawable()
+     */
     public void setDrawable(boolean drawable);
-    
+
+    /**
+     * Returns the name of the {@link ITouchAndWriteComponent}
+     *
+     * @return name as {@link String}
+     */
     public String getName();
 }

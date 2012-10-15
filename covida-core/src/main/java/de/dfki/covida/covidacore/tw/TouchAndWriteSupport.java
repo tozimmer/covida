@@ -32,25 +32,24 @@ import de.dfki.touchandwrite.conf.TouchAndWriteConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  *
  * @author Tobias
  */
 public class TouchAndWriteSupport {
-    
+
     /**
      * Logger
      */
     private static Logger log = LoggerFactory.getLogger(TouchAndWriteConfiguration.class);
-    
+
     /**
      * Starts the {@link TouchAndWriteSupport}
-     * 
+     *
      * @param application {@link IApplication}
      * @param device {@link TouchAndWriteDevice}
      */
-    public static void start(IApplication application, TouchAndWriteDevice device){
+    public static void start(IApplication application, TouchAndWriteDevice device) {
         TWServer twServer = new TWServer(device);
         twServer.start();
         TouchAndWriteConfiguration config = TouchAndWriteConfiguration.getDefaultEEESlateConfig();
@@ -59,5 +58,4 @@ public class TouchAndWriteSupport {
         log.debug("Starting Touch&Write support.");
         touchAndWrite.start();
     }
-    
 }
