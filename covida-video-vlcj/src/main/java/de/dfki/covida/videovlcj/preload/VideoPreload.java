@@ -57,16 +57,11 @@ public class VideoPreload implements Runnable, MediaPlayerEventListener {
     private final AbstractVideoHandler video;
 
     /**
-     * VideoComponent Constructor
-     *
-     * @param id
-     * @param x
-     * @param y
-     * @param source
-     * @param format
-     * @param HEIGHT
-     * @param repeating
-     * @param node
+     * Creates a new intance of {@link VideoPreload}
+     * 
+     * @param source video source location as {@link String}
+     * @param video {@link AbstractVideoHandler} which should be called if 
+     * preload is complete
      */
     public VideoPreload(String source, AbstractVideoHandler video) {
         this.video = video;
@@ -74,6 +69,9 @@ public class VideoPreload implements Runnable, MediaPlayerEventListener {
         videoSource = source;
     }
 
+    /**
+     * Initializes the preload
+     */
     private void initComponent() {
         log.debug("VIDEO SOURCE (PRELOAD): " + this.videoSource);
         this.renderer = new VideoRenderer(1, 1, "");
@@ -83,18 +81,27 @@ public class VideoPreload implements Runnable, MediaPlayerEventListener {
         mediaPlayer.playMedia(videoSource);
         mediaPlayer.setPlaySubItems(true);
     }
-
-    @Override
-    public void run() {
-        initComponent();
-    }
-
+    
+    /**
+     * Releases preload resources
+     */
     public void cleanUp() {
         mediaPlayer.release();
     }
 
+    /**
+     * Returns video dimensions
+     * 
+     * @return {@link Dimension}
+     * @return {@code null} if dimension is not available
+     */
     public Dimension getVideoDimension() {
         return dimension;
+    }
+
+    @Override
+    public void run() {
+        initComponent();
     }
 
     @Override

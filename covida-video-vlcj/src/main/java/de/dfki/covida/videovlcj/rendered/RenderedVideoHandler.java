@@ -1,5 +1,5 @@
 /*
- * AbstractVideoHandler.java
+ * RenderedVideoHandler.java
  *
  * Copyright (c) 2012, Tobias Zimmermann All rights reserved.
  *
@@ -29,7 +29,6 @@ package de.dfki.covida.videovlcj.rendered;
 
 import de.dfki.covida.covidacore.components.IVideoComponent;
 import de.dfki.covida.videovlcj.AbstractVideoHandler;
-import de.dfki.covida.videovlcj.VideoType;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -57,8 +56,8 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
      * Creates an instance of {@link AbstractVideoHandler}
      *
      * @param source video source as {@link String}
-     * @param height height of the video {@link Quad}
-     * @param width width of the video {@link Quad}
+     * @param title  video title as {@link String}
+     * @param video  corresponding {@link IVideoComponent}
      */
     public RenderedVideoHandler(String source, String title,
             IVideoComponent video) {
@@ -123,12 +122,6 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
         renderer.clearShape();
     }
 
-    /**
-     * Adds the {@link Point} to the {@link ShapePoints} which should be draw on
-     * the video.
-     *
-     * @param point {@link Point}
-     */
     @Override
     public void draw(Point point) {
         if (renderer == null) {
@@ -137,11 +130,6 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
         renderer.draw(point);
     }
 
-    /**
-     * Returns the shape points.
-     *
-     * @return {@link ShapePoints}
-     */
     @Override
     public List<Point> getShape() {
         if (renderer == null) {
@@ -158,11 +146,6 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
         return renderer.getDrawing();
     }
 
-    /**
-     * Sets the shape points to draw on the video.
-     *
-     * @param points {@link ShapePoints}
-     */
     @Override
     public void setShape(List<Point> points) {
         if (renderer == null) {

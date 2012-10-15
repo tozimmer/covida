@@ -127,16 +127,26 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * {@link MediaPlayer}
      */
     protected MediaPlayerFactory mediaPlayerFactory;
+    /**
+     * If true video player will be paused on next 
+     * {@link #positionChanged(uk.co.caprica.vlcj.player.MediaPlayer, float)}
+     */
     private boolean toPause;
+    /**
+     * Video player title
+     */
     private final String title;
+    /**
+     * Corresponding {@link IVideoComponent}
+     */
     private final IVideoComponent video;
 
     /**
      * Creates an instance of {@link AbstractVideoHandler}
      *
      * @param source video source as {@link String}
-     * @param height height of the video {@link Quad}
-     * @param width width of the video {@link Quad}
+     * @param title video title as {@link String}
+     * @param video corresponding {@link IVideoComponent}
      */
     public AbstractVideoHandler(String source, String title,
             IVideoComponent video) {
@@ -146,6 +156,12 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
         preload();
     }
 
+    /**
+     * Creates a {@link VideoPreload} instance to determine video dimensions.
+     * 
+     * Note that the {@link VideoPreload} instance will call 
+     * {@link #create(int, int)} method if dimension is determined.
+     */
     private void preload() {
         VideoPreload preload = new VideoPreload(source, this);
         Thread preloadThread = new Thread(preload);
@@ -153,6 +169,12 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
         preloadThread.start();
     }
 
+    /**
+     * Creates the video video player
+     * 
+     * @param width width of the video player
+     * @param height height of the video player
+     */
     public void create(int width, int height) {
         String[] args;
         if (Platform.isMac()) {
@@ -197,14 +219,13 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     }
 
     /**
-     * Returns the current time postion in ms.
+     * Returns the current time postion in milliseconds.
      *
-     * Note that only the part from {@code timeStart) to {
-     *
-     * @timeEnd} is considered.
+     * Note that only the part from {@code timeStart} to {@code timeEnd} is 
+     * considered.
      * @see #setTimeRange(long, long)
      *
-     * @return
+     * @return current time stamp in milliseconds
      */
     public long getTime() {
         if (mediaPlayer == null) {
@@ -226,9 +247,8 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     /**
      * Returns the video progess in percent as {@link String}.
      *
-     * Note that only the part from {@code timeStart) to {
-     *
-     * @timeEnd} is considered.
+     * Note that only the part from {@code timeStart} to {@code timeEnd} is 
+     * considered.
      * @see #setTimeRange(long, long)
      *
      * @return vieo progress in the format xx % (xx is the progress in percent)
@@ -273,16 +293,21 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     /**
      * Returns the shape points.
      *
-     * @return {@link ShapePoints}
+     * @return {@link List} of {@link Point}s
      */
     abstract public List<Point> getShape();
 
+    /**
+     * Returns drawing points.
+     * 
+     * @return {@link List} of {@link Point}s
+     */
     abstract public List<Point> getDrawing();
 
     /**
      * Sets the shape points to draw on the video.
      *
-     * @param points {@link List}
+     * @param points {@link List} of {@link Point}s
      */
     abstract public void setShape(List<Point> points);
 
@@ -316,10 +341,20 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
         return (mediaPlayer.isPlaying());
     }
 
+    /**
+     * Returns playing status.
+     * 
+     * @return true if video currently playing
+     */
     public boolean isPlaying() {
         return isPlaying;
     }
 
+    /**
+     * Returns volume as percent.
+     * 
+     * @return {@link Integer}
+     */
     public int getVolume() {
         return mediaPlayer.getVolume();
     }
@@ -334,9 +369,6 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
         if (mediaPlayerComponent != null) {
             mediaPlayerComponent.release();
         }
-//        if (mediaPlayerFactory != null) {
-//            mediaPlayerFactory.release();
-//        }
     }
 
     /**
@@ -403,9 +435,8 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     /**
      * Sets the time position of the video in percentage.
      *
-     * Note that only the part from {@code timeStart) to {
-     *
-     * @timeEnd} is considered if {@code isTimeRanged} is {@code true}.
+     * Note that only the part from {@code timeStart} to {@code timeEnd} is 
+     * considered if {@code isTimeRanged} is {@code true}.
      * @see #setTimeRange(long, long)
      *
      * @param time
@@ -428,9 +459,8 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     /**
      * Sets the time position of the video in percentage.
      *
-     * Note that only the part from {@code timeStart) to {
-     *
-     * @timeEnd} is considered.
+     * Note that only the part from {@code timeStart} to {@code timeEnd} is 
+     * considered.
      * @see #setTimeRange(long, long)
      *
      * @param percentage
@@ -480,7 +510,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     /**
      * Returns the max time position of the video in ms.
      *
-     * Note that only the part from {@code timeStart) to {@code timeEnd} is considered.
+     * Note that only the part from {@code timeStart} to {@code timeEnd} is considered.
      *
      * @see #setTimeRange(long, long)
      *
@@ -580,7 +610,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * Handles buffering event.
      *
      * @param mp {@link MediaPlayer} which fired the event
-     * @param f buffering status as {@link flaot}
+     * @param f buffering status as {@link Float}
      */
     @Override
     public void buffering(MediaPlayer mp, float f) {
@@ -753,7 +783,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * Handles the mediaDurationChanged event.
      *
      * @param mp {@link MediaPlayer} which fired the event
-     * @param l media duration in ms as {@link long}
+     * @param l media duration in ms as {@link Long}
      */
     @Override
     public void mediaDurationChanged(MediaPlayer mp, long l) {

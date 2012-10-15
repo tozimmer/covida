@@ -29,7 +29,6 @@ package de.dfki.covida.videovlcj.embedded;
 
 import de.dfki.covida.covidacore.components.IVideoComponent;
 import de.dfki.covida.videovlcj.AbstractVideoHandler;
-import de.dfki.covida.videovlcj.VideoType;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Point;
@@ -48,7 +47,7 @@ import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 import uk.co.caprica.vlcj.player.embedded.videosurface.CanvasVideoSurface;
 
 /**
- * Component to create a {@link MediaPlayer} and {@link VideoRenderer} to play
+ * Component to create a {@link MediaPlayer} and {@link EmbeddedVideoHandler} to play
  * videos.
  *
  * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
@@ -72,10 +71,11 @@ public final class EmbeddedVideoHandler extends AbstractVideoHandler {
      * Creates an instance of {@link AbstractVideoHandler}
      *
      * @param source video source as {@link String}
-     * @param height height of the video {@link Quad}
-     * @param width width of the video {@link Quad}
+     * @param title  {@link String}
+     * @param canvas  {@link Canvas}
+     * @param video {@link IVideoComponent}
      */
-    public EmbeddedVideoHandler(String source, String title, Canvas canvas, 
+    public EmbeddedVideoHandler(String source, String title, Canvas canvas,
             IVideoComponent video) {
         super(source, title, video);
         CanvasVideoSurface videoSurface = mediaPlayerFactory.newVideoSurface(canvas);
@@ -84,13 +84,17 @@ public final class EmbeddedVideoHandler extends AbstractVideoHandler {
             embeddedMediaPlayer.setVideoSurface(videoSurface);
         }
     }
-    
-    public void setOveray(int width, int height){
+
+    /**
+     * Sets the video overlay
+     * 
+     * @param width width
+     * @param height height
+     */
+    public void setOveray(int width, int height) {
         overlay = new EmbeddedVideoOverlay(width, height);
         setOverlay(overlay);
     }
-    
-    
 
     /**
      * Returns the {@link EmbeddedMediaPlayerComponent}
@@ -103,7 +107,7 @@ public final class EmbeddedVideoHandler extends AbstractVideoHandler {
 
     /**
      * Sets video overlay
-     * 
+     *
      * @param win {@link JWindow}
      */
     public void setOverlay(JWindow win) {
@@ -112,7 +116,7 @@ public final class EmbeddedVideoHandler extends AbstractVideoHandler {
 
     /**
      * Enables / Disables the video overlay
-     * 
+     *
      * @param b {@link Boolean}
      */
     public void enableOverlay(boolean b) {
@@ -121,7 +125,7 @@ public final class EmbeddedVideoHandler extends AbstractVideoHandler {
 
     /**
      * Returns the overlay
-     * 
+     *
      * @return {@link Window}
      */
     public Window getOverlay() {
@@ -160,7 +164,7 @@ public final class EmbeddedVideoHandler extends AbstractVideoHandler {
                 ImageIO.write(img, "png", new File(getSource() + "."
                         + mediaPlayerComponent.getMediaPlayer().getTime() + ".png"));
             } catch (IOException e) {
-                log.error("",e);
+                log.error("", e);
             }
         } else {
             log.warn("Snapshot BufferedImage is null");
@@ -168,22 +172,11 @@ public final class EmbeddedVideoHandler extends AbstractVideoHandler {
         overlay.clearShape();
     }
 
-    /**
-     * Adds the {@link Point} to the {@link ShapePoints} which should be draw on
-     * the video.
-     *
-     * @param point {@link Point}
-     */
     @Override
     public void draw(Point point) {
         overlay.getDrawing().add(point);
     }
 
-    /**
-     * Returns the shape points.
-     *
-     * @return {@link ShapePoints}
-     */
     @Override
     public List<Point> getShape() {
         return overlay.getSavedShape();
@@ -194,11 +187,6 @@ public final class EmbeddedVideoHandler extends AbstractVideoHandler {
         return overlay.getDrawing();
     }
 
-    /**
-     * Sets the shape points to draw on the video.
-     *
-     * @param points {@link List}
-     */
     @Override
     public void setShape(List<Point> points) {
         overlay.setShape(points);
