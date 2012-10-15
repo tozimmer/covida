@@ -428,9 +428,11 @@ public class AnnotationData implements Serializable {
     public void save(Annotation annotation) {
         for (Annotation entry : annotations) {
             if (entry.uuid.equals(annotation.uuid)) {
-                entry = annotation;
+                annotations.remove(entry);
+                break;
             }
         }
+        annotations.add(annotation);
     }
 
     @Override

@@ -206,6 +206,20 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
                 lastPoint = point;
             }
         }
+        for (Point point : shapeToDraw) {
+            if (lastPoint == null) {
+                lastPoint = point;
+            } else {
+                g2d.setColor(Color.black);
+                g2d.drawLine(lastPoint.x + 2, lastPoint.y + 2, point.x + 2, point.y + 2);
+                g2d.drawLine(lastPoint.x - 2, lastPoint.y + 2, point.x - 2, point.y + 2);
+                g2d.drawLine(lastPoint.x + 2, lastPoint.y - 2, point.x + 2, point.y - 2);
+                g2d.drawLine(lastPoint.x - 2, lastPoint.y - 2, point.x - 2, point.y - 2);
+                g2d.setColor(Color.yellow);
+                g2d.drawLine(lastPoint.x, lastPoint.y, point.x, point.y);
+                lastPoint = point;
+            }
+        }
     }
 
     /**
