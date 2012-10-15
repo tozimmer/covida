@@ -63,7 +63,5 @@ public class DataTest {
         annotation.time_start = (long) 455322;
         data.save(annotation);
         data.save();
-        CovidaConfiguration conf = CovidaConfiguration.getInstance();
-        conf.save();
     }
 }

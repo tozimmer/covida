@@ -95,7 +95,7 @@ public class CovidaApplication extends ApplicationImpl {
     public CovidaApplication(TouchAndWriteDevice device, String windowtitle) {
         super(device, windowtitle);
         videoSources = new ArrayList<>();
-        CovidaConfiguration configuration = CovidaConfiguration.getInstance();
+        CovidaConfiguration configuration = CovidaConfiguration.load("../covida-res/config.xml");
         videoSources = configuration.videoSources;
         videos = new ArrayList<>();
         if (streaming) {

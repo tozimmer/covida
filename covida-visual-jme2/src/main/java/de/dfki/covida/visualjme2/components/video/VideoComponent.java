@@ -279,7 +279,7 @@ public final class VideoComponent extends JMEComponent implements
         overlaySelectState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
         overlaySelectState.setTexture(overlaySelectTexture);
         this.overlay = new Quad("Overlay-Default-Image-Quad",
-                (1.15f) * getWidth(), (1.275f) * getHeight());
+                (1.2f) * getWidth(), (1.3f) * getHeight());
         overlay.setRenderState(overlayDefaultState);
         overlay.setRenderState(alpha);
         overlay.updateRenderState();

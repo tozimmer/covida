@@ -124,8 +124,10 @@ public class VideoComponentControls extends JMEComponent implements IVideoContro
             if (controlList.get(texture).equals(ActionName.NONE)) {
                 control.setEnabled(false);
             }
-            controls.put(controlList.get(texture), control);
-            start += controlable.getWidth() + controlWidth;
+            GameTaskQueueManager.getManager()
+                    .update(new AttachChildCallable(node, control.node));
+//            controls.put(controlList.get(texture), control);
+//            start += controlable.getWidth() + controlWidth;
         }
     }
 

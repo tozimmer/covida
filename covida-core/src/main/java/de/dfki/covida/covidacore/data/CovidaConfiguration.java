@@ -143,9 +143,9 @@ public class CovidaConfiguration implements Serializable {
      *
      * Note that the {@link CovidaConfiguration} is saved to "covida.xml"
      */
-    public void save() {
+    public void save(String location) {
         JAXBContext jc;
-        File file = new File("config.xml");
+        File file = new File(location);
         log.debug("Write data to: " + file);
         FileWriter w = null;
         try {
@@ -171,10 +171,11 @@ public class CovidaConfiguration implements Serializable {
     /**
      * Loads a {@link CovidaConfiguration}.
      *
-     * @param file {@link File} which represents the configuration XML file.
+     * @param location {@link String} which represents the configuration XML file.
      * @return {@link CovidaConfiguration}
      */
-    public static CovidaConfiguration load(File file) {
+    public static CovidaConfiguration load(String location) {
+        File file = new File(location);
         try {
             if (file != null && file.canRead()) {
                 JAXBContext jc = JAXBContext.newInstance(CovidaConfiguration.class);
