@@ -170,10 +170,12 @@ public abstract class FieldComponent extends JMEComponent {
     @Override
     public final void draw(int x, int y) {
         Vector3f local = getLocal(x, y);
+        local = local.mult(node.getWorldScale());
         int localX = (int) local.x;
         int localY = (int) local.y;
-        localX += getDimension().getWidth();
-        localY += getDimension().getHeight();
+        localX += getDimension().getWidth() / 2;
+        localY = (int) (getDimension().getHeight()
+                - (localY + getDimension().getHeight() / 2));
         overlay.updateImage(localX, localY, 1);
     }
     

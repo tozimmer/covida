@@ -58,7 +58,7 @@
                 <version>2.6</version>
                 <executions>
                     <execution>
-                        <id>copy-exe</id>
+                        <id>copy-readme</id>
                         <phase>validate</phase>
                         <goals>
                             <goal>copy-resources</goal>
@@ -67,9 +67,28 @@
                             <outputDirectory>${basedir}/target/binaries/bin</outputDirectory>
                             <resources>          
                                 <resource>
-                                    <directory>${basedir}</directory>
+                                    <directory>${basedir}/bin-res</directory>
                                     <includes>
                                         <include>readme.txt</include>
+                                    </includes>
+                                </resource>
+                            </resources>              
+                        </configuration>            
+                    </execution>
+                    <execution>
+                        <id>copy-bat-files</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/binaries</outputDirectory>
+                            <resources>          
+                                <resource>
+                                    <directory>${basedir}/bin-res</directory>
+                                    <includes>
+                                        <include>CoVidA EEE Slate.bat</include>
+                                        <include>CoVidA TW Table.bat</include>
                                     </includes>
                                 </resource>
                             </resources>              

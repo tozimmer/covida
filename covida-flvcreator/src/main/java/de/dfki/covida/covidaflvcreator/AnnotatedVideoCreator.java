@@ -193,7 +193,7 @@ public class AnnotatedVideoCreator extends MediaListenerAdapter implements Runna
                 this.text = text;
             } else {
                 textOverlayEnabled = false;
-                text = "";
+                this.text = "";
             }
         }
     }
@@ -321,47 +321,43 @@ public class AnnotatedVideoCreator extends MediaListenerAdapter implements Runna
      */
     @Override
     public void onVideoPicture(IVideoPictureEvent event) {
-        try {
-            // if the stream index does not match the selected stream index,
-            // then have a closer look
-            if (event.getStreamIndex() != mVideoStreamIndex) {
-                log.debug("Stream index differs.");
-                // if the selected video stream id is not yet set, go ahead an
-                // select this lucky video stream
-                if (-1 == mVideoStreamIndex) {
-                    mVideoStreamIndex = event.getStreamIndex();
-                } // otherwise return, no need to show frames from this video stream
-                else {
-                    log.debug("No need to show frames");
-                    return;
+        // if the stream index does not match the selected stream index,
+        // then have a closer look
+        if (event.getStreamIndex() != mVideoStreamIndex) {
+            log.debug("Stream index differs.");
+            // if the selected video stream id is not yet set, go ahead an
+            // select this lucky video stream
+            if (-1 == mVideoStreamIndex) {
+                mVideoStreamIndex = event.getStreamIndex();
+            } // otherwise return, no need to show frames from this video stream
+            else {
+                log.debug("No need to show frames");
+                return;
+            }
+        }
+        if (event.getTimeStamp() > timeStart && event.getTimeStamp() < timeEnd) {
+            BufferedImage image = event.getImage();
+            Graphics2D g2d = image.createGraphics();
+            g2d.setColor(defaultG2DColor);
+            BasicStroke bs = new BasicStroke(2);
+            g2d.setStroke(bs);
+            drawPoints(g2d);
+            g2d.setFont(f);
+            if (fm == null) {
+                fm = g2d.getFontMetrics();
+                ascent = fm.getAscent();
+                fh = ascent + fm.getDescent();
+                space = fm.stringWidth(" ");
+            }
+            if (textOverlayEnabled) {
+                if (text != null) {
+                    drawString(text, g2d, true, 0);
+                } else {
+                    log.warn("Can not render title overlay: tile == null");
+                    textOverlayEnabled = false;
                 }
             }
-            if (event.getTimeStamp() > timeStart && event.getTimeStamp() < timeEnd) {
-                BufferedImage image = event.getImage();
-                Graphics2D g2d = image.createGraphics();
-                g2d.setColor(defaultG2DColor);
-                BasicStroke bs = new BasicStroke(2);
-                g2d.setStroke(bs);
-                drawPoints(g2d);
-                g2d.setFont(f);
-                if (fm == null) {
-                    fm = g2d.getFontMetrics();
-                    ascent = fm.getAscent();
-                    fh = ascent + fm.getDescent();
-                    space = fm.stringWidth(" ");
-                }
-                if (textOverlayEnabled) {
-                    if (text != null) {
-                        drawString(text, g2d, true, 0);
-                    } else {
-                        log.warn("Can not render title overlay: tile == null");
-                        textOverlayEnabled = false;
-                    }
-                }
-                creator.encodeImage(image, event.getTimeStamp());
-            }
-        } catch (Exception e) {
-            log.error("", e);
+            creator.encodeImage(image, event.getTimeStamp());
         }
     }
 

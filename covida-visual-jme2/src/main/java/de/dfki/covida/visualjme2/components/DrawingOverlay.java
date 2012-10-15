@@ -195,7 +195,7 @@ public class DrawingOverlay extends Node {
      *
      * @param x x coordinate
      * @param y y coordinate
-     * @param i pen id
+     * @param id pen id
      */
     public void updateImage(int x, int y, int id) {
         if (!lastX.containsKey(id)) {

@@ -52,7 +52,6 @@ import de.dfki.touchandwrite.shape.ShapeType;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Component which displays annotation data of VideoComponent.
@@ -107,14 +106,12 @@ public class InfoFieldComponent extends JMEComponent {
 
     /**
      * Info field constructor
-     *
-     * @param resource
-     * @param video
-     * @param listField
-     * @param id
-     * @param node
-     * @param width
-     * @param height
+     * 
+     * @param resource background source location
+     * @param video {@link VideoComponent}
+     * @param listField {@link ListFieldComponent}
+     * @param width width of list field
+     * @param height height of list field
      */
     public InfoFieldComponent(String resource, VideoComponent video,
             ListFieldComponent listField, int width, int height) {

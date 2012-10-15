@@ -62,7 +62,7 @@ public class VideoQuad extends Quad {
      */
     private Logger log = LoggerFactory.getLogger(VideoQuad.class);
     /**
-     * {@link VideoHandler} which plays and renders the video.
+     * {@link AbstractVideoHandler} which plays and renders the video.
      */
     private AbstractVideoHandler video;
     /**

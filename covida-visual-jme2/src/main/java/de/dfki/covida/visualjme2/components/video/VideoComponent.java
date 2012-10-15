@@ -114,7 +114,7 @@ public final class VideoComponent extends JMEComponent implements
      */
     private TextComponent textOverlay;
     /**
-     * {@link VideoHandler} which plays and renders the video.
+     * {@link AbstractVideoHandler} which plays and renders the video.
      */
     private AbstractVideoHandler video;
     /**
@@ -160,7 +160,6 @@ public final class VideoComponent extends JMEComponent implements
      *
      * @param source video source location as {@link String}
      * @param title video title as {@link String}
-     * @param format {@link VideoFormat} to determine width of the video
      */
     public VideoComponent(String source, String title) {
         super("Video Component ");
@@ -184,7 +183,7 @@ public final class VideoComponent extends JMEComponent implements
     }
 
     /**
-     * Calculates the {@link Font} size.
+     * Calculates the font size.
      *
      * @return Font size as {@link Integer}
      */
@@ -312,9 +311,9 @@ public final class VideoComponent extends JMEComponent implements
     /**
      * Calculates scaling factor for snapshot texture.
      *
-     * @param diffX
-     * @param diffY
-     * @return
+     * @param min min point as {@link Vector2f}
+     * @param max max point as {@link Vector2f}
+     * @return scale of snapshot
      */
     private float getSnapshotScale(Vector2f min, Vector2f max) {
         float diffX = max.x - min.x;
@@ -333,9 +332,9 @@ public final class VideoComponent extends JMEComponent implements
     /**
      * Calculates snapshot center
      *
-     * @param min
-     * @param max
-     * @return
+     * @param min min point as {@link Vector2f}
+     * @param max max point as {@link Vector2f}
+     * @return snapshot center
      */
     private Vector3f getSnapshotCentrum(Vector2f min, Vector2f max) {
         float diffX = max.x - min.x;
@@ -348,8 +347,7 @@ public final class VideoComponent extends JMEComponent implements
     }
 
     /**
-     * Hides AnnotationList from this instance of VideoComponent.
-     *
+     * Detaches AnnotationList from this instance of VideoComponent.
      */
     public void detachList() {
         if (hasList()) {
@@ -369,7 +367,7 @@ public final class VideoComponent extends JMEComponent implements
     /**
      * Enable time code overlay in the video {@link MediaPlayer}
      *
-     * @param timeout
+     * @param timeout timeout time in milliseconds
      */
     public void enableTimeCodeOverlay(long timeout) {
         video.enableTimeCodeOverlay(timeout);
@@ -738,7 +736,6 @@ public final class VideoComponent extends JMEComponent implements
         local = local.mult(node.getWorldScale());
         int localX = (int) local.x;
         int localY = (int) local.y;
-//        localY += getPosY();
         localX += getDimension().getWidth() / 2;
         localY = (int) (getDimension().getHeight()
                 - (localY + getDimension().getHeight() / 2));

@@ -36,6 +36,7 @@ import com.jmex.angelfont.BitmapText;
 import com.jmex.scene.TimedLifeController;
 import de.dfki.covida.covidacore.components.IControlButton;
 import de.dfki.covida.covidacore.components.IControlableComponent;
+import de.dfki.covida.covidacore.data.Annotation;
 import de.dfki.covida.covidacore.data.AnnotationStorage;
 import de.dfki.covida.covidacore.tw.ITouchAndWriteComponent;
 import de.dfki.covida.covidacore.tw.TouchAndWriteComponentHandler;
