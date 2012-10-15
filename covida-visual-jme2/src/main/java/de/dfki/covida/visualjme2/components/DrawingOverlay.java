@@ -152,7 +152,7 @@ public class DrawingOverlay extends Node {
         alpha.setDestinationFunction(BlendState.DestinationFunction.OneMinusSourceAlpha);
         alpha.setTestEnabled(true);
         alpha.setTestFunction(BlendState.TestFunction.GreaterThan);
-        refreshBoard();
+        clear();
         texture.setImage(g2d.getImage());
         ts.setTexture(texture);
         board.setRenderState(alpha);
@@ -181,7 +181,7 @@ public class DrawingOverlay extends Node {
     /**
      * Removes all the drawings from the board.
      */
-    public void refreshBoard() {
+    public void clear() {
         g2d.clearRect(0, 0, height, width);
         g2d.setComposite(TRANSPARENT);
         g2d.setColor(Color.WHITE);

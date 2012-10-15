@@ -149,8 +149,6 @@ public class VideoPreload implements Runnable, MediaPlayerEventListener {
         if (dimension == null) {
             dimension = mediaPlayer.getVideoDimension();
             video.create(dimension.width, dimension.height);
-        } else {
-            cleanUp();
         }
     }
 

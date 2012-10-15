@@ -140,6 +140,10 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * Corresponding {@link IVideoComponent}
      */
     private final IVideoComponent video;
+    /**
+     * Preload component for determining video dimensions
+     */
+    private VideoPreload preload;
 
     /**
      * Creates an instance of {@link AbstractVideoHandler}
@@ -163,7 +167,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * {@link #create(int, int)} method if dimension is determined.
      */
     private void preload() {
-        VideoPreload preload = new VideoPreload(source, this);
+        preload = new VideoPreload(source, this);
         Thread preloadThread = new Thread(preload);
         preloadThread.setName(title + " preload");
         preloadThread.start();
@@ -195,6 +199,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
         this.width = width;
         addEventListener();
         video.create();
+        preload.cleanUp();
     }
 
     /**

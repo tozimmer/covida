@@ -179,6 +179,7 @@ public class AnnotationSearchField extends FieldComponent implements
     @Override
     public void hwrAction(String hwr) {
         if (open) {
+            overlay.clear();
             hwrResults.clear();
             for (String part : hwr.split(" ")) {
                 hwrResults.add(part);

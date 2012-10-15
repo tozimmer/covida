@@ -164,13 +164,14 @@ public class AnnotationClipboard extends FieldComponent implements
     @Override
     public void hwrAction(String hwr) {
         if (open) {
+            overlay.clear();
             hwrResults.add(hwr); 
             update();
         }
     }
 
     public void deleteDescription(TextComponent aThis) {
-        hwrResults.remove(aThis);
+        hwrResults.remove(aThis.getText());
         aThis.detach();
     }
 }
