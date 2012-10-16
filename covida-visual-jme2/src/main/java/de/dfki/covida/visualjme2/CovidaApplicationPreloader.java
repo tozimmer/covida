@@ -37,6 +37,7 @@ import de.dfki.covida.visualjme2.components.annotation.AnnotationSearchField;
 import de.dfki.covida.visualjme2.components.video.VideoComponent;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
 import de.dfki.covida.visualjme2.utils.CovidaRootNode;
+import de.dfki.covida.visualjme2.utils.CovidaZOrder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;

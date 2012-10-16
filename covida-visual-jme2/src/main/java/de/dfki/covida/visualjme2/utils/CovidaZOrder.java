@@ -17,5 +17,6 @@ public class CovidaZOrder {
     public final static int ui_text = 600;
     public final static int ui_button = 500;
     public final static int preload = 0;
+    public final static int ui_cornermenus = 400;
     
 }
