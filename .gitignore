@@ -1,6 +1,7 @@
 *.class
 *.cfg
 *.log
+Thumbs.db
 **/log
 nb-configuration.xml
 /covida-core/target/
