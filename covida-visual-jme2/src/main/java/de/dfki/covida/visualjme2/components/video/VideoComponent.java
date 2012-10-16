@@ -746,7 +746,6 @@ public final class VideoComponent extends JMEComponent implements
             setNewAnnotationData();
         }
         video.clearDrawing();
-        video.resumeAndPause();
         infoField.drawHwrResult(hwr);
     }
 
@@ -759,7 +758,6 @@ public final class VideoComponent extends JMEComponent implements
         for (ShapePoints shape : annotation.shapePoints) {
             video.addShape(shape.points);
         }
-        video.resumeAndPause();
     }
 
     /**
@@ -909,7 +907,6 @@ public final class VideoComponent extends JMEComponent implements
         video.clearDrawing();
         video.clearShape();
         infoField.resetInfo();
-        video.resumeAndPause();
     }
 
     public void deleteDescription(TextComponent aThis) {

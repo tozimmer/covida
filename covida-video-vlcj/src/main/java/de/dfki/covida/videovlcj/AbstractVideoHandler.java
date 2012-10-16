@@ -129,11 +129,6 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      */
     protected MediaPlayerFactory mediaPlayerFactory;
     /**
-     * If true video player will be paused on next 
-     * {@link #positionChanged(uk.co.caprica.vlcj.player.MediaPlayer, float)}
-     */
-    private boolean toPause;
-    /**
      * Video player title
      */
     private final String title;
@@ -163,8 +158,8 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
 
     /**
      * Creates a {@link VideoPreload} instance to determine video dimensions.
-     * 
-     * Note that the {@link VideoPreload} instance will call 
+     *
+     * Note that the {@link VideoPreload} instance will call
      * {@link #create(int, int)} method if dimension is determined.
      */
     private void preload() {
@@ -176,7 +171,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
 
     /**
      * Creates the video video player
-     * 
+     *
      * @param width width of the video player
      * @param height height of the video player
      */
@@ -227,8 +222,9 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     /**
      * Returns the current time postion in milliseconds.
      *
-     * Note that only the part from {@code timeStart} to {@code timeEnd} is 
+     * Note that only the part from {@code timeStart} to {@code timeEnd} is
      * considered.
+     *
      * @see #setTimeRange(long, long)
      *
      * @return current time stamp in milliseconds
@@ -253,8 +249,9 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     /**
      * Returns the video progess in percent as {@link String}.
      *
-     * Note that only the part from {@code timeStart} to {@code timeEnd} is 
+     * Note that only the part from {@code timeStart} to {@code timeEnd} is
      * considered.
+     *
      * @see #setTimeRange(long, long)
      *
      * @return vieo progress in the format xx % (xx is the progress in percent)
@@ -305,7 +302,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
 
     /**
      * Returns drawing points.
-     * 
+     *
      * @return {@link List} of {@link ShapePoints}
      */
     abstract public List<ShapePoints> getDrawings();
@@ -349,7 +346,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
 
     /**
      * Returns playing status.
-     * 
+     *
      * @return true if video currently playing
      */
     public boolean isPlaying() {
@@ -358,7 +355,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
 
     /**
      * Returns volume as percent.
-     * 
+     *
      * @return {@link Integer}
      */
     public int getVolume() {
@@ -382,15 +379,14 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      */
     public void stop() {
         isPlaying = false;
+        controls.highlightStop();
+        controls.highlightPlay();
         if (mediaPlayer == null) {
             return;
         }
         if (isReady()) {
             setTimePostion(0);
             mediaPlayer.stop();
-            isPlaying = false;
-            controls.highlightStop();
-            controls.highlightPlay();
         }
     }
 
@@ -417,10 +413,10 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
         if (isReady()) {
             if (this.mediaPlayer.isPlaying()) {
                 this.mediaPlayer.pause();
-                isPlaying = false;
             }
         }
         isPlaying = false;
+        controls.highlightPlay();
     }
 
     /**
@@ -434,6 +430,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
             if (!isPlaying) {
                 this.mediaPlayer.play();
                 isPlaying = true;
+                controls.highlightPause();
             }
         }
     }
@@ -441,8 +438,9 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     /**
      * Sets the time position of the video in percentage.
      *
-     * Note that only the part from {@code timeStart} to {@code timeEnd} is 
+     * Note that only the part from {@code timeStart} to {@code timeEnd} is
      * considered if {@code isTimeRanged} is {@code true}.
+     *
      * @see #setTimeRange(long, long)
      *
      * @param time
@@ -465,8 +463,9 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     /**
      * Sets the time position of the video in percentage.
      *
-     * Note that only the part from {@code timeStart} to {@code timeEnd} is 
+     * Note that only the part from {@code timeStart} to {@code timeEnd} is
      * considered.
+     *
      * @see #setTimeRange(long, long)
      *
      * @param percentage
@@ -516,7 +515,8 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     /**
      * Returns the max time position of the video in ms.
      *
-     * Note that only the part from {@code timeStart} to {@code timeEnd} is considered.
+     * Note that only the part from {@code timeStart} to {@code timeEnd} is
+     * considered.
      *
      * @see #setTimeRange(long, long)
      *
@@ -686,13 +686,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
         if (slider != null) {
             slider.setSlider(f);
         }
-        if (toPause) {
-            pause();
-            toPause = false;
-            isPlaying = false;
-        } else {
-            isPlaying = true;
-        }
+        isPlaying = true;
     }
 
     /**
@@ -870,17 +864,14 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     @Override
     public void finished(MediaPlayer mp) {
         isPlaying = false;
+        controls.highlightPlay();
         if (mediaPlayer == null) {
             return;
         }
         if (isRepeat()) {
             mediaPlayer.playMedia(getSource());
+            controls.highlightPause();
         }
-    }
-
-    public void resumeAndPause() {
-        resume();
-        toPause = true;
     }
 
     /**
@@ -917,7 +908,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * @param point {@link Point}
      */
     abstract public void draw(Point point);
-    
+
     abstract public void endDrawStroke();
 
     /**
@@ -960,7 +951,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     abstract public void setHWR(String hwr);
 
     public void setShapes(List<ShapePoints> drawings) {
-        for(ShapePoints shape : drawings){
+        for (ShapePoints shape : drawings) {
             addShape(shape.points);
         }
     }
