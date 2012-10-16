@@ -74,7 +74,6 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
     private List<ShapePoints> shapePoints;
     private Collection<Collection<Point>> pointsToDraw;
     private Collection<Collection<Point>> shapeToDraw;
-    private BufferedImage preloadFrame;
     private Dimension d;
     private Font f = new Font("Arial", Font.PLAIN, 20);
     private FontMetrics fm;
@@ -102,8 +101,6 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
         shapeToDraw = new ConcurrentLinkedQueue<>();
         this.frame = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration().createCompatibleImage(width, height);
         this.frame.setAccelerationPriority(1.0f);
-        this.preloadFrame = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration().createCompatibleImage(width, height);
-        this.preloadFrame.setAccelerationPriority(1.0f);
     }
 
     /**
@@ -294,14 +291,10 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
     public BufferedImage getVideoImage() {
         if (frame == null) {
             log.error("Frame is null.");
+            return null;
         }
-        return frame;
-    }
-
-    @Override
-    public void onDisplay(int[] data) {
-        preloadFrame.setRGB(0, 0, width, height, data, 0, width);
-        Graphics2D g2d = preloadFrame.createGraphics();
+        BufferedImage image = ImageUtils.deepCopy(frame);
+        Graphics2D g2d = image.createGraphics();
         g2d.setColor(defaultG2DColor);
         BasicStroke bs = new BasicStroke(2);
         g2d.setStroke(bs);
@@ -332,14 +325,18 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
         }
         if (hwrOverlayEnabled) {
             if (hwr != null) {
-//                drawString(hwr, g2d, false, height - 70);
                 drawString(hwr, g2d, true, height - 70);
             } else {
                 log.warn("Can not render hwr result: hwr == null");
                 hwrOverlayEnabled = false;
             }
         }
-        frame = ImageUtils.deepCopy(preloadFrame);
+        return image;
+    }
+
+    @Override
+    public void onDisplay(int[] data) {
+        frame.setRGB(0, 0, width, height, data, 0, width);
     }
 
     @Override
