@@ -83,7 +83,7 @@ public class CovidaApplication extends ApplicationImpl {
     private long snapshotTimer;
     private int sideMenuCount;
     private final boolean streaming = false;
-    private final boolean scenemonitor = true;
+    private final boolean scenemonitor = false;
     private Quad background;
     private Quad logo;
 
