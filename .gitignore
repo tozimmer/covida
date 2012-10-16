@@ -21,3 +21,6 @@ nb-configuration.xml
 /covida-flvcreator/target/
 /covida-thirdparty/javafx/target/
 /covida-thirdparty/vlcj-2.1.0/target/
+/covida-thirdparty/touchandwrite/target/
+/covida-thirdparty/3rdparty/target/
+/covida-thirdparty/touchandwrite-3rdparty/target/

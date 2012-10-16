@@ -64,7 +64,7 @@
             <type>jar</type>
         </dependency>
         <dependency>
-            <groupId>com.sun</groupId>
+            <groupId>net.java.dev.jna</groupId>
             <artifactId>jna</artifactId>
             <version>3.4.0</version>
             <type>jar</type>

@@ -8,6 +8,7 @@
     <name>covida</name>
     <version>1.0</version>
     <modules>
+        <module>covida-thirdparty</module>
         <module>covida-core</module>
         <module>covida-video-vlcj</module>
         <module>covida-visual-jme2</module>
