@@ -136,6 +136,16 @@
                             <pomFile>${project.basedir}/lib/windows-input-adapter-0.9.pom</pomFile>
                         </configuration>     
                     </execution>
+                    <execution>
+                        <id>install-touchandwrite-sdk-0.9</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <pomFile>${project.basedir}/lib/touchandwrite-sdk-0.9.pom</pomFile>
+                        </configuration>     
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
