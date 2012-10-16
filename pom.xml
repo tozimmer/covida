@@ -9,7 +9,7 @@
     <version>1.0</version>
     <modules>
         <module>covida-core</module>
-        <module>covida-streamclient</module>
+        <module>covida-video-vlcj</module>
         <module>covida-visual-jme2</module>
     </modules>
     <properties>
