@@ -143,6 +143,7 @@
                             <goal>install-file</goal>
                         </goals>
                         <configuration>
+                            <file>${project.basedir}/lib/touchandwrite-sdk-0.9.pom</file>
                             <pomFile>${project.basedir}/lib/touchandwrite-sdk-0.9.pom</pomFile>
                         </configuration>     
                     </execution>
