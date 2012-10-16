@@ -27,7 +27,6 @@
  */
 package de.dfki.covida.visualjme2.components.video;
 
-import com.jme.scene.shape.Quad;
 import com.jme.util.GameTaskQueueManager;
 import de.dfki.covida.covidacore.components.IControlableComponent;
 import de.dfki.covida.covidacore.utils.ActionName;
@@ -35,6 +34,7 @@ import de.dfki.covida.videovlcj.IVideoControls;
 import de.dfki.covida.visualjme2.components.ControlButton;
 import de.dfki.covida.visualjme2.components.JMEComponent;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
+import de.dfki.covida.visualjme2.utils.CovidaZOrder;
 import de.dfki.covida.visualjme2.utils.DetachChildCallable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,7 +48,6 @@ import java.util.Map;
  */
 public class VideoComponentControls extends JMEComponent implements IVideoControls {
 
-    protected Quad overlayControlsDefault;
     private int width;
     private int height;
     private IControlableComponent controlable;
@@ -110,25 +109,32 @@ public class VideoComponentControls extends JMEComponent implements IVideoContro
             controls.put(controlList.get(texture), control);
             start -= controlable.getWidth() + controlWidth;
         }
+        buttonOrder = new ArrayList<>();
+        buttonOrder.add("media/textures/video_controls_list_1.png");
+        buttonOrder.add("media/textures/video_controls_list_0.png");
         controlList = new HashMap<>();
-        controlList.put("media/textures/video_controls_list_1.png", ActionName.NONE);
         controlList.put("media/textures/video_controls_list_0.png", ActionName.LIST);
+        controlList.put("media/textures/video_controls_list_1.png", ActionName.NONE);
         controlActiveList = new HashMap<>();
-        controlActiveList.put(ActionName.NONE, "media/textures/video_controls_list_1.png");
         controlActiveList.put(ActionName.LIST, "media/textures/video_controls_list_0.png");
-        for (String texture : controlList.keySet()) {
-            ControlButton control = new ControlButton(controlList.get(texture),
+        controlActiveList.put(ActionName.NONE, "media/textures/video_controls_list_1.png");
+        int x = (int) (-controlable.getWidth() / 1.85f);
+        ControlButton control = null;
+        for (String texture : buttonOrder) {
+            control = new ControlButton(controlList.get(texture),
                     controlable, texture, controlActiveList.get(controlList.get(texture)),
                     controlWidth, controlHeight);
-            control.setLocalTranslation((int) (-controlable.getWidth() / 1.85f), 0, 0);
+            control.setLocalTranslation(x, 0, 0);
             if (controlList.get(texture).equals(ActionName.NONE)) {
                 control.setEnabled(false);
             }
             GameTaskQueueManager.getManager()
                     .update(new AttachChildCallable(node, control.node));
-//            controls.put(controlList.get(texture), control);
-//            start += controlable.getWidth() + controlWidth;
         }
+        if (control != null) {
+            control.node.setZOrder(CovidaZOrder.ui_button-1);
+        }
+        x = 0;
     }
 
     public IControlableComponent getControlable() {

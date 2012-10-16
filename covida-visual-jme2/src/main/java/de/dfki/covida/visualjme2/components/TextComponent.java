@@ -112,6 +112,7 @@ public class TextComponent extends JMEComponent implements IControlButton {
         this.action = action;
         textOverlayData = FontLoader.getInstance();
         txt = new BitmapText(textOverlayData.getBitmapFont(font), false);
+        txt.setZOrder(CovidaZOrder.ui_text);
         init();
     }
 
@@ -191,6 +192,7 @@ public class TextComponent extends JMEComponent implements IControlButton {
     public void setFont(int id) {
         GameTaskQueueManager.getManager().update(new DetachChildCallable(node, txt));
         txt = new BitmapText(textOverlayData.getBitmapFont(id), false);
+        txt.setZOrder(CovidaZOrder.ui_text);
         update();
     }
 

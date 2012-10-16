@@ -278,8 +278,9 @@ public final class VideoComponent extends JMEComponent implements
         overlaySelectTexture.setWrap(WrapMode.Clamp);
         overlaySelectState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
         overlaySelectState.setTexture(overlaySelectTexture);
-        this.overlay = new Quad("Overlay-Default-Image-Quad",
-                (1.2f) * getWidth(), (1.3f) * getHeight());
+        overlay = new Quad("Overlay-Default-Image-Quad",
+                (1.15f) * getWidth(), (1.25f) * getHeight());
+        overlay.setZOrder(CovidaZOrder.ui_overlay);
         overlay.setRenderState(overlayDefaultState);
         overlay.setRenderState(alpha);
         overlay.updateRenderState();
@@ -297,6 +298,7 @@ public final class VideoComponent extends JMEComponent implements
         overlayDragBlankState.setTexture(overlayBlankTexture);
         overlayDrag = new Quad("Overlay-Drag-Image-Quad", (1.15f) * getWidth(),
                 (1.35f) * getHeight());
+        overlayDrag.setZOrder(CovidaZOrder.ui_overlay-1);
         overlayDrag.setRenderState(overlayDragState);
         overlayDrag.setRenderState(alpha);
         overlayDrag.updateRenderState();
@@ -387,12 +389,10 @@ public final class VideoComponent extends JMEComponent implements
      */
     public void createVideo() {
         VideoQuad videoQuad = new VideoQuad(video);
-
+        videoQuad.setZOrder(CovidaZOrder.ui_background);
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, videoQuad));
-
         video.setSlider(slider);
         video.setControls(controls);
-
         if (UPSCALE_FACTOR > 0.0f) {
             setLocalScale(1.f / UPSCALE_FACTOR);
         } else {

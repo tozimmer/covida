@@ -39,6 +39,7 @@ import de.dfki.covida.visualjme2.utils.AttachChildCallable;
 import de.dfki.covida.visualjme2.utils.CovidaRootNode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -145,10 +146,15 @@ public class CovidaApplicationPreloader implements Runnable {
         List<VideoMediaData> videoData = application.getVideoSources();
         createVideoInstances(videoData);
         log.info("Initialization complete");
-        application.endLoadingAnimation();
         for (VideoComponent video : videos) {
             application.addComponent(video);
         }
         createSideMenus();
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException ex) {
+            log.error("",ex);
+        }
+        application.endLoadingAnimation();
     }
 }

@@ -50,6 +50,7 @@ import de.dfki.covida.visualjme2.components.TextComponent;
 import de.dfki.covida.visualjme2.components.video.VideoComponent;
 import de.dfki.covida.visualjme2.utils.AddControllerCallable;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
+import de.dfki.covida.visualjme2.utils.CovidaZOrder;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
 import de.dfki.covida.visualjme2.utils.RemoveControllerCallable;
 import java.util.ArrayList;
@@ -206,7 +207,8 @@ public class ListFieldComponent extends JMEComponent {
         texture = TextureManager.loadTexture(getClass().getClassLoader().getResource(image));
         ts.setTexture(texture);
 
-        quad = new Quad("Display image quad", width, height);
+        quad = new Quad("Background image quad", width, height);
+        quad.setZOrder(CovidaZOrder.ui_background);
         quad.setRenderState(ts);
         quad.setRenderState(JMEUtils.initalizeBlendState());
         quad.updateRenderState();
@@ -230,6 +232,7 @@ public class ListFieldComponent extends JMEComponent {
      */
     private void addSpacer(int x, int y, int width, int height) {
         Quad spacerQuad = new Quad("Spacer", width, height);
+        spacerQuad.setZOrder(CovidaZOrder.ui_overlay);
         spacerQuad.setRenderState(tsSpacer);
         spacerQuad.setRenderState(JMEUtils.initalizeBlendState());
         spacerQuad.updateRenderState();

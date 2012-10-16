@@ -45,6 +45,7 @@ import de.dfki.covida.visualjme2.animations.RotateAnimation;
 import de.dfki.covida.visualjme2.animations.ScaleAnimation;
 import de.dfki.covida.visualjme2.utils.AddControllerCallable;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
+import de.dfki.covida.visualjme2.utils.CovidaZOrder;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
 
 /**
@@ -110,6 +111,7 @@ public class ControlButton extends JMEComponent
         controlQuad.updateRenderState();
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node,
                 controlQuad));
+        controlQuad.setZOrder(CovidaZOrder.ui_button);
     }
 
     /**
@@ -210,7 +212,6 @@ public class ControlButton extends JMEComponent
 
     @Override
     public void toggle() {
-        log.debug(action.toString());
         if (controlable != null) {
             setActive(controlable.toggle(action));
         }

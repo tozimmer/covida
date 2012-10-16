@@ -40,6 +40,7 @@ import de.dfki.covida.visualjme2.components.FieldComponent;
 import de.dfki.covida.visualjme2.components.TextComponent;
 import de.dfki.covida.visualjme2.utils.AddControllerCallable;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
+import de.dfki.covida.visualjme2.utils.CovidaZOrder;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
 import de.dfki.covida.visualjme2.utils.RemoveControllerCallable;
 import de.dfki.touchandwrite.math.FastMath;
@@ -111,6 +112,7 @@ public class AnnotationClipboard extends FieldComponent implements
         Quaternion q = new Quaternion();
         q = q.fromAngleAxis(FastMath.DEG_TO_RAD * angle, new Vector3f(0, 0, 1));
         Quad spacerQuad = new Quad("Spacer", width, height);
+        spacerQuad.setZOrder(CovidaZOrder.ui_overlay);
         spacerQuad.setRenderState(tsSpacer);
         spacerQuad.setRenderState(JMEUtils.initalizeBlendState());
         spacerQuad.updateRenderState();

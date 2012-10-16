@@ -39,6 +39,7 @@ import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
 import com.jmex.awt.swingui.ImageGraphics;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
+import de.dfki.covida.visualjme2.utils.CovidaZOrder;
 import de.dfki.covida.visualjme2.utils.DetachChildCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
 import de.dfki.touchandwrite.input.pen.event.ShapeEvent;
@@ -134,7 +135,8 @@ public abstract class FieldComponent extends JMEComponent {
         ts.setEnabled(true);
         texture = TextureManager.loadTexture(getClass().getClassLoader().getResource(image));
         ts.setTexture(texture);
-        quad = new Quad("Display image quad", width, height);
+        quad = new Quad("Background image quad", width, height);
+        quad.setZOrder(CovidaZOrder.ui_overlay);
         quad.setRenderState(ts);
         quad.setRenderState(JMEUtils.initalizeBlendState());
         quad.updateRenderState();

@@ -42,6 +42,7 @@ import de.dfki.covida.visualjme2.components.video.VideoComponent;
 import de.dfki.covida.visualjme2.utils.AddControllerCallable;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
 import de.dfki.covida.visualjme2.utils.CovidaRootNode;
+import de.dfki.covida.visualjme2.utils.CovidaZOrder;
 import de.dfki.covida.visualjme2.utils.DetachChildCallable;
 import de.dfki.covida.visualjme2.utils.RemoveControllerCallable;
 import de.dfki.touchandwrite.analyser.touch.gestures.events.PanEventImpl;
@@ -91,6 +92,7 @@ public abstract class JMEComponent implements ITouchAndWriteComponent {
 
     public JMEComponent(String nameOfComponent) {
         node = new Node(nameOfComponent);
+        node.setZOrder(CovidaZOrder.ui_node);
         log = LoggerFactory.getLogger(getClass());
         this.display = new Vector2f(
                 DisplaySystem.getDisplaySystem().getWidth(),

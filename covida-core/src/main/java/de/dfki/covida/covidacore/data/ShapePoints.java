@@ -55,6 +55,9 @@ public class ShapePoints implements Serializable {
     @XmlJavaTypeAdapter(PointAdapter.class)
     public List<Point> points;
 
+    /**
+     * Creates a new {@link ShapePoints} instance.
+     */
     public ShapePoints() {
         points = new ArrayList<>();
     }

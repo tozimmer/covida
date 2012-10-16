@@ -41,6 +41,7 @@ import com.jme.util.TextureManager;
 import de.dfki.covida.videovlcj.ISlider;
 import de.dfki.covida.visualjme2.components.JMEComponent;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
+import de.dfki.covida.visualjme2.utils.CovidaZOrder;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
 import java.util.ArrayList;
 
@@ -90,6 +91,7 @@ public class VideoSlider extends JMEComponent implements ISlider {
                     overlaySliderState);
             overlaySlider.get(overlaySlider.size() - 1).setRenderState(alpha);
             overlaySlider.get(overlaySlider.size() - 1).updateRenderState();
+            overlaySlider.get(overlaySlider.size() - 1).setZOrder(CovidaZOrder.ui_overlay-1);
             GameTaskQueueManager.getManager().update(new AttachChildCallable(sliderNode, overlaySlider.get(overlaySlider.size() - 1)));
         }
     }

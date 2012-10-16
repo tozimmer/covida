@@ -83,7 +83,9 @@ public class CovidaApplication extends ApplicationImpl {
     private long snapshotTimer;
     private int sideMenuCount;
     private final boolean streaming = false;
-    private final boolean scenemonitor = false;
+    private final boolean scenemonitor = true;
+    private Quad background;
+    private Quad logo;
 
     /**
      * Creates an instance of {@link CovidaApplication}
@@ -112,7 +114,7 @@ public class CovidaApplication extends ApplicationImpl {
         // Rotation need because of ImageGraphics
         q.fromAngles(0f, (float) Math.toRadians(180),
                 (float) Math.toRadians(180));
-        Quad background = new Quad("Background-Image-Quad", display.getWidth(),
+        background = new Quad("Background-Image-Quad", display.getWidth(),
                 display.getHeight());
         background.getLocalTranslation().set(display.getWidth() / 2, display.getHeight() / 2, 0);
         background.rotatePoints(q);
@@ -123,7 +125,6 @@ public class CovidaApplication extends ApplicationImpl {
                 Texture.MinificationFilter.BilinearNoMipMaps,
                 Texture.MagnificationFilter.Bilinear);
         backgroundTexture.setWrap(Texture.WrapMode.Clamp);
-
         Vector2f[] texCoords = new Vector2f[4];
         texCoords[0] = new Vector2f(0, 0);
         texCoords[3] = new Vector2f(1, 0);
@@ -132,20 +133,40 @@ public class CovidaApplication extends ApplicationImpl {
         background.setTextureCoords(TexCoords.makeNew(texCoords));
         TextureState backgroundTextureState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
         backgroundTextureState.setTexture(backgroundTexture);
-
         background.setRenderState(backgroundTextureState);
         background.updateRenderState();
-
+        background.setZOrder(CovidaZOrder.preload);
         GameTaskQueueManager.getManager().update(new AttachChildCallable(CovidaRootNode.node, background));
+        Texture overlayDefaultTexture = TextureManager.loadTexture(
+                getClass().getClassLoader().getResource(
+                "media/textures/logo.png"),
+                Texture.MinificationFilter.BilinearNearestMipMap,
+                Texture.MagnificationFilter.Bilinear);
+        overlayDefaultTexture.setWrap(Texture.WrapMode.Clamp);
+        TextureState overlayDefaultState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
+        overlayDefaultState.setTexture(overlayDefaultTexture);
+        this.logo = new Quad("Overlay-Default-Image-Quad", 512, 512);
+        logo.setZOrder(CovidaZOrder.background-1);
+        logo.setRenderState(overlayDefaultState);
+        logo.setRenderState(JMEUtils.initalizeBlendState());
+        logo.updateRenderState();
+        logo.getLocalTranslation().set(0, 0, 0);
+        logo.getLocalTranslation().set(display.getWidth() / 2, display.getHeight() / 2, 0);
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(CovidaRootNode.node, logo));
+        
     }
 
     /**
      * Ends the loading animation
      */
     public void endLoadingAnimation() {
+        for(VideoComponent video : videos){
+            video.setTimePosition(0);
+        }
         GameTaskQueueManager.getManager().update(new RemoveControllerCallable(preloadScreen, stPreload));
         GameTaskQueueManager.getManager().update(new DetachChildCallable(CovidaRootNode.node, preloadScreen));
         preloader.cleanUp();
+        background.setZOrder(CovidaZOrder.background);
     }
 
     public int getWidth() {
@@ -244,11 +265,11 @@ public class CovidaApplication extends ApplicationImpl {
     @Override
     protected void loadingAnimation() {
         // Splash Screen
-        preloadScreen = new Quad("Splash-Image-Quad", this.display.getWidth(),
-                this.display.getHeight());
+        preloadScreen = new Quad("Splash-Image-Quad", 512, 512);
+        preloadScreen.setZOrder(CovidaZOrder.preload-1);
         // set splash screen background Texture
         Texture splashTexture = TextureManager.loadTexture(
-                getClass().getClassLoader().getResource("media/textures/splash.png"),
+                getClass().getClassLoader().getResource("media/textures/loading.png"),
                 Texture.MinificationFilter.BilinearNearestMipMap,
                 Texture.MagnificationFilter.Bilinear);
         splashTexture.setWrap(Texture.WrapMode.Repeat);
@@ -260,6 +281,7 @@ public class CovidaApplication extends ApplicationImpl {
         TextureState splashTextureState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
         splashTextureState.setTexture(splashTexture);
         preloadScreen.setRenderState(splashTextureState);
+        preloadScreen.setRenderState(JMEUtils.initalizeBlendState());
         preloadScreen.updateRenderState();
         GameTaskQueueManager.getManager().update(new AttachChildCallable(rootNode, preloadScreen));
         stPreload = PreloadAnimation.getController(preloadScreen);

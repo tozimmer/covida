@@ -40,6 +40,7 @@ import com.jme.system.DisplaySystem;
 import com.jme.util.GameTaskQueueManager;
 import com.jmex.awt.swingui.ImageGraphics;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
+import de.dfki.covida.visualjme2.utils.CovidaZOrder;
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -120,6 +121,7 @@ public class DrawingOverlay extends Node {
         this.width=  height;
         this.height = width;
         board = new Quad("Drawingboard-Quad", width, height);
+        board.setZOrder(CovidaZOrder.ui_overlay);
         Quaternion q = new Quaternion();
         q.fromAngles(0f, (float) Math.toRadians(180), (float) Math.toRadians(180));
         board.rotatePoints(q);

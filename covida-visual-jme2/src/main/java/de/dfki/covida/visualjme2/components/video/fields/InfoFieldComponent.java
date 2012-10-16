@@ -50,7 +50,6 @@ import de.dfki.covida.visualjme2.components.TextComponent;
 import de.dfki.covida.visualjme2.components.video.VideoComponent;
 import de.dfki.covida.visualjme2.utils.*;
 import de.dfki.touchandwrite.shape.ShapeType;
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,8 +60,17 @@ import java.util.List;
  */
 public class InfoFieldComponent extends JMEComponent {
 
+    /**
+     * Duration of delete / close / open animation
+     */
     private static final int ANIMATION_DURATION = 750;
+    /**
+     * Default font size
+     */
     private static final int DEFAULT_FONT_SIZE = 18;
+    /**
+     * Default height
+     */
     private static final int DEFAULT_HEIGHT = 250;
     private int textBeginY;
     private int width = 112;
@@ -107,7 +115,7 @@ public class InfoFieldComponent extends JMEComponent {
 
     /**
      * Info field constructor
-     * 
+     *
      * @param resource background source location
      * @param video {@link VideoComponent}
      * @param listField {@link ListFieldComponent}
@@ -150,6 +158,7 @@ public class InfoFieldComponent extends JMEComponent {
         this.overlayDefault = new Quad("Overlay-Default-Image-Quad",
                 getWidth(), getHeight());
 
+        overlayDefault.setZOrder(CovidaZOrder.ui_overlay);
         overlayDefault.setRenderState(overlayDefaultState);
         overlayDefault.setRenderState(alpha);
         overlayDefault.updateRenderState();
@@ -203,7 +212,8 @@ public class InfoFieldComponent extends JMEComponent {
         texture = TextureManager.loadTexture(getClass().getClassLoader().getResource(image));
         ts.setTexture(texture);
 
-        quad = new Quad("Display image quad", width, height);
+        quad = new Quad("Background image quad", width, height);
+        quad.setZOrder(CovidaZOrder.ui_background);
         quad.setRenderState(ts);
         quad.setRenderState(JMEUtils.initalizeBlendState());
         quad.updateRenderState();
@@ -256,6 +266,7 @@ public class InfoFieldComponent extends JMEComponent {
      */
     private void addSpacer(int x, int y, int width, int height) {
         Quad spacerQuad = new Quad("Spacer", width, height);
+        spacerQuad.setZOrder(CovidaZOrder.ui_overlay);
         spacerQuad.setRenderState(tsSpacer);
         spacerQuad.setRenderState(JMEUtils.initalizeBlendState());
         spacerQuad.updateRenderState();
@@ -302,15 +313,13 @@ public class InfoFieldComponent extends JMEComponent {
      */
     public void initComponent() {
         initTextures();
-        textBeginY = (int) (quad.getHeight() / 2 - FONT_SIZE);
+        textBeginY = (int) (quad.getHeight() / 2 + FONT_SIZE);
         initalizeListOverlayQuads(JMEUtils.initalizeBlendState());
         titleTextOverlay = new TextComponent(video, ActionName.NONE);
         titleTextOverlay.setFont(1);
         titleTextOverlay.setSize(getFontSize());
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, titleTextOverlay.node));
         titleTextOverlay.setLocalTranslation(0, textBeginY, 0);
-//        int y = (int) (titleTextOverlay.getLocalTranslation().y + ((float) titleTextOverlay.getFontSize() / 2.f));
-//        addSpacer(0, y, (int) (quad.getWidth() / 1.1f), getTextSpacer());
         textBeginY = (int) (textBeginY - FONT_SIZE);
         timeOverlay = new TextComponent(video, ActionName.NONE);
         timeOverlay.setLocalTranslation(0, textBeginY, 0);
@@ -324,14 +333,16 @@ public class InfoFieldComponent extends JMEComponent {
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, timeTextOverlay.node));
         timeTextOverlay.setFont(1);
         timeTextOverlay.setSize(getFontSize());
-        int y = (int) (timeTextOverlay.getLocalTranslation().y + ((float) timeTextOverlay.getFontSize() / 2.f));
-        addSpacer(0, y, (int) (quad.getWidth() / 1.1f), getTextSpacer());
         textBeginY = (int) (textBeginY - FONT_SIZE);
         descriptionOverlay = new TextComponent(video, ActionName.NONE);
         descriptionOverlay.setLocalTranslation(0, textBeginY, 0);
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node, descriptionOverlay.node));
         descriptionOverlay.setFont(1);
         descriptionOverlay.setSize(getFontSize());
+        descriptionOverlay.setText("Description:");
+        descriptionOverlay.setSize(getFontSize());
+        int y = (int) (descriptionOverlay.getLocalTranslation().y + ((float) descriptionOverlay.getFontSize() * 0.575f));
+        addSpacer(0, y, (int) (quad.getWidth() / 1.1f), getTextSpacer());
         descriptionText = new ArrayList<>();
         if (AnnotationStorage.getInstance().getAnnotationData(video).size() > 0) {
             listField.drawEntries();
@@ -373,37 +384,29 @@ public class InfoFieldComponent extends JMEComponent {
      * @param hwrResults hwr results
      */
     public void drawHwrResult(String hwrResults) {
-        if (descriptionOverlay != null && descriptionText != null) {
-            descriptionOverlay.setText("Description:");
-            descriptionOverlay.setSize(getFontSize());
-            if (descriptionText.isEmpty()) {
-                descriptionBeginY = (int) (textBeginY - (float) getFontSpacer());
-            }
-            descriptionBeginY = (int) (descriptionBeginY - (float) getFontSpacer() * 0.9f);
-            TextComponent descriptionTextOverlay = new TextComponent(video, ActionName.COPY);
-            descriptionTextOverlay.setLocalTranslation(0, descriptionBeginY, 0);
-            descriptionTextOverlay.setDefaultPosition();
-            descriptionTextOverlay.setTouchable(true);
-            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, descriptionTextOverlay.node));
-            descriptionText.add(descriptionTextOverlay);
-            descriptionText.get(descriptionText.size() - 1).setText(hwrResults);
-            descriptionText.get(descriptionText.size() - 1).setFont(1);
+        if (descriptionText.isEmpty()) {
+            descriptionBeginY = (int) (textBeginY - (float) getFontSpacer());
+        }
+        descriptionBeginY = (int) (descriptionBeginY - (float) getFontSpacer() * 0.9f);
+        TextComponent descriptionTextOverlay = new TextComponent(video, ActionName.COPY);
+        descriptionTextOverlay.setLocalTranslation(0, descriptionBeginY, 0);
+        descriptionTextOverlay.setDefaultPosition();
+        descriptionTextOverlay.setTouchable(true);
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, descriptionTextOverlay.node));
+        descriptionText.add(descriptionTextOverlay);
+        descriptionText.get(descriptionText.size() - 1).setText(hwrResults);
+        descriptionText.get(descriptionText.size() - 1).setFont(1);
+        descriptionText.get(descriptionText.size() - 1).setSize(
+                getFontSize());
+        if (hwrResults.length() > getCharacterLimit()) {
+            float factor = (float) hwrResults.length()
+                    / getCharacterLimit();
             descriptionText.get(descriptionText.size() - 1).setSize(
-                    getFontSize());
-            if (hwrResults.length() > getCharacterLimit()) {
-                float factor = (float) hwrResults.length()
-                        / getCharacterLimit();
-                descriptionText.get(descriptionText.size() - 1).setSize(
-                        (int) ((float) getFontSize() / factor));
-            }
-            int size = this.descriptionText.size();
-            if (size > 5) {
-                // TODO Possibility to display more than 5 entries
-            }
-        } else {
-            log.debug("ID: "
-                    + getId()
-                    + " !(descriptionOverlay != null && descriptionText != null)");
+                    (int) ((float) getFontSize() / factor));
+        }
+        int size = this.descriptionText.size();
+        if (size > 5) {
+            // TODO Possibility to display more than 5 entries
         }
     }
 
