@@ -35,6 +35,7 @@ import com.hp.hpl.jena.vocabulary.VCARD;
 import de.dfki.covida.covidacore.components.IVideoComponent;
 import de.dfki.covida.covidacore.tw.TouchAndWriteComponentHandler;
 import de.dfki.covida.covidacore.utils.AnnotationSearch;
+import de.dfki.ermed.client.ERmedFacade;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -62,6 +63,10 @@ public class AnnotationStorage {
      * Instance of the {@link AnnotationStorage}
      */
     private static AnnotationStorage instance;
+    /**
+     * 
+     */
+    private ERmedFacade client;
     /**
      * Data list
      */
@@ -258,4 +263,10 @@ public class AnnotationStorage {
             java.util.logging.Logger.getLogger(AnnotationData.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
+    public void sendAnnotation(AnnotationData data, Annotation annotation) {
+        client.annotateVideo(data.title, annotation.time_start, null,
+                annotation.description.split(" "));
+    }
+
 }

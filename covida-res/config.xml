@@ -8,7 +8,7 @@
     <videos>
         <video>
             <source>..\covida-res\videos\Collaborative Video Annotation.mp4</source>
-            <name>CoVidA Demo</name>
+            <name>CoVidA - Demo</name>
             <time_start>0</time_start>
             <time_end>0</time_end>
             <width>576</width>

@@ -9,6 +9,7 @@
     <version>1.0</version>
     <modules>
         <module>touchandwrite</module>
+        <module>ermed</module>
         <module>vlcj-2.1.0</module>
         <module>jme-2.1</module>
     </modules>

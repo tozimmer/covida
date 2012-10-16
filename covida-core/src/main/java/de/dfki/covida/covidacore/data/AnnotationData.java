@@ -28,6 +28,7 @@
 package de.dfki.covida.covidacore.data;
 
 import de.dfki.covida.covidacore.components.IVideoComponent;
+import de.dfki.covida.covidacore.data.ermed.ERmedClient;
 import java.awt.Point;
 import java.io.*;
 import java.util.ArrayList;
@@ -319,7 +320,7 @@ public class AnnotationData implements Serializable {
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             w = new FileWriter(file);
             m.marshal(this, w);
-            m.toString();
+
             log.debug(
                     "Written data to: " + file);
         } catch (JAXBException | IOException e) {
@@ -444,6 +445,7 @@ public class AnnotationData implements Serializable {
             annotation.description = "";
         }
         annotations.add(annotation);
+        ERmedClient.getInstance().sendAnnotation(this, annotation);
     }
 
     @Override
