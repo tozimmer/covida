@@ -137,8 +137,9 @@ public class ListFieldComponent extends JMEComponent {
      * @param width List field width as {@link Integer}
      * @param height List field height as {@link Integer}
      */
-    public ListFieldComponent(String resource, VideoComponent video, int width, int height) {
-        super("DisplayFieldComponent");
+    public ListFieldComponent(String resource, VideoComponent video, int width, 
+            int height, int zOrder) {
+        super("DisplayFieldComponent", zOrder);
         this.video = video;
         this.width = width;
         this.height = height;
@@ -186,9 +187,9 @@ public class ListFieldComponent extends JMEComponent {
         initTextures();
         int x = (int) (0);
         float y = getTextY(0);
-        TextComponent to = new TextComponent(video, ActionName.NONE);
+        TextComponent to = new TextComponent(video, ActionName.NONE, getZOrder());
         to.setLocalTranslation(x, y, 0);
-        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, to.node));
+        attachChild(to);
         to.setSize(getFontSize());
         to.setText("Entries:");
         to.setFont(1);
@@ -208,11 +209,11 @@ public class ListFieldComponent extends JMEComponent {
         ts.setTexture(texture);
 
         quad = new Quad("Background image quad", width, height);
-        quad.setZOrder(CovidaZOrder.ui_background);
+        quad.setZOrder(getZOrder());
         quad.setRenderState(ts);
         quad.setRenderState(JMEUtils.initalizeBlendState());
         quad.updateRenderState();
-        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, quad));
+        attachChild(quad);
 
         // Spacer
         tsSpacer = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
@@ -232,12 +233,12 @@ public class ListFieldComponent extends JMEComponent {
      */
     private void addSpacer(int x, int y, int width, int height) {
         Quad spacerQuad = new Quad("Spacer", width, height);
-        spacerQuad.setZOrder(CovidaZOrder.ui_overlay);
+        spacerQuad.setZOrder(getZOrder());
         spacerQuad.setRenderState(tsSpacer);
         spacerQuad.setRenderState(JMEUtils.initalizeBlendState());
         spacerQuad.updateRenderState();
         spacerQuad.setLocalTranslation(x, y, 0);
-        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, spacerQuad));
+        attachChild(spacerQuad);
     }
 
     /**
@@ -264,7 +265,8 @@ public class ListFieldComponent extends JMEComponent {
             }
             entries = new ArrayList<>();
             for (int i = 0; i < data.getAnnotations().size(); i++) {
-                TextComponent entryTextOverlay = new TextComponent(video, ActionName.LOAD);
+                TextComponent entryTextOverlay = new TextComponent(video, 
+                        ActionName.LOAD, getZOrder());
                 entryTextOverlay.setLocalTranslation(0, getTextY(i + 1), 0);
                 Annotation annotation = data.getAnnotations().get(i);
                 String timeCode = VideoUtils.getTimeCode(annotation.time_start);
@@ -274,9 +276,10 @@ public class ListFieldComponent extends JMEComponent {
                 entryTextOverlay.setLoadUUID(annotation.uuid);
                 entryTextOverlay.setSize((int) (getFontSize()));
                 entryTextOverlay.fadeIn((float) ANIMATION_DURATION / 125.f);
-                GameTaskQueueManager.getManager().update(new AttachChildCallable(node, entryTextOverlay.node));
+                attachChild(entryTextOverlay);
                 entries.add(entryTextOverlay);
-                entryTextOverlay = new TextComponent(video, ActionName.LOAD);
+                entryTextOverlay = new TextComponent(video, ActionName.LOAD, 
+                        getZOrder());
                 entryTextOverlay.setLocalTranslation(0, getTextY(i + 1) - getFontSize() / 1.5f, 0);
                 String[] split = annotation.description.split(" ");
                 if (split.length > 0) {
@@ -289,7 +292,7 @@ public class ListFieldComponent extends JMEComponent {
                 entryTextOverlay.setTouchable(true);
                 entryTextOverlay.setLoadUUID(annotation.uuid);
                 entryTextOverlay.fadeIn((float) ANIMATION_DURATION / 125.f);
-                GameTaskQueueManager.getManager().update(new AttachChildCallable(node, entryTextOverlay.node));
+                attachChild(entryTextOverlay);
                 entries.add(entryTextOverlay);
             }
         }

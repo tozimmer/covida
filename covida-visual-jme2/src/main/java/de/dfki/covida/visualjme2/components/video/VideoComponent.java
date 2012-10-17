@@ -158,14 +158,17 @@ public final class VideoComponent extends JMEComponent implements
      * @param source video source location as {@link String}
      * @param title video title as {@link String}
      */
-    public VideoComponent(String source, String title) {
-        super("Video Component ");
+    public VideoComponent(String source, String title, int zOrder) {
+        super("Video Component " + title, zOrder);
         log.debug("Create video id:" + getId());
         this.title = title;
         video = new RenderedVideoHandler(source, title, this);
         setDefaultPosition();
-        AnnotationStorage.getInstance().getAnnotationData(this).title = title;
-        AnnotationStorage.getInstance().getAnnotationData(this).videoSource = source;
+        initializeAnnotationData();
+    }
+
+    private void initializeAnnotationData() {
+        AnnotationStorage.getInstance().getAnnotationData(this);
     }
 
     @Override
@@ -244,7 +247,6 @@ public final class VideoComponent extends JMEComponent implements
         annotation.time_start = time;
         // set annotation data
         infoField.setAnnotationData(annotation);
-        toFront();
     }
 
     /**
@@ -280,7 +282,7 @@ public final class VideoComponent extends JMEComponent implements
         overlaySelectState.setTexture(overlaySelectTexture);
         overlay = new Quad("Overlay-Default-Image-Quad",
                 (1.15f) * getWidth(), (1.25f) * getHeight());
-        overlay.setZOrder(CovidaZOrder.ui_overlay);
+        overlay.setZOrder(getZOrder()-1);
         overlay.setRenderState(overlayDefaultState);
         overlay.setRenderState(alpha);
         overlay.updateRenderState();
@@ -298,7 +300,7 @@ public final class VideoComponent extends JMEComponent implements
         overlayDragBlankState.setTexture(overlayBlankTexture);
         overlayDrag = new Quad("Overlay-Drag-Image-Quad", (1.15f) * getWidth(),
                 (1.35f) * getHeight());
-        overlayDrag.setZOrder(CovidaZOrder.ui_overlay-1);
+        overlayDrag.setZOrder(getZOrder()-1);
         overlayDrag.setRenderState(overlayDragState);
         overlayDrag.setRenderState(alpha);
         overlayDrag.updateRenderState();
@@ -373,15 +375,13 @@ public final class VideoComponent extends JMEComponent implements
      * Creates the video controls.
      */
     public void createControls() {
-        controls = new VideoComponentControls(this);
-        GameTaskQueueManager.getManager().update(new AttachChildCallable(node,
-                controls.node));
-        slider = new VideoSlider(this);
-        slider.getLocalTranslation().set(
+        controls = new VideoComponentControls(this, getZOrder()-2);
+        attachChild(controls);
+        slider = new VideoSlider(this, getZOrder()-2);
+        slider.node.setLocalTranslation(
                 new Vector3f(-15, -22 - getHeight() / 2, 0));
         slider.setDefaultPosition();
-        GameTaskQueueManager.getManager().update(new AttachChildCallable(node,
-                slider.node));
+        attachChild(slider);
     }
 
     /**
@@ -389,8 +389,8 @@ public final class VideoComponent extends JMEComponent implements
      */
     public void createVideo() {
         VideoQuad videoQuad = new VideoQuad(video);
-        videoQuad.setZOrder(CovidaZOrder.ui_background);
-        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, videoQuad));
+        videoQuad.setZOrder(getZOrder()+1);
+        attachChild(videoQuad);
         video.setSlider(slider);
         video.setControls(controls);
         if (UPSCALE_FACTOR > 0.0f) {
@@ -405,13 +405,14 @@ public final class VideoComponent extends JMEComponent implements
      */
     public void createFields() {
         listField = new ListFieldComponent("media/textures/bg_list.png",
-                this, (int) (getHeight() * (0.55f)), (int) (getHeight() * 1.2f));
+                this, (int) (getHeight() * (0.55f)), (int) (getHeight() * 1.2f),
+                getZOrder());
         listField.setLocalTranslation(-getWidth() * (0.75f), 0, 0);
         listField.initComponent();
         listField.setDefaultPosition();
         infoField = new InfoFieldComponent("media/textures/bg_info.png",
                 this, listField, (int) (getHeight() * (0.55f)),
-                (int) (getHeight() * 1.2f));
+                (int) (getHeight() * 1.2f), getZOrder());
         infoField.setLocalTranslation(getWidth() * (0.75f), 0, 0);
         infoField.initComponent();
         infoField.setDefaultPosition();
@@ -421,14 +422,15 @@ public final class VideoComponent extends JMEComponent implements
      * Creates overlays
      */
     public void createOverlays() {
-        textOverlay = new TextComponent(this, ActionName.NONE);
+        textOverlay = new TextComponent(this, ActionName.NONE,
+                getZOrder());
         textOverlay.setLocalTranslation(0, getHeight() / (1.50f) - getFontSize()
                 / 2.f, 0);
-        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, textOverlay.node));
+        attachChild(textOverlay);
         textOverlay.setSize(getFontSize());
         initalizeOverlayQuads(JMEUtils.initalizeBlendState());
         stDrag = DragAnimation.getController(overlayDrag);
-        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, overlay));
+        attachChild(overlay);
     }
 
     /**
@@ -529,7 +531,7 @@ public final class VideoComponent extends JMEComponent implements
      */
     public void attachList() {
         if (!hasList()) {
-            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, listField.node));
+            attachChild(listField);
             listField.open();
         }
     }
@@ -548,7 +550,7 @@ public final class VideoComponent extends JMEComponent implements
      */
     public void attachAnnotation() {
         if (!hasInfoField()) {
-            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, infoField.node));
+            attachChild(infoField);
             infoField.open();
         }
     }
@@ -636,7 +638,7 @@ public final class VideoComponent extends JMEComponent implements
     public void startDragAnimation() {
         overlayDrag.setRenderState(overlayDragState);
         overlayDrag.updateRenderState();
-        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, overlayDrag));
+        attachChild(overlayDrag);
         GameTaskQueueManager.getManager().update(new AddControllerCallable(overlayDrag, stDrag));
     }
 

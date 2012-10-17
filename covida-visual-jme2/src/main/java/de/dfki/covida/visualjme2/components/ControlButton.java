@@ -45,7 +45,6 @@ import de.dfki.covida.visualjme2.animations.RotateAnimation;
 import de.dfki.covida.visualjme2.animations.ScaleAnimation;
 import de.dfki.covida.visualjme2.utils.AddControllerCallable;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
-import de.dfki.covida.visualjme2.utils.CovidaZOrder;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
 
 /**
@@ -77,8 +76,8 @@ public class ControlButton extends JMEComponent
      * @param height height as {@link Integer}
      */
     public ControlButton(ActionName actionName, IControlableComponent controlable,
-            String texScr, String activeTexSrc, int width, int height) {
-        super(actionName.toString());
+            String texScr, String activeTexSrc, int width, int height, int zOrder) {
+        super(actionName.toString(), zOrder);
         this.action = actionName;
         this.width = width;
         this.height = height;
@@ -109,9 +108,8 @@ public class ControlButton extends JMEComponent
         controlQuad.setRenderState(defaultTextureState);
         controlQuad.setRenderState(JMEUtils.initalizeBlendState());
         controlQuad.updateRenderState();
-        GameTaskQueueManager.getManager().update(new AttachChildCallable(node,
-                controlQuad));
-        controlQuad.setZOrder(CovidaZOrder.ui_button);
+        attachChild(controlQuad);
+        controlQuad.setZOrder(zOrder);
     }
 
     /**

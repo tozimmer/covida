@@ -101,7 +101,7 @@ public interface ITouchAndWriteComponent {
      *
      * @return z position as {@link Integer}
      */
-    public int getZPosition();
+    public int getZOrder();
 
     /**
      * Method which handles incoming touch dead events.
@@ -129,12 +129,6 @@ public interface ITouchAndWriteComponent {
      * @param y y coordinate on the display as {@link Integer}
      */
     public void touchBirthAction(int id, int x, int y);
-
-    /**
-     * Method to set {@link ITouchAndWriteComponent} to the front of the
-     * display.
-     */
-    public void toFront();
 
     /**
      * Abstract method for incomming drag events.
@@ -251,4 +245,6 @@ public interface ITouchAndWriteComponent {
      * @param y y coordinate on the display as {@link Integer}
      */
     public void drawEnd(int x, int y);
+
+    public void setZOrder(int zOrder);
 }

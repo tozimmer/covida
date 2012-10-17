@@ -123,8 +123,8 @@ public abstract class FieldComponent extends JMEComponent {
     protected SpatialTransformer st;
     protected DrawingOverlay overlay;
 
-    public FieldComponent(String name) {
-        super(name);
+    public FieldComponent(String name, int zOrder) {
+        super(name, zOrder);
         hwrResults = new ArrayList<>();
     }
 
@@ -136,15 +136,13 @@ public abstract class FieldComponent extends JMEComponent {
         texture = TextureManager.loadTexture(getClass().getClassLoader().getResource(image));
         ts.setTexture(texture);
         quad = new Quad("Background image quad", width, height);
-        quad.setZOrder(CovidaZOrder.ui_overlay);
+        quad.setZOrder(getZOrder());
         quad.setRenderState(ts);
         quad.setRenderState(JMEUtils.initalizeBlendState());
         quad.updateRenderState();
-        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, quad));
-
+        attachChild(quad);
         overlay = new DrawingOverlay("Drawing", width, height);
-        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, overlay));
-        
+        attachChild(overlay);
         // Spacer
         tsSpacer = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
         tsSpacer.setCorrectionType(TextureState.CorrectionType.Perspective);

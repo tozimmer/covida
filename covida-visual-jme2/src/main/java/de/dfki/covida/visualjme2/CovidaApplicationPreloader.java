@@ -66,7 +66,8 @@ public class CovidaApplicationPreloader implements Runnable {
     private void createVideoInstances(List<VideoMediaData> videoData) {
         for (int i = 0; i < videoData.size(); i++) {
             VideoComponent video = new VideoComponent(
-                    videoData.get(i).videoSource, videoData.get(i).videoName);
+                    videoData.get(i).videoSource, videoData.get(i).videoName,
+                    CovidaZOrder.getInstance().getUi_node());
             videos.add(video);
             GameTaskQueueManager.getManager().update(new AttachChildCallable(CovidaRootNode.node, video.node));
         }
@@ -84,20 +85,26 @@ public class CovidaApplicationPreloader implements Runnable {
     private void createSideMenus() {
         AnnotationClipboard clipboard = new AnnotationClipboard(
                 "media/textures/clipboard_field_color.png",
-                application.getWidth() / 2, (int) (application.getHeight() / 1.5f));
+                application.getWidth() / 2, 
+                (int) (application.getHeight() / 1.5f), 
+                CovidaZOrder.getInstance().getUi_cornermenus());
         ControlButton clipboardButton = new ControlButton(ActionName.CLOSE,
                 clipboard, "media/textures/arrow.png",
-                "media/textures/arrow.png", 64, 64);
+                "media/textures/arrow.png", 64, 64,
+                CovidaZOrder.getInstance().getUi_cornermenus());
         GameTaskQueueManager.getManager().update(new AttachChildCallable(
                 clipboardButton.node, clipboard.node));
         application.addComponent(clipboardButton);
         clipboard.close();
         AnnotationSearchField search = new AnnotationSearchField(
                 "media/textures/search_field_color.png",
-                application.getWidth() / 2, (int) (application.getHeight() / 1.5f));
+                application.getWidth() / 2, 
+                (int) (application.getHeight() / 1.5f), 
+                CovidaZOrder.getInstance().getUi_cornermenus());
         ControlButton searchButton = new ControlButton(ActionName.CLOSE,
                 search, "media/textures/search.png",
-                "media/textures/search.png", 64, 64);
+                "media/textures/search.png", 64, 64, 
+                CovidaZOrder.getInstance().getUi_cornermenus());
         GameTaskQueueManager.getManager().update(new AttachChildCallable(
                 searchButton.node, search.node));
         application.addComponent(searchButton);
@@ -107,7 +114,7 @@ public class CovidaApplicationPreloader implements Runnable {
 //                application.getWidth() / 2, (int) (application.getHeight() / 1.5f));
 //        ControlButton clipboardButton2 = new ControlButton(ActionName.CLOSE,
 //                clipboard2, "media/textures/arrow.png",
-//                "media/textures/arrow.png", 64, 64);
+//                "media/textures/arrow.png", 64, 64, CovidaZOrder.getInstance().getUi_cornermenus());
 //        GameTaskQueueManager.getManager().update(new AttachChildCallable(
 //                clipboardButton2.node, clipboard2.node));
 //        application.addComponent(clipboardButton2);
@@ -117,7 +124,7 @@ public class CovidaApplicationPreloader implements Runnable {
 //                application.getWidth() / 2, (int) (application.getHeight() / 1.5f));
 //        ControlButton searchButton2 = new ControlButton(ActionName.CLOSE,
 //                search2, "media/textures/search.png",
-//                "media/textures/search.png", 64, 64);
+//                "media/textures/search.png", 64, 64, CovidaZOrder.getInstance().getUi_cornermenus());
 //        GameTaskQueueManager.getManager().update(new AttachChildCallable(
 //                searchButton2.node, search2.node));
 //        application.addComponent(searchButton2);
@@ -125,12 +132,13 @@ public class CovidaApplicationPreloader implements Runnable {
         
         ControlButton garbadge = new ControlButton(ActionName.GARBADGE,
                 null, "media/textures/garbadge.png",
-                "media/textures/garbadge.png", 64, 64);
+                "media/textures/garbadge.png", 64, 64, 
+                CovidaZOrder.getInstance().getUi_cornermenus());
         application.addComponent(garbadge);
         
 //        ControlButton openNew = new ControlButton(ActionName.OPEN,
 //                null, "media/textures/new.png",
-//                "media/textures/new.png", 64, 64);
+//                "media/textures/new.png", 64, 64, CovidaZOrder.getInstance().getUi_cornermenus());
 //        application.addComponent(openNew);
 
     }

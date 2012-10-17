@@ -81,8 +81,9 @@ public class AnnotationSearchField extends FieldComponent implements
      * @param width {@link Integer}
      * @param height {@link Integer}
      */
-    public AnnotationSearchField(String resource, int width, int height) {
-        super("AnnotationSearch");
+    public AnnotationSearchField(String resource, int width, int height, 
+            int zOrder) {
+        super("AnnotationSearch", zOrder);
         this.width = width;
         this.height = height;
         this.image = resource;
@@ -97,13 +98,14 @@ public class AnnotationSearchField extends FieldComponent implements
         initTextures();
         textBeginY = (int) (quad.getHeight() / 2.0f);
         int x = (int) (0);
-        TextComponent caption = new TextComponent(this, ActionName.NONE);
+        TextComponent caption = new TextComponent(this, ActionName.NONE,
+                getZOrder());
         caption.setLocalTranslation(x, getTextY(0), 0);
         caption.setDefaultPosition();
         caption.setSize((int) (FONT_SIZE * 1.5f));
         caption.setText("Write here for annotation search:");
         caption.setFont(2);
-        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, caption.node));
+        attachChild(caption);
         addSpacer(x, (int) (getTextY(0) - FONT_SIZE * 1.4f), 0,
                 (int) (quad.getWidth() / 1.1f), TEXT_SPACER);
         x = (int) (getWidth() / 9.f);
@@ -130,13 +132,13 @@ public class AnnotationSearchField extends FieldComponent implements
         Quaternion q = new Quaternion();
         q = q.fromAngleAxis(FastMath.DEG_TO_RAD * angle, new Vector3f(0, 0, 1));
         Quad spacerQuad = new Quad("Spacer", width, height);
-        spacerQuad.setZOrder(CovidaZOrder.ui_overlay);
+        spacerQuad.setZOrder(getZOrder());
         spacerQuad.setRenderState(tsSpacer);
         spacerQuad.setRenderState(JMEUtils.initalizeBlendState());
         spacerQuad.updateRenderState();
         spacerQuad.setLocalTranslation(x, y, 0);
         spacerQuad.setLocalRotation(q);
-        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, spacerQuad));
+        attachChild(spacerQuad);
     }
 
     @Override
@@ -196,9 +198,10 @@ public class AnnotationSearchField extends FieldComponent implements
         int i = 0;
         int x = (int) (-width / 2.5f);
         for (String part : hwrResults) {
-            TextComponent hwrText = new TextComponent(this, ActionName.NONE);
+            TextComponent hwrText = new TextComponent(this, ActionName.NONE, 
+                    getZOrder());
             hwrText.setLocalTranslation(x, getTextY(2 + i), 0);
-            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, hwrText.node));
+            attachChild(hwrText);
             hwr.add(hwrText);
             hwr.get(i).setText(part);
             hwr.get(i).setSize(FONT_SIZE);
@@ -216,9 +219,10 @@ public class AnnotationSearchField extends FieldComponent implements
         for (AnnotationData data : result.keySet()) {
             String title = data.title;
             log.debug("draw title: " + title);
-            TextComponent titleText = new TextComponent(this, ActionName.LOADLIST);
+            TextComponent titleText = new TextComponent(this, ActionName.LOADLIST, 
+                    getZOrder());
             titleText.setLocalTranslation(x, getTextY(i + 2), 0);
-            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, titleText.node));
+            attachChild(titleText);
             titleText.setFont(1);
             titleText.setSize(FONT_SIZE);
             titleText.setAlign(Align.Left);
@@ -231,9 +235,10 @@ public class AnnotationSearchField extends FieldComponent implements
         if (!entries.isEmpty()) {
             displayAnnotationList(entries.get(0).getLoadUUID());
         } else if(!hwrResults.isEmpty()){
-            TextComponent titleText = new TextComponent(this, ActionName.NONE);
+            TextComponent titleText = new TextComponent(this, ActionName.NONE, 
+                    getZOrder());
             titleText.setLocalTranslation(x, getTextY(i + 2), 0);
-            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, titleText.node));
+            attachChild(titleText);
             titleText.setFont(1);
             titleText.setSize(FONT_SIZE);
             titleText.setAlign(Align.Left);
@@ -252,9 +257,10 @@ public class AnnotationSearchField extends FieldComponent implements
             if (data.uuid.equals(uuid)) {
                 for (Annotation annotation : result.get(data)) {
                     String entry = VideoUtils.getTimeCode(annotation.time_start);
-                    TextComponent textOverlay = new TextComponent(this, ActionName.LOAD);
+                    TextComponent textOverlay = new TextComponent(this, 
+                            ActionName.LOAD, getZOrder());
                     textOverlay.setLocalTranslation(x, getTextY(annotationList.size() + 2), 0);
-                    GameTaskQueueManager.getManager().update(new AttachChildCallable(node, textOverlay.node));
+                    attachChild(textOverlay);
                     textOverlay.setText(entry);
                     textOverlay.setFont(1);
                     textOverlay.setSize(FONT_SIZE);

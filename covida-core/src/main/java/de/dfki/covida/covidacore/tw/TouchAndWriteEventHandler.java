@@ -27,6 +27,7 @@
  */
 package de.dfki.covida.covidacore.tw;
 
+import de.dfki.covida.covidacore.components.IVideoComponent;
 import de.dfki.covida.covidacore.utils.HWRPostProcessing;
 import de.dfki.touchandwrite.ApplicationType;
 import de.dfki.touchandwrite.analyser.touch.gestures.events.DragEventImpl;
@@ -210,7 +211,7 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
                     int y = (int) (event.getY() * component.getDisplaySize()
                             .getHeight());
                     if (component.inArea(x, y)) {
-                        components.put(component.getZPosition(), component);
+                        components.put(component.getZOrder(), component);
                     }
                 }
             }
@@ -227,6 +228,15 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
 //                        component.getPosY());
 //                log.debug("In Area: {}",component.inArea(x, y));
                 activeTouchComponents.put(event.getID(), component);
+                if (component instanceof IVideoComponent) {
+                    for (ITouchAndWriteComponent video : TouchAndWriteComponentHandler.getInstance().getVideos()) {
+                        if (video.getZOrder() < component.getZOrder()) {
+                            int zOrder = component.getZOrder();
+                            component.setZOrder(video.getZOrder());
+                            video.setZOrder(zOrder);
+                        }
+                    }
+                }
             }
         }
         if (activeTouchComponents.containsKey(event.getID())) {
@@ -240,7 +250,6 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
                 component.touchDeadAction(id, x, y);
                 activeTouchComponents.remove(id);
             } else if (event.getTouchState().equals(TouchState.TOUCH_BIRTH)) {
-                component.toFront();
                 component.touchBirthAction(id, x, y);
             }
         }
@@ -288,7 +297,7 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
                     for (Point point : shape.getPoints()) {
 //                        log.debug("Shape point : {},{}",point.x,point.y);
                         if (component.inArea(point.x, point.y)) {
-                            components.put(component.getZPosition(), component);
+                            components.put(component.getZOrder(), component);
                             break;
                         }
                     }
@@ -309,7 +318,7 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
                 if (component.isDrawable()) {
                     if (component.inArea(x, y)) {
 
-                        components.put(component.getZPosition(), component);
+                        components.put(component.getZOrder(), component);
                     }
                 }
             }
@@ -322,7 +331,7 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
             if (penEventState.equals(PenEventDataType.PEN_UP)) {
                 activeDrawComponents.get(device).drawEnd(x, y);
                 activeDrawComponents.remove(device);
-            }else if(penEventState.equals(PenEventDataType.PEN_MOVE)) {
+            } else if (penEventState.equals(PenEventDataType.PEN_MOVE)) {
                 activeDrawComponents.get(device).draw(x, y);
             }
         }
@@ -337,7 +346,7 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
                 int x = (int) event.getBoundingBox().getCenterOfGravity().x;
                 int y = (int) event.getBoundingBox().getCenterOfGravity().y;
                 if (component.inArea(x, y)) {
-                    components.put(component.getZPosition(), component);
+                    components.put(component.getZOrder(), component);
                 }
             }
         }

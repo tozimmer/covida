@@ -135,7 +135,7 @@ public class CovidaApplication extends ApplicationImpl {
         backgroundTextureState.setTexture(backgroundTexture);
         background.setRenderState(backgroundTextureState);
         background.updateRenderState();
-        background.setZOrder(CovidaZOrder.preload);
+        background.setZOrder(CovidaZOrder.getInstance().getPreload());
         GameTaskQueueManager.getManager().update(new AttachChildCallable(CovidaRootNode.node, background));
         Texture overlayDefaultTexture = TextureManager.loadTexture(
                 getClass().getClassLoader().getResource(
@@ -146,7 +146,7 @@ public class CovidaApplication extends ApplicationImpl {
         TextureState overlayDefaultState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
         overlayDefaultState.setTexture(overlayDefaultTexture);
         this.logo = new Quad("Overlay-Default-Image-Quad", display.getWidth()/2.f, display.getHeight()/2.f);
-        logo.setZOrder(CovidaZOrder.background-1);
+        logo.setZOrder(CovidaZOrder.getInstance().getBackground());
         logo.setRenderState(overlayDefaultState);
         logo.setRenderState(JMEUtils.initalizeBlendState());
         logo.updateRenderState();
@@ -166,7 +166,7 @@ public class CovidaApplication extends ApplicationImpl {
         GameTaskQueueManager.getManager().update(new RemoveControllerCallable(preloadScreen, stPreload));
         GameTaskQueueManager.getManager().update(new DetachChildCallable(CovidaRootNode.node, preloadScreen));
         preloader.cleanUp();
-        background.setZOrder(CovidaZOrder.background);
+        background.setZOrder(CovidaZOrder.getInstance().getBackground());
     }
 
     public int getWidth() {
@@ -194,7 +194,6 @@ public class CovidaApplication extends ApplicationImpl {
             video.setDefaultPosition();
             video.setRepeat(true);
             video.start();
-            video.toFront();
         } else if (component instanceof ControlButton) {
             ControlButton button = (ControlButton) component;
             GameTaskQueueManager.getManager().update(
@@ -266,7 +265,7 @@ public class CovidaApplication extends ApplicationImpl {
     protected void loadingAnimation() {
         // Splash Screen
         preloadScreen = new Quad("Splash-Image-Quad", 512, 512);
-        preloadScreen.setZOrder(CovidaZOrder.preload-1);
+        preloadScreen.setZOrder(CovidaZOrder.getInstance().getPreload());
         // set splash screen background Texture
         Texture splashTexture = TextureManager.loadTexture(
                 getClass().getClassLoader().getResource("media/textures/loading.png"),

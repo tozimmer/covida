@@ -53,8 +53,9 @@ public class VideoComponentControls extends JMEComponent implements IVideoContro
     private IControlableComponent controlable;
     private Map<ActionName, ControlButton> controls;
 
-    public VideoComponentControls(IControlableComponent controlable) {
-        super("Video " + controlable.getId() + " Control");
+    public VideoComponentControls(IControlableComponent controlable,
+            int zOrder) {
+        super("Video " + controlable.getId() + " Control", zOrder);
         this.width = 0;
         this.height = 0;
         this.controlable = controlable;
@@ -88,7 +89,7 @@ public class VideoComponentControls extends JMEComponent implements IVideoContro
         for (String texture : buttonOrder) {
             ControlButton control = new ControlButton(controlList.get(texture),
                     controlable, texture, controlActiveList.get(controlList.get(texture)),
-                    controlWidth, controlHeight);
+                    controlWidth, controlHeight, getZOrder());
             control.setLocalTranslation(controlWidth / 2 + (-controlable.getWidth() / 2)
                     + (controls.size() * (controlable.getWidth() / 5)), -controlable.getHeight() / (1.4f), 0);
             controls.put(controlList.get(texture), control);
@@ -104,7 +105,7 @@ public class VideoComponentControls extends JMEComponent implements IVideoContro
         for (String texture : controlList.keySet()) {
             ControlButton control = new ControlButton(controlList.get(texture),
                     controlable, texture, controlActiveList.get(controlList.get(texture)),
-                    controlWidth, controlHeight);
+                    controlWidth, controlHeight, getZOrder());
             control.setLocalTranslation(start, controlable.getHeight() / (1.7f), 0);
             controls.put(controlList.get(texture), control);
             start -= controlable.getWidth() + controlWidth;
@@ -123,16 +124,15 @@ public class VideoComponentControls extends JMEComponent implements IVideoContro
         for (String texture : buttonOrder) {
             control = new ControlButton(controlList.get(texture),
                     controlable, texture, controlActiveList.get(controlList.get(texture)),
-                    controlWidth, controlHeight);
+                    controlWidth, controlHeight, getZOrder());
             control.setLocalTranslation(x, 0, 0);
             if (controlList.get(texture).equals(ActionName.NONE)) {
                 control.setEnabled(false);
             }
-            GameTaskQueueManager.getManager()
-                    .update(new AttachChildCallable(node, control.node));
+            attachChild(control);
         }
         if (control != null) {
-            control.node.setZOrder(CovidaZOrder.ui_button-1);
+            control.node.setZOrder(getZOrder()-1);
         }
         x = 0;
     }
@@ -181,8 +181,7 @@ public class VideoComponentControls extends JMEComponent implements IVideoContro
      */
     public void attach() {
         for (ControlButton button : controls.values()) {
-            GameTaskQueueManager.getManager()
-                    .update(new AttachChildCallable(node, button.node));
+            attachChild(button);
         }
     }
 }

@@ -106,13 +106,14 @@ public class TextComponent extends JMEComponent implements IControlButton {
      *
      * @param component controlable componnet
      */
-    public TextComponent(IControlableComponent component, ActionName action) {
-        super(component.getName() + " Text Overlay");
+    public TextComponent(IControlableComponent component, ActionName action,
+            int zOrder) {
+        super(component.getName() + " Text Overlay", zOrder);
         this.component = component;
         this.action = action;
         textOverlayData = FontLoader.getInstance();
         txt = new BitmapText(textOverlayData.getBitmapFont(font), false);
-        txt.setZOrder(CovidaZOrder.ui_text);
+        txt.setZOrder(getZOrder());
         init();
     }
 
@@ -131,7 +132,7 @@ public class TextComponent extends JMEComponent implements IControlButton {
         } catch (NullPointerException e) {
             log.error("", e);
         }
-        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, txt));
+        attachChild(txt);
     }
 
     /**
@@ -155,7 +156,7 @@ public class TextComponent extends JMEComponent implements IControlButton {
 
     public void attach() {
         if (!node.hasChild(txt)) {
-            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, txt));
+            attachChild(txt);
         }
     }
 
@@ -192,7 +193,7 @@ public class TextComponent extends JMEComponent implements IControlButton {
     public void setFont(int id) {
         GameTaskQueueManager.getManager().update(new DetachChildCallable(node, txt));
         txt = new BitmapText(textOverlayData.getBitmapFont(id), false);
-        txt.setZOrder(CovidaZOrder.ui_text);
+        txt.setZOrder(getZOrder());
         update();
     }
 
@@ -307,7 +308,7 @@ public class TextComponent extends JMEComponent implements IControlButton {
                             || (comp instanceof AnnotationSearchField)
                             || (comp instanceof ControlButton))
                             && comp.inArea(x, y)) {
-                        inAreacomponents.put(comp.getZPosition(), comp);
+                        inAreacomponents.put(comp.getZOrder(), comp);
                     }
                 }
                 if (!inAreacomponents.isEmpty()) {

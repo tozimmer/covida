@@ -31,17 +31,13 @@ import com.jme.image.Texture;
 import com.jme.image.Texture.WrapMode;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
-import com.jme.scene.Node;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.state.BlendState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
-import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
 import de.dfki.covida.videovlcj.ISlider;
 import de.dfki.covida.visualjme2.components.JMEComponent;
-import de.dfki.covida.visualjme2.utils.AttachChildCallable;
-import de.dfki.covida.visualjme2.utils.CovidaZOrder;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
 import java.util.ArrayList;
 
@@ -56,11 +52,10 @@ public class VideoSlider extends JMEComponent implements ISlider {
     private static final int WIDTH = 1000;
     private static final int HEIGHT = 100;
     private VideoComponent video;
-    private Node sliderNode;
     private boolean toPause;
 
-    public VideoSlider(VideoComponent video) {
-        super("Video " + video.getId() + " Slider");
+    public VideoSlider(VideoComponent video, int zOrder) {
+        super("Video " + video.getId() + " Slider", zOrder);
         setLocalScale(
                 new Vector3f((float) video.getWidth() / ((float) getWidth() * 1.1f),
                 (float) video.getWidth() / ((float) getWidth() * 1.1f), 1));
@@ -70,8 +65,6 @@ public class VideoSlider extends JMEComponent implements ISlider {
     }
 
     private void initalizeOverlayQuads(BlendState alpha) {
-        sliderNode = new Node("Slider Node");
-        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, sliderNode));
         overlaySlider = new ArrayList<>();
         ArrayList<String> textureList = new ArrayList<>();
         textureList.add("media/textures/slider.png");
@@ -91,8 +84,8 @@ public class VideoSlider extends JMEComponent implements ISlider {
                     overlaySliderState);
             overlaySlider.get(overlaySlider.size() - 1).setRenderState(alpha);
             overlaySlider.get(overlaySlider.size() - 1).updateRenderState();
-            overlaySlider.get(overlaySlider.size() - 1).setZOrder(CovidaZOrder.ui_overlay-1);
-            GameTaskQueueManager.getManager().update(new AttachChildCallable(sliderNode, overlaySlider.get(overlaySlider.size() - 1)));
+            overlaySlider.get(overlaySlider.size() - 1).setZOrder(getZOrder());
+            attachChild(overlaySlider.get(overlaySlider.size() - 1));
         }
     }
 
@@ -111,7 +104,7 @@ public class VideoSlider extends JMEComponent implements ISlider {
      */
     public void move(float x) {
         if (FastMath.abs(x) < getWidth()) {
-            sliderNode.setLocalTranslation(x, 0, 0);
+            node.setLocalTranslation(x, getLocalTranslation().y, 0);
         }
     }
 

@@ -42,7 +42,6 @@ import de.dfki.covida.visualjme2.components.video.VideoComponent;
 import de.dfki.covida.visualjme2.utils.AddControllerCallable;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
 import de.dfki.covida.visualjme2.utils.CovidaRootNode;
-import de.dfki.covida.visualjme2.utils.CovidaZOrder;
 import de.dfki.covida.visualjme2.utils.DetachChildCallable;
 import de.dfki.covida.visualjme2.utils.RemoveControllerCallable;
 import de.dfki.touchandwrite.analyser.touch.gestures.events.PanEventImpl;
@@ -50,6 +49,8 @@ import de.dfki.touchandwrite.analyser.touch.gestures.events.RotationGestureEvent
 import de.dfki.touchandwrite.analyser.touch.gestures.events.ZoomEventImpl;
 import de.dfki.touchandwrite.input.pen.event.ShapeEvent;
 import java.awt.Dimension;
+import java.util.ArrayList;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,10 +90,16 @@ public abstract class JMEComponent implements ITouchAndWriteComponent {
      */
     private int id;
     public final Node node;
+    private int zOrder;
+    private List<Spatial> spatials;
+    private List<JMEComponent> components;
 
-    public JMEComponent(String nameOfComponent) {
+    public JMEComponent(String nameOfComponent, int zOrder) {
         node = new Node(nameOfComponent);
-        node.setZOrder(CovidaZOrder.ui_node);
+        node.setZOrder(zOrder);
+        spatials = new ArrayList<>();
+        components = new ArrayList<>();
+        this.zOrder = zOrder;
         log = LoggerFactory.getLogger(getClass());
         this.display = new Vector2f(
                 DisplaySystem.getDisplaySystem().getWidth(),
@@ -139,21 +146,37 @@ public abstract class JMEComponent implements ITouchAndWriteComponent {
     }
 
     public final int attachChild(Spatial spatial) {
-        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, spatial));
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(node,
+                spatial));
+        if (!spatials.contains(spatial)) {
+            spatials.add(spatial);
+        }
+        return 0;
+    }
+
+    public final int attachChild(JMEComponent component) {
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(node,
+                component.node));
+        if (!components.contains(component)) {
+            components.add(component);
+        }
         return 0;
     }
 
     public final int detachChild(Spatial spatial) {
-        GameTaskQueueManager.getManager().update(new DetachChildCallable(node, spatial));
+        GameTaskQueueManager.getManager().update(new DetachChildCallable(node,
+                spatial));
         return 0;
     }
 
     public final void addController(Controller controller) {
-        GameTaskQueueManager.getManager().update(new AddControllerCallable(node, controller));
+        GameTaskQueueManager.getManager().update(new AddControllerCallable(node,
+                controller));
     }
 
     public final boolean removeController(Controller controller) {
-        GameTaskQueueManager.getManager().update(new RemoveControllerCallable(node, controller));
+        GameTaskQueueManager.getManager().update(new RemoveControllerCallable(node,
+                controller));
         return true;
     }
 
@@ -231,20 +254,6 @@ public abstract class JMEComponent implements ITouchAndWriteComponent {
      */
     public void move(float x, float y) {
         setLocalTranslation(x, y, 0);
-    }
-
-    @Override
-    public final void toFront() {
-        Node n = node;
-        if (n.getParent() != null) {
-            while (n.getParent() != null && !n.getParent().equals(CovidaRootNode.node)) {
-                n = n.getParent();
-            }
-            if (n.getParent().equals(CovidaRootNode.node)) {
-                GameTaskQueueManager.getManager().update(new DetachChildCallable(CovidaRootNode.node, n));
-                GameTaskQueueManager.getManager().update(new AttachChildCallable(CovidaRootNode.node, n));
-            }
-        }
     }
 
     /**
@@ -360,8 +369,22 @@ public abstract class JMEComponent implements ITouchAndWriteComponent {
     }
 
     @Override
-    public int getZPosition() {
-        return getNodeIndex();
+    public int getZOrder() {
+        return zOrder;
+    }
+
+    @Override
+    public void setZOrder(int zOrder) {
+        for (Spatial spatial : spatials) {
+            int diff = spatial.getZOrder() - getZOrder();
+            spatial.setZOrder(zOrder + diff);
+        }
+        for (JMEComponent component : components) {
+            int diff = component.getZOrder() - getZOrder();
+            component.setZOrder(zOrder + diff);
+        }
+        this.zOrder = zOrder;
+        node.setZOrder(zOrder);
     }
 
     @Override
@@ -438,7 +461,7 @@ public abstract class JMEComponent implements ITouchAndWriteComponent {
     @Override
     public void draw(int x, int y) {
     }
-    
+
     @Override
     public void drawEnd(int x, int y) {
     }

@@ -121,7 +121,7 @@ public class DrawingOverlay extends Node {
         this.width=  height;
         this.height = width;
         board = new Quad("Drawingboard-Quad", width, height);
-        board.setZOrder(CovidaZOrder.ui_overlay);
+        board.setZOrder(getZOrder());
         Quaternion q = new Quaternion();
         q.fromAngles(0f, (float) Math.toRadians(180), (float) Math.toRadians(180));
         board.rotatePoints(q);

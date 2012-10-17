@@ -61,8 +61,8 @@ public class AnnotationClipboard extends FieldComponent implements
      * @param width {@link Integer}
      * @param height {@link Integer}
      */
-    public AnnotationClipboard(String resource, int width, int height) {
-        super("AnnotationClipboard");
+    public AnnotationClipboard(String resource, int width, int height, int zOrder) {
+        super("AnnotationClipboard", zOrder);
         this.width = width;
         this.height = height;
         this.image = resource;
@@ -73,8 +73,9 @@ public class AnnotationClipboard extends FieldComponent implements
         initTextures();
         textBeginY = (int) (quad.getWidth() / 2.2f - FONT_SIZE);
         int x = (int) (getWidth() / 4.f);
-        TextComponent caption = new TextComponent(this, ActionName.NONE);
-        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, caption.node));
+        TextComponent caption = new TextComponent(this, ActionName.NONE, 
+                getZOrder());
+        attachChild(caption);
         caption.setLocalTranslation(x, getTextY(0) - FONT_SIZE / 4.f, 0);
         caption.setSize((int) (FONT_SIZE * 1.5f));
         caption.setText("Clipboard:");
@@ -86,11 +87,12 @@ public class AnnotationClipboard extends FieldComponent implements
     public final void update() {
         int x = (int) (+width / 4.0f);
         for (int i = 0; i < hwrResults.size(); i++) {
-            TextComponent textOverlay = new TextComponent(this, ActionName.COPY);
+            TextComponent textOverlay = new TextComponent(this, ActionName.COPY,
+                    getZOrder());
             textOverlay.setLocalTranslation(x, getTextY(2 + i), 0);
             textOverlay.setDefaultPosition();
             textOverlay.setTouchable(true);
-            GameTaskQueueManager.getManager().update(new AttachChildCallable(node, textOverlay.node));
+            attachChild(textOverlay);
             textOverlay.setText(hwrResults.get(i));
             textOverlay.setSize(FONT_SIZE);
             textOverlay.setFont(1);
@@ -112,13 +114,13 @@ public class AnnotationClipboard extends FieldComponent implements
         Quaternion q = new Quaternion();
         q = q.fromAngleAxis(FastMath.DEG_TO_RAD * angle, new Vector3f(0, 0, 1));
         Quad spacerQuad = new Quad("Spacer", width, height);
-        spacerQuad.setZOrder(CovidaZOrder.ui_overlay);
+        spacerQuad.setZOrder(getZOrder());
         spacerQuad.setRenderState(tsSpacer);
         spacerQuad.setRenderState(JMEUtils.initalizeBlendState());
         spacerQuad.updateRenderState();
         spacerQuad.setLocalTranslation(x, y, 0);
         spacerQuad.setLocalRotation(q);
-        GameTaskQueueManager.getManager().update(new AttachChildCallable(node, spacerQuad));
+        attachChild(spacerQuad);
     }
 
     @Override
