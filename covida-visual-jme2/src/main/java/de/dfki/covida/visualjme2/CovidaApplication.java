@@ -145,7 +145,7 @@ public class CovidaApplication extends ApplicationImpl {
         overlayDefaultTexture.setWrap(Texture.WrapMode.Clamp);
         TextureState overlayDefaultState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
         overlayDefaultState.setTexture(overlayDefaultTexture);
-        this.logo = new Quad("Overlay-Default-Image-Quad", 512, 512);
+        this.logo = new Quad("Overlay-Default-Image-Quad", display.getWidth()/2.f, display.getHeight()/2.f);
         logo.setZOrder(CovidaZOrder.background-1);
         logo.setRenderState(overlayDefaultState);
         logo.setRenderState(JMEUtils.initalizeBlendState());

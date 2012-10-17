@@ -5,11 +5,7 @@
 </head>
 <body>
 <track name="main" type="primary">
-<el end="14800" index="0" start="14790">
-<token>Test </token>
-<point>196,246</point>
-</el>
-<el end="15670" index="1" start="15660">
+<el end="15670" index="0" start="15660">
 <token>Test </token>
 <point>232,237</point>
 <point>231,248</point>
@@ -119,7 +115,7 @@
 <point>232,242</point>
 <point>232,242</point>
 </el>
-<el end="16138" index="2" start="16128">
+<el end="16138" index="1" start="16128">
 <token>Multiple </token>
 <point>62,197</point>
 <point>60,196</point>
@@ -425,7 +421,7 @@
 <point>53,74</point>
 <point>56,72</point>
 </el>
-<el end="16789" index="3" start="16779">
+<el end="16789" index="2" start="16779">
 <token>Multiple </token>
 <point>83,240</point>
 <point>78,238</point>
@@ -687,7 +683,7 @@
 <point>76,60</point>
 <point>74,60</point>
 </el>
-<el end="11947" index="4" start="11937">
+<el end="11947" index="3" start="11937">
 <token/>
 <point>233,209</point>
 <point>229,219</point>
@@ -757,6 +753,10 @@
 <point>231,212</point>
 <point>230,207</point>
 <point>230,207</point>
+</el>
+<el end="14800" index="4" start="14790">
+<token>Test </token>
+<point>196,246</point>
 </el>
 </track>
 </body>

@@ -5,23 +5,6 @@
     <title>CoVidA Demo</title>
     <annotations>
         <annotation>
-            <uuid>a2ef9dbb-f0f4-43bf-9b98-08e820be376e</uuid>
-            <time_start>14790</time_start>
-            <time_end>14800</time_end>
-            <shapeTypes>POLYGON</shapeTypes>
-            <shapes>
-                <shape>
-                    <points>
-                        <point>196,246</point>
-                    </points>
-                </shape>
-                <shape>
-                    <points/>
-                </shape>
-            </shapes>
-            <descriptions>Test </descriptions>
-        </annotation>
-        <annotation>
             <uuid>4f6c11b2-5275-47ce-a582-9cc4626da916</uuid>
             <time_start>15660</time_start>
             <time_end>15670</time_end>
@@ -881,6 +864,23 @@
                 </shape>
             </shapes>
             <descriptions></descriptions>
+        </annotation>
+        <annotation>
+            <uuid>a2ef9dbb-f0f4-43bf-9b98-08e820be376e</uuid>
+            <time_start>14790</time_start>
+            <time_end>14800</time_end>
+            <shapeTypes>POLYGON</shapeTypes>
+            <shapes>
+                <shape>
+                    <points>
+                        <point>196,246</point>
+                    </points>
+                </shape>
+                <shape>
+                    <points/>
+                </shape>
+            </shapes>
+            <descriptions>Test </descriptions>
         </annotation>
     </annotations>
 </data>
