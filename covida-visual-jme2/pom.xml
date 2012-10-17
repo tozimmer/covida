@@ -266,24 +266,6 @@
             <type>jar</type>
         </dependency>
         <dependency>
-            <groupId>de.dfki.touchandwrite</groupId>
-            <artifactId>touchandwrite-server</artifactId>
-            <version>0.9</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>de.dfki.touchandwrite</groupId>
-            <artifactId>touchandwrite-common</artifactId>
-            <version>0.9</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>de.dfki.touchandwrite</groupId>
-            <artifactId>touchandwrite-inputanalyser</artifactId>
-            <version>0.9</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
             <groupId>com.jme</groupId>
             <artifactId>jme-scene</artifactId>
             <version>2.1</version>
@@ -338,12 +320,6 @@
         <dependency>
             <groupId>org.lwjgl</groupId>
             <artifactId>lwjgl_util</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <artifactId>bundle</artifactId>
-            <groupId>org.jwebsockets</groupId>
-            <type>jar</type>
             <version>1.0</version>
         </dependency>
         <dependency>

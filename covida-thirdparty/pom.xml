@@ -8,7 +8,6 @@
     <name>covida-thirdparty</name>
     <version>1.0</version>
     <modules>
-        <module>touchandwrite-3rdparty</module>
         <module>touchandwrite</module>
         <module>vlcj-2.1.0</module>
         <module>jme-2.1</module>

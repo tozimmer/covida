@@ -28,18 +28,6 @@
             <type>jar</type>
         </dependency>
         <dependency>
-            <groupId>de.dfki.touchandwrite</groupId>
-            <artifactId>touchandwrite-server</artifactId>
-            <version>0.9</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>org.jwebsockets</groupId>
-            <artifactId>bundle</artifactId>
-            <version>1.0</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
             <groupId>net.java.dev.jna</groupId>
             <artifactId>jna</artifactId>
             <version>3.4.0</version>
@@ -59,62 +47,8 @@
         </dependency>
         <dependency>
             <groupId>de.dfki.touchandwrite</groupId>
-            <artifactId>touchandwrite-remote</artifactId>
+            <artifactId>touchandwrite-sdk-shaded</artifactId>
             <version>0.9</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>de.dfki.touchandwrite</groupId>
-            <artifactId>touchandwrite-common</artifactId>
-            <version>0.9</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>de.dfki.touchandwrite</groupId>
-            <artifactId>touchandwrite-inputanalyser</artifactId>
-            <version>0.9</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>de.dfki.touchandwrite</groupId>
-            <artifactId>touchandwrite-eventmanager</artifactId>
-            <version>0.9</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>de.dfki.touchandwrite</groupId>
-            <artifactId>touchandwrite-input</artifactId>
-            <version>0.9</version>
-        </dependency>
-        <dependency>
-            <groupId>de.dfki.touchandwrite</groupId>
-            <artifactId>windows-input-adapter</artifactId>
-            <version>0.9</version>
-        </dependency>
-        <dependency>
-            <groupId>de.dfki.touchandwrite</groupId>
-            <artifactId>pr-toolbox</artifactId>
-            <version>0.9</version>
-        </dependency>
-        <dependency>
-            <groupId>com.visionobjects</groupId>
-            <artifactId>engine</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.visionobjects</groupId>
-            <artifactId>hwr</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.visionobjects</groupId>
-            <artifactId>shape</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.ximtec</groupId>
-            <artifactId>igesture</artifactId>
-            <version>1.0</version>
         </dependency>
     </dependencies>
   
