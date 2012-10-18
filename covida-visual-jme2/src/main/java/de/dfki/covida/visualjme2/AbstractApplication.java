@@ -49,7 +49,6 @@ import de.dfki.covida.visualjme2.utils.CovidaRootNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * Abstract application
  *
@@ -119,6 +118,7 @@ public abstract class AbstractApplication extends AbstractGame implements IAppli
      * Window title of the application
      */
     protected String windowtitle;
+    protected boolean preload = true;
 
     /**
      * Updates the timer, sets tpf, updates the input and updates the fps
@@ -148,7 +148,9 @@ public abstract class AbstractApplication extends AbstractGame implements IAppli
 
         // Execute updateQueue item
         GameTaskQueue update = GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE);
-        update.setExecuteAll(true);
+        if (!preload) {
+            update.setExecuteAll(true);
+        }
         update.execute();
 
         if (!pause) {
@@ -569,7 +571,7 @@ public abstract class AbstractApplication extends AbstractGame implements IAppli
     }
 
     public abstract void setBackground();
-    
+
     public abstract boolean isReady();
 
     /**

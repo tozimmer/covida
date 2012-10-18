@@ -312,7 +312,7 @@ public class TextComponent extends JMEComponent implements IControlButton {
                     }
                 }
                 if (!inAreacomponents.isEmpty()) {
-                    ITouchAndWriteComponent comp = inAreacomponents.get(inAreacomponents.lastKey());
+                    ITouchAndWriteComponent comp = inAreacomponents.get(inAreacomponents.firstKey());
                     if (comp instanceof VideoComponent) {
                         VideoComponent video = (VideoComponent) comp;
                         video.hwrAction(text);

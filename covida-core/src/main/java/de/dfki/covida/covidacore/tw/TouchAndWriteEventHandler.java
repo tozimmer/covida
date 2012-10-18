@@ -217,16 +217,7 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
             }
             if (!components.isEmpty()) {
                 ITouchAndWriteComponent component =
-                        components.get(components.lastKey());
-                int x = (int) (event.getX() * component.getDisplaySize()
-                        .getWidth());
-                int y = (int) (event.getY() * component.getDisplaySize()
-                        .getHeight());
-//                log.debug("Touch on component {} with {}",
-//                        component.getName(), component.getDimension());
-//                log.debug("Position: x: {}, y: {}", component.getPosX(),
-//                        component.getPosY());
-//                log.debug("In Area: {}",component.inArea(x, y));
+                        components.get(components.firstKey());
                 activeTouchComponents.put(event.getID(), component);
                 if (component instanceof IVideoComponent) {
                     for (ITouchAndWriteComponent video : TouchAndWriteComponentHandler.getInstance().getVideos()) {
@@ -305,7 +296,7 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
             }
         }
         if (!components.isEmpty()) {
-            components.get(components.lastKey()).onShapeEvent(event);
+            components.get(components.firstKey()).onShapeEvent(event);
         }
     }
 
@@ -323,8 +314,8 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
                 }
             }
             if (!components.isEmpty()) {
-                log.debug("Put: {}", components.get(components.lastKey()));
-                activeDrawComponents.put(device, components.get(components.lastKey()));
+                log.debug("Put: {}", components.get(components.firstKey()));
+                activeDrawComponents.put(device, components.get(components.firstKey()));
             }
         }
         if (activeDrawComponents.containsKey(device)) {
@@ -351,7 +342,7 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
             }
         }
         if (!components.isEmpty()) {
-            components.get(components.lastKey()).hwrAction(topResult);
+            components.get(components.firstKey()).hwrAction(topResult);
         }
     }
 }

@@ -167,6 +167,7 @@ public class CovidaApplication extends ApplicationImpl {
         GameTaskQueueManager.getManager().update(new DetachChildCallable(CovidaRootNode.node, preloadScreen));
         preloader.cleanUp();
         background.setZOrder(CovidaZOrder.getInstance().getBackground());
+        preload = false;
     }
 
     public int getWidth() {
@@ -193,7 +194,6 @@ public class CovidaApplication extends ApplicationImpl {
             video.setLocalTranslation(x, y, 0);
             video.setDefaultPosition();
             video.setRepeat(true);
-            video.start();
         } else if (component instanceof ControlButton) {
             ControlButton button = (ControlButton) component;
             GameTaskQueueManager.getManager().update(

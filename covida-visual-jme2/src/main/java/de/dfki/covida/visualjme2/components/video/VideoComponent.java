@@ -180,6 +180,7 @@ public final class VideoComponent extends JMEComponent implements
         createVideo();
         setDrawable(true);
         setTouchable(true);
+        video.open();
     }
 
     /**
@@ -440,13 +441,6 @@ public final class VideoComponent extends JMEComponent implements
      */
     public void setRepeat(Boolean repeat) {
         video.setRepeat(repeat);
-    }
-
-    /**
-     * Start video (Initialisation)
-     */
-    public void start() {
-        video.start();
     }
 
     /**

@@ -272,12 +272,12 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     /**
      * Start video
      */
-    public void start() {
+    public void open() {
         if (mediaPlayer == null) {
             log.warn("Could not start video, mediaPlayer == null!");
             return;
         }
-        mediaPlayer.playMedia(getSource());
+        mediaPlayer.prepareMedia(getSource());
         mediaPlayer.setPlaySubItems(true);
     }
 
