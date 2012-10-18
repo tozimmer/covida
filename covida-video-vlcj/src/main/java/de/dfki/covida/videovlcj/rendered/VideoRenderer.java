@@ -100,7 +100,9 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
         this.shapePoints = new StrokeList();
         this.pointsToDraw = new ConcurrentLinkedQueue<>();
         shapeToDraw = new ConcurrentLinkedQueue<>();
-        this.frame = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration().createCompatibleImage(width, height);
+        this.frame = GraphicsEnvironment.getLocalGraphicsEnvironment()
+                .getDefaultScreenDevice().getDefaultConfiguration()
+                .createCompatibleImage(width, height);
         this.frame.setAccelerationPriority(1.0f);
     }
 
@@ -378,5 +380,11 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
     @Override
     public void setHWR(String hwr) {
         this.hwr = hwr;
+    }
+
+    public void clear() {
+        frame = GraphicsEnvironment.getLocalGraphicsEnvironment()
+                .getDefaultScreenDevice().getDefaultConfiguration()
+                .createCompatibleImage(width, height);
     }
 }

@@ -58,7 +58,6 @@ public class VideoSlider extends JMEComponent implements ISlider {
         this.video = video;
         this.sliderNode = new Node("Slider Node");
         sliderNode.setZOrder(getZOrder());
-        attachChild(sliderNode);
         initalizeOverlayQuads(JMEUtils.initalizeBlendState());
         setTouchable(true);
     }
@@ -123,11 +122,13 @@ public class VideoSlider extends JMEComponent implements ISlider {
     }
 
     private void touchAction(int x, int y) {
-        Vector3f result = getLocal(x, y);
-        float percentage = (result.x + getWidth() / 2.0f) / getWidth();
-        if (percentage <= 1.0f) {
-            video.setTimePosition(percentage);
-            video.enableTimeCodeOverlay(1000);
+        if (node.hasChild(sliderNode) && inArea(x, y)) {
+            Vector3f result = getLocal(x, y);
+            float percentage = (result.x + getWidth() / 2.0f) / getWidth();
+            if (percentage <= 1.0f) {
+                video.setTimePosition(percentage);
+                video.enableTimeCodeOverlay(1000);
+            }
         }
     }
 
@@ -139,5 +140,15 @@ public class VideoSlider extends JMEComponent implements ISlider {
     @Override
     protected final int getWidth() {
         return (int) sliderQuad.getWidth();
+    }
+
+    @Override
+    public void detach() {
+        detachChild(sliderNode);
+    }
+
+    @Override
+    public void attach() {
+        attachChild(sliderNode);
     }
 }

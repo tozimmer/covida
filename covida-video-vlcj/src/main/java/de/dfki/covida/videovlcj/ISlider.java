@@ -39,4 +39,8 @@ public interface ISlider {
      * @param percentage
      */
     public void setSlider(float percentage);
+
+    public void detach();
+
+    public void attach();
 }

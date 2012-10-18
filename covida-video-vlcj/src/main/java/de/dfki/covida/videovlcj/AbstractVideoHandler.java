@@ -385,6 +385,10 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
             setTimePostion(0);
             mediaPlayer.stop();
         }
+        if(renderer != null){
+            renderer.clear();
+        }
+        slider.detach();
     }
 
     /**
@@ -427,6 +431,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
                 this.mediaPlayer.play();
                 controls.highlightPause();
             }
+            slider.attach();
         }
     }
 
@@ -479,7 +484,12 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
                 mediaPlayer.setTime((long) (percentage * getMaxTime()));
             }
         }
-//        mediaPlayer.nextFrame();
+        if (!isPlaying()) {
+            slider.setSlider(percentage);
+            renderer.setTimecode(VideoUtils.getTimeCode(
+                    (long) (percentage * getMaxTime()))
+                    + "\t<BR>\t" + getVideoProgress());
+        }
     }
 
     /**
@@ -635,9 +645,9 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      */
     @Override
     public void paused(MediaPlayer mp) {
-//        if (controls != null) {
-//            controls.highlightPause();
-//        }
+        if (controls != null) {
+            controls.highlightPause();
+        }
     }
 
     /**
@@ -680,7 +690,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
             slider.setSlider(f);
         }
         if (renderer != null) {
-            renderer.setTimecode(VideoUtils.getTimeCode((long) f*getMaxTime()) 
+            renderer.setTimecode(VideoUtils.getTimeCode((long) (f * getMaxTime()))
                     + "\t<BR>\t" + getVideoProgress());
         }
     }
