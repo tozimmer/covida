@@ -27,28 +27,52 @@
  */
 package de.dfki.covida.covidaflvcreator.utils;
 
-import java.awt.Point;
+import java.io.Reader;
 import java.io.Serializable;
-import java.util.List;
+import java.io.StringReader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 
 /**
  * Class which holds the creation request data.
  *
  * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
  */
-public class CreationRequest implements Serializable{
+public class CreationRequest implements Serializable {
+
     public final String filename;
     public final long timeStart;
     public final long timeEnd;
-    public final List<Point> shape;
+    public final StrokeList strokelist;
     public final String label;
 
-    public CreationRequest(String filename, long timeStart, long timeEnd, 
-            List<Point> shape, String label) {
+    public CreationRequest(String filename, long timeStart, long timeEnd,
+            StrokeList strokelist, String label) {
         this.filename = filename;
         this.timeStart = timeStart;
         this.timeEnd = timeEnd;
-        this.shape = shape;
+        this.strokelist = strokelist;
+        this.label = label;
+    }
+
+    public CreationRequest(String filename, long timeStart, long timeEnd,
+            String shapeXML, String label) {
+        StrokeList list = new StrokeList();
+        try {
+            JAXBContext jc = JAXBContext.newInstance(StrokeList.class);
+            Unmarshaller u = jc.createUnmarshaller();
+            Reader r = new StringReader(shapeXML);
+            list = (StrokeList) u.unmarshal(r);
+        } catch (JAXBException ex) {
+            Logger.getLogger(CreationRequest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        this.filename = filename;
+        this.timeStart = timeStart;
+        this.timeEnd = timeEnd;
+        this.strokelist = list;
         this.label = label;
     }
 }

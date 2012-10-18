@@ -154,4 +154,14 @@ public class EmbeddedVideoOverlay extends JWindow implements IVideoGraphicsHandl
     void draw(Point point) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
+
+    @Override
+    public void clear() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void setTimecode(String string) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

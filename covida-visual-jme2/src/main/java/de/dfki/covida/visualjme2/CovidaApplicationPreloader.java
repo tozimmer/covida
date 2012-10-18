@@ -40,7 +40,6 @@ import de.dfki.covida.visualjme2.utils.CovidaRootNode;
 import de.dfki.covida.visualjme2.utils.CovidaZOrder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -136,10 +135,11 @@ public class CovidaApplicationPreloader implements Runnable {
                 CovidaZOrder.getInstance().getUi_cornermenus());
         application.addComponent(garbadge);
         
-//        ControlButton openNew = new ControlButton(ActionName.OPEN,
-//                null, "media/textures/new.png",
-//                "media/textures/new.png", 64, 64, CovidaZOrder.getInstance().getUi_cornermenus());
-//        application.addComponent(openNew);
+        ControlButton openNew = new ControlButton(ActionName.OPEN,
+                application, "media/textures/new.png",
+                "media/textures/new.png", 64, 64, 
+                CovidaZOrder.getInstance().getUi_cornermenus());
+        application.addComponent(openNew);
 
     }
 

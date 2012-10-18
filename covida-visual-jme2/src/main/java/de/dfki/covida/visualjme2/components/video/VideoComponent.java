@@ -839,7 +839,7 @@ public final class VideoComponent extends JMEComponent implements
             video.setMedia("http://www.youtube.com/watch?v=uBiN119_wvg");
             return false;
         } else if (action.equals(ActionName.CLOSE)) {
-//            close();
+            close();
             return false;
         } else if (action.equals(ActionName.FORWARD)) {
             if ((video.getTime() + video.getMaxTime() / 100) < video.getMaxTime()) {

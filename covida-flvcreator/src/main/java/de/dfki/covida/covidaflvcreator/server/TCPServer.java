@@ -182,7 +182,7 @@ public class TCPServer extends Thread {
                                 new AnnotatedVideoCreator(request.filename,
                                 this);
                         creator.setIntervall(request.timeStart, request.timeEnd);
-                        creator.setShape(request.shape);
+                        creator.setShape(request.strokelist);
                         creator.setText(request.label);
                         Thread creatorThread = new Thread(creator);
                         creatorThread.setName("Creator Thread");

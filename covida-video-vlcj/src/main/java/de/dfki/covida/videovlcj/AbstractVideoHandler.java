@@ -33,6 +33,7 @@ import de.dfki.covida.covidacore.data.Stroke;
 import de.dfki.covida.covidacore.data.StrokeList;
 import de.dfki.covida.covidacore.utils.VideoUtils;
 import de.dfki.covida.videovlcj.embedded.EmbeddedVideoHandler;
+import de.dfki.covida.videovlcj.embedded.EmbeddedVideoOverlay;
 import de.dfki.covida.videovlcj.preload.VideoPreload;
 import de.dfki.covida.videovlcj.rendered.RenderedVideoHandler;
 import de.dfki.covida.videovlcj.rendered.VideoRenderer;
@@ -115,11 +116,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * Embedded media player, used by {@link EmbeddedMediaPlayerComponent}
      */
     protected EmbeddedMediaPlayerComponent mediaPlayerComponent;
-    /**
-     * {@link VideoRenderer} Note that this variable is only used by
-     * {@link RenderedVideoHandler}
-     */
-    protected VideoRenderer renderer;
+    protected IVideoGraphicsHandler graphics;
     /**
      * The {@link MediaPlayerFactory} to crate {@link VideoSurface} or
      * {@link MediaPlayer}
@@ -183,10 +180,13 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
         if (this instanceof EmbeddedVideoHandler) {
             mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
             mediaPlayer = mediaPlayerComponent.getMediaPlayer();
-            ((EmbeddedVideoHandler) this).setOveray(width, height);
+            graphics = new EmbeddedVideoOverlay(width, width);
+            ((EmbeddedVideoHandler) this)
+                    .setOveray((EmbeddedVideoOverlay) graphics);
         } else if (this instanceof RenderedVideoHandler) {
-            this.renderer = new VideoRenderer(width, height, title);
-            mediaPlayer = mediaPlayerFactory.newDirectMediaPlayer(width, height, renderer);
+            graphics = new VideoRenderer(width, height, title);
+            mediaPlayer = mediaPlayerFactory.newDirectMediaPlayer(width, height,
+                    (VideoRenderer) graphics);
         }
         this.height = height;
         this.width = width;
@@ -385,9 +385,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
             setTimePostion(0);
             mediaPlayer.stop();
         }
-        if(renderer != null){
-            renderer.clear();
-        }
+        graphics.clear();
         slider.detach();
     }
 
@@ -486,7 +484,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
         }
         if (!isPlaying()) {
             slider.setSlider(percentage);
-            renderer.setTimecode(VideoUtils.getTimeCode(
+            graphics.setTimecode(VideoUtils.getTimeCode(
                     (long) (percentage * getMaxTime()))
                     + "\t<BR>\t" + getVideoProgress());
         }
@@ -689,10 +687,8 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
         if (slider != null) {
             slider.setSlider(f);
         }
-        if (renderer != null) {
-            renderer.setTimecode(VideoUtils.getTimeCode((long) (f * getMaxTime()))
-                    + "\t<BR>\t" + getVideoProgress());
-        }
+        graphics.setTimecode(VideoUtils.getTimeCode((long) (f * getMaxTime()))
+                + "\t<BR>\t" + getVideoProgress());
     }
 
     /**

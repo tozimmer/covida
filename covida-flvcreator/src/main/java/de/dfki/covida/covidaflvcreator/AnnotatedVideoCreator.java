@@ -32,7 +32,15 @@ import com.xuggle.mediatool.MediaListenerAdapter;
 import com.xuggle.mediatool.ToolFactory;
 import com.xuggle.mediatool.event.IVideoPictureEvent;
 import de.dfki.covida.covidaflvcreator.utils.ContainerInfo;
-import java.awt.*;
+import de.dfki.covida.covidaflvcreator.utils.Stroke;
+import de.dfki.covida.covidaflvcreator.utils.StrokeList;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +62,7 @@ public class AnnotatedVideoCreator extends MediaListenerAdapter implements Runna
     /**
      * Points of the spape to render in the video
      */
-    private List<Point> shapeToDraw;
+    private StrokeList shapeToDraw;
     /**
      * {@link FontMetrics} for the text overlay
      */
@@ -142,7 +150,7 @@ public class AnnotatedVideoCreator extends MediaListenerAdapter implements Runna
     public AnnotatedVideoCreator(String inFile, IVideoReceiver request) {
         this.inputFile = inFile;
         this.dim = ContainerInfo.getDimension(inFile);
-        this.shapeToDraw = new ArrayList<>();
+        this.shapeToDraw = new StrokeList();
         this.request = request;
     }
 
@@ -156,7 +164,7 @@ public class AnnotatedVideoCreator extends MediaListenerAdapter implements Runna
      *
      * @param shape {@link List} of {@link Point}s
      */
-    public void setShape(List<Point> shape) {
+    public void setShape(StrokeList shape) {
         if (!encoding) {
             shapeToDraw = shape;
         }
@@ -294,19 +302,21 @@ public class AnnotatedVideoCreator extends MediaListenerAdapter implements Runna
      * @param g2d {@link Graphics2D}
      */
     private void drawPoints(Graphics2D g2d) {
-        Point lastPoint = null;
-        for (Point point : shapeToDraw) {
-            if (lastPoint == null) {
-                lastPoint = point;
-            } else {
-                g2d.setColor(Color.black);
-                g2d.drawLine(lastPoint.x + 2, lastPoint.y + 2, point.x + 2, point.y + 2);
-                g2d.drawLine(lastPoint.x - 2, lastPoint.y + 2, point.x - 2, point.y + 2);
-                g2d.drawLine(lastPoint.x + 2, lastPoint.y - 2, point.x + 2, point.y - 2);
-                g2d.drawLine(lastPoint.x - 2, lastPoint.y - 2, point.x - 2, point.y - 2);
-                g2d.setColor(defaultG2DColor);
-                g2d.drawLine(lastPoint.x, lastPoint.y, point.x, point.y);
-                lastPoint = point;
+        for (Stroke stroke : shapeToDraw.strokes) {
+            Point lastPoint = null;
+            for (Point point : stroke.points) {
+                if (lastPoint == null) {
+                    lastPoint = point;
+                } else {
+                    g2d.setColor(Color.black);
+                    g2d.drawLine(lastPoint.x + 2, lastPoint.y + 2, point.x + 2, point.y + 2);
+                    g2d.drawLine(lastPoint.x - 2, lastPoint.y + 2, point.x - 2, point.y + 2);
+                    g2d.drawLine(lastPoint.x + 2, lastPoint.y - 2, point.x + 2, point.y - 2);
+                    g2d.drawLine(lastPoint.x - 2, lastPoint.y - 2, point.x - 2, point.y - 2);
+                    g2d.setColor(defaultG2DColor);
+                    g2d.drawLine(lastPoint.x, lastPoint.y, point.x, point.y);
+                    lastPoint = point;
+                }
             }
         }
     }

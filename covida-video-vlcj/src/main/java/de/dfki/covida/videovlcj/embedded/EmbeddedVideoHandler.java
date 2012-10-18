@@ -93,8 +93,8 @@ public final class EmbeddedVideoHandler extends AbstractVideoHandler {
      * @param width width
      * @param height height
      */
-    public void setOveray(int width, int height) {
-        overlay = new EmbeddedVideoOverlay(width, height);
+    public void setOveray(EmbeddedVideoOverlay overlay) {
+        this.overlay = overlay;
         setOverlay(overlay);
     }
 

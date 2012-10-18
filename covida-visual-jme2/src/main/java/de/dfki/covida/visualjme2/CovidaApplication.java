@@ -41,10 +41,12 @@ import com.jme.system.DisplaySystem;
 import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
 import com.jme.util.geom.BufferUtils;
+import de.dfki.covida.covidacore.components.IControlableComponent;
 import de.dfki.covida.covidacore.data.CovidaConfiguration;
 import de.dfki.covida.covidacore.data.VideoMediaData;
 import de.dfki.covida.covidacore.streaming.TCPServer;
 import de.dfki.covida.covidacore.tw.ITouchAndWriteComponent;
+import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.visualjme2.animations.PreloadAnimation;
 import de.dfki.covida.visualjme2.components.ControlButton;
 import de.dfki.covida.visualjme2.components.JMEComponent;
@@ -62,7 +64,7 @@ import java.util.concurrent.Callable;
  *
  * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
  */
-public class CovidaApplication extends ApplicationImpl {
+public class CovidaApplication extends ApplicationImpl implements IControlableComponent{
 
     /**
      * List of all video sources as {@link String}
@@ -343,5 +345,31 @@ public class CovidaApplication extends ApplicationImpl {
         if (scenemonitor) {
             SceneMonitor.getMonitor().cleanup();
         }
+    }
+
+    @Override
+    public boolean toggle(ActionName action) {
+        if(action.equals(ActionName.OPEN)){
+            VideoComponent video = new VideoComponent(
+                    getVideoSources().get(0).videoSource, 
+                    getVideoSources().get(0).videoName,
+                    CovidaZOrder.getInstance().getUi_node());
+            videos.add(video);
+            GameTaskQueueManager.getManager().update(new AttachChildCallable(
+                    CovidaRootNode.node, video.node));
+            addComponent(video);
+            video.node.setLocalTranslation(getWidth()/2, getHeight()/2, 0);
+        }
+        return false;
+    }
+
+    @Override
+    public int getId() {
+        return 0;
+    }
+
+    @Override
+    public String getName() {
+        return windowtitle;
     }
 }

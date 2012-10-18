@@ -29,6 +29,8 @@ package de.dfki.covida.covidaflvcreator.demos;
 
 import de.dfki.covida.covidaflvcreator.AnnotatedVideoCreator;
 import de.dfki.covida.covidaflvcreator.IVideoReceiver;
+import de.dfki.covida.covidaflvcreator.utils.Stroke;
+import de.dfki.covida.covidaflvcreator.utils.StrokeList;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,17 +51,19 @@ public class VideoCreatorRequestDemo implements IVideoReceiver{
     private long start;
     
     public void create(){
-        List<Point> shape = new ArrayList<>();
-        shape.add(new Point(22, 177));
-        shape.add(new Point(200, 22));
-        shape.add(new Point(155, 43));
-        shape.add(new Point(210, 77));
-        shape.add(new Point(244, 17));
-        shape.add(new Point(22, 7));
-        shape.add(new Point(331, 177));
-        shape.add(new Point(321, 173));
-        shape.add(new Point(100, 177));
-        shape.add(new Point(22, 177));
+        StrokeList shape = new StrokeList();
+        Stroke stroke = new Stroke();
+        stroke.points.add(new Point(22, 177));
+        stroke.points.add(new Point(200, 22));
+        stroke.points.add(new Point(155, 43));
+        stroke.points.add(new Point(210, 77));
+        stroke.points.add(new Point(244, 17));
+        stroke.points.add(new Point(22, 7));
+        stroke.points.add(new Point(331, 177));
+        stroke.points.add(new Point(321, 173));
+        stroke.points.add(new Point(100, 177));
+        stroke.points.add(new Point(22, 177));
+        shape.strokes.add(stroke);
 
         AnnotatedVideoCreator annotatedVideoCreator = new AnnotatedVideoCreator(
                 "../covida-res/videos/Collaborative Video Annotation.mp4", 

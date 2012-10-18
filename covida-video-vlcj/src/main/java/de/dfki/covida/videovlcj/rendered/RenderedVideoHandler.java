@@ -28,7 +28,6 @@
 package de.dfki.covida.videovlcj.rendered;
 
 import de.dfki.covida.covidacore.components.IVideoComponent;
-import de.dfki.covida.covidacore.data.Stroke;
 import de.dfki.covida.covidacore.data.StrokeList;
 import de.dfki.covida.videovlcj.AbstractVideoHandler;
 import java.awt.Point;
@@ -68,17 +67,17 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
 
     @Override
     public void enableTimeCodeOverlay(long timeout) {
-        renderer.enableTimeCodeOverlay(timeout);
+        ((VideoRenderer) graphics).enableTimeCodeOverlay(timeout);
     }
 
     @Override
     public void setTitleOverlayEnabled(boolean enabled) {
-        renderer.setTitleOverlayEnabled(enabled);
+        ((VideoRenderer) graphics).setTitleOverlayEnabled(enabled);
     }
 
     @Override
     public BufferedImage getVideoImage() {
-        return renderer.getVideoImage();
+        return ((VideoRenderer) graphics).getVideoImage();
     }
 
     /**
@@ -88,10 +87,7 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
      */
     @Override
     public BufferedImage getSnapshot() {
-        if (renderer == null) {
-            return null;
-        }
-        return renderer.getVideoImage();
+        return ((VideoRenderer) graphics).getVideoImage();
     }
 
     /**
@@ -100,9 +96,6 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
      */
     @Override
     public void saveAnnotatedFrame() {
-        if (renderer == null) {
-            return;
-        }
         BufferedImage img = getSnapshot();
         if (img != null) {
             try {
@@ -114,48 +107,32 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
         } else {
             log.warn("Snapshot BufferedImage is null");
         }
-        renderer.clearShapes();
+        ((VideoRenderer) graphics).clearShapes();
     }
 
     @Override
     public void draw(Point point) {
-        if (renderer == null) {
-            return;
-        }
-        renderer.draw(point);
+        ((VideoRenderer) graphics).draw(point);
     }
 
     @Override
     public StrokeList getShapes() {
-        if (renderer == null) {
-            return null;
-        }
-        return renderer.getSavedShapes();
+        return ((VideoRenderer) graphics).getSavedShapes();
     }
 
     @Override
     public StrokeList getDrawings() {
-        if (renderer == null) {
-            return null;
-        }
-        return renderer.getDrawings();
+        return ((VideoRenderer) graphics).getDrawings();
     }
 
     @Override
     public void addShape(List<Point> points) {
-        if (renderer == null) {
-            return;
-        }
-        renderer.addShape(points);
+        ((VideoRenderer) graphics).addShape(points);
     }
 
     @Override
     public void setHWR(String hwr) {
-        if (renderer == null) {
-            log.warn("Cannot set HWR result: HWR result is == null");
-            return;
-        }
-        renderer.setHWR(hwr);
+        ((VideoRenderer) graphics).setHWR(hwr);
     }
 
     /**
@@ -163,10 +140,7 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
      */
     @Override
     public void clearShape() {
-        if (renderer == null) {
-            return;
-        }
-        renderer.clearShapes();
+        ((VideoRenderer) graphics).clearShapes();
     }
 
     /**
@@ -174,19 +148,16 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
      */
     @Override
     public void clearDrawing() {
-        if (renderer == null) {
-            return;
-        }
-        renderer.clearDrawing();
+        ((VideoRenderer) graphics).clearDrawing();
     }
 
     @Override
     public String getTitle() {
-        return renderer.getTitle();
+        return ((VideoRenderer) graphics).getTitle();
     }
 
     @Override
     public void endDrawStroke() {
-        renderer.endDrawStroke();
+        ((VideoRenderer) graphics).endDrawStroke();
     }
 }

@@ -178,6 +178,11 @@ public abstract class JMEComponent implements ITouchAndWriteComponent {
                 spatial));
         return 0;
     }
+    
+    private void removeFromParent() {
+        GameTaskQueueManager.getManager().update(new DetachChildCallable(getParent(),
+                node));
+    }
 
     public final void addController(Controller controller) {
         GameTaskQueueManager.getManager().update(new AddControllerCallable(node,
@@ -374,7 +379,7 @@ public abstract class JMEComponent implements ITouchAndWriteComponent {
      * Close the component
      */
     public void close() {
-        node.removeFromParent();
+        removeFromParent();
         cleanUp();
     }
 
