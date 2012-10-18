@@ -27,7 +27,8 @@
  */
 package de.dfki.covida.videovlcj.rendered;
 
-import de.dfki.covida.covidacore.data.ShapePoints;
+import de.dfki.covida.covidacore.data.Stroke;
+import de.dfki.covida.covidacore.data.StrokeList;
 import de.dfki.covida.covidacore.utils.ImageUtils;
 import de.dfki.covida.videovlcj.IVideoGraphicsHandler;
 import java.awt.BasicStroke;
@@ -70,8 +71,8 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
     private BufferedImage frame;
     private final int width;
     private final int height;
-    private List<ShapePoints> drawedPoints;
-    private List<ShapePoints> shapePoints;
+    private StrokeList drawedPoints;
+    private StrokeList shapePoints;
     private Collection<Collection<Point>> pointsToDraw;
     private Collection<Collection<Point>> shapeToDraw;
     private Dimension d;
@@ -95,8 +96,8 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
         this.title = title;
         this.timecode = "";
         this.hwr = "";
-        this.drawedPoints = new ArrayList<>();
-        this.shapePoints = new ArrayList<>();
+        this.drawedPoints = new StrokeList();
+        this.shapePoints = new StrokeList();
         this.pointsToDraw = new ConcurrentLinkedQueue<>();
         shapeToDraw = new ConcurrentLinkedQueue<>();
         this.frame = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration().createCompatibleImage(width, height);
@@ -251,11 +252,11 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
      * @param point {@link Point}
      */
     public void draw(Point point) {
-        if (drawedPoints.isEmpty()) {
-            ShapePoints shape = new ShapePoints();
-            drawedPoints.add(shape);
+        if (drawedPoints.strokes.isEmpty()) {
+            Stroke stroke = new Stroke();
+            drawedPoints.strokes.add(stroke);
         }
-        drawedPoints.get(drawedPoints.size() - 1).points.add(point);
+        drawedPoints.strokes.get(drawedPoints.strokes.size() - 1).points.add(point);
         Iterator<Collection<Point>> iterator = pointsToDraw.iterator();
         Collection<Point> last = null;
         while (iterator.hasNext()) {
@@ -269,7 +270,7 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
     }
 
     public void endDrawStroke() {
-        drawedPoints.add(new ShapePoints());
+        drawedPoints.strokes.add(new Stroke());
         Collection<Point> newStroke = new ConcurrentLinkedQueue<>();
         pointsToDraw.add(newStroke);
     }
@@ -341,9 +342,9 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
 
     @Override
     public synchronized void addShape(List<Point> points) {
-        ShapePoints shape = new ShapePoints();
-        shape.points = points;
-        this.shapePoints.add(shape);
+        Stroke stroke = new Stroke();
+        stroke.points = points;
+        this.shapePoints.strokes.add(stroke);
         this.pointsToDraw.clear();
         Collection<Point> newShape = new ConcurrentLinkedQueue<>();
         for (Point point : points) {
@@ -353,24 +354,24 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
     }
 
     @Override
-    public List<ShapePoints> getDrawings() {
+    public StrokeList getDrawings() {
         return drawedPoints;
     }
 
     @Override
-    public List<ShapePoints> getSavedShapes() {
+    public StrokeList getSavedShapes() {
         return shapePoints;
     }
 
     @Override
     public synchronized void clearShapes() {
-        shapePoints = new ArrayList<>();
+        shapePoints = new StrokeList();
         shapeToDraw.clear();
     }
 
     @Override
     public synchronized void clearDrawing() {
-        drawedPoints = new ArrayList<>();
+        drawedPoints = new StrokeList();
         pointsToDraw.clear();
     }
 

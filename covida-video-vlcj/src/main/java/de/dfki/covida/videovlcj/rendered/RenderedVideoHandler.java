@@ -28,7 +28,8 @@
 package de.dfki.covida.videovlcj.rendered;
 
 import de.dfki.covida.covidacore.components.IVideoComponent;
-import de.dfki.covida.covidacore.data.ShapePoints;
+import de.dfki.covida.covidacore.data.Stroke;
+import de.dfki.covida.covidacore.data.StrokeList;
 import de.dfki.covida.videovlcj.AbstractVideoHandler;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
@@ -125,7 +126,7 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
     }
 
     @Override
-    public List<ShapePoints> getShapes() {
+    public StrokeList getShapes() {
         if (renderer == null) {
             return null;
         }
@@ -133,7 +134,7 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
     }
 
     @Override
-    public List<ShapePoints> getDrawings() {
+    public StrokeList getDrawings() {
         if (renderer == null) {
             return null;
         }

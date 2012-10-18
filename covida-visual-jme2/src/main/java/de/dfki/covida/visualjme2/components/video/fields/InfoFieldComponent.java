@@ -40,7 +40,7 @@ import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
 import de.dfki.covida.covidacore.data.Annotation;
 import de.dfki.covida.covidacore.data.AnnotationStorage;
-import de.dfki.covida.covidacore.data.ShapePoints;
+import de.dfki.covida.covidacore.data.Stroke;
 import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.covidacore.utils.VideoUtils;
 import de.dfki.covida.visualjme2.animations.*;
@@ -286,7 +286,7 @@ public class InfoFieldComponent extends JMEComponent {
         annotation.description = descriptions.toString();
         AnnotationStorage.getInstance().getAnnotationData(video).save(annotation);
         clearDescriptionText();
-        AnnotationStorage.getInstance().getAnnotationData(video).save();
+        AnnotationStorage.getInstance().getAnnotationData(video).write();
         AnnotationStorage.getInstance().getAnnotationData(video).export();
     }
 
@@ -295,8 +295,8 @@ public class InfoFieldComponent extends JMEComponent {
      *
      * @param shapePoints
      */
-    private void setShapePoints(List<ShapePoints> shapePoints) {
-        this.annotation.shapePoints = shapePoints;
+    private void setShapePoints(List<Stroke> shapePoints) {
+        this.annotation.strokelist.strokes = shapePoints;
     }
 
     /**
@@ -374,7 +374,7 @@ public class InfoFieldComponent extends JMEComponent {
         this.annotation = annotation;
         setTime(annotation.time_start);
         setTitle(AnnotationStorage.getInstance().getAnnotationData(video).title);
-        setShapePoints(annotation.shapePoints);
+        setShapePoints(annotation.strokelist.strokes);
         setShapeType(annotation.shapeType);
         String[] split = annotation.description.split(" ");
         for (String part : split) {

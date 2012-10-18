@@ -29,11 +29,9 @@ package de.dfki.covida.covidacore.data.test;
 
 import de.dfki.covida.covidacore.data.Annotation;
 import de.dfki.covida.covidacore.data.AnnotationData;
-import de.dfki.covida.covidacore.data.CovidaConfiguration;
-import de.dfki.covida.covidacore.data.ShapePoints;
+import de.dfki.covida.covidacore.data.Stroke;
+import de.dfki.covida.covidacore.data.StrokeList;
 import java.awt.Point;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Data test class.
@@ -49,19 +47,23 @@ public class DataTest {
         AnnotationData data = AnnotationData.load(new DataTestVideoComponent());
         Annotation annotation = new Annotation();
         annotation.description = "Data Test DFKI";
-        annotation.shapePoints = new ArrayList<>();
-        List<ShapePoints> shapes = new ArrayList<>();
-        ShapePoints shape = new ShapePoints();
+        annotation.strokelist = new StrokeList();
+        StrokeList shapes = new StrokeList();
+        Stroke shape = new Stroke();
         shape.points.add(new Point(24, 30));
         shape.points.add(new Point(98, 32));
         shape.points.add(new Point(100, 121));
         shape.points.add(new Point(22, 119));
         shape.points.add(new Point(24, 30));
-        shapes.add(shape);
-        annotation.shapePoints = shapes;
+        shapes.strokes.add(shape);
+        shape = new Stroke();
+        shape.points.add(new Point(333, 30));
+        shape.points.add(new Point(2, 32));
+        shapes.strokes.add(shape);
+        annotation.strokelist = shapes;
         annotation.time_end = (long) 456343;
         annotation.time_start = (long) 455322;
         data.save(annotation);
-        data.save();
+        data.write();
     }
 }

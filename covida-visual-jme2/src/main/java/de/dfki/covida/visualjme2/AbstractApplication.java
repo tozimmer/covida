@@ -118,7 +118,6 @@ public abstract class AbstractApplication extends AbstractGame implements IAppli
      * Window title of the application
      */
     protected String windowtitle;
-    protected boolean preload = true;
 
     /**
      * Updates the timer, sets tpf, updates the input and updates the fps
@@ -148,9 +147,7 @@ public abstract class AbstractApplication extends AbstractGame implements IAppli
 
         // Execute updateQueue item
         GameTaskQueue update = GameTaskQueueManager.getManager().getQueue(GameTaskQueue.UPDATE);
-        if (!preload) {
-            update.setExecuteAll(true);
-        }
+        update.setExecuteAll(true);
         update.execute();
 
         if (!pause) {

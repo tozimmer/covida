@@ -28,7 +28,8 @@
 package de.dfki.covida.videovlcj.embedded;
 
 import de.dfki.covida.covidacore.components.IVideoComponent;
-import de.dfki.covida.covidacore.data.ShapePoints;
+import de.dfki.covida.covidacore.data.Stroke;
+import de.dfki.covida.covidacore.data.StrokeList;
 import de.dfki.covida.videovlcj.AbstractVideoHandler;
 import java.awt.Canvas;
 import java.awt.Color;
@@ -173,12 +174,12 @@ public final class EmbeddedVideoHandler extends AbstractVideoHandler {
     }
 
     @Override
-    public List<ShapePoints> getShapes() {
+    public StrokeList getShapes() {
         return overlay.getSavedShapes();
     }
 
     @Override
-    public List<ShapePoints> getDrawings() {
+    public StrokeList getDrawings() {
         return overlay.getDrawings();
     }
 

@@ -44,7 +44,7 @@ import de.dfki.covida.covidacore.components.IControlableComponent;
 import de.dfki.covida.covidacore.components.IVideoComponent;
 import de.dfki.covida.covidacore.data.Annotation;
 import de.dfki.covida.covidacore.data.AnnotationStorage;
-import de.dfki.covida.covidacore.data.ShapePoints;
+import de.dfki.covida.covidacore.data.Stroke;
 import de.dfki.covida.covidacore.tw.TouchAndWriteComponentHandler;
 import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.videovlcj.AbstractVideoHandler;
@@ -242,7 +242,7 @@ public final class VideoComponent extends JMEComponent implements
         long time = video.getTime();
         Annotation annotation = new Annotation();
         annotation.description = "";
-        annotation.shapePoints = video.getShapes();
+        annotation.strokelist = video.getShapes();
         annotation.shapeType = ShapeType.POLYGON;
         annotation.time_end = time;
         annotation.time_start = time;
@@ -731,7 +731,7 @@ public final class VideoComponent extends JMEComponent implements
 
     @Override
     public void hwrAction(String hwr) {
-        if (video.getShapes().isEmpty()) {
+        if (video.getShapes().strokes.isEmpty()) {
             List<Point> points = new ArrayList<>();
             points.add(new Point(5, 5));
             points.add(new Point(5, getHeight() - 5));
@@ -751,7 +751,7 @@ public final class VideoComponent extends JMEComponent implements
         clearAnnotation();
         infoField.setAnnotationData(annotation);
         video.setTimePosition(annotation.time_start);
-        for (ShapePoints shape : annotation.shapePoints) {
+        for (Stroke shape : annotation.strokelist.strokes) {
             video.addShape(shape.points);
         }
     }
@@ -815,7 +815,7 @@ public final class VideoComponent extends JMEComponent implements
 
     @Override
     public void onShapeEvent(ShapeEvent event) {
-        video.setShapes(video.getDrawings());
+        video.setShapes(video.getDrawings().strokes);
         video.clearDrawing();
         setNewAnnotationData();
     }

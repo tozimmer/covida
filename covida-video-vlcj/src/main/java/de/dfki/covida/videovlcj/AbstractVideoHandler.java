@@ -29,7 +29,8 @@ package de.dfki.covida.videovlcj;
 
 import com.sun.jna.Platform;
 import de.dfki.covida.covidacore.components.IVideoComponent;
-import de.dfki.covida.covidacore.data.ShapePoints;
+import de.dfki.covida.covidacore.data.Stroke;
+import de.dfki.covida.covidacore.data.StrokeList;
 import de.dfki.covida.covidacore.utils.VideoUtils;
 import de.dfki.covida.videovlcj.embedded.EmbeddedVideoHandler;
 import de.dfki.covida.videovlcj.preload.VideoPreload;
@@ -279,6 +280,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
         }
         mediaPlayer.prepareMedia(getSource());
         mediaPlayer.setPlaySubItems(true);
+        controls.highlightPlay();
     }
 
     /**
@@ -296,16 +298,16 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     /**
      * Returns the shape points.
      *
-     * @return {@link List} of {@link ShapePoints}
+     * @return {@link List} of {@link StrokeList}
      */
-    abstract public List<ShapePoints> getShapes();
+    abstract public StrokeList getShapes();
 
     /**
      * Returns drawing points.
      *
-     * @return {@link List} of {@link ShapePoints}
+     * @return {@link List} of {@link StrokeList}
      */
-    abstract public List<ShapePoints> getDrawings();
+    abstract public StrokeList getDrawings();
 
     /**
      * Sets the shape points to draw on the video.
@@ -458,6 +460,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
                 mediaPlayer.setTime(time);
             }
         }
+        mediaPlayer.nextFrame();
     }
 
     /**
@@ -471,7 +474,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * @param percentage
      */
     public void setTimePostion(float percentage) {
-        if (mediaPlayer == null) {
+        if (mediaPlayer == null && mediaPlayer.isSeekable()) {
             return;
         }
         if (isTimeRanged) {
@@ -483,6 +486,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
                 mediaPlayer.setTime((long) (percentage * getMaxTime()));
             }
         }
+//        mediaPlayer.nextFrame();
     }
 
     /**
@@ -950,8 +954,8 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      */
     abstract public void setHWR(String hwr);
 
-    public void setShapes(List<ShapePoints> drawings) {
-        for (ShapePoints shape : drawings) {
+    public void setShapes(List<Stroke> drawings) {
+        for (Stroke shape : drawings) {
             addShape(shape.points);
         }
     }

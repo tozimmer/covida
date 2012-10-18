@@ -27,7 +27,7 @@
  */
 package de.dfki.covida.videovlcj;
 
-import de.dfki.covida.covidacore.data.ShapePoints;
+import de.dfki.covida.covidacore.data.StrokeList;
 import java.awt.Point;
 import java.util.List;
 
@@ -42,9 +42,9 @@ public interface IVideoGraphicsHandler {
     /**
      * Returns the drawing as {@link List} of {@link List} of {@link Point}
      * 
-     * @return {@link List} of {@link ShapePoints}
+     * @return {@link List} of {@link StrokeList}
      */
-    public List<ShapePoints> getDrawings();
+    public StrokeList getDrawings();
 
     /**
      * Clears all shapes
@@ -54,9 +54,9 @@ public interface IVideoGraphicsHandler {
     /**
      * Returns the shape as {@link List} of {@link List} of {@link Point}
      * 
-     * @return {@link List} of {@link ShapePoints}
+     * @return {@link List} of {@link StrokeList}
      */
-    public List<ShapePoints> getSavedShapes();
+    public StrokeList getSavedShapes();
 
     /**
      * Adds the shape as {@link List} of {@link Point}

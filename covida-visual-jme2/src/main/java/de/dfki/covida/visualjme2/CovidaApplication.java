@@ -167,7 +167,6 @@ public class CovidaApplication extends ApplicationImpl {
         GameTaskQueueManager.getManager().update(new DetachChildCallable(CovidaRootNode.node, preloadScreen));
         preloader.cleanUp();
         background.setZOrder(CovidaZOrder.getInstance().getBackground());
-        preload = false;
     }
 
     public int getWidth() {

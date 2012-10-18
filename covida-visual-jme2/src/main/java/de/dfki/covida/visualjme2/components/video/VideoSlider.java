@@ -31,6 +31,7 @@ import com.jme.image.Texture;
 import com.jme.image.Texture.WrapMode;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
+import com.jme.scene.Node;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.state.BlendState;
 import com.jme.scene.state.TextureState;
@@ -39,7 +40,6 @@ import com.jme.util.TextureManager;
 import de.dfki.covida.videovlcj.ISlider;
 import de.dfki.covida.visualjme2.components.JMEComponent;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
-import java.util.ArrayList;
 
 /**
  * Time slider for VideoComponent
@@ -48,45 +48,40 @@ import java.util.ArrayList;
  */
 public class VideoSlider extends JMEComponent implements ISlider {
 
-    private ArrayList<Quad> overlaySlider;
-    private static final int WIDTH = 1000;
-    private static final int HEIGHT = 100;
+    private Quad sliderQuad;
     private VideoComponent video;
     private boolean toPause;
+    private final Node sliderNode;
 
     public VideoSlider(VideoComponent video, int zOrder) {
         super("Video " + video.getId() + " Slider", zOrder);
-        setLocalScale(
-                new Vector3f((float) video.getWidth() / ((float) getWidth() * 1.1f),
-                (float) video.getWidth() / ((float) getWidth() * 1.1f), 1));
         this.video = video;
+        this.sliderNode = new Node("Slider Node");
+        sliderNode.setZOrder(getZOrder());
+        attachChild(sliderNode);
         initalizeOverlayQuads(JMEUtils.initalizeBlendState());
         setTouchable(true);
     }
 
     private void initalizeOverlayQuads(BlendState alpha) {
-        overlaySlider = new ArrayList<>();
-        ArrayList<String> textureList = new ArrayList<>();
-        textureList.add("media/textures/slider.png");
-        for (int i = 0; i < textureList.size(); i++) {
-            Texture overlaySliderTexture = TextureManager.loadTexture(
-                    getClass().getClassLoader().getResource(
-                    textureList.get(i)),
-                    Texture.MinificationFilter.BilinearNearestMipMap,
-                    Texture.MagnificationFilter.Bilinear);
-            overlaySliderTexture.setWrap(WrapMode.Clamp);
-            TextureState overlaySliderState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
-            overlaySliderState.setTexture(overlaySliderTexture);
-            overlaySlider.add(new Quad(
-                    ("Overlay-Video-Slider-Image-Quad-0" + i), getWidth(),
-                    getHeight()));
-            overlaySlider.get(overlaySlider.size() - 1).setRenderState(
-                    overlaySliderState);
-            overlaySlider.get(overlaySlider.size() - 1).setRenderState(alpha);
-            overlaySlider.get(overlaySlider.size() - 1).updateRenderState();
-            overlaySlider.get(overlaySlider.size() - 1).setZOrder(getZOrder());
-            attachChild(overlaySlider.get(overlaySlider.size() - 1));
-        }
+        Texture overlaySliderTexture = TextureManager.loadTexture(
+                getClass().getClassLoader().getResource(
+                "media/textures/slider.png"),
+                Texture.MinificationFilter.BilinearNearestMipMap,
+                Texture.MagnificationFilter.Bilinear);
+        overlaySliderTexture.setWrap(WrapMode.Clamp);
+        TextureState overlaySliderState = DisplaySystem.getDisplaySystem()
+                .getRenderer().createTextureState();
+        overlaySliderState.setTexture(overlaySliderTexture);
+        sliderQuad = new Quad(
+                ("Overlay-Video-Slider-Image-Quad-0"), video.getWidth(),
+                video.getHeight() / 10.f);
+        sliderQuad.setRenderState(
+                overlaySliderState);
+        sliderQuad.setRenderState(alpha);
+        sliderQuad.updateRenderState();
+        sliderQuad.setZOrder(getZOrder());
+        attachChild(sliderNode, sliderQuad);
     }
 
     /**
@@ -95,16 +90,16 @@ public class VideoSlider extends JMEComponent implements ISlider {
      */
     @Override
     public void setSlider(float percentage) {
-        move((float) getWidth() * percentage);
+        move((float) video.getWidth() * percentage);
     }
 
     /**
      *
      * @param x
      */
-    public void move(float x) {
+    private void move(float x) {
         if (FastMath.abs(x) < getWidth()) {
-            node.setLocalTranslation(x, getLocalTranslation().y, 0);
+            sliderNode.setLocalTranslation(x, 0, 0);
         }
     }
 
@@ -114,36 +109,35 @@ public class VideoSlider extends JMEComponent implements ISlider {
 
     @Override
     public void touchBirthAction(int id, int x, int y) {
-        if (!video.isPlaying()) {
-            video.resume();
-            toPause = true;
-        }
+        touchAction(x, y);
     }
 
     @Override
     public void touchAliveAction(int id, int x, int y) {
+        touchAction(x, y);
+    }
+
+    @Override
+    public void touchDeadAction(int id, int x, int y) {
+        touchAction(x, y);
+    }
+
+    private void touchAction(int x, int y) {
         Vector3f result = getLocal(x, y);
-        if (FastMath.abs(result.x) < (getWidth() / 2.0f)) {
-            video.setTimePosition((result.x + getWidth() / 2.0f) / getWidth());
+        float percentage = (result.x + getWidth() / 2.0f) / getWidth();
+        if (percentage <= 1.0f) {
+            video.setTimePosition(percentage);
             video.enableTimeCodeOverlay(1000);
         }
     }
 
     @Override
-    public void touchDeadAction(int id, int x, int y) {
-        if(toPause){
-            video.pause();
-            toPause = false;
-        }
-    }
-
-    @Override
     protected final int getHeight() {
-        return HEIGHT;
+        return (int) sliderQuad.getHeight();
     }
 
     @Override
     protected final int getWidth() {
-        return WIDTH;
+        return (int) sliderQuad.getWidth();
     }
 }

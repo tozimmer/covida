@@ -246,17 +246,17 @@ public class AnnotationData implements Serializable {
                 token = doc.createElement("token");
                 token.setTextContent(annotations.get(i).description);
                 el.appendChild(token);
-                if (annotations.get(i).shapePoints == null) {
-                    ShapePoints points = new ShapePoints();
-                    List<ShapePoints> shapes = new ArrayList<>();
+                if (annotations.get(i).strokelist == null) {
+                    Stroke points = new Stroke();
+                    StrokeList strokes = new StrokeList();
                     points.points.add(new Point(0, 0));
-                    shapes.add(points);
-                    annotations.get(i).shapePoints = shapes;
+                    strokes.strokes.add(points);
+                    annotations.get(i).strokelist = strokes;
                     log.debug(
                             "data.shapePointsList.get(i) == null - Annotation: "
                             + i + "Video: " + videoSource);
                 }
-                for (ShapePoints points : annotations.get(i).shapePoints) {
+                for (Stroke points : annotations.get(i).strokelist.strokes) {
                     for (Point p : points.points) {
                         point = doc.createElement("point");
                         point.setTextContent(p.x  + "," + p.y);
@@ -309,7 +309,7 @@ public class AnnotationData implements Serializable {
     /**
      * Savves the annotation data to a XML file.
      */
-    public void save() {
+    public void write() {
         JAXBContext jc;
         File file = new File(videoSource + ".xml");
         log.debug("Write data to: " + file);
@@ -320,6 +320,7 @@ public class AnnotationData implements Serializable {
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             w = new FileWriter(file);
             m.marshal(this, w);
+            m.toString();
             log.debug(
                     "Written data to: " + file);
         } catch (JAXBException | IOException e) {
@@ -452,7 +453,7 @@ public class AnnotationData implements Serializable {
             buffer.append("\n");
             buffer.append("times_end: ").append(annotation.time_end);
             buffer.append("\n");
-            buffer.append("shapePointsList: ").append(annotation.shapePoints);
+            buffer.append("shapePointsList: ").append(annotation.strokelist);
             buffer.append("\n");
             buffer.append("descriptions: ").append(annotation.description);
             buffer.append("\n");

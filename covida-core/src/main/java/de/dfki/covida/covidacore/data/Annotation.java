@@ -29,10 +29,8 @@ package de.dfki.covida.covidacore.data;
 
 import de.dfki.touchandwrite.shape.ShapeType;
 import java.io.Serializable;
-import java.util.List;
 import java.util.UUID;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -70,9 +68,8 @@ public class Annotation implements Serializable {
     /**
      * Points of the {@link Annotation} outline.
      */
-    @XmlElementWrapper(name = "shapes")
-    @XmlElement(name = "shape")
-    public List<ShapePoints> shapePoints;
+    @XmlElement(name = "stoke_list")
+    public StrokeList strokelist;
     /**
      * Annotation label as {@link String}
      */

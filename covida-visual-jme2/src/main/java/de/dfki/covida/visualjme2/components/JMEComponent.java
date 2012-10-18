@@ -153,6 +153,16 @@ public abstract class JMEComponent implements ITouchAndWriteComponent {
         }
         return 0;
     }
+    
+    public final int attachChild(Node parent, Spatial child) {
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(parent,
+                child));
+        if (!spatials.contains(child)) {
+            spatials.add(child);
+        }
+        return 0;
+    }
+
 
     public final int attachChild(JMEComponent component) {
         GameTaskQueueManager.getManager().update(new AttachChildCallable(node,
