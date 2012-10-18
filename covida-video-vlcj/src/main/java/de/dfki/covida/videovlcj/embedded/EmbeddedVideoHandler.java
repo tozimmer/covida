@@ -230,7 +230,6 @@ public final class EmbeddedVideoHandler extends AbstractVideoHandler {
         embeddedMediaPlayer.setMarqueeTimeout(3000);
         embeddedMediaPlayer.setMarqueeLocation(300, 400);
         embeddedMediaPlayer.enableMarquee(true);
-        isPlaying = true;
     }
 
     @Override

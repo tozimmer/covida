@@ -75,10 +75,6 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      */
     private final String source;
     /**
-     * If true the video is playing.
-     */
-    protected boolean isPlaying;
-    /**
      * If true the {@code timeStart} and {@code timeEnd} is considered.
      *
      * @see #setTimeRange(long, long)
@@ -352,7 +348,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * @return true if video currently playing
      */
     public boolean isPlaying() {
-        return isPlaying;
+        return mediaPlayer.isPlaying();
     }
 
     /**
@@ -380,7 +376,6 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * Stops the video.
      */
     public void stop() {
-        isPlaying = false;
         controls.highlightStop();
         controls.highlightPlay();
         if (mediaPlayer == null) {
@@ -417,7 +412,6 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
                 this.mediaPlayer.pause();
             }
         }
-        isPlaying = false;
         controls.highlightPlay();
     }
 
@@ -429,9 +423,8 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
             return;
         }
         if (isReady()) {
-            if (!isPlaying) {
+            if (!mediaPlayer.isPlaying()) {
                 this.mediaPlayer.play();
-                isPlaying = true;
                 controls.highlightPause();
             }
         }
@@ -673,10 +666,6 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      */
     @Override
     public void timeChanged(MediaPlayer mp, long l) {
-        if (renderer != null) {
-            renderer.setTimecode(VideoUtils.getTimeCode(l) + "\t<BR>\t"
-                    + getVideoProgress());
-        }
     }
 
     /**
@@ -690,7 +679,10 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
         if (slider != null) {
             slider.setSlider(f);
         }
-        isPlaying = true;
+        if (renderer != null) {
+            renderer.setTimecode(VideoUtils.getTimeCode((long) f*getMaxTime()) 
+                    + "\t<BR>\t" + getVideoProgress());
+        }
     }
 
     /**
@@ -867,7 +859,6 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      */
     @Override
     public void finished(MediaPlayer mp) {
-        isPlaying = false;
         controls.highlightPlay();
         if (mediaPlayer == null) {
             return;
