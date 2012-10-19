@@ -197,9 +197,9 @@ public final class VideoComponent extends JMEComponent implements
      * Mehod which holds test method calls
      */
     public void startTests() {
-        DrawTest drawTest = new DrawTest(video);
-        Thread drawTestThread = new Thread(drawTest);
-        drawTestThread.start();
+//        DrawTest drawTest = new DrawTest(video);
+//        Thread drawTestThread = new Thread(drawTest);
+//        drawTestThread.start();
 //        HWRTest hwrTest = new HWRTest(this);
 //        Thread hwrTestThread=  new Thread(hwrTest);
 //        hwrTestThread.start();

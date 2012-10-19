@@ -32,6 +32,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.DC;
 import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.VCARD;
 import de.dfki.covida.covidacore.data.Annotation;
 import de.dfki.covida.covidacore.data.AnnotationClassList;
 import de.dfki.covida.covidacore.data.AnnotationData;
@@ -108,24 +109,36 @@ public class DataTest {
         DateAdapter dateAdapter = new DateAdapter();
         // create an empty model
         Model model = ModelFactory.createDefaultModel();
-
-        // create the resource
-        //   and add the properties cascading style
+        
+        Resource creator = model.createResource();
+        creator.addProperty(VCARD.NAME, annotation.creator);
+        creator.addProperty(VCARD.CLASS, "User");
+        
         Resource video = model.createResource();
         video.addProperty(DC.title, data.title);
         video.addProperty(DC.source, data.videoSource);
         Resource annot = model.createResource(video);
-        annot.addProperty(DC.creator, annotation.creator);
-        video.addProperty(RDF.object, annot);
-        annot = model.createResource(video);
-        annot.addProperty(DC.creator, annotation.creator);
-        video.addProperty(RDF.object, annot);
-        
+        annot.addProperty(DC.creator, creator);
         try {
-            video.addProperty(DC.date, dateAdapter.marshal(annotation.date));
+            annot.addProperty(DC.date, dateAdapter.marshal(annotation.date));
         } catch (Exception ex) {
             java.util.logging.Logger.getLogger(DataTest.class.getName()).log(Level.SEVERE, null, ex);
         }
+        annot.addProperty(DC.description, annotation.description);
+        annot.addProperty(DC.subject, "");
+        video.addProperty(DC.subject, annot);
+        annot = model.createResource(video);
+        annot.addProperty(DC.creator, creator);
+        try {
+            annot.addProperty(DC.date, dateAdapter.marshal(annotation.date));
+        } catch (Exception ex) {
+            java.util.logging.Logger.getLogger(DataTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        annot.addProperty(DC.description, annotation.description);
+        annot.addProperty(DC.subject, "");
+        video.addProperty(DC.subject, annot);
+
+
 
         // now write the model in XML form to a file
         model.write(System.out);

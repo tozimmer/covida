@@ -27,12 +27,19 @@
  */
 package de.dfki.covida.covidacore.data;
 
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.DC;
+import com.hp.hpl.jena.vocabulary.VCARD;
 import de.dfki.covida.covidacore.components.IVideoComponent;
+import de.dfki.covida.covidacore.data.test.DataTest;
 import java.awt.Point;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -88,6 +95,7 @@ public class AnnotationData implements Serializable {
     @XmlElementWrapper(name = "annotations")
     @XmlElement(name = "annotation")
     private List<Annotation> annotations;
+
     /**
      * Creates a new instance of {@link AnnotationData}
      */
@@ -258,7 +266,7 @@ public class AnnotationData implements Serializable {
                 for (Stroke points : annotations.get(i).strokelist.strokelist) {
                     for (Point p : points.points) {
                         point = doc.createElement("point");
-                        point.setTextContent(p.x  + "," + p.y);
+                        point.setTextContent(p.x + "," + p.y);
                         el.appendChild(point);
                     }
                 }
@@ -333,6 +341,53 @@ public class AnnotationData implements Serializable {
                 }
             }
         }
+    }
+
+    public void generateRDF() {
+        DateAdapter dateAdapter = new DateAdapter();
+        // create an empty model
+        Model model = ModelFactory.createDefaultModel();
+
+        Resource creator = model.createResource();
+        creator.addProperty(VCARD.NAME, creator);
+        creator.addProperty(VCARD.CLASS, "User");
+
+        Resource video = model.createResource();
+        video.addProperty(DC.title, title);
+        video.addProperty(DC.source, videoSource);
+        Resource annot = model.createResource(video);
+        annot.addProperty(DC.creator, creator);
+        for (Annotation annotation : annotations) {
+            try {
+                annot.addProperty(DC.date, dateAdapter.marshal(annotation.date));
+            } catch (Exception ex) {
+                java.util.logging.Logger.getLogger(DataTest.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            annot.addProperty(DC.description, annotation.description);
+            annot.addProperty(DC.subject, "");
+            video.addProperty(DC.subject, annot);
+            annot = model.createResource(video);
+            annot.addProperty(DC.creator, creator);
+            try {
+                annot.addProperty(DC.date, dateAdapter.marshal(annotation.date));
+            } catch (Exception ex) {
+                java.util.logging.Logger.getLogger(DataTest.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            annot.addProperty(DC.description, annotation.description);
+            annot.addProperty(DC.subject, "");
+            video.addProperty(DC.subject, annot);
+        }
+        File file = new File(videoSource + ".xml");
+        log.debug("Write rdf to: " + file);
+        FileWriter w = null;
+        try {
+            w = new FileWriter(file);
+            model.write(w);
+            log.debug("Written rdf to: " + file);
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(AnnotationData.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }
 
     /**
