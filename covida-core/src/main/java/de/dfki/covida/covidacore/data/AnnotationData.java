@@ -343,53 +343,6 @@ public class AnnotationData implements Serializable {
         }
     }
 
-    public void generateRDF() {
-        DateAdapter dateAdapter = new DateAdapter();
-        // create an empty model
-        Model model = ModelFactory.createDefaultModel();
-
-        Resource creator = model.createResource();
-        creator.addProperty(VCARD.NAME, creator);
-        creator.addProperty(VCARD.CLASS, "User");
-
-        Resource video = model.createResource();
-        video.addProperty(DC.title, title);
-        video.addProperty(DC.source, videoSource);
-        Resource annot = model.createResource(video);
-        annot.addProperty(DC.creator, creator);
-        for (Annotation annotation : annotations) {
-            try {
-                annot.addProperty(DC.date, dateAdapter.marshal(annotation.date));
-            } catch (Exception ex) {
-                java.util.logging.Logger.getLogger(DataTest.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            annot.addProperty(DC.description, annotation.description);
-            annot.addProperty(DC.subject, "");
-            video.addProperty(DC.subject, annot);
-            annot = model.createResource(video);
-            annot.addProperty(DC.creator, creator);
-            try {
-                annot.addProperty(DC.date, dateAdapter.marshal(annotation.date));
-            } catch (Exception ex) {
-                java.util.logging.Logger.getLogger(DataTest.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            annot.addProperty(DC.description, annotation.description);
-            annot.addProperty(DC.subject, "");
-            video.addProperty(DC.subject, annot);
-        }
-        File file = new File(videoSource + ".xml");
-        log.debug("Write rdf to: " + file);
-        FileWriter w = null;
-        try {
-            w = new FileWriter(file);
-            model.write(w);
-            log.debug("Written rdf to: " + file);
-        } catch (IOException ex) {
-            java.util.logging.Logger.getLogger(AnnotationData.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-    }
-
     /**
      * Removes the {@link Annotation} with the given id.
      *

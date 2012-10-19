@@ -8,9 +8,23 @@
             <time_start>0</time_start>
             <time_end>0</time_end>
         </videoSource>
+		<videoSource>
+            <source>..\covida-res\videos\RadSpeech DFKI(360p_H.264-AAC).mp4</source>
+            <name>Rad Speech</name>
+            <time_start>0</time_start>
+            <time_end>0</time_end>
+        </videoSource>
     </videoSourceList>
     <videoList>
         <video>
+            <size>25</size>
+            <position>0</position>
+            <repeating>true</repeating>
+            <enabled>true</enabled>
+            <time_start>0</time_start>
+            <time_end>0</time_end>
+        </video>
+		<video>
             <size>25</size>
             <position>0</position>
             <repeating>true</repeating>

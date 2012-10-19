@@ -290,6 +290,7 @@ public class InfoFieldComponent extends JMEComponent {
         clearDescriptionText();
         AnnotationStorage.getInstance().getAnnotationData(video).write();
         AnnotationStorage.getInstance().getAnnotationData(video).export();
+        AnnotationStorage.getInstance().generateRDF();
     }
 
     /**

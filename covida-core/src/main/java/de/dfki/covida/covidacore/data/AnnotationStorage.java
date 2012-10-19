@@ -27,12 +27,23 @@
  */
 package de.dfki.covida.covidacore.data;
 
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.DC;
+import com.hp.hpl.jena.vocabulary.VCARD;
 import de.dfki.covida.covidacore.components.IVideoComponent;
 import de.dfki.covida.covidacore.utils.AnnotationSearch;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class which holds all {@link AnnotationData}.
@@ -41,6 +52,10 @@ import java.util.UUID;
  */
 public class AnnotationStorage {
 
+    /**
+     * Logger
+     */
+    private static Logger log = LoggerFactory.getLogger(AnnotationData.class);
     /**
      * Instance of the {@link AnnotationStorage}
      */
@@ -173,6 +188,48 @@ public class AnnotationStorage {
                     break;
                 }
             }
+        }
+    }
+
+    public void generateRDF() {
+        DateAdapter dateAdapter = new DateAdapter();
+        // create an empty model
+        Model model = ModelFactory.createDefaultModel();
+        for (AnnotationData data : getAnnotationDatas()) {
+            Resource video = model.createResource();
+            video.addProperty(DC.title, data.title);
+            video.addProperty(DC.source, data.videoSource);
+            for (Annotation annotation : data.getAnnotations()) {
+                Resource creator = model.createResource();
+                creator.addProperty(VCARD.NAME, annotation.creator);
+                creator.addProperty(VCARD.CLASS, "User");
+                String dat = "";
+                if (annotation.date != null) {
+                    try {
+                        dat = dateAdapter.marshal(annotation.date);
+                    } catch (Exception ex) {
+                        log.error("", ex);
+                    }
+                }
+                Resource annot = model.createResource(video);
+                annot.addProperty(DC.creator, creator);
+                annot.addProperty(DC.date, dat);
+                annot.addProperty(DC.description, annotation.description);
+                annot.addProperty(DC.creator, creator);
+                annot.addProperty(DC.description, annotation.description);
+                video.addProperty(DC.subject, annot);
+            }
+
+        }
+        File file = new File("../covida-res/rdf.xml");
+        log.debug("Write rdf to: " + file);
+        FileWriter w = null;
+        try {
+            w = new FileWriter(file);
+            model.write(w);
+            log.debug("Written rdf to: " + file);
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(AnnotationData.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

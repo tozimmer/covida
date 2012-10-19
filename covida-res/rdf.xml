@@ -1,0 +1,46 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:vcard="http://www.w3.org/2001/vcard-rdf/3.0#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/" > 
+  <rdf:Description rdf:nodeID="A0">
+    <vcard:CLASS>User</vcard:CLASS>
+    <vcard:NAME>Covida</vcard:NAME>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <vcard:CLASS>User</vcard:CLASS>
+    <vcard:NAME>Covida</vcard:NAME>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A2">
+    <dc:subject rdf:nodeID="A3"/>
+    <dc:subject rdf:nodeID="A4"/>
+    <dc:source>..\covida-res\videos\RadSpeech DFKI(360p_H.264-AAC).mp4</dc:source>
+    <dc:title>Rad Speech</dc:title>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A3">
+    <dc:description>Person </dc:description>
+    <dc:date>19-10-2012 17:19:45</dc:date>
+    <dc:creator rdf:nodeID="A0"/>
+    <rdf:type rdf:nodeID="A2"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A5">
+    <dc:description>TE </dc:description>
+    <dc:date>19-10-2012 17:17:57</dc:date>
+    <dc:creator rdf:nodeID="A6"/>
+    <rdf:type rdf:nodeID="A7"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A4">
+    <dc:description>To blot </dc:description>
+    <dc:date>19-10-2012 17:19:24</dc:date>
+    <dc:creator rdf:nodeID="A1"/>
+    <rdf:type rdf:nodeID="A2"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A7">
+    <dc:subject rdf:nodeID="A5"/>
+    <dc:source>..\covida-res\videos\Collaborative Video Annotation.mp4</dc:source>
+    <dc:title>CoVidA Demo</dc:title>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A6">
+    <vcard:CLASS>User</vcard:CLASS>
+    <vcard:NAME>Covida</vcard:NAME>
+  </rdf:Description>
+</rdf:RDF>

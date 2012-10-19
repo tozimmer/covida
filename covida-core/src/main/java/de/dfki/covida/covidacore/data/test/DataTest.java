@@ -105,7 +105,7 @@ public class DataTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        
         DateAdapter dateAdapter = new DateAdapter();
         // create an empty model
         Model model = ModelFactory.createDefaultModel();
@@ -137,9 +137,6 @@ public class DataTest {
         annot.addProperty(DC.description, annotation.description);
         annot.addProperty(DC.subject, "");
         video.addProperty(DC.subject, annot);
-
-
-
         // now write the model in XML form to a file
         model.write(System.out);
     }
