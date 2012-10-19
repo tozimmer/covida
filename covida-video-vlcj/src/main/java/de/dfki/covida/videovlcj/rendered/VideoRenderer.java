@@ -206,16 +206,16 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
         for (Polygon polygon : shapeToDraw) {
             g2d.setColor(Color.black);
             polygon.translate(+2, +2);
-            g2d.drawPolygon(polygon);
+            g2d.drawPolyline(polygon.xpoints, polygon.ypoints, polygon.npoints);
             polygon.translate(-4, +0);
-            g2d.drawPolygon(polygon);
+            g2d.drawPolyline(polygon.xpoints, polygon.ypoints, polygon.npoints);
             polygon.translate(+4, -4);
-            g2d.drawPolygon(polygon);
+            g2d.drawPolyline(polygon.xpoints, polygon.ypoints, polygon.npoints);
             polygon.translate(-4, +0);
-            g2d.drawPolygon(polygon);
+            g2d.drawPolyline(polygon.xpoints, polygon.ypoints, polygon.npoints);
             g2d.setColor(Color.yellow);
             polygon.translate(+2, +2);
-            g2d.drawPolygon(polygon);
+            g2d.drawPolyline(polygon.xpoints, polygon.ypoints, polygon.npoints);
         }
     }
 
@@ -242,6 +242,7 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
      *
      * @param timecode {@link String}
      */
+    @Override
     public synchronized void setTimecode(String timecode) {
         this.timecode = timecode;
     }
@@ -378,6 +379,7 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
         this.hwr = hwr;
     }
 
+    @Override
     public void clear() {
         frame = GraphicsEnvironment.getLocalGraphicsEnvironment()
                 .getDefaultScreenDevice().getDefaultConfiguration()
