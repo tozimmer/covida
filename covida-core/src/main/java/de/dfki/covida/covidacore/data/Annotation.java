@@ -27,14 +27,12 @@
  */
 package de.dfki.covida.covidacore.data;
 
-import de.dfki.covida.covidacore.utils.AnnotationUtils;
 import de.dfki.touchandwrite.shape.ShapeType;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
@@ -93,23 +91,5 @@ public class Annotation implements Serializable {
 
     public Annotation() {
         this.uuid = UUID.randomUUID();
-    }
-}
-
-/**
- * Adapter for serialize {@link Date} objects.
- *
- * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
- */
-class DateAdapter extends XmlAdapter<String, Date> {
-
-    @Override
-    public String marshal(Date date) throws Exception {
-        return AnnotationUtils.getDateString(date);
-    }
-
-    @Override
-    public Date unmarshal(String str) throws Exception {
-        return AnnotationUtils.getDate(str);
     }
 }

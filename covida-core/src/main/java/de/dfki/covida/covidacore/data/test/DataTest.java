@@ -27,11 +27,15 @@
  */
 package de.dfki.covida.covidacore.data.test;
 
-import com.sun.image.codec.jpeg.JPEGCodec;
-import com.sun.image.codec.jpeg.JPEGEncodeParam;
-import com.sun.image.codec.jpeg.JPEGImageEncoder;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.DC;
+import com.hp.hpl.jena.vocabulary.RDF;
 import de.dfki.covida.covidacore.data.Annotation;
+import de.dfki.covida.covidacore.data.AnnotationClassList;
 import de.dfki.covida.covidacore.data.AnnotationData;
+import de.dfki.covida.covidacore.data.DateAdapter;
 import de.dfki.covida.covidacore.data.Diagram;
 import de.dfki.covida.covidacore.data.Stroke;
 import de.dfki.covida.covidacore.data.StrokeList;
@@ -39,10 +43,12 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.logging.Level;
+import javax.imageio.ImageIO;
 import org.jfree.chart.JFreeChart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,12 +96,39 @@ public class DataTest {
         data = AnnotationData.load(new DataTestVideoComponent());
         data.write();
 
+        AnnotationClassList classes = AnnotationClassList.load();
+        classes.write();
         try {
             saveToFile(Diagram.createPieChart(Diagram.createPieDataset()),
                     "test.jpg", 500, 300, 100);
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        DateAdapter dateAdapter = new DateAdapter();
+        // create an empty model
+        Model model = ModelFactory.createDefaultModel();
+
+        // create the resource
+        //   and add the properties cascading style
+        Resource video = model.createResource();
+        video.addProperty(DC.title, data.title);
+        video.addProperty(DC.source, data.videoSource);
+        Resource annot = model.createResource(video);
+        annot.addProperty(DC.creator, annotation.creator);
+        video.addProperty(RDF.object, annot);
+        annot = model.createResource(video);
+        annot.addProperty(DC.creator, annotation.creator);
+        video.addProperty(RDF.object, annot);
+        
+        try {
+            video.addProperty(DC.date, dateAdapter.marshal(annotation.date));
+        } catch (Exception ex) {
+            java.util.logging.Logger.getLogger(DataTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        // now write the model in XML form to a file
+        model.write(System.out);
     }
 
     public static void saveToFile(JFreeChart chart,
@@ -105,15 +138,7 @@ public class DataTest {
             double quality)
             throws FileNotFoundException, IOException {
         BufferedImage img = draw(chart, width, height);
-
-        FileOutputStream fos = new FileOutputStream(aFileName);
-        JPEGImageEncoder encoder2 =
-                JPEGCodec.createJPEGEncoder(fos);
-        JPEGEncodeParam param2 =
-                encoder2.getDefaultJPEGEncodeParam(img);
-        param2.setQuality((float) quality, true);
-        encoder2.encode(img, param2);
-        fos.close();
+        ImageIO.write(img, "png", new File(aFileName));
     }
 
     protected static BufferedImage draw(JFreeChart chart, int width, int height) {
@@ -123,7 +148,6 @@ public class DataTest {
         Graphics2D g2 = img.createGraphics();
 
         chart.draw(g2, new Rectangle2D.Double(0, 0, width, height));
-
         g2.dispose();
         return img;
     }

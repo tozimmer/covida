@@ -30,7 +30,6 @@ package de.dfki.covida.covidacore.data;
 import java.awt.Color;
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
@@ -55,22 +54,4 @@ public class PenData implements Serializable {
      */
     @XmlElement(name = "thickness")
     public int penThickness;
-}
-
-/**
- * Adapter to serialize {@link Color}.
- *
- * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
- */
-class ColorAdapter extends XmlAdapter<String, Color> {
-
-    @Override
-    public Color unmarshal(String s) {
-        return Color.decode(s);
-    }
-
-    @Override
-    public String marshal(Color c) {
-        return "#" + Integer.toHexString(c.getRGB());
-    }
 }

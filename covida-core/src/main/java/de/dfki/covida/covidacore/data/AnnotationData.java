@@ -64,6 +64,10 @@ public class AnnotationData implements Serializable {
      */
     private static final long serialVersionUID = 5408416424492049902L;
     /**
+     * Logger
+     */
+    private static Logger log = LoggerFactory.getLogger(AnnotationData.class);
+    /**
      * Unique id
      */
     @XmlElement(name = "uuid")
@@ -84,11 +88,6 @@ public class AnnotationData implements Serializable {
     @XmlElementWrapper(name = "annotations")
     @XmlElement(name = "annotation")
     private List<Annotation> annotations;
-    /**
-     * Logger
-     */
-    private static Logger log = LoggerFactory.getLogger(AnnotationData.class);
-
     /**
      * Creates a new instance of {@link AnnotationData}
      */

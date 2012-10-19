@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<annotationclasslist>
+    <annotationclasses>
+        <annotationclass>
+            <name>Person</name>
+        </annotationclass>
+        <annotationclass>
+            <name>Object</name>
+        </annotationclass>
+        <annotationclass>
+            <name>Logo</name>
+        </annotationclass>
+        <annotationclass>
+            <name>Text</name>
+        </annotationclass>
+    </annotationclasses>
+</annotationclasslist>
