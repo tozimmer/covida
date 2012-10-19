@@ -39,6 +39,7 @@ import de.dfki.covida.videovlcj.rendered.RenderedVideoHandler;
 import de.dfki.covida.videovlcj.rendered.VideoRenderer;
 import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.Polygon;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.List;
@@ -301,16 +302,16 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     /**
      * Returns drawing points.
      *
-     * @return {@link List} of {@link StrokeList}
+     * @return {@link List} of {@link Stroke}
      */
-    abstract public StrokeList getDrawings();
+    abstract public List<Stroke> getDrawings();
 
     /**
      * Sets the shape points to draw on the video.
      *
-     * @param points {@link List} of {@link Point}s
+     * @param stroke {@link Stroke}
      */
-    abstract public void addShape(List<Point> points);
+    abstract public void addShape(Stroke stroke);
 
     /**
      * Sets the video slider for the video {@link ISlider}
@@ -953,7 +954,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
 
     public void setShapes(List<Stroke> drawings) {
         for (Stroke shape : drawings) {
-            addShape(shape.points);
+            addShape(shape);
         }
     }
 }

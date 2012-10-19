@@ -28,6 +28,7 @@
 package de.dfki.covida.visualjme2;
 
 import de.dfki.touchandwrite.TouchAndWriteDevice;
+import java.awt.Dimension;
 
 /**
  * Application Implementation
@@ -80,5 +81,10 @@ public class ApplicationImpl extends AbstractApplication {
     @Override
     public boolean isReady() {
         return ready;
+    }
+
+    @Override
+    public Dimension getScreenSize() {
+        return new Dimension(display.getWidth(), display.getHeight());
     }
 }

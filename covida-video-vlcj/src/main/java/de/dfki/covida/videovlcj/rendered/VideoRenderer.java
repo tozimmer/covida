@@ -39,6 +39,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
+import java.awt.Polygon;
 import java.awt.image.BufferedImage;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -71,10 +72,10 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
     private BufferedImage frame;
     private final int width;
     private final int height;
-    private StrokeList drawedPoints;
+    private List<Stroke> drawedPoints;
     private StrokeList shapePoints;
     private Collection<Collection<Point>> pointsToDraw;
-    private Collection<Collection<Point>> shapeToDraw;
+    private Collection<Polygon> shapeToDraw;
     private Dimension d;
     private Font f = new Font("Arial", Font.PLAIN, 20);
     private FontMetrics fm;
@@ -96,7 +97,7 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
         this.title = title;
         this.timecode = "";
         this.hwr = "";
-        this.drawedPoints = new StrokeList();
+        this.drawedPoints = new ArrayList<>();
         this.shapePoints = new StrokeList();
         this.pointsToDraw = new ConcurrentLinkedQueue<>();
         shapeToDraw = new ConcurrentLinkedQueue<>();
@@ -202,22 +203,19 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
                 }
             }
         }
-        for (Collection<Point> points : shapeToDraw) {
-            Point lastPoint = null;
-            for (Point point : points) {
-                if (lastPoint == null) {
-                    lastPoint = point;
-                } else {
-                    g2d.setColor(Color.black);
-                    g2d.drawLine(lastPoint.x + 2, lastPoint.y + 2, point.x + 2, point.y + 2);
-                    g2d.drawLine(lastPoint.x - 2, lastPoint.y + 2, point.x - 2, point.y + 2);
-                    g2d.drawLine(lastPoint.x + 2, lastPoint.y - 2, point.x + 2, point.y - 2);
-                    g2d.drawLine(lastPoint.x - 2, lastPoint.y - 2, point.x - 2, point.y - 2);
-                    g2d.setColor(Color.yellow);
-                    g2d.drawLine(lastPoint.x, lastPoint.y, point.x, point.y);
-                    lastPoint = point;
-                }
-            }
+        for (Polygon polygon : shapeToDraw) {
+            g2d.setColor(Color.black);
+            polygon.translate(+2, +2);
+            g2d.drawPolygon(polygon);
+            polygon.translate(-4, +0);
+            g2d.drawPolygon(polygon);
+            polygon.translate(+4, -4);
+            g2d.drawPolygon(polygon);
+            polygon.translate(-4, +0);
+            g2d.drawPolygon(polygon);
+            g2d.setColor(Color.yellow);
+            polygon.translate(+2, +2);
+            g2d.drawPolygon(polygon);
         }
     }
 
@@ -254,11 +252,11 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
      * @param point {@link Point}
      */
     public void draw(Point point) {
-        if (drawedPoints.strokes.isEmpty()) {
+        if (drawedPoints.isEmpty()) {
             Stroke stroke = new Stroke();
-            drawedPoints.strokes.add(stroke);
+            drawedPoints.add(stroke);
         }
-        drawedPoints.strokes.get(drawedPoints.strokes.size() - 1).points.add(point);
+        drawedPoints.get(drawedPoints.size() - 1).points.add(point);
         Iterator<Collection<Point>> iterator = pointsToDraw.iterator();
         Collection<Point> last = null;
         while (iterator.hasNext()) {
@@ -272,7 +270,7 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
     }
 
     public void endDrawStroke() {
-        drawedPoints.strokes.add(new Stroke());
+        drawedPoints.add(new Stroke());
         Collection<Point> newStroke = new ConcurrentLinkedQueue<>();
         pointsToDraw.add(newStroke);
     }
@@ -343,20 +341,18 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
     }
 
     @Override
-    public synchronized void addShape(List<Point> points) {
-        Stroke stroke = new Stroke();
-        stroke.points = points;
-        this.shapePoints.strokes.add(stroke);
-        this.pointsToDraw.clear();
-        Collection<Point> newShape = new ConcurrentLinkedQueue<>();
-        for (Point point : points) {
-            newShape.add(point);
+    public synchronized void addShape(Stroke stroke) {
+        Polygon polygon = new Polygon();
+        for (Point point : stroke.points) {
+            polygon.addPoint(point.x, point.y);
         }
-        shapeToDraw.add(newShape);
+        this.shapePoints.strokelist.add(stroke);
+        this.pointsToDraw.clear();
+        shapeToDraw.add(polygon);
     }
 
     @Override
-    public StrokeList getDrawings() {
+    public List<Stroke> getDrawings() {
         return drawedPoints;
     }
 
@@ -373,7 +369,7 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
 
     @Override
     public synchronized void clearDrawing() {
-        drawedPoints = new StrokeList();
+        drawedPoints = new ArrayList<>();
         pointsToDraw.clear();
     }
 

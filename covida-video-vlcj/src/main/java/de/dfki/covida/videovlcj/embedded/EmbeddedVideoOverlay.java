@@ -35,6 +35,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Polygon;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
@@ -122,7 +123,7 @@ public class EmbeddedVideoOverlay extends JWindow implements IVideoGraphicsHandl
     }
 
     @Override
-    public StrokeList getDrawings() {
+    public List<Stroke> getDrawings() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -137,7 +138,7 @@ public class EmbeddedVideoOverlay extends JWindow implements IVideoGraphicsHandl
     }
 
     @Override
-    public void addShape(List<Point> points) {
+    public void addShape(Stroke stroke) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

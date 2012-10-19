@@ -27,11 +27,25 @@
  */
 package de.dfki.covida.covidacore.data.test;
 
+import com.sun.image.codec.jpeg.JPEGCodec;
+import com.sun.image.codec.jpeg.JPEGEncodeParam;
+import com.sun.image.codec.jpeg.JPEGImageEncoder;
 import de.dfki.covida.covidacore.data.Annotation;
 import de.dfki.covida.covidacore.data.AnnotationData;
+import de.dfki.covida.covidacore.data.Diagram;
 import de.dfki.covida.covidacore.data.Stroke;
 import de.dfki.covida.covidacore.data.StrokeList;
+import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Calendar;
+import org.jfree.chart.JFreeChart;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Data test class.
@@ -41,9 +55,15 @@ import java.awt.Point;
 public class DataTest {
 
     /**
+     * Logger
+     */
+    private static Logger log = LoggerFactory.getLogger(DataTest.class);
+
+    /**
      * @param args
      */
     public static void main(String[] args) {
+        log.debug("Start Data Test");
         AnnotationData data = AnnotationData.load(new DataTestVideoComponent());
         Annotation annotation = new Annotation();
         annotation.description = "Data Test DFKI";
@@ -55,15 +75,56 @@ public class DataTest {
         shape.points.add(new Point(100, 121));
         shape.points.add(new Point(22, 119));
         shape.points.add(new Point(24, 30));
-        shapes.strokes.add(shape);
+        shapes.strokelist.add(shape);
         shape = new Stroke();
         shape.points.add(new Point(333, 30));
         shape.points.add(new Point(2, 32));
-        shapes.strokes.add(shape);
+        shapes.strokelist.add(shape);
         annotation.strokelist = shapes;
         annotation.time_end = (long) 456343;
         annotation.time_start = (long) 455322;
+        annotation.creator = "covida";
+        annotation.date = Calendar.getInstance().getTime();
         data.save(annotation);
         data.write();
+        data = AnnotationData.load(new DataTestVideoComponent());
+        data.write();
+
+        try {
+            saveToFile(Diagram.createPieChart(Diagram.createPieDataset()),
+                    "test.jpg", 500, 300, 100);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void saveToFile(JFreeChart chart,
+            String aFileName,
+            int width,
+            int height,
+            double quality)
+            throws FileNotFoundException, IOException {
+        BufferedImage img = draw(chart, width, height);
+
+        FileOutputStream fos = new FileOutputStream(aFileName);
+        JPEGImageEncoder encoder2 =
+                JPEGCodec.createJPEGEncoder(fos);
+        JPEGEncodeParam param2 =
+                encoder2.getDefaultJPEGEncodeParam(img);
+        param2.setQuality((float) quality, true);
+        encoder2.encode(img, param2);
+        fos.close();
+    }
+
+    protected static BufferedImage draw(JFreeChart chart, int width, int height) {
+        BufferedImage img =
+                new BufferedImage(width, height,
+                BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2 = img.createGraphics();
+
+        chart.draw(g2, new Rectangle2D.Double(0, 0, width, height));
+
+        g2.dispose();
+        return img;
     }
 }

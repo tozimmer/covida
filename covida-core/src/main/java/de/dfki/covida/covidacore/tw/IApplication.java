@@ -27,6 +27,8 @@
  */
 package de.dfki.covida.covidacore.tw;
 
+import java.awt.Dimension;
+
 /**
  * Interface of a covida application
  *
@@ -52,4 +54,6 @@ public interface IApplication {
      * @return true if application is ready
      */
     public boolean isReady();
+    
+    public Dimension getScreenSize();
 }

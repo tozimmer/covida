@@ -83,7 +83,7 @@ public class CovidaCMDOptions {
         if (device != null) {
             return TouchAndWriteDevice.valueOf(device);
         } else {
-            return TouchAndWriteDevice.EEE_SLATE;
+            return TouchAndWriteDevice.WMINPUT;
         }
     }
 }

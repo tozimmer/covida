@@ -34,6 +34,7 @@ import de.dfki.covida.videovlcj.AbstractVideoHandler;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Point;
+import java.awt.Polygon;
 import java.awt.Window;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -179,13 +180,13 @@ public final class EmbeddedVideoHandler extends AbstractVideoHandler {
     }
 
     @Override
-    public StrokeList getDrawings() {
+    public List<Stroke> getDrawings() {
         return overlay.getDrawings();
     }
 
     @Override
-    public void addShape(List<Point> points) {
-        overlay.addShape(points);
+    public void addShape(Stroke stroke) {
+        overlay.addShape(stroke);
     }
 
     @Override

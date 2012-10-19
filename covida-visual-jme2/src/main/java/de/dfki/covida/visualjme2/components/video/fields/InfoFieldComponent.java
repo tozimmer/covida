@@ -51,6 +51,7 @@ import de.dfki.covida.visualjme2.components.video.VideoComponent;
 import de.dfki.covida.visualjme2.utils.*;
 import de.dfki.touchandwrite.shape.ShapeType;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -284,6 +285,7 @@ public class InfoFieldComponent extends JMEComponent {
             descriptions.append(" ");
         }
         annotation.description = descriptions.toString();
+        annotation.date = Calendar.getInstance().getTime();
         AnnotationStorage.getInstance().getAnnotationData(video).save(annotation);
         clearDescriptionText();
         AnnotationStorage.getInstance().getAnnotationData(video).write();
@@ -296,7 +298,7 @@ public class InfoFieldComponent extends JMEComponent {
      * @param shapePoints
      */
     private void setShapePoints(List<Stroke> shapePoints) {
-        this.annotation.strokelist.strokes = shapePoints;
+        this.annotation.strokelist.strokelist = shapePoints;
     }
 
     /**
@@ -374,7 +376,7 @@ public class InfoFieldComponent extends JMEComponent {
         this.annotation = annotation;
         setTime(annotation.time_start);
         setTitle(AnnotationStorage.getInstance().getAnnotationData(video).title);
-        setShapePoints(annotation.strokelist.strokes);
+        setShapePoints(annotation.strokelist.strokelist);
         setShapeType(annotation.shapeType);
         String[] split = annotation.description.split(" ");
         for (String part : split) {

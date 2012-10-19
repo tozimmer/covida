@@ -250,13 +250,13 @@ public class AnnotationData implements Serializable {
                     Stroke points = new Stroke();
                     StrokeList strokes = new StrokeList();
                     points.points.add(new Point(0, 0));
-                    strokes.strokes.add(points);
+                    strokes.strokelist.add(points);
                     annotations.get(i).strokelist = strokes;
                     log.debug(
                             "data.shapePointsList.get(i) == null - Annotation: "
                             + i + "Video: " + videoSource);
                 }
-                for (Stroke points : annotations.get(i).strokelist.strokes) {
+                for (Stroke points : annotations.get(i).strokelist.strokelist) {
                     for (Point p : points.points) {
                         point = doc.createElement("point");
                         point.setTextContent(p.x  + "," + p.y);

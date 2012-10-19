@@ -44,7 +44,6 @@ import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.visualjme2.animations.RotateAnimation;
 import de.dfki.covida.visualjme2.animations.ScaleAnimation;
 import de.dfki.covida.visualjme2.utils.AddControllerCallable;
-import de.dfki.covida.visualjme2.utils.AttachChildCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
 
 /**
@@ -63,7 +62,7 @@ public class ControlButton extends JMEComponent
     private final TextureState activeTextureState;
     private boolean enabled;
     private final ActionName action;
-    private final static float ANIMATIONTIME = 0.5f;
+    private final static float ANIMATIONTIME = 0.25f;
 
     /**
      * Creates a new instance of {@link ControlButton}
@@ -122,8 +121,8 @@ public class ControlButton extends JMEComponent
         q.fromAngleAxis(FastMath.DEG_TO_RAD * (angle), new Vector3f(0, 0, 1));
         setLocalRotation(q);
     }
-    
-    public ActionName getAction(){
+
+    public ActionName getAction() {
         return action;
     }
 
@@ -181,6 +180,8 @@ public class ControlButton extends JMEComponent
     public void touchBirthAction(int id, int x, int y) {
         if (enabled && getParent() != null) {
             if (action.equals(ActionName.LIST)) {
+            } else if (action.equals(ActionName.NONE)) {
+            } else if (action.equals(ActionName.GARBADGE)) {
             } else {
                 SpatialTransformer controller = ScaleAnimation.getController(controlQuad,
                         2.0f, ANIMATIONTIME);
@@ -195,7 +196,7 @@ public class ControlButton extends JMEComponent
         if (enabled && getParent() != null) {
             if (action.equals(ActionName.LIST)) {
             } else if (action.equals(ActionName.NONE)) {
-            } else if (action.equals(ActionName.OPEN)) {
+            } else if (action.equals(ActionName.GARBADGE)) {
             } else {
                 SpatialTransformer controller = ScaleAnimation.getController(controlQuad,
                         1.0f, ANIMATIONTIME);

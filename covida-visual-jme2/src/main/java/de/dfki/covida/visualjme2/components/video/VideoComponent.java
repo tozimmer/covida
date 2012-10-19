@@ -65,6 +65,7 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 
@@ -196,9 +197,9 @@ public final class VideoComponent extends JMEComponent implements
      * Mehod which holds test method calls
      */
     public void startTests() {
-//        DrawTest drawTest = new DrawTest(video);
-//        Thread drawTestThread = new Thread(drawTest);
-//        drawTestThread.start();
+        DrawTest drawTest = new DrawTest(video);
+        Thread drawTestThread = new Thread(drawTest);
+        drawTestThread.start();
 //        HWRTest hwrTest = new HWRTest(this);
 //        Thread hwrTestThread=  new Thread(hwrTest);
 //        hwrTestThread.start();
@@ -246,6 +247,8 @@ public final class VideoComponent extends JMEComponent implements
         annotation.shapeType = ShapeType.POLYGON;
         annotation.time_end = time;
         annotation.time_start = time;
+        annotation.creator = "Covida";
+        annotation.date = Calendar.getInstance().getTime();
         // set annotation data
         infoField.setAnnotationData(annotation);
     }
@@ -731,14 +734,14 @@ public final class VideoComponent extends JMEComponent implements
 
     @Override
     public void hwrAction(String hwr) {
-        if (video.getShapes().strokes.isEmpty()) {
-            List<Point> points = new ArrayList<>();
-            points.add(new Point(5, 5));
-            points.add(new Point(5, getHeight() - 5));
-            points.add(new Point(getWidth() - 5, getHeight() - 5));
-            points.add(new Point(getWidth() - 5, 5));
-            points.add(new Point(5, 5));
-            video.addShape(points);
+        if (video.getShapes().strokelist.isEmpty()) {
+            Stroke stroke = new Stroke();
+            stroke.points.add(new Point(5, 5));
+            stroke.points.add(new Point(5, getHeight() - 5));
+            stroke.points.add(new Point(getWidth() - 5, getHeight() - 5));
+            stroke.points.add(new Point(getWidth() - 5, 5));
+            stroke.points.add(new Point(5, 5));
+            video.addShape(stroke);
             setNewAnnotationData();
         }
         video.clearDrawing();
@@ -751,8 +754,8 @@ public final class VideoComponent extends JMEComponent implements
         clearAnnotation();
         infoField.setAnnotationData(annotation);
         video.setTimePosition(annotation.time_start);
-        for (Stroke shape : annotation.strokelist.strokes) {
-            video.addShape(shape.points);
+        for (Stroke shape : annotation.strokelist.strokelist) {
+            video.addShape(shape);
         }
     }
 
@@ -815,7 +818,7 @@ public final class VideoComponent extends JMEComponent implements
 
     @Override
     public void onShapeEvent(ShapeEvent event) {
-        video.setShapes(video.getDrawings().strokes);
+        video.setShapes(video.getDrawings());
         video.clearDrawing();
         setNewAnnotationData();
     }

@@ -27,8 +27,10 @@
  */
 package de.dfki.covida.videovlcj;
 
+import de.dfki.covida.covidacore.data.Stroke;
 import de.dfki.covida.covidacore.data.StrokeList;
 import java.awt.Point;
+import java.awt.Polygon;
 import java.util.List;
 
 
@@ -44,7 +46,7 @@ public interface IVideoGraphicsHandler {
      * 
      * @return {@link List} of {@link StrokeList}
      */
-    public StrokeList getDrawings();
+    public List<Stroke> getDrawings();
 
     /**
      * Clears all shapes
@@ -63,7 +65,7 @@ public interface IVideoGraphicsHandler {
      * 
      * @param points {@link List} of {@link Point}
      */
-    public void addShape(List<Point> points);
+    public void addShape(Stroke stroke);
 
     /**
      * Sets the handwritting

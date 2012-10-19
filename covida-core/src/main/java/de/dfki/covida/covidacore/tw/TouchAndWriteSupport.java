@@ -52,9 +52,23 @@ public class TouchAndWriteSupport {
     public static void start(IApplication application, TouchAndWriteDevice device) {
         TWServer twServer = new TWServer(device);
         twServer.start();
-        TouchAndWriteConfiguration config = TouchAndWriteConfiguration.getDefaultEEESlateConfig();
+        TouchAndWriteConfiguration conf = TouchAndWriteConfiguration
+                .getDefaultWMInputConfig(application.getScreenSize(),
+                "localhost", "localhost");
+        if (device.equals(TouchAndWriteDevice.WMINPUT) || 
+                device.equals(TouchAndWriteDevice.EEE_SLATE)) {
+            conf = TouchAndWriteConfiguration
+                    .getDefaultWMInputConfig(application.getScreenSize(),
+                    "localhost", "localhost");
+        } else if (device.equals(TouchAndWriteDevice.TUIO) ||
+                device.equals(TouchAndWriteDevice.TW_TABLE)) {
+            conf = TouchAndWriteConfiguration
+                    .getDefaultTUIOConfig(application.getScreenSize(),
+                    "localhost", "localhost", new int[0]);
+        }
 //        config.getEventmanagerConfig().setHost("192.168.83.100");
-        TouchAndWriteEventHandler touchAndWrite = new TouchAndWriteEventHandler(application, config);
+        TouchAndWriteEventHandler touchAndWrite = new TouchAndWriteEventHandler(
+                application, conf);
         log.debug("Starting Touch&Write support.");
         touchAndWrite.start();
     }
