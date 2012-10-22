@@ -44,7 +44,10 @@ import de.dfki.covida.covidacore.components.IControlableComponent;
 import de.dfki.covida.covidacore.components.IVideoComponent;
 import de.dfki.covida.covidacore.data.Annotation;
 import de.dfki.covida.covidacore.data.AnnotationStorage;
+import de.dfki.covida.covidacore.data.CovidaConfiguration;
+import de.dfki.covida.covidacore.data.PenData;
 import de.dfki.covida.covidacore.data.Stroke;
+import de.dfki.covida.covidacore.data.VideoMediaData;
 import de.dfki.covida.covidacore.tw.TouchAndWriteComponentHandler;
 import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.videovlcj.AbstractVideoHandler;
@@ -64,9 +67,7 @@ import de.dfki.touchandwrite.shape.ShapeType;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 
 /**
@@ -148,22 +149,23 @@ public final class VideoComponent extends JMEComponent implements
      * Timer to determine how long video component was dragged
      */
     private long dragTimer;
-    /**
-     * Video title
-     */
-    private final String title;
+    private final VideoMediaData data;
 
     /**
      * Creates an instance of {@link VideoComponent}
      *
      * @param source video source location as {@link String}
      * @param title video title as {@link String}
+     * @param width video width
+     * @param height video height
+     * @param zOrder component z-Order
      */
-    public VideoComponent(String source, String title, int zOrder) {
-        super("Video Component " + title, zOrder);
+    public VideoComponent(VideoMediaData data, int zOrder) {
+        super("Video Component " + data.videoName, zOrder);
         log.debug("Create video id:" + getId());
-        this.title = title;
-        video = new RenderedVideoHandler(source, title, this);
+        this.data = data;
+        video = new RenderedVideoHandler(data, this);
+        video.initComponent();
         setDefaultPosition();
         initializeAnnotationData();
     }
@@ -236,7 +238,7 @@ public final class VideoComponent extends JMEComponent implements
     /**
      * Sets current annotations on the video on the info field
      */
-    private void setNewAnnotationData() {
+    private void setNewAnnotationData(String creator) {
         // attach info field to video and make it visible
         attachAnnotation();
         pause();
@@ -247,7 +249,7 @@ public final class VideoComponent extends JMEComponent implements
         annotation.shapeType = ShapeType.POLYGON;
         annotation.time_end = time;
         annotation.time_start = time;
-        annotation.creator = "Covida";
+        annotation.creator = creator;
         annotation.date = Calendar.getInstance().getTime();
         // set annotation data
         infoField.setAnnotationData(annotation);
@@ -733,7 +735,7 @@ public final class VideoComponent extends JMEComponent implements
     }
 
     @Override
-    public void hwrAction(String hwr) {
+    public void hwrAction(String id, String hwr) {
         if (video.getShapes().strokelist.isEmpty()) {
             Stroke stroke = new Stroke();
             stroke.points.add(new Point(5, 5));
@@ -742,7 +744,8 @@ public final class VideoComponent extends JMEComponent implements
             stroke.points.add(new Point(getWidth() - 5, 5));
             stroke.points.add(new Point(5, 5));
             video.addShape(stroke);
-            setNewAnnotationData();
+            String creator = CovidaConfiguration.getLoggedUser(id);
+            setNewAnnotationData(creator);
         }
         video.clearDrawing();
         infoField.drawHwrResult(hwr);
@@ -820,7 +823,8 @@ public final class VideoComponent extends JMEComponent implements
     public void onShapeEvent(ShapeEvent event) {
         video.setShapes(video.getDrawings());
         video.clearDrawing();
-        setNewAnnotationData();
+        String creator = CovidaConfiguration.getLoggedUser(event.getDeviceAddress());
+        setNewAnnotationData(creator);
     }
 
     @Override
@@ -895,7 +899,7 @@ public final class VideoComponent extends JMEComponent implements
 
     @Override
     public String getTitle() {
-        return title;
+        return data.videoName;
     }
 
     boolean isPlaying() {

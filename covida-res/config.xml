@@ -1,38 +1,28 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <configuration>
     <path>media/textures/</path>
-    <videoSourceList>
-        <videoSource>
+    <autologon>false</autologon>
+    <defaultlogin>Covida User</defaultlogin>
+    <videos>
+        <video>
             <source>..\covida-res\videos\Collaborative Video Annotation.mp4</source>
             <name>CoVidA Demo</name>
             <time_start>0</time_start>
             <time_end>0</time_end>
-        </videoSource>
-		<videoSource>
-            <source>..\covida-res\videos\RadSpeech DFKI(360p_H.264-AAC).mp4</source>
-            <name>Rad Speech</name>
-            <time_start>0</time_start>
-            <time_end>0</time_end>
-        </videoSource>
-    </videoSourceList>
-    <videoList>
+            <width>-1</width>
+            <height>-1</height>
+            <repeat>true</repeat>
+        </video>
         <video>
-            <size>25</size>
-            <position>0</position>
-            <repeating>true</repeating>
-            <enabled>true</enabled>
+            <source>..\covida-res\videos\RadSpeech DFKI(360p_H.264-AAC).mp4</source>
+            <name>RadSpeech</name>
             <time_start>0</time_start>
             <time_end>0</time_end>
+            <width>-1</width>
+            <height>-1</height>
+            <repeat>true</repeat>
         </video>
-		<video>
-            <size>25</size>
-            <position>0</position>
-            <repeating>true</repeating>
-            <enabled>true</enabled>
-            <time_start>0</time_start>
-            <time_end>0</time_end>
-        </video>
-    </videoList>
+    </videos>
     <penList>
         <pen>
             <color>#ffffffff</color>

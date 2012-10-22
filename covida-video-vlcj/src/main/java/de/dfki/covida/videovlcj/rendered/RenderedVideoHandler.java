@@ -30,6 +30,7 @@ package de.dfki.covida.videovlcj.rendered;
 import de.dfki.covida.covidacore.components.IVideoComponent;
 import de.dfki.covida.covidacore.data.Stroke;
 import de.dfki.covida.covidacore.data.StrokeList;
+import de.dfki.covida.covidacore.data.VideoMediaData;
 import de.dfki.covida.videovlcj.AbstractVideoHandler;
 import java.awt.Point;
 import java.awt.Polygon;
@@ -62,9 +63,8 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
      * @param title  video title as {@link String}
      * @param video  corresponding {@link IVideoComponent}
      */
-    public RenderedVideoHandler(String source, String title,
-            IVideoComponent video) {
-        super(source, title, video);
+    public RenderedVideoHandler(VideoMediaData data, IVideoComponent video) {
+        super(data, video);
     }
 
     @Override

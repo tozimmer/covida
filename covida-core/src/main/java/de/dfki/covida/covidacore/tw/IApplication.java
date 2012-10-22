@@ -55,5 +55,7 @@ public interface IApplication {
      */
     public boolean isReady();
     
+    public void login(String id, int x, int y, String login);
+    
     public Dimension getScreenSize();
 }

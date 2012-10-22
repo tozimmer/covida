@@ -61,4 +61,19 @@ public class VideoMediaData implements Serializable {
      */
     @XmlElement(name = "time_end")
     public long time_end;
+    /**
+     * Video width in pixel as {@link Integer}
+     */
+    @XmlElement(name = "width")
+    public int width;
+    /**
+     * Video height in pixel as {@link Integer}
+     */
+    @XmlElement(name = "height")
+    public int height;
+    /**
+     * Video repeat status
+     */
+    @XmlElement(name = "repeat")
+    public boolean repeat;
 }

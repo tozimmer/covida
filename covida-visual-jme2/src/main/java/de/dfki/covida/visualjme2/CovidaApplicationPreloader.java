@@ -28,18 +28,12 @@
 package de.dfki.covida.visualjme2;
 
 import com.jme.util.GameTaskQueueManager;
-import de.dfki.covida.covidacore.data.VideoMediaData;
 import de.dfki.covida.covidacore.utils.ActionName;
-import de.dfki.covida.videovlcj.preload.VideoPreload;
 import de.dfki.covida.visualjme2.components.ControlButton;
 import de.dfki.covida.visualjme2.components.annotation.AnnotationClipboard;
 import de.dfki.covida.visualjme2.components.annotation.AnnotationSearchField;
-import de.dfki.covida.visualjme2.components.video.VideoComponent;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
-import de.dfki.covida.visualjme2.utils.CovidaRootNode;
 import de.dfki.covida.visualjme2.utils.CovidaZOrder;
-import java.util.ArrayList;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,32 +47,9 @@ public class CovidaApplicationPreloader implements Runnable {
 
     private CovidaApplication application;
     private Logger log = LoggerFactory.getLogger(CovidaApplicationPreloader.class);
-    private List<VideoPreload> preloadVideos;
-    private List<VideoComponent> videos;
 
     public CovidaApplicationPreloader(CovidaApplication application) {
         this.application = application;
-        this.preloadVideos = new ArrayList<>();
-        this.videos = new ArrayList<>();
-    }
-
-    private void createVideoInstances(List<VideoMediaData> videoData) {
-        for (int i = 0; i < videoData.size(); i++) {
-            VideoComponent video = new VideoComponent(
-                    videoData.get(i).videoSource, videoData.get(i).videoName,
-                    CovidaZOrder.getInstance().getUi_node());
-            videos.add(video);
-            GameTaskQueueManager.getManager().update(new AttachChildCallable(CovidaRootNode.node, video.node));
-        }
-        for (VideoComponent video : videos) {
-            while (!video.isReady()) {
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException e) {
-                    log.error("",e);
-                }
-            }
-        }
     }
 
     private void createSideMenus() {
@@ -143,21 +114,9 @@ public class CovidaApplicationPreloader implements Runnable {
 
     }
 
-    public void cleanUp() {
-        for (VideoPreload preload : preloadVideos) {
-            preload.cleanUp();
-        }
-    }
-
     @Override
     public void run() {
         Thread.currentThread().setName(this.getClass().getName() + " Thread");
-        List<VideoMediaData> videoData = application.getVideoSources();
-        createVideoInstances(videoData);
-        log.info("Initialization complete");
-        for (VideoComponent video : videos) {
-            application.addComponent(video);
-        }
         createSideMenus();
         try {
             Thread.sleep(500);

@@ -54,4 +54,22 @@ public class PenData implements Serializable {
      */
     @XmlElement(name = "thickness")
     public int penThickness;
+    /**
+     * Pen id.
+     */
+    @XmlElement(name = "id")
+    public String id;
+    /**
+     * User which uses this pen
+     */
+    @XmlElement(name = "userlogin")
+    public String userlogin;
+    
+    public static PenData getDefaultConfig(String id){
+        PenData pen = new PenData();
+        pen.id = id;
+        pen.penColor = Color.WHITE;
+        pen.penThickness = 1;
+        return pen;
+    }
 }

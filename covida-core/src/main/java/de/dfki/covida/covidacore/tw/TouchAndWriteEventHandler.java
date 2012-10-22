@@ -220,11 +220,18 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
                         components.get(components.firstKey());
                 activeTouchComponents.put(event.getID(), component);
                 if (component instanceof IVideoComponent) {
-                    for (ITouchAndWriteComponent video : TouchAndWriteComponentHandler.getInstance().getVideos()) {
-                        if (video.getZOrder() < component.getZOrder()) {
-                            int zOrder = component.getZOrder();
-                            component.setZOrder(video.getZOrder());
-                            video.setZOrder(zOrder);
+                    for (IVideoComponent video : TouchAndWriteComponentHandler.getInstance().getVideos()) {
+                        if (video instanceof ITouchAndWriteComponent) {
+                            ITouchAndWriteComponent videoComp = 
+                                    (ITouchAndWriteComponent) video;
+                            if (videoComp.getZOrder() < component.getZOrder()) {
+                                int zOrder = component.getZOrder();
+                                component.setZOrder(videoComp.getZOrder());
+                                videoComp.setZOrder(zOrder);
+                            }
+                        }else{
+                            log.warn("IVideoComponent found which does not "
+                                    + "implement ITouchAndWriteComponent.");
                         }
                     }
                 }
@@ -330,19 +337,26 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
 
     @Override
     public void onHandwritingResult(HandwritingRecognitionEvent event) {
-        SortedMap<Integer, ITouchAndWriteComponent> components = new TreeMap<>();
-        String topResult = HWRPostProcessing.getResult(event);
-        for (ITouchAndWriteComponent component : componentHandler.getComponents()) {
-            if (component.isDrawable()) {
-                int x = (int) event.getBoundingBox().getCenterOfGravity().x;
-                int y = (int) event.getBoundingBox().getCenterOfGravity().y;
-                if (component.inArea(x, y)) {
-                    components.put(component.getZOrder(), component);
+        int x = (int) event.getBoundingBox().getCenterOfGravity().x;
+        int y = (int) event.getBoundingBox().getCenterOfGravity().y;
+        if (componentHandler.isLogin()) {
+            application.login(event.getDeviceAddress(), x, y,
+                    event.getHWRResultSet().topResult());
+            componentHandler.setLogin(false);
+        } else {
+            SortedMap<Integer, ITouchAndWriteComponent> components = new TreeMap<>();
+            String topResult = HWRPostProcessing.getResult(event);
+            for (ITouchAndWriteComponent component : componentHandler.getComponents()) {
+                if (component.isDrawable()) {
+                    if (component.inArea(x, y)) {
+                        components.put(component.getZOrder(), component);
+                    }
                 }
             }
-        }
-        if (!components.isEmpty()) {
-            components.get(components.firstKey()).hwrAction(topResult);
+            if (!components.isEmpty()) {
+                components.get(components.firstKey()).hwrAction(
+                        event.getDeviceAddress(), topResult);
+            }
         }
     }
 }

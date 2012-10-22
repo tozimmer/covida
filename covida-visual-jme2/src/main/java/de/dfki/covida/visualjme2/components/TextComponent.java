@@ -268,14 +268,18 @@ public class TextComponent extends JMEComponent implements IControlButton {
         }
     }
 
+    public void resetAnimation() {
+        CovidaSpatialController controller =
+                ResetAnimation.getController(node, defaultScale,
+                defaultRotation, defaultTranslation);
+        GameTaskQueueManager.getManager().update(new AddControllerCallable(
+                node, controller));
+    }
+
     @Override
     public void dragEndAction(int id, int x, int y, int dx, int dy) {
         if (action.equals(ActionName.COPY)) {
-            CovidaSpatialController controller =
-                    ResetAnimation.getController(node, defaultScale,
-                    defaultRotation, defaultTranslation);
-            GameTaskQueueManager.getManager().update(new AddControllerCallable(
-                    node, controller));
+            resetAnimation();
         }
     }
 
@@ -315,13 +319,13 @@ public class TextComponent extends JMEComponent implements IControlButton {
                     ITouchAndWriteComponent comp = inAreacomponents.get(inAreacomponents.firstKey());
                     if (comp instanceof VideoComponent) {
                         VideoComponent video = (VideoComponent) comp;
-                        video.hwrAction(text);
+                        video.hwrAction(null, text);
                     } else if (comp instanceof InfoFieldComponent) {
                         InfoFieldComponent info = (InfoFieldComponent) comp;
-                        info.getVideo().hwrAction(text);
+                        info.getVideo().hwrAction(null, text);
                     } else if (comp instanceof AnnotationClipboard) {
                         AnnotationClipboard clipboard = (AnnotationClipboard) comp;
-                        clipboard.hwrAction(text);
+                        clipboard.hwrAction(null, text);
                     } else if (comp instanceof ControlButton) {
                         ControlButton button = (ControlButton) comp;
                         if (button.getAction().equals(ActionName.GARBADGE)) {
@@ -335,7 +339,7 @@ public class TextComponent extends JMEComponent implements IControlButton {
                         }
                     } else if (comp instanceof AnnotationSearchField) {
                         AnnotationSearchField search = (AnnotationSearchField) comp;
-                        search.hwrAction(text);
+                        search.hwrAction(null, text);
                     }
                 }
             } else if (inArea(x, y)) {

@@ -30,6 +30,7 @@ package de.dfki.covida.videovlcj.embedded;
 import de.dfki.covida.covidacore.components.IVideoComponent;
 import de.dfki.covida.covidacore.data.Stroke;
 import de.dfki.covida.covidacore.data.StrokeList;
+import de.dfki.covida.covidacore.data.VideoMediaData;
 import de.dfki.covida.videovlcj.AbstractVideoHandler;
 import java.awt.Canvas;
 import java.awt.Color;
@@ -78,9 +79,9 @@ public final class EmbeddedVideoHandler extends AbstractVideoHandler {
      * @param canvas  {@link Canvas}
      * @param video {@link IVideoComponent}
      */
-    public EmbeddedVideoHandler(String source, String title, Canvas canvas,
+    public EmbeddedVideoHandler(VideoMediaData data, Canvas canvas,
             IVideoComponent video) {
-        super(source, title, video);
+        super(data, video);
         CanvasVideoSurface videoSurface = mediaPlayerFactory.newVideoSurface(canvas);
         if (mediaPlayer instanceof EmbeddedMediaPlayer) {
             embeddedMediaPlayer = (EmbeddedMediaPlayer) mediaPlayer;

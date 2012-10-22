@@ -166,7 +166,7 @@ public class AnnotationClipboard extends FieldComponent implements
     }
 
     @Override
-    public void hwrAction(String hwr) {
+    public void hwrAction(String id, String hwr) {
         if (open) {
             overlay.clear();
             hwrResults.add(hwr); 

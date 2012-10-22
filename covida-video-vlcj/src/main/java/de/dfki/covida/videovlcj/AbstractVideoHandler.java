@@ -31,6 +31,7 @@ import com.sun.jna.Platform;
 import de.dfki.covida.covidacore.components.IVideoComponent;
 import de.dfki.covida.covidacore.data.Stroke;
 import de.dfki.covida.covidacore.data.StrokeList;
+import de.dfki.covida.covidacore.data.VideoMediaData;
 import de.dfki.covida.covidacore.utils.VideoUtils;
 import de.dfki.covida.videovlcj.embedded.EmbeddedVideoHandler;
 import de.dfki.covida.videovlcj.embedded.EmbeddedVideoOverlay;
@@ -65,34 +66,6 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      */
     private Logger log = LoggerFactory.getLogger(AbstractVideoHandler.class);
     /**
-     * height of the video video
-     */
-    private int height;
-    /**
-     * width of the video video
-     */
-    private int width;
-    /**
-     * video source as {@link String}
-     */
-    private final String source;
-    /**
-     * If true the {@code timeStart} and {@code timeEnd} is considered.
-     *
-     * @see #setTimeRange(long, long)
-     */
-    protected boolean isTimeRanged;
-    /**
-     * Defines the start time of the video. Note that {@code timeStart} is only
-     * considered if {@code isTimeRange} is true.
-     */
-    protected long timeStart;
-    /**
-     * Defines the end time of the video. Note that {@code timeEnd} is only
-     * considered if {@code isTimeRange} is true.
-     */
-    protected long timeEnd;
-    /**
      * Video Slider {@link ISlider}
      */
     protected ISlider slider;
@@ -100,10 +73,6 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * Video controls {@link IVideoControls}
      */
     protected IVideoControls controls;
-    /**
-     * If tue the video repeating is enabled.
-     */
-    protected Boolean repeat;
     /**
      * Current recognized handwriting Note that this {@link String} must be set
      * by the visual component of covida
@@ -124,10 +93,6 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      */
     protected MediaPlayerFactory mediaPlayerFactory;
     /**
-     * Video player title
-     */
-    private final String title;
-    /**
      * Corresponding {@link IVideoComponent}
      */
     private final IVideoComponent video;
@@ -135,6 +100,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * Preload component for determining video dimensions
      */
     private VideoPreload preload;
+    private final VideoMediaData data;
 
     /**
      * Creates an instance of {@link AbstractVideoHandler}
@@ -143,12 +109,17 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * @param title video title as {@link String}
      * @param video corresponding {@link IVideoComponent}
      */
-    public AbstractVideoHandler(String source, String title,
-            IVideoComponent video) {
-        this.title = title;
-        this.source = source;
+    public AbstractVideoHandler(VideoMediaData data, IVideoComponent video) {
+        this.data = data;
         this.video = video;
-        preload();
+    }
+    
+    public void initComponent(){
+        if (data.width < 1 || data.height < 1) {
+            preload();
+        } else {
+            create(data.width, data.height);
+        }
     }
 
     /**
@@ -158,9 +129,9 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * {@link #create(int, int)} method if dimension is determined.
      */
     private void preload() {
-        preload = new VideoPreload(source, this);
+        preload = new VideoPreload(data.videoSource, this);
         Thread preloadThread = new Thread(preload);
-        preloadThread.setName(title + " preload");
+        preloadThread.setName(data.videoName + " preload");
         preloadThread.start();
     }
 
@@ -170,7 +141,9 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * @param width width of the video player
      * @param height height of the video player
      */
-    public void create(int width, int height) {
+    public final void create(int width, int height) {
+        data.width = width;
+        data.height = height;
         String[] args;
         if (Platform.isMac()) {
             args = new String[]{"--no-video-title-show", "--vout=macosx"};
@@ -185,15 +158,15 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
             ((EmbeddedVideoHandler) this)
                     .setOveray((EmbeddedVideoOverlay) graphics);
         } else if (this instanceof RenderedVideoHandler) {
-            graphics = new VideoRenderer(width, height, title);
+            graphics = new VideoRenderer(data.width, data.height, data.videoName);
             mediaPlayer = mediaPlayerFactory.newDirectMediaPlayer(width, height,
                     (VideoRenderer) graphics);
         }
-        this.height = height;
-        this.width = width;
         addEventListener();
         video.create();
-        preload.cleanUp();
+        if(preload != null){
+            preload.cleanUp();
+        }
     }
 
     /**
@@ -231,9 +204,9 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
         if (mediaPlayer == null) {
             return -1;
         }
-        if (isTimeRanged) {
+        if (data.time_start > 0) {
             if (isReady()) {
-                return mediaPlayer.getTime() - timeStart;
+                return mediaPlayer.getTime() - data.time_start;
             }
             return -1;
         } else {
@@ -258,13 +231,9 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
         if (mediaPlayer == null) {
             return null;
         }
-        if (!isTimeRanged) {
-            int p = (int) (mediaPlayer.getPosition() * 100);
-            return String.valueOf(p) + " %";
-        } else {
-            int p = (int) ((getTime() / getMaxTime()) * 100);
-            return String.valueOf(p) + " %";
-        }
+        int p = (int) ((getTime() / getMaxTime()) * 100);
+        return String.valueOf(p) + " %";
+
     }
 
     /**
@@ -448,9 +417,9 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
         if (mediaPlayer == null) {
             return;
         }
-        if (isTimeRanged) {
+        if (data.time_start > 0) {
             if (isReady()) {
-                mediaPlayer.setTime(time + timeStart);
+                mediaPlayer.setTime(time + data.time_start);
             }
         } else {
             if (isReady()) {
@@ -474,9 +443,10 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
         if (mediaPlayer == null && mediaPlayer.isSeekable()) {
             return;
         }
-        if (isTimeRanged) {
+        if (data.time_start > 0) {
             if (isReady()) {
-                mediaPlayer.setTime((long) ((percentage * (getMaxTime() - timeStart)) + timeStart));
+                mediaPlayer.setTime((long) ((percentage * (getMaxTime()
+                        - data.time_start)) + data.time_start));
             }
         } else {
             if (isReady()) {
@@ -497,7 +467,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * @return video source as {@link String}
      */
     public String getSource() {
-        return source;
+        return data.videoSource;
     }
 
     /**
@@ -506,7 +476,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * @return video width as {@link Integer}
      */
     public int getWidth() {
-        return width;
+        return data.width;
     }
 
     /**
@@ -515,7 +485,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * @return video height as {@link Integer}
      */
     public int getHeight() {
-        return height;
+        return data.height;
     }
 
     /**
@@ -532,9 +502,9 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
         if (mediaPlayer == null) {
             return -1;
         }
-        if (isTimeRanged) {
+        if (data.time_end > 0) {
             if (isReady()) {
-                return timeEnd;
+                return data.time_end;
             }
             return -1;
         } else {
@@ -564,9 +534,8 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * @param end end time in ms
      */
     public void setTimeRange(long start, long end) {
-        this.isTimeRanged = true;
-        this.timeStart = start;
-        this.timeEnd = end;
+        data.time_start = start;
+        data.time_end = end;
     }
 
     /**
@@ -585,7 +554,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * @param repeat if set to true repeating is enabled.
      */
     public void setRepeat(Boolean repeat) {
-        this.repeat = repeat;
+        data.repeat = repeat;
     }
 
     /**
@@ -594,7 +563,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * @return true if repeating is enabled.
      */
     public boolean isRepeat() {
-        return repeat;
+        return data.repeat;
     }
 
     // vlcj event handling

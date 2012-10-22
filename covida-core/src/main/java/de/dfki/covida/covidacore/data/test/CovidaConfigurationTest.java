@@ -17,8 +17,8 @@ public class CovidaConfigurationTest {
      */
     public static void main(String[] args) {
         CovidaConfiguration conf = CovidaConfiguration.getInstance();
-        conf.save("../covida-res/config.xml");
-        conf = CovidaConfiguration.load("../covida-res/config.xml");
+        conf.save();
+        conf = CovidaConfiguration.load();
     }
     
 }

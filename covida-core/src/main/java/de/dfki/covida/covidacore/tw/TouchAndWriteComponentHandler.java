@@ -46,7 +46,8 @@ public class TouchAndWriteComponentHandler {
      * {@link Collection} of {@link ITouchAndWriteComponent}
      */
     private Collection<ITouchAndWriteComponent> components;
-    private Collection<ITouchAndWriteComponent> videos;
+    private Collection<IVideoComponent> videos;
+    private boolean login;
 
     /**
      * Private constructor of {@link TouchAndWriteComponentHandler}
@@ -77,10 +78,18 @@ public class TouchAndWriteComponentHandler {
         if (!components.contains(component)) {
             components.add(component);
             if (component instanceof IVideoComponent) {
-                videos.add(component);
+                videos.add((IVideoComponent) component);
             }
         }
 
+    }
+    
+    public void setLogin(boolean login){
+        this.login = login;
+    }
+    
+    public boolean isLogin(){
+        return login;
     }
 
     /**
@@ -92,7 +101,7 @@ public class TouchAndWriteComponentHandler {
         return components;
     }
     
-    public Collection<ITouchAndWriteComponent> getVideos() {
+    public Collection<IVideoComponent> getVideos() {
         return videos;
     }
 

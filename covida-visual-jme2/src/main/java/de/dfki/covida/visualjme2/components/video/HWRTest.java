@@ -4,7 +4,6 @@
  */
 package de.dfki.covida.visualjme2.components.video;
 
-import de.dfki.covida.visualjme2.components.video.VideoComponent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,7 +26,7 @@ public class HWRTest implements Runnable {
             } catch (InterruptedException ex) {
                 Logger.getLogger(DrawTest.class.getName()).log(Level.SEVERE, null, ex);
             }
-            video.hwrAction("Test "+Math.random()*100);
+            video.hwrAction("1", "Test "+Math.random()*100);
         }
     }
     

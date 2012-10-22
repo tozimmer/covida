@@ -87,4 +87,9 @@ public class ApplicationImpl extends AbstractApplication {
     public Dimension getScreenSize() {
         return new Dimension(display.getWidth(), display.getHeight());
     }
+
+    @Override
+    public void login(String id, int x, int y, String login) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

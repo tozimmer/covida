@@ -466,7 +466,7 @@ public abstract class JMEComponent implements ITouchAndWriteComponent {
     }
 
     @Override
-    public void hwrAction(String hwr) {
+    public void hwrAction(String id, String hwr) {
     }
 
     @Override

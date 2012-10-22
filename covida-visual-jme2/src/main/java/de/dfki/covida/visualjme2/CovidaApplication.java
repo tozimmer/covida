@@ -42,21 +42,29 @@ import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
 import com.jme.util.geom.BufferUtils;
 import de.dfki.covida.covidacore.components.IControlableComponent;
+import de.dfki.covida.covidacore.components.IVideoComponent;
 import de.dfki.covida.covidacore.data.CovidaConfiguration;
+import de.dfki.covida.covidacore.data.PenData;
 import de.dfki.covida.covidacore.data.VideoMediaData;
 import de.dfki.covida.covidacore.streaming.TCPServer;
 import de.dfki.covida.covidacore.tw.ITouchAndWriteComponent;
+import de.dfki.covida.covidacore.tw.TouchAndWriteComponentHandler;
+import de.dfki.covida.covidacore.tw.TouchAndWriteEventHandler;
 import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.visualjme2.animations.PreloadAnimation;
 import de.dfki.covida.visualjme2.components.ControlButton;
+import de.dfki.covida.visualjme2.components.DrawingOverlay;
 import de.dfki.covida.visualjme2.components.JMEComponent;
+import de.dfki.covida.visualjme2.components.TextComponent;
 import de.dfki.covida.visualjme2.components.video.VideoComponent;
 import de.dfki.covida.visualjme2.utils.*;
 import de.dfki.touchandwrite.TouchAndWriteDevice;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.Callable;
 
 /**
@@ -64,17 +72,8 @@ import java.util.concurrent.Callable;
  *
  * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
  */
-public class CovidaApplication extends ApplicationImpl implements IControlableComponent{
+public class CovidaApplication extends ApplicationImpl implements IControlableComponent {
 
-    /**
-     * List of all video sources as {@link String}
-     */
-    private List<VideoMediaData> videoSources;
-    /**
-     * List of {@link VideoComponent}s which are added to the
-     * {@link CovidaApplication}
-     */
-    private List<VideoComponent> videos;
     /**
      * {@link Quad} for displaying the splash animation
      */
@@ -88,6 +87,11 @@ public class CovidaApplication extends ApplicationImpl implements IControlableCo
     private final boolean scenemonitor = false;
     private Quad background;
     private Quad logo;
+    private final CovidaConfiguration configuration;
+    private DrawingOverlay loginOverlay;
+    private TextComponent loginInfo;
+    private TextComponent loginText;
+    private Random random;
 
     /**
      * Creates an instance of {@link CovidaApplication}
@@ -98,15 +102,13 @@ public class CovidaApplication extends ApplicationImpl implements IControlableCo
      */
     public CovidaApplication(TouchAndWriteDevice device, String windowtitle) {
         super(device, windowtitle);
-        videoSources = new ArrayList<>();
-        CovidaConfiguration configuration = CovidaConfiguration.load("../covida-res/config.xml");
-        videoSources = configuration.videoSources;
-        videos = new ArrayList<>();
+        configuration = CovidaConfiguration.load();
         if (streaming) {
             tcpServer = TCPServer.getInstance();
         }
         snapshotTimer = System.currentTimeMillis();
         sideMenuCount = 0;
+        random = new Random();
     }
 
     @Override
@@ -147,7 +149,7 @@ public class CovidaApplication extends ApplicationImpl implements IControlableCo
         overlayDefaultTexture.setWrap(Texture.WrapMode.Clamp);
         TextureState overlayDefaultState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
         overlayDefaultState.setTexture(overlayDefaultTexture);
-        this.logo = new Quad("Overlay-Default-Image-Quad", display.getWidth()/2.f, display.getHeight()/2.f);
+        this.logo = new Quad("Overlay-Default-Image-Quad", display.getWidth() / 2.f, display.getHeight() / 2.f);
         logo.setZOrder(CovidaZOrder.getInstance().getBackground());
         logo.setRenderState(overlayDefaultState);
         logo.setRenderState(JMEUtils.initalizeBlendState());
@@ -155,26 +157,72 @@ public class CovidaApplication extends ApplicationImpl implements IControlableCo
         logo.getLocalTranslation().set(0, 0, 0);
         logo.getLocalTranslation().set(display.getWidth() / 2, display.getHeight() / 2, 0);
         GameTaskQueueManager.getManager().update(new AttachChildCallable(CovidaRootNode.node, logo));
-        
+
     }
 
     /**
      * Ends the loading animation
      */
     public void endLoadingAnimation() {
-        for(VideoComponent video : videos){
-            video.setTimePosition(0);
+        GameTaskQueueManager.getManager().update(new RemoveControllerCallable(
+                preloadScreen, stPreload));
+        GameTaskQueueManager.getManager().update(new DetachChildCallable(
+                CovidaRootNode.node, preloadScreen));
+        if (configuration.autologon) {
+            if (configuration.pens.isEmpty()) {
+                PenData pen = new PenData();
+                pen.penColor = Color.WHITE;
+                pen.penThickness = 1;
+                pen.userlogin = configuration.defaultlogin;
+            } else {
+                for (PenData pen : configuration.pens) {
+                    pen.userlogin = configuration.defaultlogin;
+                }
+            }
+            background.setZOrder(CovidaZOrder.getInstance().getBackground());
+        } else {
+            loginOverlay = new DrawingOverlay("Login", getWidth(), getHeight());
+            GameTaskQueueManager.getManager().update(new AttachChildCallable(
+                    CovidaRootNode.node, loginOverlay));
+            loginInfo = new TextComponent(this, ActionName.NONE,
+                    0);
+            loginInfo.setFont(2);
+            loginInfo.setSize(75);
+            loginInfo.setText("Write to login");
+            loginInfo.setLocalTranslation(getWidth() / 2, getHeight() / 2, 0);
+            GameTaskQueueManager.getManager().update(new AttachChildCallable(
+                    CovidaRootNode.node, loginInfo.node));
+            TouchAndWriteComponentHandler.getInstance().setLogin(true);
         }
-        GameTaskQueueManager.getManager().update(new RemoveControllerCallable(preloadScreen, stPreload));
-        GameTaskQueueManager.getManager().update(new DetachChildCallable(CovidaRootNode.node, preloadScreen));
-        preloader.cleanUp();
-        background.setZOrder(CovidaZOrder.getInstance().getBackground());
     }
 
+    @Override
+    public void login(String id, int x, int y, String login) {
+        GameTaskQueueManager.getManager().update(new DetachChildCallable(
+                CovidaRootNode.node, loginOverlay));
+        GameTaskQueueManager.getManager().update(new DetachChildCallable(
+                CovidaRootNode.node, loginInfo.node));
+        loginInfo.detach();
+        background.setZOrder(CovidaZOrder.getInstance().getBackground());
+        loginText = new TextComponent(this, ActionName.NONE,
+                CovidaZOrder.getInstance().getUi_text());
+        loginText.setFont(1);
+        loginText.setSize(18);
+        loginText.setText("User: " + login);
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(
+                CovidaRootNode.node, loginText.node));
+        loginText.setLocalTranslation(getWidth() / 2, getHeight(), 0);
+        loginText.setDefaultPosition();
+        loginText.setLocalTranslation(x, y, 0);
+        loginText.resetAnimation();
+    }
+
+    @Override
     public int getWidth() {
         return display.getWidth();
     }
 
+    @Override
     public int getHeight() {
         return display.getHeight();
     }
@@ -187,10 +235,8 @@ public class CovidaApplication extends ApplicationImpl implements IControlableCo
     public void addComponent(ITouchAndWriteComponent component) {
         if (component instanceof VideoComponent) {
             VideoComponent video = (VideoComponent) component;
-            int x = (int) (display.getWidth() / 2.25f) + (videos.size() * display.getWidth() / 3);
-            int y = (display.getHeight() / 2 + 150)
-                    - (videos.size() * 350);
-            videos.add(video);
+            int x = (int) (display.getWidth() / 2.f);
+            int y = (int) (display.getHeight() / 2.f);
             video.setVolume(0);
             video.setLocalTranslation(x, y, 0);
             video.setDefaultPosition();
@@ -251,15 +297,6 @@ public class CovidaApplication extends ApplicationImpl implements IControlableCo
             }
             sideMenuCount++;
         }
-    }
-
-    /**
-     * Returns a list of {@link VideoMediaData}
-     *
-     * @return list of {@link VideoMediaData}
-     */
-    public List<VideoMediaData> getVideoSources() {
-        return videoSources;
     }
 
     @Override
@@ -349,16 +386,33 @@ public class CovidaApplication extends ApplicationImpl implements IControlableCo
 
     @Override
     public boolean toggle(ActionName action) {
-        if(action.equals(ActionName.OPEN)){
-            VideoComponent video = new VideoComponent(
-                    getVideoSources().get(0).videoSource, 
-                    getVideoSources().get(0).videoName,
+        VideoMediaData videoData = null;
+        if (action.equals(ActionName.OPEN)) {
+            for (VideoMediaData data : CovidaConfiguration.getInstance().videos) {
+                boolean open = false;
+                for (IVideoComponent video :
+                        TouchAndWriteComponentHandler.getInstance().getVideos()) {
+                    if (video.getSource().equals(input)) {
+                        open = true;
+                        break;
+                    }
+                }
+                if(!open){
+                    videoData = data;
+                    break;
+                }
+            }
+            if(videoData == null){
+                int ran = random.nextInt(
+                        CovidaConfiguration.getInstance().videos.size());
+                videoData = CovidaConfiguration.getInstance().videos.get(ran);
+            }
+            VideoComponent video = new VideoComponent(videoData,
                     CovidaZOrder.getInstance().getUi_node());
-            videos.add(video);
             GameTaskQueueManager.getManager().update(new AttachChildCallable(
                     CovidaRootNode.node, video.node));
             addComponent(video);
-            video.node.setLocalTranslation(getWidth()/2, getHeight()/2, 0);
+            video.node.setLocalTranslation(getWidth() / 2, getHeight() / 2, 0);
         }
         return false;
     }

@@ -157,7 +157,7 @@ public interface ITouchAndWriteComponent {
      *
      * @param hwr HWR result as {@link String}
      */
-    public void hwrAction(String hwr);
+    public void hwrAction(String id, String hwr);
 
     /**
      * Abstract method for incomming shape events

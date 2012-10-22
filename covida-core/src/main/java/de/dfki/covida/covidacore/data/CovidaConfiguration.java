@@ -27,7 +27,6 @@
  */
 package de.dfki.covida.covidacore.data;
 
-import java.awt.Color;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -70,17 +69,26 @@ public class CovidaConfiguration implements Serializable {
     @XmlElement(name = "path")
     public String texturePath;
     /**
+     * Indicates if the application should be automatacaly log on with default
+     * login
+     *
+     * @see #defaultlogin
+     */
+    @XmlElement(name = "autologon")
+    public Boolean autologon;
+    /**
+     * If autologon is true this login is used
+     *
+     * @see #autologon
+     */
+    @XmlElement(name = "defaultlogin")
+    public String defaultlogin;
+    /**
      * Paths to the video resources as {@link List} of {@link VideoMediaData}.
      */
-    @XmlElement(name = "videoSource")
-    @XmlElementWrapper(name = "videoSourceList")
-    public List<VideoMediaData> videoSources = new ArrayList<>();
-    /**
-     * Video data as {@link List} of {@link VideoData}
-     */
     @XmlElement(name = "video")
-    @XmlElementWrapper(name = "videoList")
-    public List<VideoData> videos = new ArrayList<>();
+    @XmlElementWrapper(name = "videos")
+    public List<VideoMediaData> videos = new ArrayList<>();
     /**
      * List of pen configurations as {@link List} of {@link PenData}
      */
@@ -93,37 +101,30 @@ public class CovidaConfiguration implements Serializable {
      */
     private CovidaConfiguration() {
         texturePath = "media/textures/";
+        autologon = false;
+        defaultlogin = "Covida User";
 
-        videos.add(new VideoData());
-        videos.get(videos.size() - 1).enabled = true;
-        videos.get(videos.size() - 1).repeating = true;
-        videos.get(videos.size() - 1).position = 0;
-        videos.get(videos.size() - 1).size = 25;
-        videos.get(videos.size() - 1).time_end = 0;
-        videos.get(videos.size() - 1).time_start = 0;
-        videoSources.add(new VideoMediaData());
-        videoSources.get(videoSources.size() - 1).videoName = "CoVidA Demo";
-        videoSources.get(videoSources.size() - 1).videoSource = "..\\covida-res\\videos\\Collaborative Video Annotation.mp4";
-        videoSources.get(videoSources.size() - 1).time_start = 0;
-        videoSources.get(videoSources.size() - 1).time_end = 0;
+        VideoMediaData data = new VideoMediaData();
+        data.videoName = "CoVidA Demo";
+        data.videoSource = "..\\covida-res\\videos\\Collaborative Video Annotation.mp4";
+        data.time_start = 0;
+        data.time_end = 0;
+        data.repeat = true;
+        data.width = -1;
+        data.height = -1;
+        videos.add(data);
 
-        videos.add(new VideoData());
-        videos.get(videos.size() - 1).enabled = true;
-        videos.get(videos.size() - 1).repeating = true;
-        videos.get(videos.size() - 1).position = 0;
-        videos.get(videos.size() - 1).size = 25;
-        videos.get(videos.size() - 1).time_end = 0;
-        videos.get(videos.size() - 1).time_start = 0;
-        videoSources.add(new VideoMediaData());
-        videoSources.get(videoSources.size() - 1).videoName = "RadSpeech";
-        videoSources.get(videoSources.size() - 1).videoSource = "..\\covida-res\\videos\\RadSpeech DFKI(360p_H.264-AAC).mp4";
-        videoSources.get(videoSources.size() - 1).time_start = 0;
-        videoSources.get(videoSources.size() - 1).time_end = 0;
+        data = new VideoMediaData();
+        data.videoName = "RadSpeech";
+        data.videoSource = "..\\covida-res\\videos\\RadSpeech DFKI(360p_H.264-AAC).mp4";
+        data.time_start = 0;
+        data.time_end = 0;
+        data.repeat = true;
+        data.width = -1;
+        data.height = -1;
+        videos.add(data);
 
-        PenData pen = new PenData();
-        pen.penColor = Color.WHITE;
-        pen.penThickness = 1;
-        pens.add(pen);
+        pens.add(PenData.getDefaultConfig(null));
     }
 
     /**
@@ -143,9 +144,9 @@ public class CovidaConfiguration implements Serializable {
      *
      * Note that the {@link CovidaConfiguration} is saved to "covida.xml"
      */
-    public void save(String location) {
+    public void save() {
         JAXBContext jc;
-        File file = new File(location);
+        File file = new File("../covida-res/config.xml");
         log.debug("Write data to: " + file);
         FileWriter w = null;
         try {
@@ -171,11 +172,12 @@ public class CovidaConfiguration implements Serializable {
     /**
      * Loads a {@link CovidaConfiguration}.
      *
-     * @param location {@link String} which represents the configuration XML file.
+     * @param location {@link String} which represents the configuration XML
+     * file.
      * @return {@link CovidaConfiguration}
      */
-    public static CovidaConfiguration load(String location) {
-        File file = new File(location);
+    public static CovidaConfiguration load() {
+        File file = new File("../covida-res/config.xml");
         try {
             if (file != null && file.canRead()) {
                 JAXBContext jc = JAXBContext.newInstance(CovidaConfiguration.class);
@@ -191,7 +193,38 @@ public class CovidaConfiguration implements Serializable {
             log.debug(e + " create new VideoAnnotationData");
             instance = CovidaConfiguration.getInstance();
         }
-        log.debug("", instance);
         return instance;
+    }
+
+    public static String getLoggedUser(String penID) {
+        if (penID == null) {
+            if (CovidaConfiguration.getInstance().pens.isEmpty()) {
+                return CovidaConfiguration.getInstance().defaultlogin;
+            } else {
+                return CovidaConfiguration.getInstance().pens.get(0).userlogin;
+            }
+        }
+        String user = null;
+        for (PenData pen : CovidaConfiguration.getInstance().pens) {
+            if (pen.id.equals(penID)) {
+                user = pen.userlogin;
+                break;
+            }
+        }
+        if (user == null) {
+            for (PenData pen : CovidaConfiguration.getInstance().pens) {
+                if (pen.id == null) {
+                    pen.id = penID;
+                    user = pen.userlogin;
+                    break;
+                }
+            }
+        }
+        if (user == null) {
+            PenData pen = PenData.getDefaultConfig(penID);
+            pen.userlogin = CovidaConfiguration.getInstance().defaultlogin;
+            CovidaConfiguration.getInstance().pens.add(null);
+        }
+        return user;
     }
 }
