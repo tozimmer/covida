@@ -27,6 +27,7 @@
  */
 package de.dfki.covida.visualjme2.components;
 
+import com.jme.math.FastMath;
 import com.jme.math.Matrix4f;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector2f;
@@ -211,7 +212,7 @@ public abstract class JMEComponent implements ITouchAndWriteComponent {
      */
     public void rotate(float angle, Vector3f axis) {
         Quaternion rotation = new Quaternion();
-        rotation.fromAngleAxis(angle, axis);
+        rotation.fromAngleAxis(FastMath.DEG_TO_RAD * angle, axis);
         setLocalRotation(rotation);
     }
 

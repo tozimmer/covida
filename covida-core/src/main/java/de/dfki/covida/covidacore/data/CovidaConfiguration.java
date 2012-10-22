@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -193,6 +194,11 @@ public class CovidaConfiguration implements Serializable {
             log.debug(e + " create new VideoAnnotationData");
             instance = CovidaConfiguration.getInstance();
         }
+        for(VideoMediaData data : instance.videos){
+            if(data.uuid == null){
+                data.uuid = UUID.randomUUID();
+            }
+        }
         return instance;
     }
 
@@ -206,7 +212,7 @@ public class CovidaConfiguration implements Serializable {
         }
         String user = null;
         for (PenData pen : CovidaConfiguration.getInstance().pens) {
-            if (pen.id.equals(penID)) {
+            if (pen.id != null && pen.id.equals(penID)) {
                 user = pen.userlogin;
                 break;
             }

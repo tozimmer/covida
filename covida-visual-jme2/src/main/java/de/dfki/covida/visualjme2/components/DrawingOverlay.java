@@ -95,11 +95,11 @@ public class DrawingOverlay extends Node {
     /**
      * Last x position of the pen. (-1 if there was a pen up event)
      */
-    private Map<Integer, Integer> lastX = new HashMap<>();
+    private Map<String, Integer> lastX = new HashMap<>();
     /**
      * Last y position of the pen. (-1 if there was a pen up event)
      */
-    private Map<Integer, Integer> lastY = new HashMap<>();
+    private Map<String, Integer> lastY = new HashMap<>();
     /**
      * Drawing will be done with Java2D.
      */
@@ -116,10 +116,11 @@ public class DrawingOverlay extends Node {
      * @param width Width as {@link Integer}
      * @param height Height as {@link Integer}
      */
-    public DrawingOverlay(String name, int width, int height){
+    public DrawingOverlay(String name, int width, int height, int zOrder){
         super(name);
         this.width=  height;
         this.height = width;
+        this.setZOrder(zOrder);
         board = new Quad("Drawingboard-Quad", width, height);
         board.setZOrder(getZOrder());
         Quaternion q = new Quaternion();
@@ -199,7 +200,7 @@ public class DrawingOverlay extends Node {
      * @param y y coordinate
      * @param id pen id
      */
-    public void updateImage(int x, int y, int id) {
+    public void updateImage(int x, int y, String id) {
         if (!lastX.containsKey(id)) {
             g2d.setColor(Color.WHITE);
             lastX.put(id, x);
@@ -207,8 +208,8 @@ public class DrawingOverlay extends Node {
         } else {
             this.g2d.setStroke(new BasicStroke(2));
             this.g2d.drawLine(
-                    lastX.get(new Integer(id)),
-                    lastY.get(new Integer(id)), x, y);
+                    lastX.get(id),
+                    lastY.get(id), x, y);
             lastX.put(id, x);
             lastY.put(id, y);
         }
@@ -230,7 +231,7 @@ public class DrawingOverlay extends Node {
     /**
      * Ends current draw stroke
      */
-    void endDrawStroke() {
+    public void endDrawStroke() {
         lastX.clear();
         lastY.clear();
     }

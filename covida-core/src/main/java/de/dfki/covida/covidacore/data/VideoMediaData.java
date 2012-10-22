@@ -28,6 +28,7 @@
 package de.dfki.covida.covidacore.data;
 
 import java.io.Serializable;
+import java.util.UUID;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
@@ -76,4 +77,9 @@ public class VideoMediaData implements Serializable {
      */
     @XmlElement(name = "repeat")
     public boolean repeat;
+    /**
+     * UUID which is generated from the application
+     */
+    @XmlElement(name = "uuid")
+    public UUID uuid;
 }

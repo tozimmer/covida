@@ -40,11 +40,15 @@ import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
 import de.dfki.covida.covidacore.components.IControlButton;
 import de.dfki.covida.covidacore.components.IControlableComponent;
+import de.dfki.covida.covidacore.data.CovidaConfiguration;
+import de.dfki.covida.covidacore.data.VideoMediaData;
 import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.visualjme2.animations.RotateAnimation;
 import de.dfki.covida.visualjme2.animations.ScaleAnimation;
 import de.dfki.covida.visualjme2.utils.AddControllerCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ControlButton
@@ -63,6 +67,7 @@ public class ControlButton extends JMEComponent
     private boolean enabled;
     private final ActionName action;
     private final static float ANIMATIONTIME = 0.25f;
+    private List<TextComponent> textComponents;
 
     /**
      * Creates a new instance of {@link ControlButton}
@@ -77,6 +82,7 @@ public class ControlButton extends JMEComponent
     public ControlButton(ActionName actionName, IControlableComponent controlable,
             String texScr, String activeTexSrc, int width, int height, int zOrder) {
         super(actionName.toString(), zOrder);
+        textComponents = new ArrayList<>();
         this.action = actionName;
         this.width = width;
         this.height = height;
@@ -211,7 +217,42 @@ public class ControlButton extends JMEComponent
 
     @Override
     public void toggle() {
-        if (controlable != null) {
+        if (action.equals(ActionName.OPEN)) {
+            if (textComponents.isEmpty()) {
+                Vector3f local = new Vector3f(0, 0, 0);
+                for (VideoMediaData data : CovidaConfiguration.getInstance().videos) {
+                    TextComponent text = new TextComponent(
+                            controlable, action, getZOrder());
+                    text.setFont(1);
+                    text.setSize(40);
+                    text.setText(data.videoName);
+                    local = local.add(0, 100, 0);
+                    text.setLocalTranslation(local);
+                    text.setDefaultPosition();
+                    text.setLoadUUID(data.uuid);
+                    text.setTouchable(true);
+                    attachChild(text);
+                    textComponents.add(text);
+                    text = new TextComponent(
+                            controlable, action, getZOrder());
+                    text.setFont(1);
+                    text.setSize(40);
+                    text.setText(data.videoName);
+                    text.setLocalTranslation(local);
+                    text.rotate(180, Vector3f.UNIT_Z);
+                    text.setDefaultPosition();
+                    text.setLoadUUID(data.uuid);
+                    text.setTouchable(true);
+                    attachChild(text);
+                    textComponents.add(text);
+                }
+            } else {
+                for(TextComponent text : textComponents){
+                    text.detach();
+                }
+                textComponents.clear();
+            }
+        } else if (controlable != null) {
             setActive(controlable.toggle(action));
         }
     }

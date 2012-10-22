@@ -141,7 +141,7 @@ public abstract class FieldComponent extends JMEComponent {
         quad.setRenderState(JMEUtils.initalizeBlendState());
         quad.updateRenderState();
         attachChild(quad);
-        overlay = new DrawingOverlay("Drawing", width, height);
+        overlay = new DrawingOverlay("Drawing", width, height, getZOrder()-9);
         attachChild(overlay);
         // Spacer
         tsSpacer = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
@@ -179,7 +179,7 @@ public abstract class FieldComponent extends JMEComponent {
         localX += getDimension().getWidth() / 2;
         localY = (int) (getDimension().getHeight()
                 - (localY + getDimension().getHeight() / 2));
-        overlay.updateImage(localX, localY, 1);
+        overlay.updateImage(localX, localY, "1");
     }
     
     @Override

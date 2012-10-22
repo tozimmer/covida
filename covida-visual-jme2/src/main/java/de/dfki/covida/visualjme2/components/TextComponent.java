@@ -38,6 +38,9 @@ import de.dfki.covida.covidacore.components.IControlButton;
 import de.dfki.covida.covidacore.components.IControlableComponent;
 import de.dfki.covida.covidacore.data.Annotation;
 import de.dfki.covida.covidacore.data.AnnotationStorage;
+import de.dfki.covida.covidacore.data.CovidaConfiguration;
+import de.dfki.covida.covidacore.data.VideoMediaData;
+import de.dfki.covida.covidacore.tw.IApplication;
 import de.dfki.covida.covidacore.tw.ITouchAndWriteComponent;
 import de.dfki.covida.covidacore.tw.TouchAndWriteComponentHandler;
 import de.dfki.covida.covidacore.utils.ActionName;
@@ -357,6 +360,15 @@ public class TextComponent extends JMEComponent implements IControlButton {
             if (component instanceof AnnotationSearchField) {
                 AnnotationSearchField search = (AnnotationSearchField) component;
                 search.displayAnnotationList(uuid);
+            }
+        } else if (action.equals(ActionName.OPEN)){
+            for(VideoMediaData data : CovidaConfiguration.getInstance().videos){
+                if(data.uuid.equals(uuid)){
+                    if(component instanceof IApplication){
+                        ((IApplication) component).addVideo(data);
+                        break;
+                    }
+                }
             }
         }
     }

@@ -27,6 +27,7 @@
  */
 package de.dfki.covida.visualjme2;
 
+import de.dfki.covida.covidacore.data.VideoMediaData;
 import de.dfki.touchandwrite.TouchAndWriteDevice;
 import java.awt.Dimension;
 
@@ -90,6 +91,16 @@ public class ApplicationImpl extends AbstractApplication {
 
     @Override
     public void login(String id, int x, int y, String login) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void draw(String id, int x, int y, boolean penUp) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void addVideo(VideoMediaData data) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 }

@@ -222,14 +222,14 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
                 if (component instanceof IVideoComponent) {
                     for (IVideoComponent video : TouchAndWriteComponentHandler.getInstance().getVideos()) {
                         if (video instanceof ITouchAndWriteComponent) {
-                            ITouchAndWriteComponent videoComp = 
+                            ITouchAndWriteComponent videoComp =
                                     (ITouchAndWriteComponent) video;
                             if (videoComp.getZOrder() < component.getZOrder()) {
                                 int zOrder = component.getZOrder();
                                 component.setZOrder(videoComp.getZOrder());
                                 videoComp.setZOrder(zOrder);
                             }
-                        }else{
+                        } else {
                             log.warn("IVideoComponent found which does not "
                                     + "implement ITouchAndWriteComponent.");
                         }
@@ -309,9 +309,16 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
 
     @Override
     public void onPenEvent(String device, int x, int y, float force, PenEventDataType penEventState, long timestamp, String eventPageID) {
-//        log.debug("Pen Event: {} / {}", x, y);
         SortedMap<Integer, ITouchAndWriteComponent> components = new TreeMap<>();
+        if (componentHandler.isLogin()) {
+            if (penEventState.equals(PenEventDataType.PEN_UP)) {
+                application.draw(device, x, y, true);
+            }else{
+                application.draw(device, x, y, false);
+            }
+        }
         if (penEventState.equals(PenEventDataType.PEN_DOWN)) {
+
             for (ITouchAndWriteComponent component : componentHandler.getComponents()) {
                 if (component.isDrawable()) {
                     if (component.inArea(x, y)) {

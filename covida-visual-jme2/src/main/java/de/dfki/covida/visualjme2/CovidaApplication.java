@@ -181,9 +181,6 @@ public class CovidaApplication extends ApplicationImpl implements IControlableCo
             }
             background.setZOrder(CovidaZOrder.getInstance().getBackground());
         } else {
-            loginOverlay = new DrawingOverlay("Login", getWidth(), getHeight());
-            GameTaskQueueManager.getManager().update(new AttachChildCallable(
-                    CovidaRootNode.node, loginOverlay));
             loginInfo = new TextComponent(this, ActionName.NONE,
                     0);
             loginInfo.setFont(2);
@@ -193,6 +190,20 @@ public class CovidaApplication extends ApplicationImpl implements IControlableCo
             GameTaskQueueManager.getManager().update(new AttachChildCallable(
                     CovidaRootNode.node, loginInfo.node));
             TouchAndWriteComponentHandler.getInstance().setLogin(true);
+            loginOverlay = new DrawingOverlay("Login", getWidth(), getHeight(), 0);
+            loginOverlay.setLocalTranslation(getWidth() / 2, getHeight() / 2, 0);
+            GameTaskQueueManager.getManager().update(new AttachChildCallable(
+                    CovidaRootNode.node, loginOverlay));
+        }
+    }
+
+    @Override
+    public void draw(String id, int x, int y, boolean penUp) {
+        if (loginOverlay != null) {
+            loginOverlay.updateImage(x, y, id);
+            if (penUp) {
+                loginOverlay.endDrawStroke();
+            }
         }
     }
 
@@ -397,12 +408,12 @@ public class CovidaApplication extends ApplicationImpl implements IControlableCo
                         break;
                     }
                 }
-                if(!open){
+                if (!open) {
                     videoData = data;
                     break;
                 }
             }
-            if(videoData == null){
+            if (videoData == null) {
                 int ran = random.nextInt(
                         CovidaConfiguration.getInstance().videos.size());
                 videoData = CovidaConfiguration.getInstance().videos.get(ran);
@@ -425,5 +436,20 @@ public class CovidaApplication extends ApplicationImpl implements IControlableCo
     @Override
     public String getName() {
         return windowtitle;
+    }
+
+    @Override
+    public void addVideo(VideoMediaData data) {
+        if (data == null) {
+            int ran = random.nextInt(
+                    CovidaConfiguration.getInstance().videos.size());
+            data = CovidaConfiguration.getInstance().videos.get(ran);
+        }
+        VideoComponent video = new VideoComponent(data,
+                CovidaZOrder.getInstance().getUi_node());
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(
+                CovidaRootNode.node, video.node));
+        addComponent(video);
+        video.node.setLocalTranslation(getWidth() / 2, getHeight() / 2, 0);
     }
 }

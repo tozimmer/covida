@@ -27,6 +27,7 @@
  */
 package de.dfki.covida.covidacore.tw;
 
+import de.dfki.covida.covidacore.data.VideoMediaData;
 import java.awt.Dimension;
 
 /**
@@ -58,4 +59,8 @@ public interface IApplication {
     public void login(String id, int x, int y, String login);
     
     public Dimension getScreenSize();
+    
+    public void draw(String id, int x, int y, boolean penUp);
+    
+    public void addVideo(VideoMediaData data);
 }
