@@ -246,6 +246,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
         }
         mediaPlayer.prepareMedia(getSource());
         mediaPlayer.setPlaySubItems(true);
+        mediaPlayer.setVolume(0);
         controls.highlightPlay();
     }
 

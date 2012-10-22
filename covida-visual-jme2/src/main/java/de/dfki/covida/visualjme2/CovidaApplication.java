@@ -249,7 +249,6 @@ public class CovidaApplication extends ApplicationImpl implements IControlableCo
             video.setVolume(0);
             video.setLocalTranslation(x, y, 0);
             video.setDefaultPosition();
-            video.setRepeat(true);
         } else if (component instanceof ControlButton) {
             ControlButton button = (ControlButton) component;
             GameTaskQueueManager.getManager().update(

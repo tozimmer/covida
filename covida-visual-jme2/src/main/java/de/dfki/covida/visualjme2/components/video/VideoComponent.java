@@ -166,7 +166,6 @@ public final class VideoComponent extends JMEComponent implements
         this.data = data;
         video = new RenderedVideoHandler(data, this);
         video.initComponent();
-        video.setVolume(0);
         setDefaultPosition();
         initializeAnnotationData();
     }
