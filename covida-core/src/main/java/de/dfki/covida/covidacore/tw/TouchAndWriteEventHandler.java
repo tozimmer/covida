@@ -285,15 +285,14 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
 
     @Override
     public void onShapeEvent(ShapeEvent event) {
-        for (Shape shape : event.getDetectedShapes()) {
-            log.debug("Shape: {}", shape.getShapeType());
+        if(componentHandler.isLogin()){
+            application.clearDrawings();
         }
         SortedMap<Integer, ITouchAndWriteComponent> components = new TreeMap<>();
         for (ITouchAndWriteComponent component : componentHandler.getComponents()) {
             if (component.isDrawable()) {
                 for (Shape shape : event.getDetectedShapes()) {
                     for (Point point : shape.getPoints()) {
-//                        log.debug("Shape point : {},{}",point.x,point.y);
                         if (component.inArea(point.x, point.y)) {
                             components.put(component.getZOrder(), component);
                             break;

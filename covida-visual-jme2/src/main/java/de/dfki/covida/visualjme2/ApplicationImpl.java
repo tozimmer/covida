@@ -103,4 +103,9 @@ public class ApplicationImpl extends AbstractApplication {
     public void addVideo(VideoMediaData data) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
+    @Override
+    public void clearDrawings() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

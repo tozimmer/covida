@@ -62,5 +62,7 @@ public interface IApplication {
     
     public void draw(String id, int x, int y, boolean penUp);
     
+    public void clearDrawings();
+    
     public void addVideo(VideoMediaData data);
 }

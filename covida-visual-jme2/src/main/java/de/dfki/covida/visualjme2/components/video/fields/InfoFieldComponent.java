@@ -278,7 +278,7 @@ public class InfoFieldComponent extends JMEComponent {
     /**
      * Save annotation data to binary and XML files
      */
-    private void saveData() {
+    private void saveAnnotation() {
         StringBuilder descriptions = new StringBuilder();
         for (TextComponent description : descriptionText) {
             descriptions.append(description.getText());
@@ -447,7 +447,7 @@ public class InfoFieldComponent extends JMEComponent {
      */
     public void save() {
         log.debug("Save begin");
-        saveData();
+        saveAnnotation();
         st = SaveAnimation.getController(node, ANIMATION_DURATION, CloseAnimationType.INFO_FIELD);
         GameTaskQueueManager.getManager().update(new AddControllerCallable(node, st));
         close();

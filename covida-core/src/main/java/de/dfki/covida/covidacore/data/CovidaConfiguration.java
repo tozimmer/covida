@@ -213,7 +213,7 @@ public class CovidaConfiguration implements Serializable {
                 }
             } else {
                 String login = CovidaConfiguration.getInstance().pens.get(0).userlogin;
-                if(login == null){
+                if (login == null) {
                     login = "default user";
                 }
                 return login;
@@ -241,5 +241,38 @@ public class CovidaConfiguration implements Serializable {
             CovidaConfiguration.getInstance().pens.add(pen);
         }
         return user;
+    }
+
+    public void setUser(String id, String login) {
+        boolean set = false;
+        for (PenData pen : pens) {
+            if (pen.id != null && pen.id.equals(id)) {
+                pen.userlogin = login;
+                set = true;
+                break;
+            }
+        }
+        if (!set) {
+            if (pens.isEmpty()) {
+                PenData pen = PenData.getDefaultConfig(id);
+                pen.userlogin = login;
+                pens.add(pen);
+                set = true;
+            } else {
+                for (PenData pen : pens) {
+                    if (pen.id == null) {
+                        pen.userlogin = login;
+                        set = true;
+                        break;
+                    }
+                }
+            }
+        }
+        if (!set) {
+            PenData pen = PenData.getDefaultConfig(id);
+            pen.userlogin = login;
+            pens.add(pen);
+        }
+        save();
     }
 }

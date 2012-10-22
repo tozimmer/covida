@@ -49,7 +49,6 @@ import de.dfki.covida.covidacore.data.VideoMediaData;
 import de.dfki.covida.covidacore.streaming.TCPServer;
 import de.dfki.covida.covidacore.tw.ITouchAndWriteComponent;
 import de.dfki.covida.covidacore.tw.TouchAndWriteComponentHandler;
-import de.dfki.covida.covidacore.tw.TouchAndWriteEventHandler;
 import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.visualjme2.animations.PreloadAnimation;
 import de.dfki.covida.visualjme2.components.ControlButton;
@@ -62,8 +61,6 @@ import de.dfki.touchandwrite.TouchAndWriteDevice;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Callable;
 
@@ -226,6 +223,7 @@ public class CovidaApplication extends ApplicationImpl implements IControlableCo
         loginText.setDefaultPosition();
         loginText.setLocalTranslation(x, y, 0);
         loginText.resetAnimation();
+        CovidaConfiguration.getInstance().setUser(id, login);
     }
 
     @Override

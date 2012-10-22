@@ -12,6 +12,7 @@
             <width>-1</width>
             <height>-1</height>
             <repeat>true</repeat>
+            <uuid>98f3f89c-b97e-48cf-ac3b-52a92a75ae49</uuid>
         </video>
         <video>
             <source>..\covida-res\videos\RadSpeech DFKI(360p_H.264-AAC).mp4</source>
@@ -21,12 +22,13 @@
             <width>-1</width>
             <height>-1</height>
             <repeat>true</repeat>
+            <uuid>2004d6d7-f877-43c6-bf54-d27c8839c05f</uuid>
         </video>
     </videos>
     <penList>
         <pen>
-            <color>#ffffffff</color>
             <thickness>1</thickness>
+            <userlogin>test</userlogin>
         </pen>
     </penList>
 </configuration>

@@ -27,19 +27,12 @@
  */
 package de.dfki.covida.covidacore.data;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.vocabulary.DC;
-import com.hp.hpl.jena.vocabulary.VCARD;
 import de.dfki.covida.covidacore.components.IVideoComponent;
-import de.dfki.covida.covidacore.data.test.DataTest;
 import java.awt.Point;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Level;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -442,6 +435,12 @@ public class AnnotationData implements Serializable {
                 annotations.remove(entry);
                 break;
             }
+        }
+        if(annotation.creator == null){
+            annotation.creator = "default user";
+        }
+        if(annotation.description == null){
+            annotation.description = "";
         }
         annotations.add(annotation);
     }
