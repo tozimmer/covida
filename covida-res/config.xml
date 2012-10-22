@@ -28,7 +28,8 @@
     <penList>
         <pen>
             <thickness>1</thickness>
-            <userlogin>test</userlogin>
+            <id>6</id>
+            <userlogin>TZ</userlogin>
         </pen>
     </penList>
 </configuration>

@@ -201,6 +201,17 @@ public class AnnotationStorage {
             video.addProperty(DC.source, data.videoSource);
             for (Annotation annotation : data.getAnnotations()) {
                 Resource creator = model.createResource();
+                if (annotation.creator == null) {
+                    for (PenData pen : CovidaConfiguration.getInstance().pens) {
+                        if (pen.userlogin != null) {
+                            annotation.creator = pen.userlogin;
+                            break;
+                        }
+                    }
+                    if (annotation.creator == null) {
+                        annotation.creator = "default_user";
+                    }
+                }
                 creator.addProperty(VCARD.NAME, annotation.creator);
                 creator.addProperty(VCARD.CLASS, "User");
                 String dat = "";

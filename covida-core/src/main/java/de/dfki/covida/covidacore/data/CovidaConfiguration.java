@@ -203,27 +203,33 @@ public class CovidaConfiguration implements Serializable {
     }
 
     public static String getLoggedUser(String penID) {
+        String user = null;
         if (penID == null) {
             if (CovidaConfiguration.getInstance().pens.isEmpty()) {
                 String defaultLogin = CovidaConfiguration.getInstance().defaultlogin;
                 if (defaultLogin != null) {
-                    return defaultLogin;
+                    user = defaultLogin;
                 } else {
                     return "default user";
                 }
             } else {
                 String login = CovidaConfiguration.getInstance().pens.get(0).userlogin;
                 if (login == null) {
-                    login = "default user";
+                    user = "default user";
+                } else {
+                    user = login;
                 }
-                return login;
+            }
+            if (user != null) {
+                return user;
             }
         }
-        String user = null;
         for (PenData pen : CovidaConfiguration.getInstance().pens) {
             if (pen.id != null && pen.id.equals(penID)) {
-                user = pen.userlogin;
-                break;
+                if (pen.userlogin != null) {
+                    user = pen.userlogin;
+                    break;
+                }
             }
         }
         if (user == null) {
@@ -239,6 +245,9 @@ public class CovidaConfiguration implements Serializable {
             PenData pen = PenData.getDefaultConfig(penID);
             pen.userlogin = CovidaConfiguration.getInstance().defaultlogin;
             CovidaConfiguration.getInstance().pens.add(pen);
+        }
+        if (user == null) {
+            user = "default_user";
         }
         return user;
     }
@@ -261,6 +270,7 @@ public class CovidaConfiguration implements Serializable {
             } else {
                 for (PenData pen : pens) {
                     if (pen.id == null) {
+                        pen.id = id;
                         pen.userlogin = login;
                         set = true;
                         break;

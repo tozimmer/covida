@@ -355,6 +355,9 @@ public class TextComponent extends JMEComponent implements IControlButton {
     public void toggle() {
         if (action.equals(ActionName.COPY)) {
         } else if (action.equals(ActionName.LOAD)) {
+            if(component instanceof VideoComponent){
+                ((VideoComponent) component).resume();
+            }
             AnnotationStorage.getInstance().load(uuid);
         } else if (action.equals(ActionName.LOADLIST)) {
             if (component instanceof AnnotationSearchField) {

@@ -449,4 +449,9 @@ public class CovidaApplication extends ApplicationImpl implements IControlableCo
         addComponent(video);
         video.node.setLocalTranslation(getWidth() / 2, getHeight() / 2, 0);
     }
+    
+    @Override
+    public void clearDrawings(){
+        loginOverlay.clear();
+    }
 }
