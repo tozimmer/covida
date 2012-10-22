@@ -194,8 +194,8 @@ public class CovidaConfiguration implements Serializable {
             log.debug(e + " create new VideoAnnotationData");
             instance = CovidaConfiguration.getInstance();
         }
-        for(VideoMediaData data : instance.videos){
-            if(data.uuid == null){
+        for (VideoMediaData data : instance.videos) {
+            if (data.uuid == null) {
                 data.uuid = UUID.randomUUID();
             }
         }
@@ -205,9 +205,18 @@ public class CovidaConfiguration implements Serializable {
     public static String getLoggedUser(String penID) {
         if (penID == null) {
             if (CovidaConfiguration.getInstance().pens.isEmpty()) {
-                return CovidaConfiguration.getInstance().defaultlogin;
+                String defaultLogin = CovidaConfiguration.getInstance().defaultlogin;
+                if (defaultLogin != null) {
+                    return defaultLogin;
+                } else {
+                    return "default user";
+                }
             } else {
-                return CovidaConfiguration.getInstance().pens.get(0).userlogin;
+                String login = CovidaConfiguration.getInstance().pens.get(0).userlogin;
+                if(login == null){
+                    login = "default user";
+                }
+                return login;
             }
         }
         String user = null;
@@ -229,7 +238,7 @@ public class CovidaConfiguration implements Serializable {
         if (user == null) {
             PenData pen = PenData.getDefaultConfig(penID);
             pen.userlogin = CovidaConfiguration.getInstance().defaultlogin;
-            CovidaConfiguration.getInstance().pens.add(null);
+            CovidaConfiguration.getInstance().pens.add(pen);
         }
         return user;
     }
