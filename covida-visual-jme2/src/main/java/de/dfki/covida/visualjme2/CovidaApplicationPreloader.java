@@ -132,7 +132,7 @@ public class CovidaApplicationPreloader implements Runnable {
 
     private void preloadVideos() {
         for(VideoMediaData data : CovidaConfiguration.getInstance().videos){
-            VideoPreload preload = new VideoPreload(data.videoSource);
+            VideoPreload preload = new VideoPreload(data);
             preload.run();
         }
     }

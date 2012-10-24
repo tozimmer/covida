@@ -9,8 +9,8 @@
             <name>CoVidA Demo</name>
             <time_start>0</time_start>
             <time_end>0</time_end>
-            <width>-1</width>
-            <height>-1</height>
+            <width>576</width>
+            <height>360</height>
             <repeat>true</repeat>
             <uuid>98f3f89c-b97e-48cf-ac3b-52a92a75ae49</uuid>
         </video>
@@ -19,8 +19,8 @@
             <name>RadSpeech</name>
             <time_start>0</time_start>
             <time_end>0</time_end>
-            <width>-1</width>
-            <height>-1</height>
+            <width>636</width>
+            <height>360</height>
             <repeat>true</repeat>
             <uuid>2004d6d7-f877-43c6-bf54-d27c8839c05f</uuid>
         </video>

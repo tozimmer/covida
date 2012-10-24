@@ -17,6 +17,8 @@ import de.dfki.covida.covidacore.tw.IApplication;
 import de.dfki.covida.visualjme2.utils.DetachChildCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -72,15 +74,19 @@ public class VideoThumb extends JMEComponent {
         for (int i = 0; i < 3; i++) {
             File file = new File(data.videoSource + i + ".png");
             if (file.isFile()) {
-                Texture defaultTexture = TextureManager.loadTexture(
-                        file.getAbsolutePath(),
-                        Texture.MinificationFilter.BilinearNearestMipMap,
-                        Texture.MagnificationFilter.Bilinear);
-                defaultTexture.setWrap(Texture.WrapMode.Clamp);
-                TextureState textureState = DisplaySystem.getDisplaySystem()
-                        .getRenderer().createTextureState();
-                textureState.setTexture(defaultTexture);
-                textureStates.add(textureState);
+                try {
+                    URL url = file.toURI().toURL();
+                    Texture defaultTexture = TextureManager.loadTexture(url,
+                            Texture.MinificationFilter.BilinearNearestMipMap,
+                            Texture.MagnificationFilter.Bilinear);
+                    defaultTexture.setWrap(Texture.WrapMode.Clamp);
+                    TextureState textureState = DisplaySystem.getDisplaySystem()
+                            .getRenderer().createTextureState();
+                    textureState.setTexture(defaultTexture);
+                    textureStates.add(textureState);
+                } catch (MalformedURLException ex) {
+                    log.debug("",ex);
+                }
             }
         }
         thumbQuad = new Quad((data.videoName + " thumb quad"), width,

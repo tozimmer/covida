@@ -45,7 +45,6 @@ import de.dfki.covida.covidacore.components.IVideoComponent;
 import de.dfki.covida.covidacore.data.Annotation;
 import de.dfki.covida.covidacore.data.AnnotationStorage;
 import de.dfki.covida.covidacore.data.CovidaConfiguration;
-import de.dfki.covida.covidacore.data.PenData;
 import de.dfki.covida.covidacore.data.Stroke;
 import de.dfki.covida.covidacore.data.VideoMediaData;
 import de.dfki.covida.covidacore.tw.TouchAndWriteComponentHandler;
@@ -176,14 +175,14 @@ public final class VideoComponent extends JMEComponent implements
 
     @Override
     public void create() {
-        createControls();
+        createVideo();
+        video.open();
         createFields();
         createOverlays();
-        startTests();
-        createVideo();
+        createControls();
         setDrawable(true);
         setTouchable(true);
-        video.open();
+        startTests();
     }
 
     /**

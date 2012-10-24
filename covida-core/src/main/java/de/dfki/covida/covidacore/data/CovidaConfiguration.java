@@ -145,7 +145,7 @@ public class CovidaConfiguration implements Serializable {
      *
      * Note that the {@link CovidaConfiguration} is saved to "covida.xml"
      */
-    public void save() {
+    public synchronized void save() {
         JAXBContext jc;
         File file = new File("../covida-res/config.xml");
         log.debug("Write data to: " + file);

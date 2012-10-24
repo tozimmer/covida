@@ -223,18 +223,15 @@ public class ControlButton extends JMEComponent
             if (videoThumbs.isEmpty()) {
                 Vector3f local = new Vector3f(0, 0, 0);
                 for (VideoMediaData data : CovidaConfiguration.getInstance().videos) {
-                    File file = new File(data.videoSource + ".png");
-                    if (file.isFile()) {
-                        float ration = (float) data.width / (float) data.height;
-                        local = local.add(0, ((float) height * 1.5f) / ration + 25, 0);
-                        IApplication app = (IApplication) controlable;
-                        VideoThumb thumb = new VideoThumb(data, local, app, this,
-                                (int) (width * 1.5f),
-                                (int) (((float) height * 1.5f) / ration),
-                                getZOrder());
-                        attachChild(thumb);
-                        videoThumbs.add(thumb);
-                    }
+                    float ration = (float) data.width / (float) data.height;
+                    local = local.add(0, ((float) height * 1.5f) / ration + 25, 0);
+                    IApplication app = (IApplication) controlable;
+                    VideoThumb thumb = new VideoThumb(data, local, app, this,
+                            (int) (width * 1.5f),
+                            (int) (((float) height * 1.5f) / ration),
+                            getZOrder());
+                    attachChild(thumb);
+                    videoThumbs.add(thumb);
                 }
             } else {
                 for (VideoThumb thumb : videoThumbs) {

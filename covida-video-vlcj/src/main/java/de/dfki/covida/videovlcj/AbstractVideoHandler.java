@@ -40,7 +40,6 @@ import de.dfki.covida.videovlcj.rendered.RenderedVideoHandler;
 import de.dfki.covida.videovlcj.rendered.VideoRenderer;
 import java.awt.Dimension;
 import java.awt.Point;
-import java.awt.Polygon;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.List;
@@ -129,7 +128,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * {@link #create(int, int)} method if dimension is determined.
      */
     private void preload() {
-        preload = new VideoPreload(data.videoSource, this);
+        preload = new VideoPreload(data, this);
         Thread preloadThread = new Thread(preload);
         preloadThread.setName(data.videoName + " preload");
         preloadThread.start();
