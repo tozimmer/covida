@@ -165,32 +165,34 @@ public class CovidaApplication extends ApplicationImpl implements IControlableCo
                 preloadScreen, stPreload));
         GameTaskQueueManager.getManager().update(new DetachChildCallable(
                 CovidaRootNode.node, preloadScreen));
+        loginInfo = new TextComponent(this, ActionName.NONE,
+                0);
+        loginInfo.setFont(2);
+        loginInfo.setSize(75);
+        loginInfo.setText("Write to login");
+        loginInfo.setLocalTranslation(getWidth() / 2, getHeight() / 2, 0);
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(
+                CovidaRootNode.node, loginInfo.node));
+        TouchAndWriteComponentHandler.getInstance().setLogin(true);
+        loginOverlay = new DrawingOverlay("Login", getWidth(), getHeight(), 0);
+        loginOverlay.setLocalTranslation(getWidth() / 2, getHeight() / 2, 0);
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(
+                CovidaRootNode.node, loginOverlay));
         if (configuration.autologon) {
             if (configuration.pens.isEmpty()) {
                 PenData pen = new PenData();
                 pen.penColor = Color.WHITE;
                 pen.penThickness = 1;
                 pen.userlogin = configuration.defaultlogin;
+                login("1", getWidth() / 2, getHeight() / 2, configuration.defaultlogin);
             } else {
                 for (PenData pen : configuration.pens) {
                     pen.userlogin = configuration.defaultlogin;
                 }
+                login(configuration.pens.get(0).id, getWidth() / 2,
+                        getHeight() / 2, configuration.defaultlogin);
             }
             background.setZOrder(CovidaZOrder.getInstance().getBackground());
-        } else {
-            loginInfo = new TextComponent(this, ActionName.NONE,
-                    0);
-            loginInfo.setFont(2);
-            loginInfo.setSize(75);
-            loginInfo.setText("Write to login");
-            loginInfo.setLocalTranslation(getWidth() / 2, getHeight() / 2, 0);
-            GameTaskQueueManager.getManager().update(new AttachChildCallable(
-                    CovidaRootNode.node, loginInfo.node));
-            TouchAndWriteComponentHandler.getInstance().setLogin(true);
-            loginOverlay = new DrawingOverlay("Login", getWidth(), getHeight(), 0);
-            loginOverlay.setLocalTranslation(getWidth() / 2, getHeight() / 2, 0);
-            GameTaskQueueManager.getManager().update(new AttachChildCallable(
-                    CovidaRootNode.node, loginOverlay));
         }
     }
 
@@ -449,9 +451,9 @@ public class CovidaApplication extends ApplicationImpl implements IControlableCo
         addComponent(video);
         video.node.setLocalTranslation(getWidth() / 2, getHeight() / 2, 0);
     }
-    
+
     @Override
-    public void clearDrawings(){
+    public void clearDrawings() {
         loginOverlay.clear();
     }
 }

@@ -28,7 +28,10 @@
 package de.dfki.covida.visualjme2;
 
 import com.jme.util.GameTaskQueueManager;
+import de.dfki.covida.covidacore.data.CovidaConfiguration;
+import de.dfki.covida.covidacore.data.VideoMediaData;
 import de.dfki.covida.covidacore.utils.ActionName;
+import de.dfki.covida.videovlcj.preload.VideoPreload;
 import de.dfki.covida.visualjme2.components.ControlButton;
 import de.dfki.covida.visualjme2.components.annotation.AnnotationClipboard;
 import de.dfki.covida.visualjme2.components.annotation.AnnotationSearchField;
@@ -117,6 +120,7 @@ public class CovidaApplicationPreloader implements Runnable {
     @Override
     public void run() {
         Thread.currentThread().setName(this.getClass().getName() + " Thread");
+        preloadVideos();
         createSideMenus();
         try {
             Thread.sleep(500);
@@ -124,5 +128,12 @@ public class CovidaApplicationPreloader implements Runnable {
             log.error("",ex);
         }
         application.endLoadingAnimation();
+    }
+
+    private void preloadVideos() {
+        for(VideoMediaData data : CovidaConfiguration.getInstance().videos){
+            VideoPreload preload = new VideoPreload(data.videoSource);
+            preload.run();
+        }
     }
 }

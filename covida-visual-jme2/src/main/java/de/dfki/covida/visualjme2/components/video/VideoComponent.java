@@ -288,7 +288,7 @@ public final class VideoComponent extends JMEComponent implements
         overlaySelectState.setTexture(overlaySelectTexture);
         overlay = new Quad("Overlay-Default-Image-Quad",
                 (1.15f) * getWidth(), (1.25f) * getHeight());
-        overlay.setZOrder(getZOrder()-1);
+        overlay.setZOrder(getZOrder() - 1);
         overlay.setRenderState(overlayDefaultState);
         overlay.setRenderState(alpha);
         overlay.updateRenderState();
@@ -306,7 +306,7 @@ public final class VideoComponent extends JMEComponent implements
         overlayDragBlankState.setTexture(overlayBlankTexture);
         overlayDrag = new Quad("Overlay-Drag-Image-Quad", (1.15f) * getWidth(),
                 (1.35f) * getHeight());
-        overlayDrag.setZOrder(getZOrder()-1);
+        overlayDrag.setZOrder(getZOrder() - 1);
         overlayDrag.setRenderState(overlayDragState);
         overlayDrag.setRenderState(alpha);
         overlayDrag.updateRenderState();
@@ -381,9 +381,9 @@ public final class VideoComponent extends JMEComponent implements
      * Creates the video controls.
      */
     public void createControls() {
-        controls = new VideoComponentControls(this, getZOrder()-2);
+        controls = new VideoComponentControls(this, getZOrder() - 2);
         attachChild(controls);
-        slider = new VideoSlider(this, getZOrder()-2);
+        slider = new VideoSlider(this, getZOrder() - 2);
         slider.node.setLocalTranslation(
                 new Vector3f(-15, -22 - getHeight() / 2, 0));
         slider.setDefaultPosition();
@@ -395,7 +395,7 @@ public final class VideoComponent extends JMEComponent implements
      */
     public void createVideo() {
         VideoQuad videoQuad = new VideoQuad(video);
-        videoQuad.setZOrder(getZOrder()+1);
+        videoQuad.setZOrder(getZOrder() + 1);
         attachChild(videoQuad);
         video.setSlider(slider);
         video.setControls(controls);
@@ -445,14 +445,18 @@ public final class VideoComponent extends JMEComponent implements
      * @param repeat - repeat flag (true -> repeat video)
      */
     public void setRepeat(Boolean repeat) {
-        video.setRepeat(repeat);
+        if (video.isReady()) {
+            video.setRepeat(repeat);
+        }
     }
 
     /**
      * Stops the video
      */
     public void stop() {
-        video.stop();
+        if (video.isReady()) {
+            video.stop();
+        }
     }
 
     /**
@@ -461,14 +465,18 @@ public final class VideoComponent extends JMEComponent implements
      * @param source
      */
     public void setMedia(String source) {
-        video.setMedia(source);
+        if (video.isReady()) {
+            video.setMedia(source);
+        }
     }
 
     /**
      * Pauses the video
      */
     public void pause() {
-        video.pause();
+        if (video.isReady()) {
+            video.pause();
+        }
     }
 
     /**
@@ -476,7 +484,9 @@ public final class VideoComponent extends JMEComponent implements
      *
      */
     public void resume() {
-        video.resume();
+        if (video.isReady()) {
+            video.resume();
+        }
     }
 
     /**
@@ -485,7 +495,9 @@ public final class VideoComponent extends JMEComponent implements
      * @param time - time in frames
      */
     public void setTimePosition(long time) {
-        video.setTimePosition(time);
+        if (video.isReady()) {
+            video.setTimePosition(time);
+        }
     }
 
     /**
@@ -494,7 +506,9 @@ public final class VideoComponent extends JMEComponent implements
      * @param percentage
      */
     public void setTimePosition(float percentage) {
-        video.setTimePostion(percentage);
+        if (video.isReady()) {
+            video.setTimePostion(percentage);
+        }
     }
 
     /**
@@ -503,7 +517,9 @@ public final class VideoComponent extends JMEComponent implements
      * @param end
      */
     public void setTimeRange(long start, long end) {
-        video.setTimeRange(start, end);
+        if (video.isReady()) {
+            video.setTimeRange(start, end);
+        }
     }
 
     /**
@@ -512,7 +528,9 @@ public final class VideoComponent extends JMEComponent implements
      * @param file
      */
     public void videoChange(File file) {
-        video.setMedia(file.getAbsolutePath());
+        if (video.isReady()) {
+            video.setMedia(file.getAbsolutePath());
+        }
     }
 
     /**
@@ -521,7 +539,10 @@ public final class VideoComponent extends JMEComponent implements
      * @return true if video repeating is enabled.
      */
     public boolean isRepeating() {
-        return video.isRepeat();
+        if (video.isReady()) {
+            return video.isRepeat();
+        }
+        return false;
     }
 
     /**
@@ -582,7 +603,10 @@ public final class VideoComponent extends JMEComponent implements
      * @return {@link Dimension} of the video.
      */
     public Dimension getVideoDimension() {
-        return video.getDimension();
+        if (video.isReady()) {
+            return video.getDimension();
+        }
+        return null;
     }
 
     /**
@@ -667,7 +691,9 @@ public final class VideoComponent extends JMEComponent implements
      * volume.
      */
     public void setVolume(int i) {
-        video.setVolume(i);
+        if (video.isReady()) {
+            video.setVolume(i);
+        }
     }
 
     /**
@@ -676,7 +702,10 @@ public final class VideoComponent extends JMEComponent implements
      * @return end position in ms as {@link Long}
      */
     public long getMaxTime() {
-        return video.getMaxTime();
+        if (video.isReady()) {
+            return video.getMaxTime();
+        }
+        return 0;
     }
 
     /**
@@ -685,7 +714,10 @@ public final class VideoComponent extends JMEComponent implements
      * @return current time position in ms as {@link Long}
      */
     public long getTime() {
-        return video.getTime();
+        if (video.isReady()) {
+            return video.getTime();
+        }
+        return 0;
     }
 
     @Override
@@ -717,25 +749,32 @@ public final class VideoComponent extends JMEComponent implements
 
     @Override
     public void draw(int x, int y) {
-        video.pause();
-        Vector3f local = getLocal(x, y);
-        int localX = (int) local.x;
-        int localY = (int) local.y;
-        localX += (getDimension().getWidth() / 2) / node.getLocalScale().x;
-        localY = (int) ((getDimension().getHeight() / node.getLocalScale().y)
-                - ((localY + (getDimension().getHeight() / 2)
-                / node.getLocalScale().y)));
-        video.draw(new Point(localX, localY));
+        if (video.isReady()) {
+            video.pause();
+            Vector3f local = getLocal(x, y);
+            int localX = (int) local.x;
+            int localY = (int) local.y;
+            localX += (getDimension().getWidth() / 2) / node.getLocalScale().x;
+            localY = (int) ((getDimension().getHeight() / node.getLocalScale().y)
+                    - ((localY + (getDimension().getHeight() / 2)
+                    / node.getLocalScale().y)));
+            video.draw(new Point(localX, localY));
+        }
     }
 
     @Override
     public void drawEnd(int x, int y) {
-        draw(x, y);
-        video.endDrawStroke();
+        if (video.isReady()) {
+            draw(x, y);
+            video.endDrawStroke();
+        }
     }
 
     @Override
     public void hwrAction(String id, String hwr) {
+        if (!video.isReady()) {
+            return;
+        }
         if (video.getShapes().strokelist.isEmpty()) {
             Stroke stroke = new Stroke();
             stroke.points.add(new Point(5, 5));
@@ -753,6 +792,9 @@ public final class VideoComponent extends JMEComponent implements
 
     @Override
     public void load(Annotation annotation) {
+        if (!video.isReady()) {
+            return;
+        }
         attachAnnotation();
         clearAnnotation();
         infoField.setAnnotationData(annotation);
@@ -769,7 +811,10 @@ public final class VideoComponent extends JMEComponent implements
      */
     @Override
     public int getWidth() {
-        return video.getWidth();
+        if (video.isReady()) {
+            return video.getWidth();
+        }
+        return 0;
     }
 
     /**
@@ -778,7 +823,10 @@ public final class VideoComponent extends JMEComponent implements
      */
     @Override
     public final int getHeight() {
-        return video.getHeight();
+        if (video.isReady()) {
+            return video.getHeight();
+        }
+        return 0;
     }
 
     @Override
@@ -821,77 +869,81 @@ public final class VideoComponent extends JMEComponent implements
 
     @Override
     public void onShapeEvent(ShapeEvent event) {
-        video.setShapes(video.getDrawings());
-        video.clearDrawing();
-        String creator = CovidaConfiguration.getLoggedUser(event.getDeviceAddress());
-        setNewAnnotationData(creator);
+        if (video.isReady()) {
+            video.setShapes(video.getDrawings());
+            video.clearDrawing();
+            String creator = CovidaConfiguration.getLoggedUser(event.getDeviceAddress());
+            setNewAnnotationData(creator);
+        }
     }
 
     @Override
     public String getSource() {
-        return video.getSource();
+        return data.videoSource;
     }
 
     @Override
     public boolean toggle(ActionName action) {
-        if (action.equals(ActionName.BACKWARD)) {
-            if ((video.getTime() - video.getMaxTime() / 20) > 0) {
-                setTimePosition(video.getTime()
-                        - video.getMaxTime() / 20);
-            } else {
-                setTimePosition(0);
-            }
-            return false;
-        } else if (action.equals(ActionName.CHANGEMEDIA)) {
-            video.setMedia("http://www.youtube.com/watch?v=uBiN119_wvg");
-            return false;
-        } else if (action.equals(ActionName.CLOSE)) {
-            close();
-            return false;
-        } else if (action.equals(ActionName.FORWARD)) {
-            if ((video.getTime() + video.getMaxTime() / 100) < video.getMaxTime()) {
-                setTimePosition(video.getTime()
-                        + video.getMaxTime() / 100);
-            } else {
-                setTimePosition(video.getMaxTime());
-            }
-            return false;
-        } else if (action.equals(ActionName.LIST)) {
-            if (!hasList()) {
-                attachList();
-                return true;
-            } else {
-                detachList();
+        if (video.isReady()) {
+            if (action.equals(ActionName.BACKWARD)) {
+                if ((video.getTime() - video.getMaxTime() / 20) > 0) {
+                    setTimePosition(video.getTime()
+                            - video.getMaxTime() / 20);
+                } else {
+                    setTimePosition(0);
+                }
                 return false;
-            }
-        } else if (action.equals(ActionName.PLAYPAUSE)) {
-            if (video.isPlaying()) {
-                pause();
-                return true;
-            } else {
-                resume();
+            } else if (action.equals(ActionName.CHANGEMEDIA)) {
+                video.setMedia("http://www.youtube.com/watch?v=uBiN119_wvg");
                 return false;
-            }
-        } else if (action.equals(ActionName.SOUND)) {
-            if (video.getVolume() > 0) {
-                video.setVolume(0);
+            } else if (action.equals(ActionName.CLOSE)) {
+                close();
                 return false;
-            } else {
-                video.setVolume(100);
-                return true;
-            }
-        } else if (action.equals(ActionName.SAVE)) {
-            if (infoField.isOpen()) {
-                this.infoField.save();
-            }
-        } else if (action.equals(ActionName.DELETE)) {
-            if (infoField.isOpen()) {
-                this.infoField.delete();
-            }
-        } else if (action.equals(ActionName.STOP)) {
-            if (video.isPlaying()) {
-                video.stop();
-                return true;
+            } else if (action.equals(ActionName.FORWARD)) {
+                if ((video.getTime() + video.getMaxTime() / 100) < video.getMaxTime()) {
+                    setTimePosition(video.getTime()
+                            + video.getMaxTime() / 100);
+                } else {
+                    setTimePosition(video.getMaxTime());
+                }
+                return false;
+            } else if (action.equals(ActionName.LIST)) {
+                if (!hasList()) {
+                    attachList();
+                    return true;
+                } else {
+                    detachList();
+                    return false;
+                }
+            } else if (action.equals(ActionName.PLAYPAUSE)) {
+                if (video.isPlaying()) {
+                    pause();
+                    return true;
+                } else {
+                    resume();
+                    return false;
+                }
+            } else if (action.equals(ActionName.SOUND)) {
+                if (video.getVolume() > 0) {
+                    video.setVolume(0);
+                    return false;
+                } else {
+                    video.setVolume(100);
+                    return true;
+                }
+            } else if (action.equals(ActionName.SAVE)) {
+                if (infoField.isOpen()) {
+                    this.infoField.save();
+                }
+            } else if (action.equals(ActionName.DELETE)) {
+                if (infoField.isOpen()) {
+                    this.infoField.delete();
+                }
+            } else if (action.equals(ActionName.STOP)) {
+                if (video.isPlaying()) {
+                    video.stop();
+                    return true;
+                }
             }
         }
         return false;
@@ -903,13 +955,18 @@ public final class VideoComponent extends JMEComponent implements
     }
 
     boolean isPlaying() {
-        return video.isPlaying();
+        if (video.isReady()) {
+            return video.isPlaying();
+        }
+        return false;
     }
 
     public void clearAnnotation() {
-        video.clearDrawing();
-        video.clearShape();
-        infoField.resetInfo();
+        if (video.isReady()) {
+            video.clearDrawing();
+            video.clearShape();
+            infoField.resetInfo();
+        }
     }
 
     public void deleteDescription(TextComponent aThis) {

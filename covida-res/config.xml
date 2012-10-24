@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <configuration>
     <path>media/textures/</path>
-    <autologon>false</autologon>
+    <autologon>true</autologon>
     <defaultlogin>Covida User</defaultlogin>
     <videos>
         <video>
@@ -29,7 +29,12 @@
         <pen>
             <thickness>1</thickness>
             <id>6</id>
-            <userlogin>TZ</userlogin>
+            <userlogin>Covida User</userlogin>
+        </pen>
+        <pen>
+            <thickness>1</thickness>
+            <id>1</id>
+            <userlogin>Covida User</userlogin>
         </pen>
     </penList>
 </configuration>

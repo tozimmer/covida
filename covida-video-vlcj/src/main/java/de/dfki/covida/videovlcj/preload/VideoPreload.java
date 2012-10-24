@@ -28,9 +28,10 @@
 package de.dfki.covida.videovlcj.preload;
 
 import de.dfki.covida.videovlcj.AbstractVideoHandler;
-import de.dfki.covida.videovlcj.rendered.VideoRenderer;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.util.concurrent.CountDownLatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.caprica.vlcj.binding.internal.libvlc_media_t;
@@ -45,6 +46,9 @@ import uk.co.caprica.vlcj.player.MediaPlayerFactory;
  */
 public class VideoPreload implements Runnable, MediaPlayerEventListener {
 
+    final CountDownLatch inPositionLatch = new CountDownLatch(1);
+    final CountDownLatch snapshotTakenLatch = new CountDownLatch(1);
+    private static final float VLC_THUMBNAIL_POSITION = 30.0f / 100.0f;
     /**
      * Logger
      */
@@ -53,18 +57,33 @@ public class VideoPreload implements Runnable, MediaPlayerEventListener {
     private Dimension dimension;
     BufferedImage frame;
     private MediaPlayer mediaPlayer;
-    private VideoRenderer renderer;
-    private final AbstractVideoHandler video;
+    private AbstractVideoHandler video;
+    private static final String[] VLC_ARGS = {
+        "--intf", "dummy", /* no interface */
+        "--vout", "dummy", /* we don't want video (output) */
+        "--no-audio", /* we don't want audio (decoding) */ //        "--no-video-title-show",    /* nor the filename displayed */
+    //        "--no-stats",               /* no stats */
+    //        "--no-sub-autodetect-file", /* we don't want subtitles */
+    //        "--no-inhibit",             /* we don't want interfaces */
+    //        "--no-disable-screensaver", /* we don't want interfaces */
+    //        "--no-snapshot-preview",    /* no blending in dummy vout */
+    };
+    private MediaPlayerFactory factory;
 
     /**
      * Creates a new intance of {@link VideoPreload}
-     * 
+     *
      * @param source video source location as {@link String}
-     * @param video {@link AbstractVideoHandler} which should be called if 
+     * @param video {@link AbstractVideoHandler} which should be called if
      * preload is complete
      */
     public VideoPreload(String source, AbstractVideoHandler video) {
         this.video = video;
+        dimension = null;
+        videoSource = source;
+    }
+
+    public VideoPreload(String source) {
         dimension = null;
         videoSource = source;
     }
@@ -74,24 +93,40 @@ public class VideoPreload implements Runnable, MediaPlayerEventListener {
      */
     private void initComponent() {
         log.debug("VIDEO SOURCE (PRELOAD): " + this.videoSource);
-        this.renderer = new VideoRenderer(1, 1, "");
-        mediaPlayer = (new MediaPlayerFactory()).newDirectMediaPlayer(1, 1, renderer);
+        factory = new MediaPlayerFactory(VLC_ARGS);
+        mediaPlayer = factory.newHeadlessMediaPlayer();
         mediaPlayer.addMediaPlayerEventListener(this);
         mediaPlayer.setVolume(0);
-        mediaPlayer.playMedia(videoSource);
-        mediaPlayer.setPlaySubItems(true);
-    }
-    
-    /**
-     * Releases preload resources
-     */
-    public void cleanUp() {
-        mediaPlayer.release();
+        if (mediaPlayer.startMedia(videoSource)) {
+            mediaPlayer.setPosition(VLC_THUMBNAIL_POSITION);
+            try {
+                inPositionLatch.await(); // Might wait forever if error
+            } catch (InterruptedException ex) {
+                log.error("", ex);
+            }
+            mediaPlayer.saveSnapshot(new File(videoSource + ".png"), 500, 0);
+            try {
+                snapshotTakenLatch.await(); // Might wait forever if error
+            } catch (InterruptedException ex) {
+                log.error("", ex);
+            }
+            if (dimension == null) {
+                dimension = mediaPlayer.getVideoDimension();
+            }
+            mediaPlayer.stop();
+            if (dimension == null) {
+                log.error("Video dimension detection failed!");
+            } else if (video != null) {
+                video.create(dimension.width, dimension.height);
+            }
+            mediaPlayer.release();
+            factory.release();
+        }
     }
 
     /**
      * Returns video dimensions
-     * 
+     *
      * @return {@link Dimension}
      * @return {@code null} if dimension is not available
      */
@@ -145,10 +180,9 @@ public class VideoPreload implements Runnable, MediaPlayerEventListener {
     }
 
     @Override
-    public void positionChanged(MediaPlayer mp, float f) {
-        if (dimension == null) {
-            dimension = mediaPlayer.getVideoDimension();
-            video.create(dimension.width, dimension.height);
+    public void positionChanged(MediaPlayer mp, float newPosition) {
+        if (newPosition >= VLC_THUMBNAIL_POSITION * 0.9f) { /* 90% margin */
+            inPositionLatch.countDown();
         }
     }
 
@@ -165,7 +199,9 @@ public class VideoPreload implements Runnable, MediaPlayerEventListener {
     }
 
     @Override
-    public void snapshotTaken(MediaPlayer mp, String string) {
+    public void snapshotTaken(MediaPlayer mp, String filename) {
+        log.debug("snapshotTaken(filename=" + filename + ")");
+        snapshotTakenLatch.countDown();
     }
 
     @Override

@@ -49,8 +49,6 @@ import de.dfki.covida.visualjme2.components.JMEComponent;
 import de.dfki.covida.visualjme2.components.TextComponent;
 import de.dfki.covida.visualjme2.components.video.VideoComponent;
 import de.dfki.covida.visualjme2.utils.AddControllerCallable;
-import de.dfki.covida.visualjme2.utils.AttachChildCallable;
-import de.dfki.covida.visualjme2.utils.CovidaZOrder;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
 import de.dfki.covida.visualjme2.utils.RemoveControllerCallable;
 import java.util.ArrayList;
@@ -120,10 +118,6 @@ public class ListFieldComponent extends JMEComponent {
      */
     private boolean open;
     /**
-     * Font size
-     */
-    private static final int FONT_SIZE = 30;
-    /**
      * {@link SpatialTransformer} for the open and close animation
      */
     private SpatialTransformer st;
@@ -160,15 +154,6 @@ public class ListFieldComponent extends JMEComponent {
      */
     private int getFontSize() {
         return (int) (1.2f * (float) DEFAULT_FONT_SIZE * ((float) getHeight() / (float) DEFAULT_HEIGHT));
-    }
-
-    /**
-     * Returns the font spacer size.
-     *
-     * @return Font spacer size as {@link Integer}
-     */
-    private int getFontSpacer() {
-        return (int) ((float) getFontSize() * 0.8f);
     }
 
     /**

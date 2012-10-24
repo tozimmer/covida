@@ -164,9 +164,6 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
         }
         addEventListener();
         video.create();
-        if(preload != null){
-            preload.cleanUp();
-        }
     }
 
     /**

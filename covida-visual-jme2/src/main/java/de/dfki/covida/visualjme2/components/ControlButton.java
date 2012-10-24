@@ -42,11 +42,13 @@ import de.dfki.covida.covidacore.components.IControlButton;
 import de.dfki.covida.covidacore.components.IControlableComponent;
 import de.dfki.covida.covidacore.data.CovidaConfiguration;
 import de.dfki.covida.covidacore.data.VideoMediaData;
+import de.dfki.covida.covidacore.tw.IApplication;
 import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.visualjme2.animations.RotateAnimation;
 import de.dfki.covida.visualjme2.animations.ScaleAnimation;
 import de.dfki.covida.visualjme2.utils.AddControllerCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,7 +69,7 @@ public class ControlButton extends JMEComponent
     private boolean enabled;
     private final ActionName action;
     private final static float ANIMATIONTIME = 0.25f;
-    private List<TextComponent> textComponents;
+    private List<VideoThumb> videoThumbs;
 
     /**
      * Creates a new instance of {@link ControlButton}
@@ -82,7 +84,7 @@ public class ControlButton extends JMEComponent
     public ControlButton(ActionName actionName, IControlableComponent controlable,
             String texScr, String activeTexSrc, int width, int height, int zOrder) {
         super(actionName.toString(), zOrder);
-        textComponents = new ArrayList<>();
+        videoThumbs = new ArrayList<>();
         this.action = actionName;
         this.width = width;
         this.height = height;
@@ -217,40 +219,28 @@ public class ControlButton extends JMEComponent
 
     @Override
     public void toggle() {
-        if (action.equals(ActionName.OPEN)) {
-            if (textComponents.isEmpty()) {
+        if (action.equals(ActionName.OPEN) && controlable instanceof IApplication) {
+            if (videoThumbs.isEmpty()) {
                 Vector3f local = new Vector3f(0, 0, 0);
                 for (VideoMediaData data : CovidaConfiguration.getInstance().videos) {
-                    TextComponent text = new TextComponent(
-                            controlable, action, getZOrder());
-                    text.setFont(1);
-                    text.setSize(40);
-                    text.setText(data.videoName);
-                    local = local.add(0, 100, 0);
-                    text.setLocalTranslation(local);
-                    text.setDefaultPosition();
-                    text.setLoadUUID(data.uuid);
-                    text.setTouchable(true);
-                    attachChild(text);
-                    textComponents.add(text);
-                    text = new TextComponent(
-                            controlable, action, getZOrder());
-                    text.setFont(1);
-                    text.setSize(40);
-                    text.setText(data.videoName);
-                    text.setLocalTranslation(local);
-                    text.rotate(180, Vector3f.UNIT_Z);
-                    text.setDefaultPosition();
-                    text.setLoadUUID(data.uuid);
-                    text.setTouchable(true);
-                    attachChild(text);
-                    textComponents.add(text);
+                    File file = new File(data.videoSource + ".png");
+                    if (file.isFile()) {
+                        float ration = (float) data.width / (float) data.height;
+                        local = local.add(0, ((float) height * 1.5f) / ration + 25, 0);
+                        IApplication app = (IApplication) controlable;
+                        VideoThumb thumb = new VideoThumb(data, local, app, this,
+                                (int) (width * 1.5f),
+                                (int) (((float) height * 1.5f) / ration),
+                                getZOrder());
+                        attachChild(thumb);
+                        videoThumbs.add(thumb);
+                    }
                 }
             } else {
-                for(TextComponent text : textComponents){
-                    text.detach();
+                for (VideoThumb thumb : videoThumbs) {
+                    thumb.detach();
                 }
-                textComponents.clear();
+                videoThumbs.clear();
             }
         } else if (controlable != null) {
             setActive(controlable.toggle(action));

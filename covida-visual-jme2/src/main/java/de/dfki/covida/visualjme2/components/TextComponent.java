@@ -112,6 +112,7 @@ public class TextComponent extends JMEComponent implements IControlButton {
     public TextComponent(IControlableComponent component, ActionName action,
             int zOrder) {
         super(component.getName() + " Text Overlay", zOrder);
+        setTouchable(true);
         this.component = component;
         this.action = action;
         textOverlayData = FontLoader.getInstance();
@@ -158,6 +159,7 @@ public class TextComponent extends JMEComponent implements IControlButton {
     }
 
     public void attach() {
+        setTouchable(true);
         if (!node.hasChild(txt)) {
             attachChild(txt);
         }
