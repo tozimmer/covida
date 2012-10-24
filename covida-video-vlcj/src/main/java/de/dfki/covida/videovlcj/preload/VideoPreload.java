@@ -46,9 +46,11 @@ import uk.co.caprica.vlcj.player.MediaPlayerFactory;
  */
 public class VideoPreload implements Runnable, MediaPlayerEventListener {
 
-    final CountDownLatch inPositionLatch = new CountDownLatch(1);
-    final CountDownLatch snapshotTakenLatch = new CountDownLatch(1);
-    private static final float VLC_THUMBNAIL_POSITION = 30.0f / 100.0f;
+    private final CountDownLatch inPositionLatch = new CountDownLatch(1);
+    private final CountDownLatch snapshotTakenLatch = new CountDownLatch(1);
+    private static final float[] VLC_THUMBNAIL_POSITION = {20.0f / 100.0f,
+        50.0f / 100.0f, 80.0f / 100.0f};
+    private int vlc_thumbnail_number = 0;
     /**
      * Logger
      */
@@ -98,20 +100,24 @@ public class VideoPreload implements Runnable, MediaPlayerEventListener {
         mediaPlayer.addMediaPlayerEventListener(this);
         mediaPlayer.setVolume(0);
         if (mediaPlayer.startMedia(videoSource)) {
-            mediaPlayer.setPosition(VLC_THUMBNAIL_POSITION);
-            try {
-                inPositionLatch.await(); // Might wait forever if error
-            } catch (InterruptedException ex) {
-                log.error("", ex);
-            }
-            mediaPlayer.saveSnapshot(new File(videoSource + ".png"), 500, 0);
-            try {
-                snapshotTakenLatch.await(); // Might wait forever if error
-            } catch (InterruptedException ex) {
-                log.error("", ex);
-            }
-            if (dimension == null) {
-                dimension = mediaPlayer.getVideoDimension();
+            while (vlc_thumbnail_number < VLC_THUMBNAIL_POSITION.length) {
+                mediaPlayer.setPosition(VLC_THUMBNAIL_POSITION[vlc_thumbnail_number]);
+                try {
+                    inPositionLatch.await(); // Might wait forever if error
+                } catch (InterruptedException ex) {
+                    log.error("", ex);
+                }
+                mediaPlayer.saveSnapshot(new File(videoSource
+                        + vlc_thumbnail_number + ".png"), 500, 0);
+                try {
+                    snapshotTakenLatch.await(); // Might wait forever if error
+                } catch (InterruptedException ex) {
+                    log.error("", ex);
+                }
+                if (dimension == null) {
+                    dimension = mediaPlayer.getVideoDimension();
+                }
+                vlc_thumbnail_number++;
             }
             mediaPlayer.stop();
             if (dimension == null) {
@@ -181,7 +187,7 @@ public class VideoPreload implements Runnable, MediaPlayerEventListener {
 
     @Override
     public void positionChanged(MediaPlayer mp, float newPosition) {
-        if (newPosition >= VLC_THUMBNAIL_POSITION * 0.9f) { /* 90% margin */
+        if (newPosition >= VLC_THUMBNAIL_POSITION[vlc_thumbnail_number] * 0.9f) { /* 90% margin */
             inPositionLatch.countDown();
         }
     }
