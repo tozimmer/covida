@@ -46,7 +46,7 @@ import uk.co.caprica.vlcj.player.MediaPlayerFactory;
  * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
  */
 public class VideoPreload implements Runnable, MediaPlayerEventListener {
-
+    
     private final CountDownLatch inPositionLatch = new CountDownLatch(1);
     private static float[] VLC_THUMBNAIL_POSITION;
     private int vlc_thumbnail_number = 0;
@@ -85,21 +85,21 @@ public class VideoPreload implements Runnable, MediaPlayerEventListener {
         dimension = null;
         this.data = data;
         int thumbcount = CovidaConfiguration.getInstance().thumbcount;
-        VLC_THUMBNAIL_POSITION = new float[thumbcount];
         float step = (100.f / ((float) thumbcount + 1)) / 100.f;
         float position = step;
-        for (int i = 0; i < thumbcount; i++) {
-            VLC_THUMBNAIL_POSITION[i] = position;
-            position += step;
-        }
         if (data.thumbs.size() != thumbcount) {
             data.thumbs.clear();
             thumbcreation = true;
+            VLC_THUMBNAIL_POSITION = new float[thumbcount];
+            for (int i = 0; i < thumbcount; i++) {
+                VLC_THUMBNAIL_POSITION[i] = position;
+                position += step;
+            }
         } else {
             thumbcreation = false;
         }
     }
-
+    
     public VideoPreload(VideoMediaData data) {
         this(data, null);
     }
@@ -113,32 +113,47 @@ public class VideoPreload implements Runnable, MediaPlayerEventListener {
         mediaPlayer = factory.newHeadlessMediaPlayer();
         mediaPlayer.addMediaPlayerEventListener(this);
         mediaPlayer.setVolume(0);
-        data.thumbs.clear();
         if (mediaPlayer.startMedia(data.videoSource)) {
-            while (vlc_thumbnail_number < VLC_THUMBNAIL_POSITION.length) {
-                mediaPlayer.setPosition(VLC_THUMBNAIL_POSITION[vlc_thumbnail_number]);
-                try {
-                    inPositionLatch.await(); // Might wait forever if error
-                } catch (InterruptedException ex) {
-                    log.error("", ex);
+            if (thumbcreation) {
+                log.debug("Create thumbnails for video: " + data.videoName);
+                while (vlc_thumbnail_number < VLC_THUMBNAIL_POSITION.length) {
+                    mediaPlayer.setPosition(VLC_THUMBNAIL_POSITION[vlc_thumbnail_number]);
+                    try {
+                        inPositionLatch.await(); // Might wait forever if error
+                    } catch (InterruptedException ex) {
+                        log.error("", ex);
+                    }
+                    int ratio = (int) ((float) data.width / (float) data.height);
+                    BufferedImage image = mediaPlayer.getSnapshot(128, (int) (ratio * 128));
+                    if (image != null) {
+                        data.thumbs.add(image);
+                    }
+                    if (dimension == null) {
+                        dimension = mediaPlayer.getVideoDimension();
+                        data.height = dimension.height;
+                        data.width = dimension.width;
+                    }
+                    vlc_thumbnail_number++;
                 }
-                int ratio = (int) ((float) data.width / (float) data.height);
-                BufferedImage image = mediaPlayer.getSnapshot(128,(int) (ratio * 128));
-                if (image != null) {
-                    data.thumbs.add(image);
-                }
+                mediaPlayer.stop();
                 if (dimension == null) {
-                    dimension = mediaPlayer.getVideoDimension();
-                    data.height = dimension.height;
-                    data.width = dimension.width;
+                    log.error("Video dimension detection failed!");
+                } else if (video != null) {
+                    video.create(dimension.width, dimension.height);
                 }
-                vlc_thumbnail_number++;
-            }
-            mediaPlayer.stop();
-            if (dimension == null) {
-                log.error("Video dimension detection failed!");
-            } else if (video != null) {
-                video.create(dimension.width, dimension.height);
+            } else {
+                while (dimension != null) {
+                    try {
+                        inPositionLatch.await(); // Might wait forever if error
+                    } catch (InterruptedException ex) {
+                        log.error("", ex);
+                    }
+                    if (dimension == null) {
+                        log.error("Video dimension detection failed!");
+                    } else if (video != null) {
+                        video.create(dimension.width, dimension.height);
+                    }
+                }
             }
             mediaPlayer.release();
             factory.release();
@@ -155,52 +170,52 @@ public class VideoPreload implements Runnable, MediaPlayerEventListener {
     public Dimension getVideoDimension() {
         return dimension;
     }
-
+    
     @Override
     public void run() {
         initComponent();
     }
-
+    
     @Override
     public void mediaChanged(MediaPlayer mp, libvlc_media_t l, String string) {
     }
-
+    
     @Override
     public void opening(MediaPlayer mp) {
     }
-
+    
     @Override
     public void buffering(MediaPlayer mp, float f) {
     }
-
+    
     @Override
     public void playing(MediaPlayer mp) {
     }
-
+    
     @Override
     public void paused(MediaPlayer mp) {
     }
-
+    
     @Override
     public void stopped(MediaPlayer mp) {
     }
-
+    
     @Override
     public void forward(MediaPlayer mp) {
     }
-
+    
     @Override
     public void backward(MediaPlayer mp) {
     }
-
+    
     @Override
     public void finished(MediaPlayer mp) {
     }
-
+    
     @Override
     public void timeChanged(MediaPlayer mp, long l) {
     }
-
+    
     @Override
     public void positionChanged(MediaPlayer mp, float newPosition) {
         /* 90% margin */
@@ -208,71 +223,71 @@ public class VideoPreload implements Runnable, MediaPlayerEventListener {
             inPositionLatch.countDown();
         }
     }
-
+    
     @Override
     public void seekableChanged(MediaPlayer mp, int i) {
     }
-
+    
     @Override
     public void pausableChanged(MediaPlayer mp, int i) {
     }
-
+    
     @Override
     public void titleChanged(MediaPlayer mp, int i) {
     }
-
+    
     @Override
     public void snapshotTaken(MediaPlayer mp, String filename) {
     }
-
+    
     @Override
     public void lengthChanged(MediaPlayer mp, long l) {
     }
-
+    
     @Override
     public void videoOutput(MediaPlayer mp, int i) {
     }
-
+    
     @Override
     public void error(MediaPlayer mp) {
     }
-
+    
     @Override
     public void mediaMetaChanged(MediaPlayer mp, int i) {
     }
-
+    
     @Override
     public void mediaSubItemAdded(MediaPlayer mp, libvlc_media_t l) {
     }
-
+    
     @Override
     public void mediaDurationChanged(MediaPlayer mp, long l) {
     }
-
+    
     @Override
     public void mediaParsedChanged(MediaPlayer mp, int i) {
     }
-
+    
     @Override
     public void mediaFreed(MediaPlayer mp) {
     }
-
+    
     @Override
     public void mediaStateChanged(MediaPlayer mp, int i) {
     }
-
+    
     @Override
     public void newMedia(MediaPlayer mp) {
     }
-
+    
     @Override
     public void subItemPlayed(MediaPlayer mp, int i) {
     }
-
+    
     @Override
     public void subItemFinished(MediaPlayer mp, int i) {
     }
-
+    
     @Override
     public void endOfSubItems(MediaPlayer mp) {
     }
