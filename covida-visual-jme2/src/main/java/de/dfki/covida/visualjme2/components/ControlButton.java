@@ -48,7 +48,6 @@ import de.dfki.covida.visualjme2.animations.RotateAnimation;
 import de.dfki.covida.visualjme2.animations.ScaleAnimation;
 import de.dfki.covida.visualjme2.utils.AddControllerCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 

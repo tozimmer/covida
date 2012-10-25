@@ -39,6 +39,7 @@ import com.jmex.awt.swingui.ImageGraphics;
 import de.dfki.covida.videovlcj.AbstractVideoHandler;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -125,11 +126,14 @@ public class VideoQuad extends Quad {
 
     @Override
     public void draw(Renderer r) {
-        if(g2d == null){
+        if (g2d == null) {
             log.error("Draw failed");
             return;
         }
-        g2d.drawImage(video.getVideoImage(), null, 0, 0);
+        BufferedImage image = video.getVideoImage();
+        if (image != null) {
+            g2d.drawImage(image, null, 0, 0);
+        }
         g2d.update();
         if (texture.getTextureId() > 0) {
             g2d.update(texture, false);

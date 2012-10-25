@@ -16,6 +16,7 @@ import de.dfki.covida.covidacore.data.VideoMediaData;
 import de.dfki.covida.covidacore.tw.IApplication;
 import de.dfki.covida.visualjme2.utils.DetachChildCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
+import java.awt.Image;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -71,22 +72,17 @@ public class VideoThumb extends JMEComponent {
         attachChild(videoQuad);
         videoQuad.setZOrder(getZOrder() - 1);
 
-        for (int i = 0; i < 3; i++) {
-            File file = new File(data.videoSource + i + ".png");
-            if (file.isFile()) {
-                try {
-                    URL url = file.toURI().toURL();
-                    Texture defaultTexture = TextureManager.loadTexture(url,
-                            Texture.MinificationFilter.BilinearNearestMipMap,
-                            Texture.MagnificationFilter.Bilinear);
-                    defaultTexture.setWrap(Texture.WrapMode.Clamp);
-                    TextureState textureState = DisplaySystem.getDisplaySystem()
-                            .getRenderer().createTextureState();
-                    textureState.setTexture(defaultTexture);
-                    textureStates.add(textureState);
-                } catch (MalformedURLException ex) {
-                    log.debug("",ex);
-                }
+        for (Image image : data.thumbs) {
+            if (image != null) {
+                Texture defaultTexture = TextureManager.loadTexture(image,
+                        Texture.MinificationFilter.BilinearNearestMipMap,
+                        Texture.MagnificationFilter.Bilinear,
+                        false);
+                defaultTexture.setWrap(Texture.WrapMode.Clamp);
+                TextureState textureState = DisplaySystem.getDisplaySystem()
+                        .getRenderer().createTextureState();
+                textureState.setTexture(defaultTexture);
+                textureStates.add(textureState);
             }
         }
         thumbQuad = new Quad((data.videoName + " thumb quad"), width,

@@ -179,7 +179,6 @@ public final class VideoComponent extends JMEComponent implements
         video.open();
         createFields();
         createOverlays();
-        createControls();
         setDrawable(true);
         setTouchable(true);
         startTests();
@@ -379,7 +378,7 @@ public final class VideoComponent extends JMEComponent implements
     /**
      * Creates the video controls.
      */
-    public void createControls() {
+    private void createControls() {
         controls = new VideoComponentControls(this, getZOrder() - 2);
         attachChild(controls);
         slider = new VideoSlider(this, getZOrder() - 2);
@@ -392,7 +391,8 @@ public final class VideoComponent extends JMEComponent implements
     /**
      * Creates video quad and handler for the video.
      */
-    public void createVideo() {
+    private void createVideo() {
+        createControls();
         VideoQuad videoQuad = new VideoQuad(video);
         videoQuad.setZOrder(getZOrder() + 1);
         attachChild(videoQuad);
@@ -426,7 +426,7 @@ public final class VideoComponent extends JMEComponent implements
     /**
      * Creates overlays
      */
-    public void createOverlays() {
+    private void createOverlays() {
         textOverlay = new TextComponent(this, ActionName.NONE,
                 getZOrder());
         textOverlay.setLocalTranslation(0, getHeight() / (1.50f) - getFontSize()

@@ -32,7 +32,6 @@ import de.dfki.covida.covidacore.data.VideoMediaData;
 import de.dfki.covida.videovlcj.AbstractVideoHandler;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.util.concurrent.CountDownLatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,9 +48,7 @@ import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 public class VideoPreload implements Runnable, MediaPlayerEventListener {
 
     private final CountDownLatch inPositionLatch = new CountDownLatch(1);
-    private final CountDownLatch snapshotTakenLatch = new CountDownLatch(1);
-    private static final float[] VLC_THUMBNAIL_POSITION = {20.0f / 100.0f,
-        50.0f / 100.0f, 80.0f / 100.0f};
+    private static float[] VLC_THUMBNAIL_POSITION;
     private int vlc_thumbnail_number = 0;
     /**
      * Logger
@@ -69,9 +66,12 @@ public class VideoPreload implements Runnable, MediaPlayerEventListener {
         "--no-stats", /* no stats */ //        
         "--no-sub-autodetect-file", /* we don't want subtitles */
         "--no-disable-screensaver", /* we don't want interfaces */
-        "--no-snapshot-preview", /* no blending in dummy vout */};
+        "--no-snapshot-preview", /* no blending in dummy vout */
+        "--ffmpeg-threads", "0"
+    };
     private MediaPlayerFactory factory;
     private final VideoMediaData data;
+    private final boolean thumbcreation;
 
     /**
      * Creates a new intance of {@link VideoPreload}
@@ -84,11 +84,24 @@ public class VideoPreload implements Runnable, MediaPlayerEventListener {
         this.video = video;
         dimension = null;
         this.data = data;
+        int thumbcount = CovidaConfiguration.getInstance().thumbcount;
+        VLC_THUMBNAIL_POSITION = new float[thumbcount];
+        float step = (100.f / ((float) thumbcount + 1)) / 100.f;
+        float position = step;
+        for (int i = 0; i < thumbcount; i++) {
+            VLC_THUMBNAIL_POSITION[i] = position;
+            position += step;
+        }
+        if (data.thumbs.size() != thumbcount) {
+            data.thumbs.clear();
+            thumbcreation = true;
+        } else {
+            thumbcreation = false;
+        }
     }
 
     public VideoPreload(VideoMediaData data) {
-        dimension = null;
-        this.data = data;
+        this(data, null);
     }
 
     /**
@@ -100,6 +113,7 @@ public class VideoPreload implements Runnable, MediaPlayerEventListener {
         mediaPlayer = factory.newHeadlessMediaPlayer();
         mediaPlayer.addMediaPlayerEventListener(this);
         mediaPlayer.setVolume(0);
+        data.thumbs.clear();
         if (mediaPlayer.startMedia(data.videoSource)) {
             while (vlc_thumbnail_number < VLC_THUMBNAIL_POSITION.length) {
                 mediaPlayer.setPosition(VLC_THUMBNAIL_POSITION[vlc_thumbnail_number]);
@@ -108,18 +122,15 @@ public class VideoPreload implements Runnable, MediaPlayerEventListener {
                 } catch (InterruptedException ex) {
                     log.error("", ex);
                 }
-                mediaPlayer.saveSnapshot(new File(data.videoSource
-                        + vlc_thumbnail_number + ".png"), 500, 0);
-                try {
-                    snapshotTakenLatch.await(); // Might wait forever if error
-                } catch (InterruptedException ex) {
-                    log.error("", ex);
+                int ratio = (int) ((float) data.width / (float) data.height);
+                BufferedImage image = mediaPlayer.getSnapshot(128,(int) (ratio * 128));
+                if (image != null) {
+                    data.thumbs.add(image);
                 }
                 if (dimension == null) {
                     dimension = mediaPlayer.getVideoDimension();
                     data.height = dimension.height;
                     data.width = dimension.width;
-                    CovidaConfiguration.getInstance().save();
                 }
                 vlc_thumbnail_number++;
             }
@@ -131,6 +142,7 @@ public class VideoPreload implements Runnable, MediaPlayerEventListener {
             }
             mediaPlayer.release();
             factory.release();
+            CovidaConfiguration.getInstance().save();
         }
     }
 
@@ -192,7 +204,7 @@ public class VideoPreload implements Runnable, MediaPlayerEventListener {
     @Override
     public void positionChanged(MediaPlayer mp, float newPosition) {
         /* 90% margin */
-        if (newPosition >= VLC_THUMBNAIL_POSITION[vlc_thumbnail_number] * 0.9f) { 
+        if (newPosition >= VLC_THUMBNAIL_POSITION[vlc_thumbnail_number] * 0.9f) {
             inPositionLatch.countDown();
         }
     }
@@ -211,8 +223,6 @@ public class VideoPreload implements Runnable, MediaPlayerEventListener {
 
     @Override
     public void snapshotTaken(MediaPlayer mp, String filename) {
-        log.debug("snapshotTaken(filename=" + filename + ")");
-        snapshotTakenLatch.countDown();
     }
 
     @Override

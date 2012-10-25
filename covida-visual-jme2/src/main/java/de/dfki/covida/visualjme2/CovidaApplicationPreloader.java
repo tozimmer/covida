@@ -74,6 +74,8 @@ public class CovidaApplicationPreloader implements Runnable {
                 application.getWidth() / 2, 
                 (int) (application.getHeight() / 1.5f), 
                 CovidaZOrder.getInstance().getUi_cornermenus());
+        search.setLocalTranslation(0, 100, 0);
+        search.setDefaultPosition();
         ControlButton searchButton = new ControlButton(ActionName.CLOSE,
                 search, "media/textures/search.png",
                 "media/textures/search.png", 64, 64, 

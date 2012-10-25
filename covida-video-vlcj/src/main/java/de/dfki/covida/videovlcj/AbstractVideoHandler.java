@@ -64,6 +64,16 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * Logger.
      */
     private Logger log = LoggerFactory.getLogger(AbstractVideoHandler.class);
+    private static final String[] VLC_ARGS = {
+        "--intf", "dummy", /* no interface */
+        "--vout", "dummy", /* we don't want video (output) */
+        "--no-video-title-show", /* nor the filename displayed */
+        "--no-stats", /* no stats */ //        
+        "--no-sub-autodetect-file", /* we don't want subtitles */
+        "--no-disable-screensaver", /* we don't want interfaces */
+        "--no-snapshot-preview", /* no blending in dummy vout */
+        "--ffmpeg-threads", "0"
+    };
     /**
      * Video Slider {@link ISlider}
      */
@@ -144,12 +154,12 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
         data.width = width;
         data.height = height;
         String[] args;
-        if (Platform.isMac()) {
-            args = new String[]{"--no-video-title-show", "--vout=macosx"};
-        } else {
-            args = new String[]{"--no-video-title-show"};
-        }
-        this.mediaPlayerFactory = new MediaPlayerFactory(args);
+//        if (Platform.isMac()) {
+//            args = new String[]{"--no-video-title-show", "--vout=macosx"};
+//        } else {
+//            args = new String[]{"--no-video-title-show"};
+//        }
+        this.mediaPlayerFactory = new MediaPlayerFactory(VLC_ARGS);
         if (this instanceof EmbeddedVideoHandler) {
             mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
             mediaPlayer = mediaPlayerComponent.getMediaPlayer();
@@ -158,8 +168,9 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
                     .setOveray((EmbeddedVideoOverlay) graphics);
         } else if (this instanceof RenderedVideoHandler) {
             graphics = new VideoRenderer(data.width, data.height, data.videoName);
-            mediaPlayer = mediaPlayerFactory.newDirectMediaPlayer(width, height,
-                    (VideoRenderer) graphics);
+//            mediaPlayer = mediaPlayerFactory.newDirectMediaPlayer(width, height,
+//                    (VideoRenderer) graphics);
+            mediaPlayer = mediaPlayerFactory.newHeadlessMediaPlayer();
         }
         addEventListener();
         video.create();

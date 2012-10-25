@@ -77,6 +77,8 @@ public class CovidaConfiguration implements Serializable {
      */
     @XmlElement(name = "autologon")
     public Boolean autologon;
+    @XmlElement(name = "thumbcount")
+    public int thumbcount;
     /**
      * If autologon is true this login is used
      *
@@ -104,6 +106,7 @@ public class CovidaConfiguration implements Serializable {
         texturePath = "media/textures/";
         autologon = false;
         defaultlogin = "Covida User";
+        thumbcount = 5;
 
         VideoMediaData data = new VideoMediaData();
         data.videoName = "CoVidA Demo";
@@ -197,6 +200,9 @@ public class CovidaConfiguration implements Serializable {
         for (VideoMediaData data : instance.videos) {
             if (data.uuid == null) {
                 data.uuid = UUID.randomUUID();
+            }
+            if(data.thumbs == null){
+                data.thumbs = new ArrayList<>();
             }
         }
         return instance;

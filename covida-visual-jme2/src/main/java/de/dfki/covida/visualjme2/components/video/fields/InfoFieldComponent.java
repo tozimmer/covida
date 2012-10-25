@@ -40,7 +40,7 @@ import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
 import de.dfki.covida.covidacore.data.Annotation;
 import de.dfki.covida.covidacore.data.AnnotationStorage;
-import de.dfki.covida.covidacore.data.Stroke;
+import de.dfki.covida.covidacore.data.StrokeList;
 import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.covidacore.utils.VideoUtils;
 import de.dfki.covida.visualjme2.animations.*;
@@ -52,7 +52,6 @@ import de.dfki.covida.visualjme2.utils.*;
 import de.dfki.touchandwrite.shape.ShapeType;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 /**
  * Component which displays annotation data of VideoComponent.
@@ -298,8 +297,8 @@ public class InfoFieldComponent extends JMEComponent {
      *
      * @param shapePoints
      */
-    private void setShapePoints(List<Stroke> shapePoints) {
-        this.annotation.strokelist.strokelist = shapePoints;
+    private void setShapePoints(StrokeList shapePoints) {
+        this.annotation.strokelist = shapePoints;
     }
 
     /**
@@ -325,14 +324,14 @@ public class InfoFieldComponent extends JMEComponent {
         attachChild(titleTextOverlay);
         titleTextOverlay.setLocalTranslation(0, textBeginY, 0);
         textBeginY = (int) (textBeginY - FONT_SIZE);
-        timeOverlay = new TextComponent(video, ActionName.NONE, 
+        timeOverlay = new TextComponent(video, ActionName.NONE,
                 getZOrder());
         timeOverlay.setLocalTranslation(0, textBeginY, 0);
         attachChild(timeOverlay);
         timeOverlay.setFont(1);
         timeOverlay.setSize(getFontSize());
         timeOverlay.setText("Time:");
-        timeTextOverlay = new TextComponent(video, ActionName.NONE, 
+        timeTextOverlay = new TextComponent(video, ActionName.NONE,
                 getZOrder());
         textBeginY = (int) (textBeginY - FONT_SIZE);
         timeTextOverlay.setLocalTranslation(0, textBeginY, 0);
@@ -348,7 +347,8 @@ public class InfoFieldComponent extends JMEComponent {
         descriptionOverlay.setSize(getFontSize());
         descriptionOverlay.setText("Description:");
         descriptionOverlay.setSize(getFontSize());
-        int y = (int) (descriptionOverlay.getLocalTranslation().y + ((float) descriptionOverlay.getFontSize() * 0.575f));
+        int y = (int) (descriptionOverlay.getLocalTranslation().y 
+                - getTextSpacer()/2);
         addSpacer(0, y, (int) (quad.getWidth() / 1.1f), getTextSpacer());
         descriptionText = new ArrayList<>();
         if (AnnotationStorage.getInstance().getAnnotationData(video).size() > 0) {
@@ -377,7 +377,11 @@ public class InfoFieldComponent extends JMEComponent {
         this.annotation = annotation;
         setTime(annotation.time_start);
         setTitle(AnnotationStorage.getInstance().getAnnotationData(video).title);
-        setShapePoints(annotation.strokelist.strokelist);
+        if (annotation.strokelist != null) {
+            setShapePoints(annotation.strokelist);
+        } else {
+            setShapePoints(new StrokeList());
+        }
         setShapeType(annotation.shapeType);
         String[] split = annotation.description.split(" ");
         for (String part : split) {
@@ -397,7 +401,20 @@ public class InfoFieldComponent extends JMEComponent {
             descriptionBeginY = (int) (textBeginY - (float) getFontSpacer());
         }
         descriptionBeginY = (int) (descriptionBeginY - (float) getFontSpacer() * 0.9f);
-        TextComponent descriptionTextOverlay = new TextComponent(video, 
+        if ((descriptionBeginY - 3 * ((float) getFontSpacer() * 0.9f)) < -getHeight() / 2) {
+            if (!descriptionText.isEmpty()) {
+                descriptionText.get(0).detach();
+                descriptionText.remove(0);
+            }
+            descriptionBeginY = (int) (textBeginY - (float) getFontSpacer());
+            for (TextComponent text : descriptionText) {
+                descriptionBeginY = (int) (descriptionBeginY - (float) getFontSpacer() * 0.9f);
+                text.setLocalTranslation(0, descriptionBeginY, 0);
+                text.setDefaultPosition();
+            }
+            descriptionBeginY = (int) (descriptionBeginY - (float) getFontSpacer() * 0.9f);
+        }
+        TextComponent descriptionTextOverlay = new TextComponent(video,
                 ActionName.COPY, getZOrder());
         descriptionTextOverlay.setLocalTranslation(0, descriptionBeginY, 0);
         descriptionTextOverlay.setDefaultPosition();
@@ -413,10 +430,6 @@ public class InfoFieldComponent extends JMEComponent {
                     / getCharacterLimit();
             descriptionText.get(descriptionText.size() - 1).setSize(
                     (int) ((float) getFontSize() / factor));
-        }
-        int size = this.descriptionText.size();
-        if (size > 5) {
-            // TODO Possibility to display more than 5 entries
         }
     }
 

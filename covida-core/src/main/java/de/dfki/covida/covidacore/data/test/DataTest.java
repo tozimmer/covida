@@ -31,7 +31,6 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.DC;
-import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.VCARD;
 import de.dfki.covida.covidacore.data.Annotation;
 import de.dfki.covida.covidacore.data.AnnotationClassList;
@@ -40,6 +39,7 @@ import de.dfki.covida.covidacore.data.DateAdapter;
 import de.dfki.covida.covidacore.data.Diagram;
 import de.dfki.covida.covidacore.data.Stroke;
 import de.dfki.covida.covidacore.data.StrokeList;
+import de.dfki.touchandwrite.shape.ShapeType;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Rectangle2D;
@@ -73,27 +73,37 @@ public class DataTest {
         log.debug("Start Data Test");
         AnnotationData data = AnnotationData.load(new DataTestVideoComponent());
         Annotation annotation = new Annotation();
-        annotation.description = "Data Test DFKI";
-        annotation.strokelist = new StrokeList();
-        StrokeList shapes = new StrokeList();
-        Stroke shape = new Stroke();
-        shape.points.add(new Point(24, 30));
-        shape.points.add(new Point(98, 32));
-        shape.points.add(new Point(100, 121));
-        shape.points.add(new Point(22, 119));
-        shape.points.add(new Point(24, 30));
-        shapes.strokelist.add(shape);
-        shape = new Stroke();
-        shape.points.add(new Point(333, 30));
-        shape.points.add(new Point(2, 32));
-        shapes.strokelist.add(shape);
-        annotation.strokelist = shapes;
-        annotation.time_end = (long) 456343;
-        annotation.time_start = (long) 455322;
-        annotation.creator = "covida";
-        annotation.date = Calendar.getInstance().getTime();
-        data.save(annotation);
+        for (int i = 0; i < 12; i++) {
+            annotation = new Annotation();
+            StringBuilder desc = new StringBuilder("Data Test DFKI");
+            for(int j = 0; j<i; j++){
+                desc.append(" DFKI");
+            }
+            annotation.description = desc.toString();
+            annotation.strokelist = new StrokeList();
+            StrokeList shapes = new StrokeList();
+            Stroke shape = new Stroke();
+            shape.points.add(new Point(24, 30));
+            shape.points.add(new Point(98, 32));
+            shape.points.add(new Point(100, 121));
+            shape.points.add(new Point(22, 119));
+            shape.points.add(new Point(24, 30));
+            shapes.strokelist.add(shape);
+            shape = new Stroke();
+            shape.points.add(new Point(333, 30));
+            shape.points.add(new Point(2, 32));
+            shapes.strokelist.add(shape);
+            annotation.strokelist = shapes;
+            annotation.shapeType = ShapeType.POLYGON;
+            annotation.time_end = (long) 456343 + i*10000;
+            annotation.time_start = (long) 455322 + i*10000;
+            annotation.creator = "covida";
+            annotation.date = Calendar.getInstance().getTime();
+            data.save(annotation);
+        }
         data.write();
+
+
         data = AnnotationData.load(new DataTestVideoComponent());
         data.write();
 
@@ -105,15 +115,15 @@ public class DataTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
+
         DateAdapter dateAdapter = new DateAdapter();
         // create an empty model
         Model model = ModelFactory.createDefaultModel();
-        
+
         Resource creator = model.createResource();
         creator.addProperty(VCARD.NAME, annotation.creator);
         creator.addProperty(VCARD.CLASS, "User");
-        
+
         Resource video = model.createResource();
         video.addProperty(DC.title, data.title);
         video.addProperty(DC.source, data.videoSource);

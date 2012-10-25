@@ -242,17 +242,21 @@ public class ListFieldComponent extends JMEComponent {
      */
     public void drawEntries() {
         if (isOpen()) {
-            // TODO max limit for list
             data = AnnotationStorage.getInstance().getAnnotationData(video);
+            int k = data.getAnnotations().size();
+            while(getTextY(k+1)< - getHeight()/2){
+                k--;
+            }
+            int start = data.getAnnotations().size() - k;
             log.debug("Draw {} entries.", data.getAnnotations().size());
             for (TextComponent e : entries) {
                 e.detach();
             }
             entries = new ArrayList<>();
-            for (int i = 0; i < data.getAnnotations().size(); i++) {
+            for (int i = start; i < data.getAnnotations().size(); i++) {
                 TextComponent entryTextOverlay = new TextComponent(video, 
                         ActionName.LOAD, getZOrder());
-                entryTextOverlay.setLocalTranslation(0, getTextY(i + 1), 0);
+                entryTextOverlay.setLocalTranslation(0, getTextY(i - start + 1), 0);
                 Annotation annotation = data.getAnnotations().get(i);
                 String timeCode = VideoUtils.getTimeCode(annotation.time_start);
                 entryTextOverlay.setText(timeCode);
@@ -265,7 +269,7 @@ public class ListFieldComponent extends JMEComponent {
                 entries.add(entryTextOverlay);
                 entryTextOverlay = new TextComponent(video, ActionName.LOAD, 
                         getZOrder());
-                entryTextOverlay.setLocalTranslation(0, getTextY(i + 1) - getFontSize() / 1.5f, 0);
+                entryTextOverlay.setLocalTranslation(0, getTextY(i - start + 1) - getFontSize() / 1.5f, 0);
                 String[] split = annotation.description.split(" ");
                 if (split.length > 0) {
                     entryTextOverlay.setText(split[0]);
@@ -274,6 +278,7 @@ public class ListFieldComponent extends JMEComponent {
                 }
                 entryTextOverlay.setFont(1);
                 entryTextOverlay.setSize((int) (getFontSize() / 1.5f));
+                entryTextOverlay.setDefaultPosition();
                 entryTextOverlay.setTouchable(true);
                 entryTextOverlay.setLoadUUID(annotation.uuid);
                 entryTextOverlay.fadeIn((float) ANIMATION_DURATION / 125.f);

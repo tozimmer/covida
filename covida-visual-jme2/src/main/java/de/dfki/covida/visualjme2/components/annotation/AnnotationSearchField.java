@@ -44,8 +44,6 @@ import de.dfki.covida.visualjme2.animations.OpenAnimation;
 import de.dfki.covida.visualjme2.components.FieldComponent;
 import de.dfki.covida.visualjme2.components.TextComponent;
 import de.dfki.covida.visualjme2.utils.AddControllerCallable;
-import de.dfki.covida.visualjme2.utils.AttachChildCallable;
-import de.dfki.covida.visualjme2.utils.CovidaZOrder;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
 import de.dfki.covida.visualjme2.utils.RemoveControllerCallable;
 import de.dfki.touchandwrite.math.FastMath;
@@ -159,7 +157,7 @@ public class AnnotationSearchField extends FieldComponent implements
             GameTaskQueueManager.getManager().update(new RemoveControllerCallable(node, st));
         }
         // Open animation
-        st = OpenAnimation.getController(node, ANIMATION_DURATION);
+        st = OpenAnimation.getController(node, ANIMATION_DURATION, defaultScale, defaultTranslation);
         GameTaskQueueManager.getManager().update(new AddControllerCallable(node, st));
         update();
     }

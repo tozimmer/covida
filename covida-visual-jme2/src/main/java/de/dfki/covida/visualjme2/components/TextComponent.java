@@ -112,7 +112,6 @@ public class TextComponent extends JMEComponent implements IControlButton {
     public TextComponent(IControlableComponent component, ActionName action,
             int zOrder) {
         super(component.getName() + " Text Overlay", zOrder);
-        setTouchable(true);
         this.component = component;
         this.action = action;
         textOverlayData = FontLoader.getInstance();
@@ -150,7 +149,6 @@ public class TextComponent extends JMEComponent implements IControlButton {
 
     public void detach() {
         setTouchable(false);
-        setDrawable(false);
         if (node.hasChild(txt)) {
             GameTaskQueueManager.getManager().update(new DetachChildCallable(node, txt));
         }
@@ -284,13 +282,15 @@ public class TextComponent extends JMEComponent implements IControlButton {
     @Override
     public void dragEndAction(int id, int x, int y, int dx, int dy) {
         if (action.equals(ActionName.COPY)) {
-            resetAnimation();
         }
     }
 
     @Override
     public void touchBirthAction(int id, int x, int y) {
         if (!action.equals(ActionName.COPY) && getParent() != null) {
+            ColorRGBA c = txt.getDefaultColor();
+            c.a = 1.0f;
+            txt.setDefaultColor(c);
             SpatialTransformer controller = ScaleAnimation.getController(txt,
                     2.0f, ANIMATIONTIME);
             GameTaskQueueManager.getManager().update(new AddControllerCallable(
@@ -328,6 +328,7 @@ public class TextComponent extends JMEComponent implements IControlButton {
                     } else if (comp instanceof InfoFieldComponent) {
                         InfoFieldComponent info = (InfoFieldComponent) comp;
                         info.getVideo().hwrAction(null, text);
+
                     } else if (comp instanceof AnnotationClipboard) {
                         AnnotationClipboard clipboard = (AnnotationClipboard) comp;
                         clipboard.hwrAction(null, text);
@@ -347,6 +348,7 @@ public class TextComponent extends JMEComponent implements IControlButton {
                         search.hwrAction(null, text);
                     }
                 }
+                resetAnimation();
             } else if (inArea(x, y)) {
                 toggle();
             }
@@ -357,7 +359,7 @@ public class TextComponent extends JMEComponent implements IControlButton {
     public void toggle() {
         if (action.equals(ActionName.COPY)) {
         } else if (action.equals(ActionName.LOAD)) {
-            if(component instanceof VideoComponent){
+            if (component instanceof VideoComponent) {
                 ((VideoComponent) component).resume();
             }
             AnnotationStorage.getInstance().load(uuid);
@@ -366,10 +368,10 @@ public class TextComponent extends JMEComponent implements IControlButton {
                 AnnotationSearchField search = (AnnotationSearchField) component;
                 search.displayAnnotationList(uuid);
             }
-        } else if (action.equals(ActionName.OPEN)){
-            for(VideoMediaData data : CovidaConfiguration.getInstance().videos){
-                if(data.uuid.equals(uuid)){
-                    if(component instanceof IApplication){
+        } else if (action.equals(ActionName.OPEN)) {
+            for (VideoMediaData data : CovidaConfiguration.getInstance().videos) {
+                if (data.uuid.equals(uuid)) {
+                    if (component instanceof IApplication) {
                         ((IApplication) component).addVideo(data);
                         break;
                     }

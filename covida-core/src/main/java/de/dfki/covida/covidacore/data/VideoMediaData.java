@@ -27,9 +27,12 @@
  */
 package de.dfki.covida.covidacore.data;
 
+import java.awt.Image;
 import java.io.Serializable;
+import java.util.List;
 import java.util.UUID;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 
 /**
  * Video media data
@@ -82,4 +85,11 @@ public class VideoMediaData implements Serializable {
      */
     @XmlElement(name = "uuid")
     public UUID uuid;
+    
+    /**
+     * UUID which is generated from the application
+     */
+    @XmlElementWrapper(name = "thumbs")
+    @XmlElement(name = "thumb")
+    public List<Image> thumbs;
 }

@@ -33,7 +33,6 @@ import de.dfki.covida.covidacore.data.StrokeList;
 import de.dfki.covida.covidacore.data.VideoMediaData;
 import de.dfki.covida.videovlcj.AbstractVideoHandler;
 import java.awt.Point;
-import java.awt.Polygon;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;

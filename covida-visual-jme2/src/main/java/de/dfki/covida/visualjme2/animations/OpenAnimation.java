@@ -47,12 +47,16 @@ public class OpenAnimation {
         return st;
     }
 
-    public static SpatialTransformer getController(Spatial pivot, float animationDuration) {
+    public static SpatialTransformer getController(Spatial pivot,
+            float animationDuration, Vector3f defaultScale,
+            Vector3f defaultPosition) {
         SpatialTransformer st = new SpatialTransformer(1);
         Vector3f origin = pivot.getLocalTranslation();
         st.setObject(pivot, 0, -1);
         st.setPosition(0, 0.f, origin);
-        st.setPosition(0, 0.5f, Vector3f.ZERO);
+        st.setPosition(0, 0.5f, defaultPosition);
+        st.setScale(0, 0f, new Vector3f(pivot.getLocalScale()));
+        st.setScale(0, (float) animationDuration / 1000.f, defaultScale);
         st.interpolateMissing();
         return st;
     }

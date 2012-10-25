@@ -141,7 +141,7 @@ public class AnnotationClipboard extends FieldComponent implements
             GameTaskQueueManager.getManager().update(new RemoveControllerCallable(node, st));
         }
         // Open animation
-        st = OpenAnimation.getController(node, ANIMATION_DURATION);
+        st = OpenAnimation.getController(node, ANIMATION_DURATION, defaultScale, defaultTranslation);
         GameTaskQueueManager.getManager().update(new AddControllerCallable(node, st));
         update();
     }
