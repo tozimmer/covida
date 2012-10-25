@@ -98,7 +98,6 @@ public class AnnotationClipboard extends FieldComponent implements
             textOverlay.setFont(1);
             textOverlay.setColor(new ColorRGBA(0.75f, 0.75f, 0.75f, 0));
             textOverlay.fadeIn((float) i * 1.f + 1.f);
-            setTouchable(true);
             hwr.add(textOverlay);
         }
     }

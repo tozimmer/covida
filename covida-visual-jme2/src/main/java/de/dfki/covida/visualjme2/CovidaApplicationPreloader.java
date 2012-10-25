@@ -61,6 +61,8 @@ public class CovidaApplicationPreloader implements Runnable {
                 application.getWidth() / 2, 
                 (int) (application.getHeight() / 1.5f), 
                 CovidaZOrder.getInstance().getUi_cornermenus());
+        clipboard.setLocalTranslation(0, 50, 0);
+        clipboard.setDefaultPosition();
         ControlButton clipboardButton = new ControlButton(ActionName.CLOSE,
                 clipboard, "media/textures/arrow.png",
                 "media/textures/arrow.png", 64, 64,

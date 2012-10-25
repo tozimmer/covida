@@ -328,7 +328,6 @@ public class TextComponent extends JMEComponent implements IControlButton {
                     } else if (comp instanceof InfoFieldComponent) {
                         InfoFieldComponent info = (InfoFieldComponent) comp;
                         info.getVideo().hwrAction(null, text);
-
                     } else if (comp instanceof AnnotationClipboard) {
                         AnnotationClipboard clipboard = (AnnotationClipboard) comp;
                         clipboard.hwrAction(null, text);

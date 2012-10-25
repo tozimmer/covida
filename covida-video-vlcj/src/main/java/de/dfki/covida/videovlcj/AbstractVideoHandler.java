@@ -235,25 +235,6 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     }
 
     /**
-     * Returns the video progess in percent as {@link String}.
-     *
-     * Note that only the part from {@code timeStart} to {@code timeEnd} is
-     * considered.
-     *
-     * @see #setTimeRange(long, long)
-     *
-     * @return vieo progress in the format xx % (xx is the progress in percent)
-     */
-    public String getVideoProgress() {
-        if (mediaPlayer == null) {
-            return null;
-        }
-        int p = (int) ((getTime() / getMaxTime()) * 100);
-        return String.valueOf(p) + " %";
-
-    }
-
-    /**
      * Start video
      */
     public void open() {
@@ -473,9 +454,10 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
         }
         if (!isPlaying()) {
             slider.setSlider(percentage);
+            int perc = (int) (percentage * 100);
             graphics.setTimecode(VideoUtils.getTimeCode(
                     (long) (percentage * getMaxTime()))
-                    + "\t<BR>\t" + getVideoProgress());
+                    + "\t<BR>\t" + String.valueOf(perc) + " %");
         }
     }
 
@@ -675,8 +657,9 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
         if (slider != null) {
             slider.setSlider(f);
         }
+        int perc = (int) (f * 100);
         graphics.setTimecode(VideoUtils.getTimeCode((long) (f * getMaxTime()))
-                + "\t<BR>\t" + getVideoProgress());
+                + "\t<BR>\t" + String.valueOf(perc) + " %");
     }
 
     /**

@@ -43,6 +43,7 @@
     <penList>
         <pen>
             <thickness>1</thickness>
+            <id>6</id>
             <userlogin>Covida User</userlogin>
         </pen>
     </penList>

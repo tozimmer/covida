@@ -4,50 +4,83 @@
     xmlns:dc="http://purl.org/dc/elements/1.1/" > 
   <rdf:Description rdf:nodeID="A0">
     <vcard:CLASS>User</vcard:CLASS>
-    <vcard:NAME>Covida</vcard:NAME>
+    <vcard:NAME>Covida User</vcard:NAME>
   </rdf:Description>
   <rdf:Description rdf:nodeID="A1">
-    <vcard:CLASS>User</vcard:CLASS>
-    <vcard:NAME>Test</vcard:NAME>
+    <dc:description>TE </dc:description>
+    <dc:date>19-10-2012 17:17:57</dc:date>
+    <dc:creator rdf:nodeID="A2"/>
+    <rdf:type rdf:nodeID="A3"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A4">
+    <dc:description>test </dc:description>
+    <dc:date>25-10-2012 17:27:48</dc:date>
+    <dc:creator rdf:nodeID="A5"/>
+    <rdf:type rdf:nodeID="A3"/>
   </rdf:Description>
   <rdf:Description rdf:nodeID="A2">
     <vcard:CLASS>User</vcard:CLASS>
     <vcard:NAME>Covida</vcard:NAME>
   </rdf:Description>
-  <rdf:Description rdf:nodeID="A3">
-    <dc:description>Person </dc:description>
-    <dc:date>19-10-2012 17:19:45</dc:date>
-    <dc:creator rdf:nodeID="A2"/>
-    <rdf:type rdf:nodeID="A4"/>
+  <rdf:Description rdf:nodeID="A6">
+    <dc:description>test </dc:description>
+    <dc:date>25-10-2012 17:27:23</dc:date>
+    <dc:creator rdf:nodeID="A7"/>
+    <rdf:type rdf:nodeID="A3"/>
   </rdf:Description>
   <rdf:Description rdf:nodeID="A5">
-    <dc:description>To blot </dc:description>
-    <dc:date>19-10-2012 17:19:24</dc:date>
-    <dc:creator rdf:nodeID="A0"/>
-    <rdf:type rdf:nodeID="A4"/>
-  </rdf:Description>
-  <rdf:Description rdf:nodeID="A4">
-    <dc:subject rdf:nodeID="A6"/>
-    <dc:subject rdf:nodeID="A7"/>
-    <dc:subject rdf:nodeID="A3"/>
-    <dc:subject rdf:nodeID="A5"/>
-    <dc:source>..\covida-res\videos\RadSpeech DFKI(360p_H.264-AAC).mp4</dc:source>
-    <dc:title>Rad Speech</dc:title>
-  </rdf:Description>
-  <rdf:Description rdf:nodeID="A6">
-    <dc:description>Test </dc:description>
-    <dc:date>22-10-2012 18:42:41</dc:date>
-    <dc:creator rdf:nodeID="A1"/>
-    <rdf:type rdf:nodeID="A4"/>
-  </rdf:Description>
-  <rdf:Description rdf:nodeID="A7">
-    <dc:description>Test </dc:description>
-    <dc:date>22-10-2012 17:32:17</dc:date>
-    <dc:creator rdf:nodeID="A8"/>
-    <rdf:type rdf:nodeID="A4"/>
+    <vcard:CLASS>User</vcard:CLASS>
+    <vcard:NAME>Covida User</vcard:NAME>
   </rdf:Description>
   <rdf:Description rdf:nodeID="A8">
+    <dc:description>Ppngtl </dc:description>
+    <dc:date>22-10-2012 19:09:02</dc:date>
+    <dc:creator rdf:nodeID="A9"/>
+    <rdf:type rdf:nodeID="A3"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A3">
+    <dc:subject rdf:nodeID="A10"/>
+    <dc:subject rdf:nodeID="A4"/>
+    <dc:subject rdf:nodeID="A6"/>
+    <dc:subject rdf:nodeID="A8"/>
+    <dc:subject rdf:nodeID="A11"/>
+    <dc:subject rdf:nodeID="A12"/>
+    <dc:subject rdf:nodeID="A1"/>
+    <dc:source>..\covida-res\videos\Collaborative Video Annotation.mp4</dc:source>
+    <dc:title>CoVidA Demo</dc:title>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A10">
+    <dc:description>Test </dc:description>
+    <dc:date>25-10-2012 17:51:43</dc:date>
+    <dc:creator rdf:nodeID="A13"/>
+    <rdf:type rdf:nodeID="A3"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A7">
     <vcard:CLASS>User</vcard:CLASS>
-    <vcard:NAME>test</vcard:NAME>
+    <vcard:NAME>Covida User</vcard:NAME>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A13">
+    <vcard:CLASS>User</vcard:CLASS>
+    <vcard:NAME>Covida User</vcard:NAME>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A12">
+    <dc:description>Shapes </dc:description>
+    <dc:date>22-10-2012 16:55:12</dc:date>
+    <dc:creator rdf:nodeID="A0"/>
+    <rdf:type rdf:nodeID="A3"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A14">
+    <vcard:CLASS>User</vcard:CLASS>
+    <vcard:NAME>Test</vcard:NAME>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A9">
+    <vcard:CLASS>User</vcard:CLASS>
+    <vcard:NAME>Test</vcard:NAME>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A11">
+    <dc:description>P ever </dc:description>
+    <dc:date>22-10-2012 18:47:48</dc:date>
+    <dc:creator rdf:nodeID="A14"/>
+    <rdf:type rdf:nodeID="A3"/>
   </rdf:Description>
 </rdf:RDF>

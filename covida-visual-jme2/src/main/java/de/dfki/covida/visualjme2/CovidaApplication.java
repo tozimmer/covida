@@ -179,12 +179,14 @@ public class CovidaApplication extends ApplicationImpl implements IControlableCo
         GameTaskQueueManager.getManager().update(new AttachChildCallable(
                 CovidaRootNode.node, loginOverlay));
         if (configuration.autologon) {
+            TouchAndWriteComponentHandler.getInstance().setLogin(false);
             if (configuration.pens.isEmpty()) {
                 PenData pen = new PenData();
                 pen.penColor = Color.WHITE;
                 pen.penThickness = 1;
                 pen.userlogin = configuration.defaultlogin;
-                login("1", getWidth() / 2, getHeight() / 2, configuration.defaultlogin);
+                login("1", getWidth() / 2, getHeight() / 2, 
+                        configuration.defaultlogin);
             } else {
                 for (PenData pen : configuration.pens) {
                     pen.userlogin = configuration.defaultlogin;
