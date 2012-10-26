@@ -33,10 +33,12 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.DC;
 import com.hp.hpl.jena.vocabulary.VCARD;
 import de.dfki.covida.covidacore.components.IVideoComponent;
+import de.dfki.covida.covidacore.tw.TouchAndWriteComponentHandler;
 import de.dfki.covida.covidacore.utils.AnnotationSearch;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +65,7 @@ public class AnnotationStorage {
     /**
      * Data list
      */
-    private Map<IVideoComponent, AnnotationData> dataList;
+    private Map<UUID, AnnotationData> dataList;
 
     /**
      * Private constructor of {@link AnnotationStorage}
@@ -92,10 +94,10 @@ public class AnnotationStorage {
      * @return {@link AnnotationData}
      */
     public AnnotationData getAnnotationData(IVideoComponent component) {
-        if (!dataList.containsKey(component)) {
+        if (!dataList.containsKey(component.getUUID())) {
             addNewComponent(component);
         }
-        return dataList.get(component);
+        return dataList.get(component.getUUID());
     }
 
     /**
@@ -104,8 +106,10 @@ public class AnnotationStorage {
      * @param component {@link IVideoComponent} to add
      */
     private void addNewComponent(IVideoComponent component) {
-        AnnotationData data = AnnotationData.load(component);
-        dataList.put(component, data);
+        if (!dataList.containsKey(component.getUUID())) {
+            AnnotationData data = AnnotationData.load(component);
+            dataList.put(component.getUUID(), data);
+        }
     }
 
     /**
@@ -125,15 +129,19 @@ public class AnnotationStorage {
      * @return {@link IVideoComponent}
      * @return {@code null} if the {@link IVideoComponent} is not registered.
      */
-    public IVideoComponent getVideo(AnnotationData data) {
+    public List<IVideoComponent> getVideo(AnnotationData data) {
+        List<IVideoComponent> videos = new ArrayList<>();
         if (dataList.containsValue(data)) {
-            for (IVideoComponent video : dataList.keySet()) {
-                if (dataList.get(video).equals(data)) {
-                    return video;
+            for (UUID uuid : dataList.keySet()) {
+                if (dataList.get(uuid).equals(data)) {
+                    for (IVideoComponent video : TouchAndWriteComponentHandler
+                            .getInstance().getVideos()) {
+                        videos.add(video);
+                    }
                 }
             }
         }
-        return null;
+        return videos;
     }
 
     /**
@@ -148,12 +156,20 @@ public class AnnotationStorage {
     }
 
     public void load(UUID uuid) {
-        for (IVideoComponent video : dataList.keySet()) {
-            AnnotationData data = dataList.get(video);
-            for (Annotation annotation : data.getAnnotations()) {
-                if (annotation.uuid.equals(uuid)) {
-                    video.load(annotation);
-                    break;
+        for (UUID dataUUID : dataList.keySet()) {
+            AnnotationData data = dataList.get(dataUUID);
+            if (data != null) {
+                for (Annotation annotation : data.getAnnotations()) {
+                    if (annotation.uuid.equals(uuid)) {
+                        for (IVideoComponent video :
+                                TouchAndWriteComponentHandler.getInstance()
+                                .getVideos()) {
+                            if (video.getUUID().equals(data.uuid)) {
+                                video.load(annotation);
+                            }
+                        }
+                        break;
+                    }
                 }
             }
         }
@@ -166,11 +182,8 @@ public class AnnotationStorage {
      * @param uuid {@link UUID} which represents the {@link AnnotationData}
      */
     public void remove(UUID uuid) {
-        for (IVideoComponent video : dataList.keySet()) {
-            if (dataList.get(video).uuid.equals(uuid)) {
-                dataList.remove(video);
-                return;
-            }
+        if (dataList.get(uuid).uuid.equals(uuid)) {
+            dataList.remove(uuid);
         }
     }
 
@@ -180,12 +193,14 @@ public class AnnotationStorage {
      * @param uuid {@link UUID} which represents the {@link Annotation}
      */
     public void removeAnnotation(UUID uuid) {
-        for (IVideoComponent video : dataList.keySet()) {
-            AnnotationData data = dataList.get(video);
-            for (Annotation annotation : data.getAnnotations()) {
-                if (annotation.uuid.equals(uuid)) {
-                    data.remove(annotation);
-                    break;
+        for (IVideoComponent video : TouchAndWriteComponentHandler.getInstance().getVideos()) {
+            AnnotationData data = dataList.get(video.getUUID());
+            if (data != null) {
+                for (Annotation annotation : data.getAnnotations()) {
+                    if (annotation.uuid.equals(uuid)) {
+                        data.remove(annotation);
+                        break;
+                    }
                 }
             }
         }

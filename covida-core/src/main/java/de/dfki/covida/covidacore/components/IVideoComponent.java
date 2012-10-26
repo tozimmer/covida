@@ -28,6 +28,7 @@
 package de.dfki.covida.covidacore.components;
 
 import de.dfki.covida.covidacore.data.Annotation;
+import java.util.UUID;
 
 /**
  * Interface for the video component
@@ -61,4 +62,6 @@ public interface IVideoComponent {
      * @param annotation {@link Annotation}
      */
     public void load(Annotation annotation);
+    
+    public UUID getUUID();
 }

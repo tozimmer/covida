@@ -29,6 +29,7 @@ package de.dfki.covida.covidacore.data.test;
 
 import de.dfki.covida.covidacore.components.IVideoComponent;
 import de.dfki.covida.covidacore.data.Annotation;
+import java.util.UUID;
 
 /**
  * Data test video component
@@ -53,5 +54,10 @@ public class DataTestVideoComponent implements IVideoComponent {
 
     @Override
     public void create() {
+    }
+
+    @Override
+    public UUID getUUID() {
+        return UUID.randomUUID();
     }
 }

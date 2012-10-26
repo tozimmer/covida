@@ -36,7 +36,6 @@ import de.dfki.covida.covidacore.data.Annotation;
 import de.dfki.covida.covidacore.data.AnnotationClassList;
 import de.dfki.covida.covidacore.data.AnnotationData;
 import de.dfki.covida.covidacore.data.DateAdapter;
-import de.dfki.covida.covidacore.data.Diagram;
 import de.dfki.covida.covidacore.data.Stroke;
 import de.dfki.covida.covidacore.data.StrokeList;
 import de.dfki.touchandwrite.shape.ShapeType;
@@ -109,12 +108,6 @@ public class DataTest {
 
         AnnotationClassList classes = AnnotationClassList.load();
         classes.write();
-        try {
-            saveToFile(Diagram.createPieChart(Diagram.createPieDataset()),
-                    "test.jpg", 500, 300, 100);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         DateAdapter dateAdapter = new DateAdapter();
         // create an empty model

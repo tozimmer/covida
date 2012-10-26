@@ -67,6 +67,7 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.io.File;
 import java.util.Calendar;
+import java.util.UUID;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 
 /**
@@ -263,54 +264,6 @@ public final class VideoComponent extends JMEComponent implements
     }
 
     /**
-     * Initialized the overlay quads and texture states.
-     *
-     * @param alpha {@link BlendState}
-     */
-    private void initalizeOverlayQuads(BlendState alpha) {
-        Texture overlayDefaultTexture = TextureManager.loadTexture(
-                getClass().getClassLoader().getResource(
-                "media/textures/overlay_default.png"),
-                Texture.MinificationFilter.BilinearNearestMipMap,
-                Texture.MagnificationFilter.Bilinear);
-        overlayDefaultTexture.setWrap(WrapMode.Clamp);
-        overlayDefaultState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
-        overlayDefaultState.setTexture(overlayDefaultTexture);
-        Texture overlaySelectTexture = TextureManager.loadTexture(
-                getClass().getClassLoader().getResource(
-                "media/textures/overlay_select.png"),
-                Texture.MinificationFilter.BilinearNearestMipMap,
-                Texture.MagnificationFilter.Bilinear);
-        overlaySelectTexture.setWrap(WrapMode.Clamp);
-        overlaySelectState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
-        overlaySelectState.setTexture(overlaySelectTexture);
-        overlay = new Quad("Overlay-Default-Image-Quad",
-                (1.15f) * getWidth(), (1.25f) * getHeight());
-        overlay.setZOrder(getZOrder() - 1);
-        overlay.setRenderState(overlayDefaultState);
-        overlay.setRenderState(alpha);
-        overlay.updateRenderState();
-        Texture overlayDragTexture = TextureManager.loadTexture(getClass().getClassLoader().getResource("media/textures/overlay_drag.png"),
-                Texture.MinificationFilter.BilinearNearestMipMap,
-                Texture.MagnificationFilter.Bilinear);
-        overlayDragTexture.setWrap(Texture.WrapMode.Clamp);
-        overlayDragState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
-        overlayDragState.setTexture(overlayDragTexture);
-        Texture overlayBlankTexture = TextureManager.loadTexture(getClass().getClassLoader().getResource("media/textures/bg_info_blank.png"),
-                Texture.MinificationFilter.BilinearNearestMipMap,
-                Texture.MagnificationFilter.Bilinear);
-        overlayDragTexture.setWrap(Texture.WrapMode.Clamp);
-        overlayDragBlankState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
-        overlayDragBlankState.setTexture(overlayBlankTexture);
-        overlayDrag = new Quad("Overlay-Drag-Image-Quad", (1.15f) * getWidth(),
-                (1.35f) * getHeight());
-        overlayDrag.setZOrder(getZOrder() - 1);
-        overlayDrag.setRenderState(overlayDragState);
-        overlayDrag.setRenderState(alpha);
-        overlayDrag.updateRenderState();
-    }
-
-    /**
      * Calculates scaling factor for snapshot texture.
      *
      * @param min min point as {@link Vector2f}
@@ -436,6 +389,54 @@ public final class VideoComponent extends JMEComponent implements
         initalizeOverlayQuads(JMEUtils.initalizeBlendState());
         stDrag = DragAnimation.getController(overlayDrag);
         attachChild(overlay);
+    }
+
+    /**
+     * Initialized the overlay quads and texture states.
+     *
+     * @param alpha {@link BlendState}
+     */
+    private void initalizeOverlayQuads(BlendState alpha) {
+        Texture overlayDefaultTexture = TextureManager.loadTexture(
+                getClass().getClassLoader().getResource(
+                "media/textures/overlay_default.png"),
+                Texture.MinificationFilter.BilinearNearestMipMap,
+                Texture.MagnificationFilter.Bilinear);
+        overlayDefaultTexture.setWrap(WrapMode.Clamp);
+        overlayDefaultState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
+        overlayDefaultState.setTexture(overlayDefaultTexture);
+        Texture overlaySelectTexture = TextureManager.loadTexture(
+                getClass().getClassLoader().getResource(
+                "media/textures/overlay_select.png"),
+                Texture.MinificationFilter.BilinearNearestMipMap,
+                Texture.MagnificationFilter.Bilinear);
+        overlaySelectTexture.setWrap(WrapMode.Clamp);
+        overlaySelectState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
+        overlaySelectState.setTexture(overlaySelectTexture);
+        overlay = new Quad("Overlay-Default-Image-Quad",
+                getWidth() + 100, getHeight() + 100);
+        overlay.setZOrder(getZOrder() - 1);
+        overlay.setRenderState(overlayDefaultState);
+        overlay.setRenderState(alpha);
+        overlay.updateRenderState();
+        Texture overlayDragTexture = TextureManager.loadTexture(getClass().getClassLoader().getResource("media/textures/overlay_drag.png"),
+                Texture.MinificationFilter.BilinearNearestMipMap,
+                Texture.MagnificationFilter.Bilinear);
+        overlayDragTexture.setWrap(Texture.WrapMode.Clamp);
+        overlayDragState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
+        overlayDragState.setTexture(overlayDragTexture);
+        Texture overlayBlankTexture = TextureManager.loadTexture(getClass().getClassLoader().getResource("media/textures/bg_info_blank.png"),
+                Texture.MinificationFilter.BilinearNearestMipMap,
+                Texture.MagnificationFilter.Bilinear);
+        overlayDragTexture.setWrap(Texture.WrapMode.Clamp);
+        overlayDragBlankState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
+        overlayDragBlankState.setTexture(overlayBlankTexture);
+        overlayDrag = new Quad("Overlay-Drag-Image-Quad", getWidth() + 120,
+                getHeight() + 120);
+        overlayDrag.setZOrder(getZOrder() - 1);
+        overlayDrag.setRenderState(overlayDragState);
+        overlayDrag.setRenderState(alpha);
+        overlayDrag.updateRenderState();
     }
 
     /**
@@ -970,5 +971,10 @@ public final class VideoComponent extends JMEComponent implements
 
     public void deleteDescription(TextComponent aThis) {
         infoField.deleteDescription(aThis);
+    }
+
+    @Override
+    public UUID getUUID() {
+        return data.uuid;
     }
 }

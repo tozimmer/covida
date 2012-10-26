@@ -58,8 +58,7 @@ public class RenderedVideoHandler extends AbstractVideoHandler {
     /**
      * Creates an instance of {@link AbstractVideoHandler}
      *
-     * @param source video source as {@link String}
-     * @param title  video title as {@link String}
+     * @param data video data as {@link VideoMediaData}
      * @param video  corresponding {@link IVideoComponent}
      */
     public RenderedVideoHandler(VideoMediaData data, IVideoComponent video) {

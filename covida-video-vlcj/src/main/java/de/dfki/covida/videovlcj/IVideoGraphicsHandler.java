@@ -30,7 +30,6 @@ package de.dfki.covida.videovlcj;
 import de.dfki.covida.covidacore.data.Stroke;
 import de.dfki.covida.covidacore.data.StrokeList;
 import java.awt.Point;
-import java.awt.Polygon;
 import java.util.List;
 
 
@@ -61,9 +60,9 @@ public interface IVideoGraphicsHandler {
     public StrokeList getSavedShapes();
 
     /**
-     * Adds the shape as {@link List} of {@link Point}
+     * Adds the shape as {@link Stroke}
      * 
-     * @param points {@link List} of {@link Point}
+     * @param stroke {@link Stroke}
      */
     public void addShape(Stroke stroke);
 

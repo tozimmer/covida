@@ -76,7 +76,7 @@ public class VideoPreload implements Runnable, MediaPlayerEventListener {
     /**
      * Creates a new intance of {@link VideoPreload}
      *
-     * @param source video source location as {@link String}
+     * @param data video data {@link VideoMediaData}
      * @param video {@link AbstractVideoHandler} which should be called if
      * preload is complete
      */

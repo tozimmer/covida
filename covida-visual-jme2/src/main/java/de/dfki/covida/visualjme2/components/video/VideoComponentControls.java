@@ -33,8 +33,6 @@ import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.videovlcj.IVideoControls;
 import de.dfki.covida.visualjme2.components.ControlButton;
 import de.dfki.covida.visualjme2.components.JMEComponent;
-import de.dfki.covida.visualjme2.utils.AttachChildCallable;
-import de.dfki.covida.visualjme2.utils.CovidaZOrder;
 import de.dfki.covida.visualjme2.utils.DetachChildCallable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -96,17 +94,15 @@ public class VideoComponentControls extends JMEComponent implements IVideoContro
         }
         controlWidth = (int) (0.15f * controlable.getHeight());
         controlList = new HashMap<>();
-//        controlList.put("media/textures/video_controls_changemedia.png", ActionName.CHANGEMEDIA);
         controlList.put("media/textures/video_controls_close.png", ActionName.CLOSE);
         controlActiveList = new HashMap<>();
-//        controlActiveList.put(ActionName.CHANGEMEDIA, "media/textures/video_controls_changemedia.png");
         controlActiveList.put(ActionName.CLOSE, "media/textures/video_controls_close.png");
-        int start = controlable.getWidth() / 2 + controlWidth / 2;
+        int start = controlable.getWidth() / 2 - controlWidth / 2;
         for (String texture : controlList.keySet()) {
             ControlButton control = new ControlButton(controlList.get(texture),
                     controlable, texture, controlActiveList.get(controlList.get(texture)),
                     controlWidth, controlHeight, getZOrder());
-            control.setLocalTranslation(start, controlable.getHeight() / (1.7f), 0);
+            control.setLocalTranslation(start, controlable.getHeight() / (1.65f), 0);
             controls.put(controlList.get(texture), control);
             start -= controlable.getWidth() + controlWidth;
         }

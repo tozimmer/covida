@@ -33,8 +33,6 @@ import de.dfki.covida.covidacore.data.Stroke;
 import de.dfki.covida.covidacore.data.StrokeList;
 import de.dfki.covida.covidacore.data.VideoMediaData;
 import de.dfki.covida.covidacore.utils.VideoUtils;
-import de.dfki.covida.videovlcj.embedded.EmbeddedVideoHandler;
-import de.dfki.covida.videovlcj.embedded.EmbeddedVideoOverlay;
 import de.dfki.covida.videovlcj.preload.VideoPreload;
 import de.dfki.covida.videovlcj.rendered.RenderedVideoHandler;
 import de.dfki.covida.videovlcj.rendered.VideoRenderer;
@@ -46,7 +44,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.caprica.vlcj.binding.internal.libvlc_media_t;
-import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.MediaPlayerEventListener;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
@@ -74,7 +71,6 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
         "--no-snapshot-preview", /* no blending in dummy vout */
         "--ffmpeg-threads", "0"
     };
-    
     private static final String[] VLC_ARGS_MAC = {
         "--intf", "dummy", /* no interface */
         "--vout", "dummy", /* we don't want video (output) */
@@ -102,10 +98,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * {@link MediaPlayer} instance to play the {@code source}
      */
     protected MediaPlayer mediaPlayer;
-    /**
-     * Embedded media player, used by {@link EmbeddedMediaPlayerComponent}
-     */
-    protected EmbeddedMediaPlayerComponent mediaPlayerComponent;
+
     protected IVideoGraphicsHandler graphics;
     /**
      * The {@link MediaPlayerFactory} to crate {@link VideoSurface} or
@@ -125,8 +118,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     /**
      * Creates an instance of {@link AbstractVideoHandler}
      *
-     * @param source video source as {@link String}
-     * @param title video title as {@link String}
+     * @param data {@link VideoMediaData}
      * @param video corresponding {@link IVideoComponent}
      */
     public AbstractVideoHandler(VideoMediaData data, IVideoComponent video) {
@@ -167,21 +159,13 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
         String[] args;
         if (Platform.isMac()) {
             args = VLC_ARGS_MAC;
-        }else{
+        } else {
             args = VLC_ARGS;
         }
         this.mediaPlayerFactory = new MediaPlayerFactory(args);
-        if (this instanceof EmbeddedVideoHandler) {
-            mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
-            mediaPlayer = mediaPlayerComponent.getMediaPlayer();
-            graphics = new EmbeddedVideoOverlay(width, width);
-            ((EmbeddedVideoHandler) this)
-                    .setOveray((EmbeddedVideoOverlay) graphics);
-        } else if (this instanceof RenderedVideoHandler) {
-            graphics = new VideoRenderer(data.width, data.height, data.videoName);
-            mediaPlayer = mediaPlayerFactory.newDirectMediaPlayer(width, height,
-                    (VideoRenderer) graphics);
-        }
+        graphics = new VideoRenderer(data.width, data.height, data.videoName);
+        mediaPlayer = mediaPlayerFactory.newDirectMediaPlayer(width, height,
+                (VideoRenderer) graphics);
         addEventListener();
         video.create();
     }
@@ -335,9 +319,6 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     public void cleanUp() {
         if (mediaPlayer != null) {
             mediaPlayer.release();
-        }
-        if (mediaPlayerComponent != null) {
-            mediaPlayerComponent.release();
         }
     }
 

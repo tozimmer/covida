@@ -29,6 +29,7 @@ package de.dfki.covida.covidacore.tw;
 
 import de.dfki.covida.covidacore.components.IVideoComponent;
 import java.util.Collection;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -109,5 +110,14 @@ public class TouchAndWriteComponentHandler {
         if (components.contains(component)) {
             components.remove(component);
         }
+    }
+
+    public boolean isOpen(UUID uuid) {
+        for(IVideoComponent video : getVideos()){
+            if(uuid.equals(video.getUUID())){
+                return true;
+            }
+        }
+        return false;
     }
 }

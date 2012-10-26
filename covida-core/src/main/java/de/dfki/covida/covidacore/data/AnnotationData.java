@@ -92,9 +92,11 @@ public class AnnotationData implements Serializable {
     /**
      * Creates a new instance of {@link AnnotationData}
      */
-    private AnnotationData() {
+    private AnnotationData(IVideoComponent component) {
         annotations = new ArrayList<>();
-        this.uuid = UUID.randomUUID();
+        videoSource = component.getSource();
+        title = component.getTitle();
+        uuid = component.getUUID();
     }
 
     /**
@@ -408,15 +410,11 @@ public class AnnotationData implements Serializable {
                         file.getAbsolutePath());
             } else {
                 log.debug("No data file exists, create new VideoAnnotationData");
-                instance = new AnnotationData();
-                instance.videoSource = component.getSource();
-                instance.title = component.getTitle();
+                instance = new AnnotationData(component);
             }
         } catch (JAXBException e) {
             log.debug("XML parsing error: {}, create new VideoAnnotationData", e);
-            instance = new AnnotationData();
-            instance.videoSource = component.getSource();
-            instance.title = component.getTitle();
+            instance = new AnnotationData(component);
         }
         return instance;
     }
@@ -436,10 +434,10 @@ public class AnnotationData implements Serializable {
                 break;
             }
         }
-        if(annotation.creator == null){
+        if (annotation.creator == null) {
             annotation.creator = "default user";
         }
-        if(annotation.description == null){
+        if (annotation.description == null) {
             annotation.description = "";
         }
         annotations.add(annotation);

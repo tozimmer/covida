@@ -176,8 +176,6 @@ public class CovidaConfiguration implements Serializable {
     /**
      * Loads a {@link CovidaConfiguration}.
      *
-     * @param location {@link String} which represents the configuration XML
-     * file.
      * @return {@link CovidaConfiguration}
      */
     public static CovidaConfiguration load() {

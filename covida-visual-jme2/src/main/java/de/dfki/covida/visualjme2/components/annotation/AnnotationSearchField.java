@@ -37,6 +37,7 @@ import de.dfki.covida.covidacore.components.IControlableComponent;
 import de.dfki.covida.covidacore.data.Annotation;
 import de.dfki.covida.covidacore.data.AnnotationData;
 import de.dfki.covida.covidacore.data.AnnotationStorage;
+import de.dfki.covida.covidacore.tw.TouchAndWriteComponentHandler;
 import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.covidacore.utils.VideoUtils;
 import de.dfki.covida.visualjme2.animations.CloseAnimation;
@@ -79,7 +80,7 @@ public class AnnotationSearchField extends FieldComponent implements
      * @param width {@link Integer}
      * @param height {@link Integer}
      */
-    public AnnotationSearchField(String resource, int width, int height, 
+    public AnnotationSearchField(String resource, int width, int height,
             int zOrder) {
         super("AnnotationSearch", zOrder);
         this.width = width;
@@ -196,7 +197,7 @@ public class AnnotationSearchField extends FieldComponent implements
         int i = 0;
         int x = (int) (-width / 2.5f);
         for (String part : hwrResults) {
-            TextComponent hwrText = new TextComponent(this, ActionName.NONE, 
+            TextComponent hwrText = new TextComponent(this, ActionName.NONE,
                     getZOrder());
             hwrText.setLocalTranslation(x, getTextY(2 + i), 0);
             attachChild(hwrText);
@@ -215,25 +216,27 @@ public class AnnotationSearchField extends FieldComponent implements
         x = (int) (-quad.getWidth() / 4.15f);
         i = 0;
         for (AnnotationData data : result.keySet()) {
-            String title = data.title;
-            log.debug("draw title: " + title);
-            TextComponent titleText = new TextComponent(this, ActionName.LOADLIST, 
-                    getZOrder());
-            titleText.setLocalTranslation(x, getTextY(i + 2), 0);
-            attachChild(titleText);
-            titleText.setFont(1);
-            titleText.setSize(FONT_SIZE);
-            titleText.setAlign(Align.Left);
-            titleText.setText(title);
-            titleText.setTouchable(true);
-            titleText.setLoadUUID(data.uuid);
-            entries.add(titleText);
-            i++;
+            if (TouchAndWriteComponentHandler.getInstance().isOpen(data.uuid)) {
+                String title = data.title;
+                log.debug("draw title: " + title);
+                TextComponent titleText = new TextComponent(this, ActionName.LOADLIST,
+                        getZOrder());
+                titleText.setLocalTranslation(x, getTextY(i + 2), 0);
+                attachChild(titleText);
+                titleText.setFont(1);
+                titleText.setSize(FONT_SIZE);
+                titleText.setAlign(Align.Left);
+                titleText.setText(title);
+                titleText.setTouchable(true);
+                titleText.setLoadUUID(data.uuid);
+                entries.add(titleText);
+                i++;
+            }
         }
         if (!entries.isEmpty()) {
             displayAnnotationList(entries.get(0).getLoadUUID());
-        } else if(!hwrResults.isEmpty()){
-            TextComponent titleText = new TextComponent(this, ActionName.NONE, 
+        } else if (!hwrResults.isEmpty()) {
+            TextComponent titleText = new TextComponent(this, ActionName.NONE,
                     getZOrder());
             titleText.setLocalTranslation(x, getTextY(i + 2), 0);
             attachChild(titleText);
@@ -253,20 +256,22 @@ public class AnnotationSearchField extends FieldComponent implements
         annotationList = new ArrayList<>();
         for (AnnotationData data : result.keySet()) {
             if (data.uuid.equals(uuid)) {
-                for (Annotation annotation : result.get(data)) {
-                    String entry = VideoUtils.getTimeCode(annotation.time_start);
-                    TextComponent textOverlay = new TextComponent(this, 
-                            ActionName.LOAD, getZOrder());
-                    textOverlay.setLocalTranslation(x, getTextY(annotationList.size() + 2), 0);
-                    attachChild(textOverlay);
-                    textOverlay.setText(entry);
-                    textOverlay.setFont(1);
-                    textOverlay.setSize(FONT_SIZE);
-                    textOverlay.setAlign(Align.Left);
-                    textOverlay.fadeIn((float) annotationList.size() * 1.f + 1.f);
-                    textOverlay.setLoadUUID(annotation.uuid);
-                    textOverlay.setTouchable(true);
-                    annotationList.add(textOverlay);
+                if (TouchAndWriteComponentHandler.getInstance().isOpen(data.uuid)) {
+                    for (Annotation annotation : result.get(data)) {
+                        String entry = VideoUtils.getTimeCode(annotation.time_start);
+                        TextComponent textOverlay = new TextComponent(this,
+                                ActionName.LOAD, getZOrder());
+                        textOverlay.setLocalTranslation(x, getTextY(annotationList.size() + 2), 0);
+                        attachChild(textOverlay);
+                        textOverlay.setText(entry);
+                        textOverlay.setFont(1);
+                        textOverlay.setSize(FONT_SIZE);
+                        textOverlay.setAlign(Align.Left);
+                        textOverlay.fadeIn((float) annotationList.size() * 1.f + 1.f);
+                        textOverlay.setLoadUUID(annotation.uuid);
+                        textOverlay.setTouchable(true);
+                        annotationList.add(textOverlay);
+                    }
                 }
             }
         }
