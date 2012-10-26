@@ -286,9 +286,9 @@ public class CovidaApplication extends ApplicationImpl implements IControlableCo
                     button.rotate(-180);
                     break;
                 case 5:
-                    button.setLocalTranslation(button.getWidth(),
-                            display.getHeight() / 2, 0);
-                    button.rotate(-90);
+                    button.setLocalTranslation(display.getWidth() / 2,
+                            button.getHeight(), 0);
+                    button.rotate(0);
                     break;
                 case 6:
                     button.setLocalTranslation(display.getWidth() - button.getWidth(),
@@ -297,9 +297,9 @@ public class CovidaApplication extends ApplicationImpl implements IControlableCo
 
                     break;
                 case 7:
-                    button.setLocalTranslation(display.getWidth() / 2,
-                            button.getHeight(), 0);
-                    button.rotate(0);
+                    button.setLocalTranslation(button.getWidth(),
+                            display.getHeight() / 2, 0);
+                    button.rotate(-90);
                     break;
                 default:
                     GameTaskQueueManager.getManager().update(

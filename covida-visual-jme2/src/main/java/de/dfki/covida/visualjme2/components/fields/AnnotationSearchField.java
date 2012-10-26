@@ -25,7 +25,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package de.dfki.covida.visualjme2.components.annotation;
+package de.dfki.covida.visualjme2.components.fields;
 
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;

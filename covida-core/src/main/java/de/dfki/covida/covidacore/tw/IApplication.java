@@ -65,4 +65,6 @@ public interface IApplication {
     public void clearDrawings();
     
     public void addVideo(VideoMediaData data);
+
+    public void close();
 }

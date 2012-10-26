@@ -21,6 +21,6 @@ public class ColorAdapter extends XmlAdapter<String, Color> {
 
     @Override
     public String marshal(Color c) {
-        return "#" + Integer.toHexString(c.getRGB());
+        return "0x" + Integer.toHexString(c.getRGB() & 0x00ffffff);
     }
 }

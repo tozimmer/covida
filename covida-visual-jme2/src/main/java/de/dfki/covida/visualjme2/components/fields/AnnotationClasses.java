@@ -25,22 +25,22 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * 
  */
-package de.dfki.covida.visualjme2.components.annotation;
+package de.dfki.covida.visualjme2.components.fields;
 
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
-import com.jme.renderer.ColorRGBA;
 import com.jme.scene.shape.Quad;
 import com.jme.util.GameTaskQueueManager;
 import de.dfki.covida.covidacore.components.IControlableComponent;
+import de.dfki.covida.covidacore.data.AnnotationClass;
+import de.dfki.covida.covidacore.data.AnnotationClassList;
 import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.visualjme2.animations.CloseAnimation;
 import de.dfki.covida.visualjme2.animations.OpenAnimation;
+import de.dfki.covida.visualjme2.components.ClassButton;
 import de.dfki.covida.visualjme2.components.FieldComponent;
 import de.dfki.covida.visualjme2.components.TextComponent;
 import de.dfki.covida.visualjme2.utils.AddControllerCallable;
-import de.dfki.covida.visualjme2.utils.AttachChildCallable;
-import de.dfki.covida.visualjme2.utils.CovidaZOrder;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
 import de.dfki.covida.visualjme2.utils.RemoveControllerCallable;
 import de.dfki.touchandwrite.math.FastMath;
@@ -51,7 +51,7 @@ import java.util.ArrayList;
  *
  * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
  */
-public class AnnotationClipboard extends FieldComponent implements
+public class AnnotationClasses extends FieldComponent implements
         IControlableComponent {
 
     /**
@@ -61,51 +61,44 @@ public class AnnotationClipboard extends FieldComponent implements
      * @param width {@link Integer}
      * @param height {@link Integer}
      */
-    public AnnotationClipboard(String resource, int width, int height, int zOrder) {
+    public AnnotationClasses(String resource, int width, int height, int zOrder) {
         super("AnnotationClipboard", zOrder);
         this.width = width;
         this.height = height;
         this.image = resource;
-        setDrawable(true);
         hwr = new ArrayList<>();
         super.setAlwaysOnTop(true);
         setLocalScale(new Vector3f(1, 1, 1));
         initTextures();
-        textBeginY = (int) (quad.getWidth() / 2.2f - FONT_SIZE);
-        int x = (int) (getWidth() / 4.f);
-        TextComponent caption = new TextComponent(this, ActionName.NONE, 
+        textBeginY = (int) (quad.getWidth() / 2.f);
+        TextComponent caption = new TextComponent(this, ActionName.NONE,
                 getZOrder());
         attachChild(caption);
-        caption.setLocalTranslation(x, getTextY(0) - FONT_SIZE / 4.f, 0);
+        caption.setLocalTranslation(0, getTextY(0), 0);
         caption.setSize((int) (FONT_SIZE * 1.5f));
-        caption.setText("Clipboard:");
+        caption.setText("Classes:");
         caption.setFont(2);
         update();
     }
 
     @Override
     public final void update() {
-        int x = (int) (+width / 4.0f);
-        for (int i = 0; i < hwrResults.size(); i++) {
-            TextComponent textOverlay = new TextComponent(this, ActionName.COPY,
-                    getZOrder());
-            textOverlay.setLocalTranslation(x, getTextY(2 + i), 0);
-            textOverlay.setDefaultPosition();
-            textOverlay.setTouchable(true);
-            attachChild(textOverlay);
-            textOverlay.setText(hwrResults.get(i));
-            textOverlay.setSize(FONT_SIZE);
-            textOverlay.setFont(1);
-            textOverlay.setColor(new ColorRGBA(0.75f, 0.75f, 0.75f, 0));
-            textOverlay.fadeIn((float) i * 1.f + 1.f);
-            hwr.add(textOverlay);
+        Vector3f local = new Vector3f(-getWidth() / 3.2f, getHeight() / 2 - 3 * FONT_SIZE, 0);
+        for (AnnotationClass annotationClass : AnnotationClassList.load().annotationClasses) {
+            ClassButton classButton = new ClassButton(annotationClass,
+                    local,(int) (getWidth() / 3.1f), getHeight() / 6, getZOrder() - 1);
+            attachChild(classButton);
+            if (local.x < getWidth() / 3.1f) {
+                local = local.add(getWidth()/ 3.1f, 0, 0);
+            }else{
+                local = local.add(-(2*(getWidth()/ 3.1f)), -getHeight()/5.5f, 0);
+            }
         }
     }
 
     @Override
     protected final float getTextY(int position) {
-        return textBeginY - TEXT_SPACER - FONT_SIZE * (position)
-                - (float) FONT_SIZE / 2.f;
+        return textBeginY - 5 - FONT_SIZE * (position);
     }
 
     @Override
@@ -168,7 +161,7 @@ public class AnnotationClipboard extends FieldComponent implements
     public void hwrAction(String id, String hwr) {
         if (open) {
             overlay.clear();
-            hwrResults.add(hwr); 
+            hwrResults.add(hwr);
             update();
         }
     }

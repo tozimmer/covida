@@ -57,13 +57,9 @@ public enum ActionName {
      */
     FORWARD,
     /**
-     * Close action.
+     * Close field action.
      */
     CLOSE,
-    /**
-     * Change media action.
-     */
-    CHANGEMEDIA,
     /**
      * Sound on / off action.
      */
@@ -97,9 +93,14 @@ public enum ActionName {
      */
     GARBADGE,
     /**
+     * Open Config menu
+     */
+    CONFIG,
+    /**
      * Opens new video component
      */
-    OPEN;
+    OPEN, 
+    CLOSEAPP;
 
     @Override
     public String toString() {

@@ -569,6 +569,7 @@ public abstract class AbstractApplication extends AbstractGame implements IAppli
 
     public abstract void setBackground();
 
+    @Override
     public abstract boolean isReady();
 
     /**

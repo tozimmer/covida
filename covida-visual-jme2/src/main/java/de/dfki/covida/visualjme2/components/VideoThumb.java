@@ -6,6 +6,7 @@ package de.dfki.covida.visualjme2.components;
 
 import com.jme.image.Texture;
 import com.jme.math.Vector3f;
+import com.jme.renderer.ColorRGBA;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
@@ -17,9 +18,6 @@ import de.dfki.covida.covidacore.tw.IApplication;
 import de.dfki.covida.visualjme2.utils.DetachChildCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
 import java.awt.Image;
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -33,7 +31,7 @@ public class VideoThumb extends JMEComponent {
 
     private final int width;
     private final int height;
-    private Quad videoQuad;
+    private Quad borderQuad;
     private Quad thumbQuad;
     private List<TextureState> textureStates;
     private final IControlButton button;
@@ -64,13 +62,13 @@ public class VideoThumb extends JMEComponent {
         TextureState videoTextureState = DisplaySystem.getDisplaySystem()
                 .getRenderer().createTextureState();
         videoTextureState.setTexture(videoTexture);
-        videoQuad = new Quad((data.videoName + " thumb border quad"), width + 15,
+        borderQuad = new Quad((data.videoName + " thumb border quad"), width + 15,
                 height + 15);
-        videoQuad.setRenderState(videoTextureState);
-        videoQuad.setRenderState(JMEUtils.initalizeBlendState());
-        videoQuad.updateRenderState();
-        attachChild(videoQuad);
-        videoQuad.setZOrder(getZOrder() - 1);
+        borderQuad.setRenderState(videoTextureState);
+        borderQuad.setRenderState(JMEUtils.initalizeBlendState());
+        borderQuad.updateRenderState();
+        attachChild(borderQuad);
+        borderQuad.setZOrder(getZOrder() - 1);
 
         for (Image image : data.thumbs) {
             if (image != null) {
@@ -110,10 +108,22 @@ public class VideoThumb extends JMEComponent {
 
     @Override
     public void touchBirthAction(int id, int x, int y) {
+        ColorRGBA c = borderQuad.getDefaultColor();
+        c.a = 0.5f;
+        borderQuad.setDefaultColor(c);
+        c = thumbQuad.getDefaultColor();
+        c.a = 0.5f;
+        thumbQuad.setDefaultColor(c);
     }
 
     @Override
     public void touchDeadAction(int id, int x, int y) {
+        ColorRGBA c = borderQuad.getDefaultColor();
+        c.a = 1.f;
+        borderQuad.setDefaultColor(c);
+        c = thumbQuad.getDefaultColor();
+        c.a = 1.f;
+        thumbQuad.setDefaultColor(c);
         button.toggle();
         app.addVideo(data);
     }
@@ -125,15 +135,15 @@ public class VideoThumb extends JMEComponent {
             GameTaskQueueManager.getManager().update(new DetachChildCallable(
                     node, thumbQuad));
         }
-        if (node.hasChild(videoQuad)) {
+        if (node.hasChild(borderQuad)) {
             GameTaskQueueManager.getManager().update(new DetachChildCallable(
-                    node, videoQuad));
+                    node, borderQuad));
         }
     }
 
     public void attach() {
-        if (!node.hasChild(videoQuad)) {
-            attachChild(videoQuad);
+        if (!node.hasChild(borderQuad)) {
+            attachChild(borderQuad);
         }
         if (!node.hasChild(thumbQuad)) {
             attachChild(thumbQuad);

@@ -71,7 +71,7 @@ public class AnnotationData implements Serializable {
      * Unique id
      */
     @XmlElement(name = "uuid")
-    public final UUID uuid;
+    public UUID uuid;
     /**
      * Video source as {@link String}
      */
@@ -92,11 +92,8 @@ public class AnnotationData implements Serializable {
     /**
      * Creates a new instance of {@link AnnotationData}
      */
-    private AnnotationData(IVideoComponent component) {
+    private AnnotationData() {
         annotations = new ArrayList<>();
-        videoSource = component.getSource();
-        title = component.getTitle();
-        uuid = component.getUUID();
     }
 
     /**
@@ -410,11 +407,17 @@ public class AnnotationData implements Serializable {
                         file.getAbsolutePath());
             } else {
                 log.debug("No data file exists, create new VideoAnnotationData");
-                instance = new AnnotationData(component);
+                instance = new AnnotationData();
+                instance.videoSource = component.getSource();
+                instance.title = component.getTitle();
+                instance.uuid = component.getUUID();
             }
         } catch (JAXBException e) {
             log.debug("XML parsing error: {}, create new VideoAnnotationData", e);
-            instance = new AnnotationData(component);
+            instance = new AnnotationData();
+            instance.videoSource = component.getSource();
+            instance.title = component.getTitle();
+            instance.uuid = component.getUUID();
         }
         return instance;
     }

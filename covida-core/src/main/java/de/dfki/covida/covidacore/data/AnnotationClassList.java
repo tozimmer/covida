@@ -38,25 +38,33 @@ public class AnnotationClassList implements Serializable {
     private static Logger log = LoggerFactory.getLogger(AnnotationData.class);
     @XmlElementWrapper(name = "annotationclasses")
     @XmlElement(name = "annotationclass")
-    private List<AnnotationClass> annotationClasses;
+    public List<AnnotationClass> annotationClasses;
     
     private AnnotationClassList(){
         annotationClasses = new ArrayList<>();
         AnnotationClass annotationClass = new AnnotationClass();
-        annotationClass.color = Color.CYAN;
+        annotationClass.color = Color.decode("0x104E8B");
         annotationClass.name = "Person";
         annotationClasses.add(annotationClass);
         annotationClass = new AnnotationClass();
-        annotationClass.color = Color.MAGENTA;
+        annotationClass.color = Color.decode("0x6E8B3D");
         annotationClass.name = "Object";
         annotationClasses.add(annotationClass);
         annotationClass = new AnnotationClass();
-        annotationClass.color = Color.GRAY;
+        annotationClass.color = Color.decode("0x8B2323");
         annotationClass.name = "Logo";
         annotationClasses.add(annotationClass);
         annotationClass = new AnnotationClass();
-        annotationClass.color = Color.YELLOW;
+        annotationClass.color = Color.decode("0xA2B5CD");
         annotationClass.name = "Text";
+        annotationClasses.add(annotationClass);
+        annotationClass = new AnnotationClass();
+        annotationClass.color = Color.decode("0xCD3700");
+        annotationClass.name = "Emotion";
+        annotationClasses.add(annotationClass);
+        annotationClass = new AnnotationClass();
+        annotationClass.color = Color.decode("0xEEC900");
+        annotationClass.name = "Animal";
         annotationClasses.add(annotationClass);
     }
 
@@ -98,7 +106,6 @@ public class AnnotationClassList implements Serializable {
                 JAXBContext jc = JAXBContext.newInstance(AnnotationClassList.class);
                 Unmarshaller u = jc.createUnmarshaller();
                 instance = (AnnotationClassList) u.unmarshal(file);
-
                 log.debug(
                         "Data file loaded at location: {}",
                         file.getAbsolutePath());

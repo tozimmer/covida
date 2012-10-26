@@ -69,6 +69,7 @@ public class ControlButton extends JMEComponent
     private final ActionName action;
     private final static float ANIMATIONTIME = 0.25f;
     private List<VideoThumb> videoThumbs;
+    private List<ConfigButton> configButtons;
 
     /**
      * Creates a new instance of {@link ControlButton}
@@ -84,6 +85,7 @@ public class ControlButton extends JMEComponent
             String texScr, String activeTexSrc, int width, int height, int zOrder) {
         super(actionName.toString(), zOrder);
         videoThumbs = new ArrayList<>();
+        configButtons = new ArrayList<>();
         this.action = actionName;
         this.width = width;
         this.height = height;
@@ -238,7 +240,24 @@ public class ControlButton extends JMEComponent
                 }
                 videoThumbs.clear();
             }
-        } else if (controlable != null) {
+        } else if (action.equals(ActionName.CONFIG) && controlable instanceof IApplication) {
+            if (configButtons.isEmpty()) {
+                Vector3f local = new Vector3f(0, 0, 0);
+                    local = local.add(0, getHeight(), 0);
+                    IApplication app = (IApplication) controlable;
+                    ConfigButton configButton = new ConfigButton(
+                            ActionName.CLOSEAPP, "media/textures/close.png", 
+                            local, app, this, getWidth(), getWidth(),
+                            getZOrder());
+                    attachChild(configButton);
+                    configButtons.add(configButton);
+            } else {
+                for (ConfigButton button : configButtons) {
+                    button.detach();
+                }
+                configButtons.clear();
+            }
+        }else if (controlable != null) {
             setActive(controlable.toggle(action));
         }
     }

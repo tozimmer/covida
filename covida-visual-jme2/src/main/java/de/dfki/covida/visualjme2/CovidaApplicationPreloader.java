@@ -33,13 +33,13 @@ import de.dfki.covida.covidacore.data.VideoMediaData;
 import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.videovlcj.preload.VideoPreload;
 import de.dfki.covida.visualjme2.components.ControlButton;
-import de.dfki.covida.visualjme2.components.annotation.AnnotationClipboard;
-import de.dfki.covida.visualjme2.components.annotation.AnnotationSearchField;
+import de.dfki.covida.visualjme2.components.fields.AnnotationClasses;
+import de.dfki.covida.visualjme2.components.fields.AnnotationClipboard;
+import de.dfki.covida.visualjme2.components.fields.AnnotationSearchField;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
 import de.dfki.covida.visualjme2.utils.CovidaZOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 /**
  * CovidaApplicationPreloader
@@ -58,8 +58,8 @@ public class CovidaApplicationPreloader implements Runnable {
     private void createSideMenus() {
         AnnotationClipboard clipboard = new AnnotationClipboard(
                 "media/textures/clipboard_field_color.png",
-                application.getWidth() / 2, 
-                (int) (application.getHeight() / 1.5f), 
+                application.getWidth() / 2,
+                (int) (application.getHeight() / 1.5f),
                 CovidaZOrder.getInstance().getUi_cornermenus());
         clipboard.setLocalTranslation(0, 50, 0);
         clipboard.setDefaultPosition();
@@ -73,52 +73,71 @@ public class CovidaApplicationPreloader implements Runnable {
         clipboard.close();
         AnnotationSearchField search = new AnnotationSearchField(
                 "media/textures/search_field_color.png",
-                application.getWidth() / 2, 
-                (int) (application.getHeight() / 1.5f), 
+                application.getWidth() / 2,
+                (int) (application.getHeight() / 1.5f),
                 CovidaZOrder.getInstance().getUi_cornermenus());
         search.setLocalTranslation(0, 100, 0);
         search.setDefaultPosition();
         ControlButton searchButton = new ControlButton(ActionName.CLOSE,
                 search, "media/textures/search.png",
-                "media/textures/search.png", 64, 64, 
+                "media/textures/search.png", 64, 64,
                 CovidaZOrder.getInstance().getUi_cornermenus());
         GameTaskQueueManager.getManager().update(new AttachChildCallable(
                 searchButton.node, search.node));
         application.addComponent(searchButton);
         search.close();
-//        AnnotationClipboard clipboard2 = new AnnotationClipboard(
-//                "media/textures/clipboard_field_color.png",
-//                application.getWidth() / 2, (int) (application.getHeight() / 1.5f));
-//        ControlButton clipboardButton2 = new ControlButton(ActionName.CLOSE,
-//                clipboard2, "media/textures/arrow.png",
-//                "media/textures/arrow.png", 64, 64, CovidaZOrder.getInstance().getUi_cornermenus());
-//        GameTaskQueueManager.getManager().update(new AttachChildCallable(
-//                clipboardButton2.node, clipboard2.node));
-//        application.addComponent(clipboardButton2);
-//        clipboard2.close();
-//        AnnotationSearchField search2 = new AnnotationSearchField(
-//                "media/textures/search_field_color.png",
-//                application.getWidth() / 2, (int) (application.getHeight() / 1.5f));
-//        ControlButton searchButton2 = new ControlButton(ActionName.CLOSE,
-//                search2, "media/textures/search.png",
-//                "media/textures/search.png", 64, 64, CovidaZOrder.getInstance().getUi_cornermenus());
-//        GameTaskQueueManager.getManager().update(new AttachChildCallable(
-//                searchButton2.node, search2.node));
-//        application.addComponent(searchButton2);
-//        search2.close();
-        
         ControlButton garbadge = new ControlButton(ActionName.GARBADGE,
                 null, "media/textures/garbadge.png",
-                "media/textures/garbadge.png", 64, 64, 
+                "media/textures/garbadge.png", 64, 64,
                 CovidaZOrder.getInstance().getUi_cornermenus());
         application.addComponent(garbadge);
-        
         ControlButton openNew = new ControlButton(ActionName.OPEN,
                 application, "media/textures/new.png",
-                "media/textures/new.png", 64, 64, 
+                "media/textures/new.png", 64, 64,
                 CovidaZOrder.getInstance().getUi_cornermenus());
         application.addComponent(openNew);
 
+        ControlButton configButton = new ControlButton(ActionName.CONFIG,
+                application, "media/textures/config.png",
+                "media/textures/config.png", 64, 64,
+                CovidaZOrder.getInstance().getUi_cornermenus());
+        application.addComponent(configButton);
+        AnnotationClasses classes = new AnnotationClasses(
+                "media/textures/classes_field.png",
+                application.getWidth() / 2,
+                (int) (application.getHeight() / 1.5f),
+                CovidaZOrder.getInstance().getUi_cornermenus());
+        classes.setLocalTranslation(0, -100, 0);
+        classes.setDefaultPosition();
+        ControlButton classesButton = new ControlButton(ActionName.CLOSE,
+                classes, "media/textures/classes.png",
+                "media/textures/classes.png", 64, 64,
+                CovidaZOrder.getInstance().getUi_cornermenus());
+        GameTaskQueueManager.getManager().update(new AttachChildCallable(
+                classesButton.node, classes.node));
+        application.addComponent(classesButton);
+//        classes.close();
+        
+//        AnnotationClasses classes2 = new AnnotationClasses(
+//                "media/textures/classes_field.png",
+//                application.getWidth() / 2, 
+//                (int) (application.getHeight() / 1.5f), 
+//                CovidaZOrder.getInstance().getUi_cornermenus());
+//        classes2.setLocalTranslation(0, 50, 0);
+//        classes2.setDefaultPosition();
+//        ControlButton classesButton2 = new ControlButton(ActionName.CLOSE,
+//                classes2, "media/textures/classes.png",
+//                "media/textures/classes.png", 64, 64, 
+//                CovidaZOrder.getInstance().getUi_cornermenus());
+//        GameTaskQueueManager.getManager().update(new AttachChildCallable(
+//                classesButton2.node, classes2.node));
+//        application.addComponent(classesButton2);
+//        classes2.close();  
+//        ControlButton configButton2 = new ControlButton(ActionName.CONFIG,
+//                application, "media/textures/config.png",
+//                "media/textures/config.png", 64, 64, 
+//                CovidaZOrder.getInstance().getUi_cornermenus());
+//        application.addComponent(configButton2);
     }
 
     @Override
@@ -129,13 +148,13 @@ public class CovidaApplicationPreloader implements Runnable {
         try {
             Thread.sleep(500);
         } catch (InterruptedException ex) {
-            log.error("",ex);
+            log.error("", ex);
         }
         application.endLoadingAnimation();
     }
 
     private void preloadVideos() {
-        for(VideoMediaData data : CovidaConfiguration.getInstance().videos){
+        for (VideoMediaData data : CovidaConfiguration.getInstance().videos) {
             VideoPreload preload = new VideoPreload(data);
             preload.run();
         }
