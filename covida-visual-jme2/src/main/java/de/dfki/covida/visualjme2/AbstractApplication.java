@@ -45,7 +45,10 @@ import com.jme.util.*;
 import com.jme.util.stat.StatCollector;
 import com.jmex.audio.AudioSystem;
 import de.dfki.covida.covidacore.tw.IApplication;
+import de.dfki.covida.covidacore.utils.ActionName;
+import de.dfki.covida.visualjme2.components.TextComponent;
 import de.dfki.covida.visualjme2.utils.CovidaRootNode;
+import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -476,7 +479,13 @@ public abstract class AbstractApplication extends AbstractGame implements IAppli
                 throwableHandler.handle(t);
             }
         }
-
+        rootNode.detachAllChildren();
+        update(-1.0f);
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ex) {
+            java.util.logging.Logger.getLogger(AbstractApplication.class.getName()).log(Level.SEVERE, null, ex);
+        }
         cleanup();
         log.info("Application ending.");
 
@@ -484,6 +493,11 @@ public abstract class AbstractApplication extends AbstractGame implements IAppli
             display.reset();
         }
         quit();
+    }
+
+    @Override
+    public void close() {
+        finished = true;
     }
 
     public void startSubApp(DisplaySystem display, Camera cam) {

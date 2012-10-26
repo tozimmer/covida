@@ -71,13 +71,6 @@ public class AnnotationClasses extends FieldComponent implements
         setLocalScale(new Vector3f(1, 1, 1));
         initTextures();
         textBeginY = (int) (quad.getWidth() / 2.f);
-        TextComponent caption = new TextComponent(this, ActionName.NONE,
-                getZOrder());
-        attachChild(caption);
-        caption.setLocalTranslation(0, getTextY(0), 0);
-        caption.setSize((int) (FONT_SIZE * 1.5f));
-        caption.setText("Classes:");
-        caption.setFont(2);
         update();
     }
 

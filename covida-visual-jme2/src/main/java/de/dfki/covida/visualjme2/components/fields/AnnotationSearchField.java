@@ -96,18 +96,7 @@ public class AnnotationSearchField extends FieldComponent implements
         setLocalScale(new Vector3f(1, 1, 1));
         initTextures();
         textBeginY = (int) (quad.getHeight() / 2.0f);
-        int x = (int) (0);
-        TextComponent caption = new TextComponent(this, ActionName.NONE,
-                getZOrder());
-        caption.setLocalTranslation(x, getTextY(0), 0);
-        caption.setDefaultPosition();
-        caption.setSize((int) (FONT_SIZE * 1.5f));
-        caption.setText("Write here for annotation search:");
-        caption.setFont(2);
-        attachChild(caption);
-        addSpacer(x, (int) (getTextY(0) - FONT_SIZE * 1.4f), 0,
-                (int) (quad.getWidth() / 1.1f), TEXT_SPACER);
-        x = (int) (getWidth() / 9.f);
+        int x = (int) (getWidth() / 9.f);
         addSpacer(x, 0, 90, (int) (quad.getHeight() / 1.1f), TEXT_SPACER);
         x = (int) -(getWidth() / 4.f);
         addSpacer(x, 0, 90, (int) (quad.getHeight() / 1.1f), TEXT_SPACER);
@@ -199,7 +188,7 @@ public class AnnotationSearchField extends FieldComponent implements
         for (String part : hwrResults) {
             TextComponent hwrText = new TextComponent(this, ActionName.NONE,
                     getZOrder());
-            hwrText.setLocalTranslation(x, getTextY(2 + i), 0);
+            hwrText.setLocalTranslation(x, getTextY(1 + i), 0);
             attachChild(hwrText);
             hwr.add(hwrText);
             hwr.get(i).setText(part);
@@ -221,7 +210,7 @@ public class AnnotationSearchField extends FieldComponent implements
                 log.debug("draw title: " + title);
                 TextComponent titleText = new TextComponent(this, ActionName.LOADLIST,
                         getZOrder());
-                titleText.setLocalTranslation(x, getTextY(i + 2), 0);
+                titleText.setLocalTranslation(x, getTextY(i + 1), 0);
                 attachChild(titleText);
                 titleText.setFont(1);
                 titleText.setSize(FONT_SIZE);
@@ -238,7 +227,7 @@ public class AnnotationSearchField extends FieldComponent implements
         } else if (!hwrResults.isEmpty()) {
             TextComponent titleText = new TextComponent(this, ActionName.NONE,
                     getZOrder());
-            titleText.setLocalTranslation(x, getTextY(i + 2), 0);
+            titleText.setLocalTranslation(x, getTextY(i + 1), 0);
             attachChild(titleText);
             titleText.setFont(1);
             titleText.setSize(FONT_SIZE);
