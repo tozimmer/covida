@@ -169,41 +169,43 @@ public class AnnotationSearchField extends FieldComponent implements
     }
 
     @Override
-    public void hwrAction(String id, String hwr) {
+    public void hwrAction(String id, String string) {
         if (open) {
-            overlay.clear();
-            hwrResults.clear();
-            for (String part : hwr.split(" ")) {
-                hwrResults.add(part);
-                update();
+            for(TextComponent text : hwr){
+                text.detach();
             }
+            hwr.clear();
+            overlay.clear();
+            int x = (int) (-width / 2.5f);
+            for (String part : string.split(" ")) {
+                TextComponent hwrText = new TextComponent(this, ActionName.NONE,
+                        getZOrder());
+                hwrText.setLocalTranslation(x, getTextY(1 + hwr.size()), 0);
+                hwrText.setText(part);
+                hwrText.setSize(FONT_SIZE);
+                hwrText.setFont(1);
+                hwrText.setColor(new ColorRGBA(0.75f, 0.75f, 0.75f, 0));
+                hwrText.fadeIn(1.f + 1.f);
+                attachChild(hwrText);
+                hwr.add(hwrText);
+            }
+            update();
         }
     }
 
     @Override
     protected void update() {
-        result = AnnotationStorage.getInstance().search(hwrResults);
-        int i = 0;
-        int x = (int) (-width / 2.5f);
-        for (String part : hwrResults) {
-            TextComponent hwrText = new TextComponent(this, ActionName.NONE,
-                    getZOrder());
-            hwrText.setLocalTranslation(x, getTextY(1 + i), 0);
-            attachChild(hwrText);
-            hwr.add(hwrText);
-            hwr.get(i).setText(part);
-            hwr.get(i).setSize(FONT_SIZE);
-            hwr.get(i).setFont(1);
-            hwr.get(i).setColor(new ColorRGBA(0.75f, 0.75f, 0.75f, 0));
-            hwr.get(i).fadeIn((float) i * 1.f + 1.f);
-            i++;
+        List<String> hwrs = new ArrayList<>();
+        for(TextComponent text : hwr){
+            hwrs.add(text.getText());
         }
+        result = AnnotationStorage.getInstance().search(hwrs);
         for (TextComponent text : entries) {
             text.detach();
         }
         entries = new ArrayList<>();
-        x = (int) (-quad.getWidth() / 4.15f);
-        i = 0;
+        int x = (int) (-quad.getWidth() / 4.15f);
+        int i = 0;
         for (AnnotationData data : result.keySet()) {
             if (TouchAndWriteComponentHandler.getInstance().isOpen(data.uuid)) {
                 String title = data.title;
@@ -224,7 +226,7 @@ public class AnnotationSearchField extends FieldComponent implements
         }
         if (!entries.isEmpty()) {
             displayAnnotationList(entries.get(0).getLoadUUID());
-        } else if (!hwrResults.isEmpty()) {
+        } else if (!hwr.isEmpty()) {
             TextComponent titleText = new TextComponent(this, ActionName.NONE,
                     getZOrder());
             titleText.setLocalTranslation(x, getTextY(i + 1), 0);

@@ -45,7 +45,7 @@ public class CovidaZOrder {
         ui_overlay = 7000;
         ui_text = 6000;
         ui_button = 5000;
-        preload = 0;
+        preload = 1000;
         ui_cornermenus = 4000;
     }
 
@@ -57,42 +57,42 @@ public class CovidaZOrder {
     }
 
     public int getBackground() {
-        background += 10;
+        background -= 10;
         return background;
     }
 
     public int getUi_background() {
-        ui_background += 10;
+        ui_background -= 10;
         return ui_background;
     }
 
     public int getUi_node() {
-        ui_node += 10;
+        ui_node -= 10;
         return ui_node;
     }
 
     public int getUi_overlay() {
-        ui_overlay += 10;
+        ui_overlay -= 10;
         return ui_overlay;
     }
 
     public int getUi_text() {
-        ui_text += 10;
+        ui_text -= 10;
         return ui_text;
     }
 
     public int getUi_button() {
-        ui_button += 10;
+        ui_button -= 10;
         return ui_button;
     }
 
     public int getPreload() {
-        preload += 10;
+        preload -= 10;
         return preload;
     }
 
     public int getUi_cornermenus() {
-        ui_cornermenus += 10;
+        ui_cornermenus -= 10;
         return ui_cornermenus;
     }
 }

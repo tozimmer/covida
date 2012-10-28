@@ -39,6 +39,7 @@ import com.jme.system.DisplaySystem;
 import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
 import de.dfki.covida.covidacore.data.Annotation;
+import de.dfki.covida.covidacore.data.AnnotationClass;
 import de.dfki.covida.covidacore.data.AnnotationStorage;
 import de.dfki.covida.covidacore.data.StrokeList;
 import de.dfki.covida.covidacore.utils.ActionName;
@@ -347,8 +348,8 @@ public class InfoFieldComponent extends JMEComponent {
         descriptionOverlay.setSize(getFontSize());
         descriptionOverlay.setText("Description:");
         descriptionOverlay.setSize(getFontSize());
-        int y = (int) (descriptionOverlay.getLocalTranslation().y 
-                - getTextSpacer()/2);
+        int y = (int) (descriptionOverlay.getLocalTranslation().y
+                - getTextSpacer() / 2);
         addSpacer(0, y, (int) (quad.getWidth() / 1.1f), getTextSpacer());
         descriptionText = new ArrayList<>();
         if (AnnotationStorage.getInstance().getAnnotationData(video).size() > 0) {
@@ -397,23 +398,7 @@ public class InfoFieldComponent extends JMEComponent {
      * @param hwrResults hwr results
      */
     public void drawHwrResult(String hwrResults) {
-        if (descriptionText.isEmpty()) {
-            descriptionBeginY = (int) (textBeginY - (float) getFontSpacer());
-        }
-        descriptionBeginY = (int) (descriptionBeginY - (float) getFontSpacer() * 0.9f);
-        if ((descriptionBeginY - 3 * ((float) getFontSpacer() * 0.9f)) < -getHeight() / 2) {
-            if (!descriptionText.isEmpty()) {
-                descriptionText.get(0).detach();
-                descriptionText.remove(0);
-            }
-            descriptionBeginY = (int) (textBeginY - (float) getFontSpacer());
-            for (TextComponent text : descriptionText) {
-                descriptionBeginY = (int) (descriptionBeginY - (float) getFontSpacer() * 0.9f);
-                text.setLocalTranslation(0, descriptionBeginY, 0);
-                text.setDefaultPosition();
-            }
-            descriptionBeginY = (int) (descriptionBeginY - (float) getFontSpacer() * 0.9f);
-        }
+        update();
         TextComponent descriptionTextOverlay = new TextComponent(video,
                 ActionName.COPY, getZOrder());
         descriptionTextOverlay.setLocalTranslation(0, descriptionBeginY, 0);
@@ -556,5 +541,29 @@ public class InfoFieldComponent extends JMEComponent {
     public void deleteDescription(TextComponent aThis) {
         descriptionText.remove(aThis);
         aThis.detach();
+        update();
+    }
+
+    public void tagAction(AnnotationClass tag) {
+    }
+
+    private void update() {
+        if (descriptionText.isEmpty()) {
+            descriptionBeginY = (int) (textBeginY - (float) getFontSpacer());
+        }
+        descriptionBeginY = (int) (descriptionBeginY - (float) getFontSpacer() * 0.9f);
+        if ((descriptionBeginY - 3 * ((float) getFontSpacer() * 0.9f)) < -getHeight() / 2) {
+            if (!descriptionText.isEmpty()) {
+                descriptionText.get(0).detach();
+                descriptionText.remove(0);
+            }
+            descriptionBeginY = (int) (textBeginY - (float) getFontSpacer());
+            for (TextComponent text : descriptionText) {
+                descriptionBeginY = (int) (descriptionBeginY - (float) getFontSpacer() * 0.9f);
+                text.setLocalTranslation(0, descriptionBeginY, 0);
+                text.setDefaultPosition();
+            }
+            descriptionBeginY = (int) (descriptionBeginY - (float) getFontSpacer() * 0.9f);
+        }
     }
 }

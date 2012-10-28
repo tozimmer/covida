@@ -44,7 +44,7 @@ public class CovidaCMDOptions {
     @Option(name = "-log", usage = "Location of the log configuration.")
     private String logfile = "log4j.xml";
     @Option(name = "-device", usage = "Name of the device")
-    private String device;
+    private String device = "WMINPUT";
 
     /**
      * Returns the location of the Touch and Write configuration file.

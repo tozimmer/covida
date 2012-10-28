@@ -381,6 +381,7 @@ public abstract class JMEComponent implements ITouchAndWriteComponent {
      */
     public void close() {
         removeFromParent();
+        TouchAndWriteComponentHandler.getInstance().removeComponent(this);
         cleanUp();
     }
 
@@ -401,6 +402,10 @@ public abstract class JMEComponent implements ITouchAndWriteComponent {
         }
         this.zOrder = zOrder;
         node.setZOrder(zOrder);
+        if(this instanceof VideoComponent){
+            VideoComponent video = (VideoComponent) this;
+            video.setFieldZOrder();
+        }
     }
 
     @Override

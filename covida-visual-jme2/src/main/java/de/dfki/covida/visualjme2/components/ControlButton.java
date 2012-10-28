@@ -32,6 +32,7 @@ import com.jme.image.Texture;
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
+import com.jme.renderer.ColorRGBA;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
@@ -48,6 +49,7 @@ import de.dfki.covida.visualjme2.animations.RotateAnimation;
 import de.dfki.covida.visualjme2.animations.ScaleAnimation;
 import de.dfki.covida.visualjme2.utils.AddControllerCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -116,6 +118,13 @@ public class ControlButton extends JMEComponent
         controlQuad.setRenderState(defaultTextureState);
         controlQuad.setRenderState(JMEUtils.initalizeBlendState());
         controlQuad.updateRenderState();
+        ColorRGBA color = ColorRGBA.white;
+        Color c = CovidaConfiguration.getInstance().uiColor;
+        if (CovidaConfiguration.getInstance().uiColor != null) {
+            color = new ColorRGBA(c.getRed() / 255.f, c.getGreen() / 255.f,
+                    c.getBlue() / 255.f, c.getAlpha() / 255.f);
+        }
+        controlQuad.setDefaultColor(color);
         attachChild(controlQuad);
         controlQuad.setZOrder(zOrder);
     }
@@ -156,6 +165,7 @@ public class ControlButton extends JMEComponent
                             node, controller));
                 }
                 controlQuad.setRenderState(activeTextureState);
+                controlQuad.setDefaultColor(ColorRGBA.orange);
             } else {
                 if (action.equals(ActionName.LIST)) {
                     SpatialTransformer controller = RotateAnimation.getController(node,
@@ -164,6 +174,7 @@ public class ControlButton extends JMEComponent
                             node, controller));
                 }
                 controlQuad.setRenderState(defaultTextureState);
+                setColor(CovidaConfiguration.getInstance().uiColor);
             }
             controlQuad.updateRenderState();
         }
@@ -218,6 +229,23 @@ public class ControlButton extends JMEComponent
         }
     }
 
+    public void setColor(Color color) {
+        ColorRGBA colorRGBA = ColorRGBA.white;
+        if (color != null) {
+            colorRGBA = new ColorRGBA(color.getRed() / 255.f, color.getGreen() / 255.f,
+                    color.getBlue() / 255.f, color.getAlpha() / 255.f);
+        }
+        setColor(colorRGBA);
+    }
+
+    public void setColor(ColorRGBA color) {
+        if (color != null) {
+            controlQuad.setDefaultColor(color);
+        } else {
+            controlQuad.setDefaultColor(ColorRGBA.white);
+        }
+    }
+
     @Override
     public void toggle() {
         if (action.equals(ActionName.OPEN) && controlable instanceof IApplication) {
@@ -234,30 +262,57 @@ public class ControlButton extends JMEComponent
                     attachChild(thumb);
                     videoThumbs.add(thumb);
                 }
+                controlQuad.setDefaultColor(ColorRGBA.orange);
             } else {
                 for (VideoThumb thumb : videoThumbs) {
                     thumb.detach();
                 }
                 videoThumbs.clear();
+                ColorRGBA color = ColorRGBA.white;
+                Color c = CovidaConfiguration.getInstance().uiColor;
+                if (CovidaConfiguration.getInstance().uiColor != null) {
+                    color = new ColorRGBA(c.getRed() / 255.f, c.getGreen() / 255.f,
+                            c.getBlue() / 255.f, c.getAlpha() / 255.f);
+                }
+                controlQuad.setDefaultColor(color);
             }
         } else if (action.equals(ActionName.CONFIG) && controlable instanceof IApplication) {
             if (configButtons.isEmpty()) {
                 Vector3f local = new Vector3f(0, 0, 0);
-                    local = local.add(0, getHeight(), 0);
-                    IApplication app = (IApplication) controlable;
-                    ConfigButton configButton = new ConfigButton(
-                            ActionName.CLOSEAPP, "media/textures/close.png", 
-                            local, app, this, getWidth(), getWidth(),
-                            getZOrder());
-                    attachChild(configButton);
-                    configButtons.add(configButton);
+                local = local.add(0, getHeight(), 0);
+                IApplication app = (IApplication) controlable;
+                ConfigButton configButton = new ConfigButton(
+                        ActionName.CLOSEAPP, "media/textures/close.png",
+                        new Vector3f(local), app, this, getWidth(), getWidth(),
+                        getZOrder());
+                configButton.rotate(180, Vector3f.UNIT_Z);
+                attachChild(configButton);
+                configButtons.add(configButton);
+                controlQuad.setDefaultColor(ColorRGBA.orange);
+                local = local.add(0, getHeight(), 0);
+                app = (IApplication) controlable;
+                ConfigButton colorButton = new ConfigButton(
+                        ActionName.UICOLORLIST, "media/textures/drop.png",
+                        new Vector3f(local), app, this, getWidth(), getWidth(),
+                        getZOrder());
+                attachChild(colorButton);
+                colorButton.rotate(180, Vector3f.UNIT_Z);
+                configButtons.add(colorButton);
+                controlQuad.setDefaultColor(ColorRGBA.orange);
             } else {
                 for (ConfigButton button : configButtons) {
                     button.detach();
                 }
                 configButtons.clear();
+                ColorRGBA color = ColorRGBA.white;
+                Color c = CovidaConfiguration.getInstance().uiColor;
+                if (CovidaConfiguration.getInstance().uiColor != null) {
+                    color = new ColorRGBA(c.getRed() / 255.f, c.getGreen() / 255.f,
+                            c.getBlue() / 255.f, c.getAlpha() / 255.f);
+                }
+                controlQuad.setDefaultColor(color);
             }
-        }else if (controlable != null) {
+        } else if (controlable != null) {
             setActive(controlable.toggle(action));
         }
     }

@@ -107,6 +107,9 @@ public class TouchAndWriteComponentHandler {
     }
 
     public void removeComponent(ITouchAndWriteComponent component) {
+        if(component instanceof IVideoComponent){
+            videos.remove((IVideoComponent) component);
+        }
         if (components.contains(component)) {
             components.remove(component);
         }

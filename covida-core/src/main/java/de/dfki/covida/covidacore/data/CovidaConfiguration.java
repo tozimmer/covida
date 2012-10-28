@@ -27,6 +27,7 @@
  */
 package de.dfki.covida.covidacore.data;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -41,6 +42,7 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,15 +100,35 @@ public class CovidaConfiguration implements Serializable {
     @XmlElement(name = "pen")
     @XmlElementWrapper(name = "penList")
     public List<PenData> pens = new ArrayList<>();
+    /**
+     * UI color.
+     */
+    @XmlJavaTypeAdapter(ColorAdapter.class)
+    @XmlElement(name = "uicolor")
+    public Color uiColor;
+    /**
+     * List of pen configurations as {@link List} of {@link PenData}
+     */
+    @XmlElement(name = "uicolor")
+    @XmlJavaTypeAdapter(ColorAdapter.class)
+    @XmlElementWrapper(name = "uicolors")
+    public List<Color> uiColors = new ArrayList<>();
 
     /**
      * Private constructor of {@link CovidaConfiguration}.
      */
     private CovidaConfiguration() {
         texturePath = "media/textures/";
-        autologon = false;
+        autologon = true;
         defaultlogin = "Covida User";
         thumbcount = 5;
+        uiColor = Color.decode("0xffffff");
+        uiColors = new ArrayList<>();
+        uiColors.add(Color.decode("0xffffff"));
+        uiColors.add(Color.decode("0x9A9FA5"));
+        uiColors.add(Color.decode("0xddffff"));
+        uiColors.add(Color.decode("0xcccccc"));
+        uiColors.add(Color.decode("0xffccff"));
 
         VideoMediaData data = new VideoMediaData();
         data.videoName = "CoVidA Demo";

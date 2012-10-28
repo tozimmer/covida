@@ -84,19 +84,8 @@ public class AnnotationClipboard extends FieldComponent implements
     @Override
     public final void update() {
         int x = (int) (+width / 4.0f);
-        for (int i = 0; i < hwrResults.size(); i++) {
-            TextComponent textOverlay = new TextComponent(this, ActionName.COPY,
-                    getZOrder());
-            textOverlay.setLocalTranslation(x, getTextY(2 + i), 0);
-            textOverlay.setDefaultPosition();
-            textOverlay.setTouchable(true);
-            attachChild(textOverlay);
-            textOverlay.setText(hwrResults.get(i));
-            textOverlay.setSize(FONT_SIZE);
-            textOverlay.setFont(1);
-            textOverlay.setColor(new ColorRGBA(0.75f, 0.75f, 0.75f, 0));
-            textOverlay.fadeIn((float) i * 1.f + 1.f);
-            hwr.add(textOverlay);
+        for(TextComponent text : hwr){
+            text.setLocalTranslation(x, getTextY(2 + hwr.lastIndexOf(text)), yDrag);
         }
     }
 
@@ -163,16 +152,29 @@ public class AnnotationClipboard extends FieldComponent implements
     }
 
     @Override
-    public void hwrAction(String id, String hwr) {
+    public void hwrAction(String id, String string) {
         if (open) {
+            int x = (int) (+width / 4.0f);
             overlay.clear();
-            hwrResults.add(hwr); 
+            TextComponent textOverlay = new TextComponent(this, ActionName.COPY,
+                    getZOrder());
+            textOverlay.setLocalTranslation(x, getTextY(2 + hwr.size()), 0);
+            textOverlay.setDefaultPosition();
+            textOverlay.setTouchable(true);
+            attachChild(textOverlay);
+            textOverlay.setText(string);
+            textOverlay.setSize(FONT_SIZE);
+            textOverlay.setFont(1);
+            textOverlay.setColor(new ColorRGBA(0.75f, 0.75f, 0.75f, 0));
+            textOverlay.fadeIn((float) hwr.size() * 1.f + 1.f);
+            hwr.add(textOverlay);
             update();
         }
     }
 
     public void deleteDescription(TextComponent aThis) {
-        hwrResults.remove(aThis.getText());
+        hwr.remove(aThis);
         aThis.detach();
+        update();
     }
 }

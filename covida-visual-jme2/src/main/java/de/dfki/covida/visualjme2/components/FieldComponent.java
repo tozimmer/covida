@@ -96,10 +96,6 @@ public abstract class FieldComponent extends JMEComponent {
      */
     protected ImageGraphics g2d;
     /**
-     * List of hwr results
-     */
-    protected List<String> hwrResults;
-    /**
      * Texture state for spacer
      */
     protected TextureState tsSpacer;
@@ -125,7 +121,6 @@ public abstract class FieldComponent extends JMEComponent {
 
     public FieldComponent(String name, int zOrder) {
         super(name, zOrder);
-        hwrResults = new ArrayList<>();
     }
 
     protected final void initTextures() {
@@ -141,7 +136,7 @@ public abstract class FieldComponent extends JMEComponent {
         quad.setRenderState(JMEUtils.initalizeBlendState());
         quad.updateRenderState();
         attachChild(quad);
-        overlay = new DrawingOverlay("Drawing", width, height, getZOrder()-9);
+        overlay = new DrawingOverlay("Drawing", width, height, getZOrder()-5);
         attachChild(overlay);
         // Spacer
         tsSpacer = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();

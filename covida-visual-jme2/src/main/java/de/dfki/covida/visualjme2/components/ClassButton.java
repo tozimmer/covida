@@ -4,7 +4,6 @@
  */
 package de.dfki.covida.visualjme2.components;
 
-import com.jme.animation.SpatialTransformer;
 import com.jme.image.Texture;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
@@ -14,21 +13,19 @@ import com.jme.system.DisplaySystem;
 import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
 import com.jmex.angelfont.BitmapFont;
-import de.dfki.covida.covidacore.components.IControlButton;
 import de.dfki.covida.covidacore.components.IControlableComponent;
 import de.dfki.covida.covidacore.data.AnnotationClass;
-import de.dfki.covida.covidacore.tw.IApplication;
 import de.dfki.covida.covidacore.tw.ITouchAndWriteComponent;
 import de.dfki.covida.covidacore.tw.TouchAndWriteComponentHandler;
 import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.visualjme2.animations.CovidaSpatialController;
 import de.dfki.covida.visualjme2.animations.ResetAnimation;
-import de.dfki.covida.visualjme2.animations.ScaleAnimation;
 import de.dfki.covida.visualjme2.components.fields.AnnotationClipboard;
 import de.dfki.covida.visualjme2.components.fields.AnnotationSearchField;
 import de.dfki.covida.visualjme2.components.video.VideoComponent;
 import de.dfki.covida.visualjme2.components.video.fields.InfoFieldComponent;
 import de.dfki.covida.visualjme2.utils.AddControllerCallable;
+import de.dfki.covida.visualjme2.utils.CovidaZOrder;
 import de.dfki.covida.visualjme2.utils.DetachChildCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
 import java.util.Collection;
@@ -43,9 +40,11 @@ public class ClassButton extends JMEComponent implements IControlableComponent {
 
     private final int width;
     private final int height;
-    private Quad buttonQuad;
+    private Quad tagQuad;
     private final AnnotationClass tag;
     private final static int FONT_SIZE = 28;
+    private final Quad tagTopQuad;
+    private final Quad tagShineQuad;
 
     public ClassButton(AnnotationClass tag, Vector3f local,
             int width, int height, int zOrder) {
@@ -57,34 +56,68 @@ public class ClassButton extends JMEComponent implements IControlableComponent {
         setZOrder(zOrder);
         setTouchable(true);
         setDefaultPosition();
-        Texture videoTexture = TextureManager.loadTexture(
+        Texture tagTexture = TextureManager.loadTexture(
                 getClass().getClassLoader()
                 .getResource("media/textures/class.png"),
                 Texture.MinificationFilter.BilinearNearestMipMap,
                 Texture.MagnificationFilter.Bilinear);
-        videoTexture.setWrap(Texture.WrapMode.Clamp);
-        TextureState videoTextureState = DisplaySystem.getDisplaySystem()
+        tagTexture.setWrap(Texture.WrapMode.Clamp);
+        TextureState tagTextureState = DisplaySystem.getDisplaySystem()
                 .getRenderer().createTextureState();
-        videoTextureState.setTexture(videoTexture);
-        buttonQuad = new Quad(tag.name + " quad", width,
+        tagTextureState.setTexture(tagTexture);
+        tagQuad = new Quad(tag.name + " quad", width,
                 height);
-        buttonQuad.setRenderState(videoTextureState);
-        buttonQuad.setRenderState(JMEUtils.initalizeBlendState());
-        buttonQuad.updateRenderState();
-        attachChild(buttonQuad);
-        buttonQuad.setZOrder(getZOrder() - 1);
-        TextComponent tagText = new TextComponent(this, ActionName.NONE, zOrder - 1);
+        tagQuad.setRenderState(tagTextureState);
+        tagQuad.setRenderState(JMEUtils.initalizeBlendState());
+        tagQuad.updateRenderState();
+        attachChild(tagQuad);
+        tagQuad.setZOrder(getZOrder() - 1);
+        Texture tagTopTexture = TextureManager.loadTexture(
+                getClass().getClassLoader()
+                .getResource("media/textures/class_top.png"),
+                Texture.MinificationFilter.BilinearNearestMipMap,
+                Texture.MagnificationFilter.Bilinear);
+        tagTopTexture.setWrap(Texture.WrapMode.Clamp);
+        TextureState tagTopState = DisplaySystem.getDisplaySystem()
+                .getRenderer().createTextureState();
+        tagTopState.setTexture(tagTopTexture);
+        tagTopQuad = new Quad(tag.name + " quad", width,
+                height);
+        tagTopQuad.setRenderState(tagTopState);
+        tagTopQuad.setRenderState(JMEUtils.initalizeBlendState());
+        tagTopQuad.updateRenderState();
+        attachChild(tagTopQuad);
+        tagTopQuad.setZOrder(getZOrder() - 2);
+        Texture tagShineTexture = TextureManager.loadTexture(
+                getClass().getClassLoader()
+                .getResource("media/textures/class_shine.png"),
+                Texture.MinificationFilter.BilinearNearestMipMap,
+                Texture.MagnificationFilter.Bilinear);
+        tagShineTexture.setWrap(Texture.WrapMode.Clamp);
+        TextureState tagShineState = DisplaySystem.getDisplaySystem()
+                .getRenderer().createTextureState();
+        tagShineState.setTexture(tagShineTexture);
+        tagShineQuad = new Quad(tag.name + " quad", width,
+                height);
+        tagShineQuad.setRenderState(tagShineState);
+        tagShineQuad.setRenderState(JMEUtils.initalizeBlendState());
+        tagShineQuad.updateRenderState();
+        tagShineQuad.setDefaultColor(ColorRGBA.black);
+        attachChild(tagShineQuad);
+        tagShineQuad.setZOrder(getZOrder() - 4);
+        TextComponent tagText = new TextComponent(this, ActionName.NONE, zOrder - 3);
         ColorRGBA color = ColorRGBA.randomColor();
         if (tag.color != null) {
-            color = new ColorRGBA(tag.color.getRed()/255.f, tag.color.getGreen()/255.f,
-                    tag.color.getBlue()/255.f, tag.color.getAlpha()/255.f);
+            color = new ColorRGBA(tag.color.getRed() / 255.f, tag.color.getGreen() / 255.f,
+                    tag.color.getBlue() / 255.f, tag.color.getAlpha() / 255.f);
         }
+        tagTopQuad.setDefaultColor(color);
         tagText.setAlign(BitmapFont.Align.Center);
         tagText.setSize(FONT_SIZE);
         tagText.setText(tag.name);
         tagText.setFont(1);
-        tagText.setColor(color);
-        tagText.setLocalTranslation(0, FONT_SIZE/2, 0);
+//        tagText.setColor(color);
+        tagText.setLocalTranslation(0, FONT_SIZE * 0.8f, 0);
         attachChild(tagText);
     }
 
@@ -114,16 +147,19 @@ public class ClassButton extends JMEComponent implements IControlableComponent {
                 defaultRotation, defaultTranslation);
         GameTaskQueueManager.getManager().update(new AddControllerCallable(
                 node, controller));
-        ColorRGBA c = buttonQuad.getDefaultColor();
-        c.a = 1.f;
-        buttonQuad.setDefaultColor(c);
+//        ColorRGBA c = tagQuad.getDefaultColor();
+//        c.a = 1.f;
+//        tagQuad.setDefaultColor(c);
+        tagShineQuad.setDefaultColor(ColorRGBA.black);
     }
 
     @Override
     public void touchBirthAction(int id, int x, int y) {
-        ColorRGBA c = buttonQuad.getDefaultColor();
-        c.a = 0.5f;
-        buttonQuad.setDefaultColor(c);
+//        ColorRGBA c = tagQuad.getDefaultColor();
+//        c.a = 0.5f;
+//        tagQuad.setDefaultColor(c);
+        tagShineQuad.setDefaultColor(ColorRGBA.white);
+        setZOrder(CovidaZOrder.getInstance().getUi_cornermenus());
     }
 
     @Override
@@ -147,6 +183,7 @@ public class ClassButton extends JMEComponent implements IControlableComponent {
                 ITouchAndWriteComponent comp = inAreacomponents.get(inAreacomponents.firstKey());
                 if (comp instanceof VideoComponent) {
                     VideoComponent video = (VideoComponent) comp;
+                    video.classAction(tag);
                 } else if (comp instanceof InfoFieldComponent) {
                     InfoFieldComponent info = (InfoFieldComponent) comp;
                 } else if (comp instanceof AnnotationClipboard) {
@@ -161,16 +198,16 @@ public class ClassButton extends JMEComponent implements IControlableComponent {
 
     void detach() {
         setTouchable(false);
-        if (node.hasChild(buttonQuad)) {
+        if (node.hasChild(tagQuad)) {
             GameTaskQueueManager.getManager().update(new DetachChildCallable(
-                    node, buttonQuad));
+                    node, tagQuad));
         }
     }
 
     public void attach() {
         setTouchable(true);
-        if (!node.hasChild(buttonQuad)) {
-            attachChild(buttonQuad);
+        if (!node.hasChild(tagQuad)) {
+            attachChild(tagQuad);
         }
     }
 

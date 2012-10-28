@@ -30,8 +30,12 @@ package de.dfki.covida.covidacore.data;
 import de.dfki.touchandwrite.shape.ShapeType;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
@@ -62,6 +66,12 @@ public class Annotation implements Serializable {
      */
     @XmlElement(name = "time_end")
     public Long time_end;
+    /**
+     * Ending time of the {@link Annotation} as {@link Long}.
+     */
+    @XmlElementWrapper(name = "classes")
+    @XmlElement(name = "class")
+    public List<AnnotationClass> classes;
     /**
      * {@link ShapeType} of the {@link Annotation} outline.
      */

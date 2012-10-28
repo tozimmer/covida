@@ -50,8 +50,6 @@ public class TouchAndWriteSupport {
      * @param device {@link TouchAndWriteDevice}
      */
     public static void start(IApplication application, TouchAndWriteDevice device) {
-        TWServer twServer = new TWServer(device);
-        twServer.start();
         TouchAndWriteConfiguration conf = TouchAndWriteConfiguration
                 .getDefaultWMInputConfig(application.getScreenSize(),
                 "localhost", "localhost");
@@ -66,6 +64,8 @@ public class TouchAndWriteSupport {
                     .getDefaultTUIOConfig(application.getScreenSize(),
                     "localhost", "localhost", new int[0]);
         }
+        TWServer twServer = new TWServer(device, conf);
+        twServer.start();
 //        config.getEventmanagerConfig().setHost("192.168.83.100");
         TouchAndWriteEventHandler touchAndWrite = new TouchAndWriteEventHandler(
                 application, conf);

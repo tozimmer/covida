@@ -94,8 +94,10 @@ public class VideoComponentControls extends JMEComponent implements IVideoContro
         }
         controlWidth = (int) (0.15f * controlable.getHeight());
         controlList = new HashMap<>();
+        controlList.put("media/textures/video_controls_changemedia.png", ActionName.RESET);
         controlList.put("media/textures/video_controls_close.png", ActionName.CLOSE);
         controlActiveList = new HashMap<>();
+        controlActiveList.put(ActionName.RESET, "media/textures/video_controls_changemedia.png");
         controlActiveList.put(ActionName.CLOSE, "media/textures/video_controls_close.png");
         int start = controlable.getWidth() / 2 - controlWidth / 2;
         for (String texture : controlList.keySet()) {
@@ -104,7 +106,7 @@ public class VideoComponentControls extends JMEComponent implements IVideoContro
                     controlWidth, controlHeight, getZOrder());
             control.setLocalTranslation(start, controlable.getHeight() / (1.65f), 0);
             controls.put(controlList.get(texture), control);
-            start -= controlable.getWidth() + controlWidth;
+            start -= controlable.getWidth() - controlWidth;
         }
         buttonOrder = new ArrayList<>();
         buttonOrder.add("media/textures/video_controls_list_1.png");

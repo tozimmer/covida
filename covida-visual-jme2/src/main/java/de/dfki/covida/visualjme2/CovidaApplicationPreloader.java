@@ -71,12 +71,11 @@ public class CovidaApplicationPreloader implements Runnable {
                 clipboardButton.node, clipboard.node));
         application.addComponent(clipboardButton);
         clipboard.close();
-        clipboard.setZOrder(CovidaZOrder.getInstance().getUi_cornermenus());
         AnnotationSearchField search = new AnnotationSearchField(
                 "media/textures/search_field_color.png",
                 application.getWidth() / 2,
                 (int) (application.getHeight() / 1.5f),
-                clipboard.getZOrder()-5);
+                CovidaZOrder.getInstance().getUi_cornermenus());
         search.setLocalTranslation(0, 100, 0);
         search.setDefaultPosition();
         ControlButton searchButton = new ControlButton(ActionName.CLOSE,
@@ -86,19 +85,17 @@ public class CovidaApplicationPreloader implements Runnable {
         GameTaskQueueManager.getManager().update(new AttachChildCallable(
                 searchButton.node, search.node));
         application.addComponent(searchButton);
-        search.setZOrder(CovidaZOrder.getInstance().getUi_cornermenus());
         search.close();
         ControlButton garbadge = new ControlButton(ActionName.GARBADGE,
                 null, "media/textures/garbadge.png",
                 "media/textures/garbadge.png", 64, 64,
-                search.getZOrder()-5);
+                CovidaZOrder.getInstance().getUi_cornermenus());
         application.addComponent(garbadge);
         ControlButton openNew = new ControlButton(ActionName.OPEN,
                 application, "media/textures/new.png",
                 "media/textures/new.png", 64, 64,
                 CovidaZOrder.getInstance().getUi_cornermenus());
         application.addComponent(openNew);
-
         ControlButton configButton = new ControlButton(ActionName.CONFIG,
                 application, "media/textures/config.png",
                 "media/textures/config.png", 64, 64,
@@ -111,15 +108,14 @@ public class CovidaApplicationPreloader implements Runnable {
                 CovidaZOrder.getInstance().getUi_cornermenus());
         classes.setLocalTranslation(0, -100, 0);
         classes.setDefaultPosition();
-        classes.setZOrder(CovidaZOrder.getInstance().getUi_cornermenus());
         ControlButton classesButton = new ControlButton(ActionName.CLOSE,
                 classes, "media/textures/classes.png",
                 "media/textures/classes.png", 64, 64,
-                classes.getZOrder()-5);
+                classes.getZOrder()-8);
         GameTaskQueueManager.getManager().update(new AttachChildCallable(
                 classesButton.node, classes.node));
         application.addComponent(classesButton);
-//        classes.close();
+        classes.close();
         
 //        AnnotationClasses classes2 = new AnnotationClasses(
 //                "media/textures/classes_field.png",

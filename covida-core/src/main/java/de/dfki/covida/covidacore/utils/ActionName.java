@@ -100,7 +100,16 @@ public enum ActionName {
      * Opens new video component
      */
     OPEN, 
-    CLOSEAPP;
+    /**
+     * UI Color List
+     */
+    UICOLORLIST,
+    /**
+     * Changes UI Color
+     */
+    UICOLOR,
+    CLOSEAPP, 
+    RESET;
 
     @Override
     public String toString() {

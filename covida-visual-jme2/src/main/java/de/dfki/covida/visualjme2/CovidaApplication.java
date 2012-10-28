@@ -33,6 +33,7 @@ import com.jme.image.Image;
 import com.jme.image.Texture;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector2f;
+import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Spatial;
 import com.jme.scene.TexCoords;
 import com.jme.scene.shape.Quad;
@@ -51,6 +52,7 @@ import de.dfki.covida.covidacore.tw.ITouchAndWriteComponent;
 import de.dfki.covida.covidacore.tw.TouchAndWriteComponentHandler;
 import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.visualjme2.animations.PreloadAnimation;
+import de.dfki.covida.visualjme2.components.ConfigButton;
 import de.dfki.covida.visualjme2.components.ControlButton;
 import de.dfki.covida.visualjme2.components.DrawingOverlay;
 import de.dfki.covida.visualjme2.components.JMEComponent;
@@ -120,6 +122,13 @@ public class CovidaApplication extends ApplicationImpl implements IControlableCo
         background.getLocalTranslation().set(display.getWidth() / 2, display.getHeight() / 2, 0);
         background.rotatePoints(q);
         background.setCullHint(Spatial.CullHint.Inherit);
+        ColorRGBA color = ColorRGBA.white;
+        Color c = CovidaConfiguration.getInstance().uiColor;
+        if (CovidaConfiguration.getInstance().uiColor != null) {
+            color = new ColorRGBA(c.getRed() / 255.f, c.getGreen() / 255.f,
+                    c.getBlue() / 255.f, c.getAlpha() / 255.f);
+        }
+        background.setDefaultColor(color);
         // set background Texture
         Texture backgroundTexture = TextureManager.loadTexture(
                 getClass().getClassLoader().getResource("media/textures/1280x800.jpg"),
@@ -185,7 +194,7 @@ public class CovidaApplication extends ApplicationImpl implements IControlableCo
                 pen.penColor = Color.WHITE;
                 pen.penThickness = 1;
                 pen.userlogin = configuration.defaultlogin;
-                login("1", getWidth() / 2, getHeight() / 2, 
+                login("1", getWidth() / 2, getHeight() / 2,
                         configuration.defaultlogin);
             } else {
                 for (PenData pen : configuration.pens) {
@@ -423,8 +432,9 @@ public class CovidaApplication extends ApplicationImpl implements IControlableCo
                     CovidaZOrder.getInstance().getUi_node());
             GameTaskQueueManager.getManager().update(new AttachChildCallable(
                     CovidaRootNode.node, video.node));
-            addComponent(video);
             video.node.setLocalTranslation(getWidth() / 2, getHeight() / 2, 0);
+            video.open();
+            addComponent(video);
         }
         return false;
     }
@@ -450,12 +460,62 @@ public class CovidaApplication extends ApplicationImpl implements IControlableCo
                 CovidaZOrder.getInstance().getUi_node());
         GameTaskQueueManager.getManager().update(new AttachChildCallable(
                 CovidaRootNode.node, video.node));
-        addComponent(video);
         video.node.setLocalTranslation(getWidth() / 2, getHeight() / 2, 0);
+        video.open();
+        addComponent(video);
     }
 
     @Override
     public void clearDrawings() {
         loginOverlay.clear();
+    }
+    
+    @Override
+    public void changeColor(ColorRGBA color) {
+        for(ITouchAndWriteComponent comp : TouchAndWriteComponentHandler.getInstance().getComponents()){
+            if(comp instanceof ControlButton){
+                ControlButton button = (ControlButton) comp;
+                button.setColor(color);
+            }
+            if(comp instanceof ConfigButton){
+                ConfigButton button = (ConfigButton) comp;
+                button.setColor(color);
+            }
+        }
+        background.setDefaultColor(color);
+    }
+
+    @Override
+    public void applicationEndMessage() {
+        background.setZOrder(CovidaZOrder.getInstance().getPreload());
+        logo.setZOrder(CovidaZOrder.getInstance().getPreload());
+        Texture overlayDefaultTexture = TextureManager.loadTexture(
+                getClass().getClassLoader().getResource(
+                "media/textures/goodbye.png"),
+                Texture.MinificationFilter.BilinearNearestMipMap,
+                Texture.MagnificationFilter.Bilinear);
+        overlayDefaultTexture.setWrap(Texture.WrapMode.Clamp);
+        TextureState overlayDefaultState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
+        overlayDefaultState.setTexture(overlayDefaultTexture);
+        logo.setRenderState(overlayDefaultState);
+        logo.updateRenderState();
+        // update game state, do not use interpolation parameter
+        update(-1.0f);
+        // render, do not use interpolation parameter
+        render(-1.0f);
+        // swap buffers
+        display.getRenderer().displayBackBuffer();
+        long time = System.currentTimeMillis();
+        ColorRGBA color = logo.getDefaultColor();
+        while (System.currentTimeMillis() - time < 900) {
+            color.a = 1.f - ((System.currentTimeMillis() - time) / 900.f);
+            logo.setDefaultColor(color);
+            // update game state, do not use interpolation parameter
+            update(-1.0f);
+            // render, do not use interpolation parameter
+            render(-1.0f);
+            // swap buffers
+            display.getRenderer().displayBackBuffer();
+        }
     }
 }

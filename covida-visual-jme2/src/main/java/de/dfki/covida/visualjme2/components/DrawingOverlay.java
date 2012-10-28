@@ -40,7 +40,6 @@ import com.jme.system.DisplaySystem;
 import com.jme.util.GameTaskQueueManager;
 import com.jmex.awt.swingui.ImageGraphics;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
-import de.dfki.covida.visualjme2.utils.CovidaZOrder;
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;

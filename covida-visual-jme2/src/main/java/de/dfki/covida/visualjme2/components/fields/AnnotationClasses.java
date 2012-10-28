@@ -76,15 +76,15 @@ public class AnnotationClasses extends FieldComponent implements
 
     @Override
     public final void update() {
-        Vector3f local = new Vector3f(-getWidth() / 3.2f, getHeight() / 2 - 3 * FONT_SIZE, 0);
+        Vector3f local = new Vector3f(-getWidth() / 3.2f, getHeight() / 2 - 50, 0);
         for (AnnotationClass annotationClass : AnnotationClassList.load().annotationClasses) {
             ClassButton classButton = new ClassButton(annotationClass,
-                    local,(int) (getWidth() / 3.1f), getHeight() / 6, getZOrder() - 1);
+                    local,(int) (getWidth() / 3.1f), getHeight() / 9, getZOrder() - 1);
             attachChild(classButton);
             if (local.x < getWidth() / 3.1f) {
                 local = local.add(getWidth()/ 3.1f, 0, 0);
             }else{
-                local = local.add(-(2*(getWidth()/ 3.1f)), -getHeight()/5.5f, 0);
+                local = local.add(-(2*(getWidth()/ 3.1f)), -getHeight()/9.f, 0);
             }
         }
     }
@@ -154,13 +154,10 @@ public class AnnotationClasses extends FieldComponent implements
     public void hwrAction(String id, String hwr) {
         if (open) {
             overlay.clear();
-            hwrResults.add(hwr);
             update();
         }
     }
 
     public void deleteDescription(TextComponent aThis) {
-        hwrResults.remove(aThis.getText());
-        aThis.detach();
     }
 }

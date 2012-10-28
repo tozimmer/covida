@@ -339,6 +339,7 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
     @Override
     public void onDisplay(int[] data) {
         frame.setRGB(0, 0, width, height, data, 0, width);
+        data = null;
     }
 
     @Override

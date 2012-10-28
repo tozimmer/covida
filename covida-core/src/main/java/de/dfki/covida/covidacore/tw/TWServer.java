@@ -29,6 +29,7 @@ package de.dfki.covida.covidacore.tw;
 
 import de.dfki.touchandwrite.TouchAndWriteDevice;
 import de.dfki.touchandwrite.TouchAndWriteServer;
+import de.dfki.touchandwrite.conf.TouchAndWriteConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,9 +51,9 @@ public class TWServer {
      * 
      * @param device 
      */
-    public TWServer(TouchAndWriteDevice device){
+    public TWServer(TouchAndWriteDevice device, TouchAndWriteConfiguration conf){
         log.debug("Create new Touch & Write server instance.");
-        twserver = new TouchAndWriteServer(device);
+        twserver = new TouchAndWriteServer(device, conf);
     }
     
     /**

@@ -33,6 +33,8 @@ import com.jme.image.Texture.WrapMode;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
+import com.jme.renderer.ColorRGBA;
+import com.jme.scene.Spatial;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.state.BlendState;
 import com.jme.scene.state.RenderState;
@@ -43,6 +45,7 @@ import com.jme.util.TextureManager;
 import de.dfki.covida.covidacore.components.IControlableComponent;
 import de.dfki.covida.covidacore.components.IVideoComponent;
 import de.dfki.covida.covidacore.data.Annotation;
+import de.dfki.covida.covidacore.data.AnnotationClass;
 import de.dfki.covida.covidacore.data.AnnotationStorage;
 import de.dfki.covida.covidacore.data.CovidaConfiguration;
 import de.dfki.covida.covidacore.data.Stroke;
@@ -53,6 +56,7 @@ import de.dfki.covida.videovlcj.AbstractVideoHandler;
 import de.dfki.covida.videovlcj.rendered.RenderedVideoHandler;
 import de.dfki.covida.visualjme2.animations.CovidaSpatialController;
 import de.dfki.covida.visualjme2.animations.DragAnimation;
+import de.dfki.covida.visualjme2.animations.PreloadAnimation;
 import de.dfki.covida.visualjme2.animations.ResetAnimation;
 import de.dfki.covida.visualjme2.components.JMEComponent;
 import de.dfki.covida.visualjme2.components.TextComponent;
@@ -150,6 +154,8 @@ public final class VideoComponent extends JMEComponent implements
      */
     private long dragTimer;
     private final VideoMediaData data;
+    private Quad preloadScreen;
+    private SpatialTransformer stPreload;
 
     /**
      * Creates an instance of {@link VideoComponent}
@@ -164,10 +170,38 @@ public final class VideoComponent extends JMEComponent implements
         super("Video Component " + data.videoName, zOrder);
         log.debug("Create video id:" + getId());
         this.data = data;
+    }
+
+    public void open() {
+        preloadAnimation();
         video = new RenderedVideoHandler(data, this);
         video.initComponent();
         setDefaultPosition();
         initializeAnnotationData();
+    }
+
+    private void preloadAnimation() {
+        // Splash Screen
+        preloadScreen = new Quad("Splash-Image-Quad", 64, 64);
+        preloadScreen.setZOrder(CovidaZOrder.getInstance().getPreload());
+        // set splash screen background Texture
+        Texture splashTexture = TextureManager.loadTexture(
+                getClass().getClassLoader().getResource("media/textures/loading_small.png"),
+                Texture.MinificationFilter.BilinearNearestMipMap,
+                Texture.MagnificationFilter.Bilinear);
+        splashTexture.setWrap(Texture.WrapMode.Repeat);
+        preloadScreen.setCullHint(Spatial.CullHint.Inherit);
+        TextureState splashTextureState = DisplaySystem.getDisplaySystem()
+                .getRenderer().createTextureState();
+        splashTextureState.setTexture(splashTexture);
+        preloadScreen.setRenderState(splashTextureState);
+        preloadScreen.setRenderState(JMEUtils.initalizeBlendState());
+        preloadScreen.updateRenderState();
+        GameTaskQueueManager.getManager().update(
+                new AttachChildCallable(node, preloadScreen));
+        stPreload = PreloadAnimation.getController(preloadScreen);
+        GameTaskQueueManager.getManager().update(
+                new AddControllerCallable(preloadScreen, stPreload));
     }
 
     private void initializeAnnotationData() {
@@ -183,6 +217,10 @@ public final class VideoComponent extends JMEComponent implements
         setDrawable(true);
         setTouchable(true);
         startTests();
+        GameTaskQueueManager.getManager().update(new RemoveControllerCallable(
+                preloadScreen, stPreload));
+        GameTaskQueueManager.getManager().update(new DetachChildCallable(
+                node, preloadScreen));
     }
 
     /**
@@ -381,7 +419,8 @@ public final class VideoComponent extends JMEComponent implements
      */
     private void createOverlays() {
         textOverlay = new TextComponent(this, ActionName.NONE,
-                getZOrder());
+                getZOrder() - 2);
+        textOverlay.setColor(ColorRGBA.gray);
         textOverlay.setLocalTranslation(0, getHeight() / (1.50f) - getFontSize()
                 / 2.f, 0);
         attachChild(textOverlay);
@@ -941,6 +980,8 @@ public final class VideoComponent extends JMEComponent implements
                     video.stop();
                     return true;
                 }
+            } else if (action.equals(ActionName.RESET)) {
+                reset(0);
             }
         }
         return false;
@@ -973,5 +1014,17 @@ public final class VideoComponent extends JMEComponent implements
     @Override
     public UUID getUUID() {
         return data.uuid;
+    }
+
+    public void tagAction(AnnotationClass tag) {
+        infoField.tagAction(tag);
+    }
+
+    public void classAction(AnnotationClass tag) {
+    }
+
+    public void setFieldZOrder() {
+        infoField.setZOrder(node.getZOrder());
+        listField.setZOrder(node.getZOrder());
     }
 }

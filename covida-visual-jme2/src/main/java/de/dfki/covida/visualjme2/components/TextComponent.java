@@ -164,7 +164,7 @@ public class TextComponent extends JMEComponent implements IControlButton {
     }
 
     public void fadeOut(float time) {
-        txt.setDefaultColor(color);
+        txt.setDefaultColor(txt.getDefaultColor());
         TimedLifeController fader = new TimedLifeController(time) {
             @Override
             public void updatePercentage(float percentComplete) {
@@ -330,7 +330,9 @@ public class TextComponent extends JMEComponent implements IControlButton {
                         info.getVideo().hwrAction(null, text);
                     } else if (comp instanceof AnnotationClipboard) {
                         AnnotationClipboard clipboard = (AnnotationClipboard) comp;
-                        clipboard.hwrAction(null, text);
+                        if (!(component instanceof AnnotationClipboard)) {
+                            clipboard.hwrAction(null, text);
+                        }
                     } else if (comp instanceof ControlButton) {
                         ControlButton button = (ControlButton) comp;
                         if (button.getAction().equals(ActionName.GARBADGE)) {
@@ -400,5 +402,9 @@ public class TextComponent extends JMEComponent implements IControlButton {
 
     public UUID getLoadUUID() {
         return uuid;
+    }
+
+    public ColorRGBA getColor() {
+        return txt.getDefaultColor();
     }
 }
