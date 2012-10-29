@@ -78,7 +78,7 @@ public class AnnotationClasses extends FieldComponent implements
     public final void update() {
         Vector3f local = new Vector3f(-getWidth() / 3.2f, getHeight() / 2 - 50, 0);
         for (AnnotationClass annotationClass : AnnotationClassList.load().annotationClasses) {
-            ClassButton classButton = new ClassButton(annotationClass,
+            ClassButton classButton = new ClassButton(annotationClass, null,
                     local,(int) (getWidth() / 3.1f), getHeight() / 9, getZOrder() - 1);
             attachChild(classButton);
             if (local.x < getWidth() / 3.1f) {

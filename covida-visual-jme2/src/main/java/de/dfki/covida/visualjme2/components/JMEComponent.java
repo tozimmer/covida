@@ -437,6 +437,9 @@ public abstract class JMEComponent implements ITouchAndWriteComponent {
     @Override
     public boolean inArea(int x, int y) {
         Node n = node;
+        if(getDimension().getWidth() == 0 || getDimension().getHeight() == 0){
+            return false;
+        }
         while (n.getParent() != null && !n.getParent()
                 .equals(CovidaRootNode.node)) {
             n = n.getParent();

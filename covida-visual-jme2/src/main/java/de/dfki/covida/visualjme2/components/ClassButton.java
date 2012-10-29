@@ -45,11 +45,13 @@ public class ClassButton extends JMEComponent implements IControlableComponent {
     private int fontSize = 28;
     private final Quad tagTopQuad;
     private final Quad tagShineQuad;
+    private final InfoFieldComponent field;
 
-    public ClassButton(AnnotationClass tag, Vector3f local,
+    public ClassButton(AnnotationClass tag, InfoFieldComponent field, Vector3f local,
             int width, int height, int zOrder) {
         super(tag.name + " class button", zOrder);
         this.fontSize = (int) (fontSize * ((float) height / 64));
+        this.field = field;
         this.tag = tag;
         this.node.setLocalTranslation(local);
         this.width = width;
@@ -131,6 +133,10 @@ public class ClassButton extends JMEComponent implements IControlableComponent {
     public int getHeight() {
         return height;
     }
+    
+    public AnnotationClass getTag(){
+        return tag;
+    }
 
     @Override
     public void dragAction(int id, int x, int y, int dx, int dy) {
@@ -187,8 +193,13 @@ public class ClassButton extends JMEComponent implements IControlableComponent {
                 } else if (comp instanceof InfoFieldComponent) {
                     InfoFieldComponent info = (InfoFieldComponent) comp;
                     info.tagAction(tag);
-                } else if (comp instanceof AnnotationClipboard) {
-                    AnnotationClipboard clipboard = (AnnotationClipboard) comp;
+                } else if (comp instanceof ControlButton) {
+                    ControlButton control = (ControlButton) comp;
+                    if(control.getAction().equals(ActionName.GARBADGE)
+                            && field != null){
+                        field.deleteTag(this);
+                        return;
+                    }
                 } else if (comp instanceof AnnotationSearchField) {
                     AnnotationSearchField search = (AnnotationSearchField) comp;
                 }
@@ -197,7 +208,7 @@ public class ClassButton extends JMEComponent implements IControlableComponent {
         }
     }
 
-    void detach() {
+    public void detach() {
         setTouchable(false);
         if (node.hasChild(tagQuad)) {
             GameTaskQueueManager.getManager().update(new DetachChildCallable(

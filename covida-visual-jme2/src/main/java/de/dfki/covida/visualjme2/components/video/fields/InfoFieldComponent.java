@@ -394,6 +394,22 @@ public class InfoFieldComponent extends JMEComponent {
                 drawHwrResult(part);
             }
         }
+        for (ClassButton button : classes) {
+            button.detach();
+        }
+        classes.clear();
+        if (annotation.classes == null) {
+            annotation.classes = new ArrayList<>();
+        }
+        for (AnnotationClass tag : annotation.classes) {
+            if (!annotation.classes.contains(tag)) {
+                annotation.classes.add(tag);
+                Vector3f local = new Vector3f(getWidth() / 2 + 32, getHeight() / 2 - 128 - classes.size() * 64, 0);
+                ClassButton button = new ClassButton(tag, this, local, 96, 32, getZOrder() - 1);
+                attachChild(button);
+                classes.add(button);
+            }
+        }
     }
 
     /**
@@ -532,6 +548,10 @@ public class InfoFieldComponent extends JMEComponent {
         }
         video.clearAnnotation();
         listField.drawEntries();
+        for (ClassButton button : classes) {
+            button.detach();
+        }
+        classes.clear();
     }
 
     public void delete() {
@@ -551,8 +571,8 @@ public class InfoFieldComponent extends JMEComponent {
     public void tagAction(AnnotationClass tag) {
         if (!annotation.classes.contains(tag)) {
             annotation.classes.add(tag);
-            Vector3f local = new Vector3f(getWidth()/2 + 32, getHeight()/2 - 128 - classes.size() * 64, 0);
-            ClassButton button = new ClassButton(tag, local, 96, 32, getZOrder() - 1);
+            Vector3f local = new Vector3f(getWidth() / 2 + 32, getHeight() / 2 - 128 - classes.size() * 64, 0);
+            ClassButton button = new ClassButton(tag, this, local, 96, 32, getZOrder() - 1);
             attachChild(button);
             classes.add(button);
         }
@@ -569,12 +589,17 @@ public class InfoFieldComponent extends JMEComponent {
                 descriptionText.remove(0);
             }
             descriptionBeginY = (int) (textBeginY - (float) getFontSpacer());
-            for (TextComponent text : descriptionText) {
-                descriptionBeginY = (int) (descriptionBeginY - (float) getFontSpacer() * 0.9f);
-                text.setLocalTranslation(0, descriptionBeginY, 0);
-                text.setDefaultPosition();
-            }
+
             descriptionBeginY = (int) (descriptionBeginY - (float) getFontSpacer() * 0.9f);
         }
+        for (TextComponent text : descriptionText) {
+            descriptionBeginY = (int) (descriptionBeginY - (float) getFontSpacer() * 0.9f);
+            text.setLocalTranslation(0, descriptionBeginY, 0);
+            text.setDefaultPosition();
+        }
+    }
+
+    public void deleteTag(ClassButton aThis) {
+        if (annotation.classes.contains(aThis.getTag()));
     }
 }

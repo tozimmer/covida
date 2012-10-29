@@ -74,7 +74,7 @@ public class VideoSlider extends JMEComponent implements ISlider {
         overlaySliderState.setTexture(overlaySliderTexture);
         sliderQuad = new Quad(
                 ("Overlay-Video-Slider-Image-Quad-0"), video.getWidth(),
-                video.getHeight() / 10.f);
+                video.getHeight() / 8.f);
         sliderQuad.setRenderState(
                 overlaySliderState);
         sliderQuad.setRenderState(alpha);
@@ -122,7 +122,7 @@ public class VideoSlider extends JMEComponent implements ISlider {
     }
 
     private void touchAction(int x, int y) {
-        if (node.hasChild(sliderNode) && inArea(x, y)) {
+        if (node.hasChild(sliderNode)) {
             Vector3f result = getLocal(x, y);
             float percentage = (result.x + getWidth() / 2.0f) / getWidth();
             if (percentage <= 1.0f) {
