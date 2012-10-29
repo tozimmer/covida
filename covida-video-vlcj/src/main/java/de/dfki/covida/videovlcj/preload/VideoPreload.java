@@ -32,6 +32,8 @@ import de.dfki.covida.covidacore.data.VideoMediaData;
 import de.dfki.covida.videovlcj.AbstractVideoHandler;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,13 +63,13 @@ public class VideoPreload implements Runnable, MediaPlayerEventListener {
     private static final String[] VLC_ARGS = {
         "--intf", "dummy", /* no interface */
         "--vout", "dummy", /* we don't want video (output) */
-        "--no-audio", /* we don't want audio (decoding) */ //        
-        "--no-video-title-show", /* nor the filename displayed */
-        "--no-stats", /* no stats */ //        
-        "--no-sub-autodetect-file", /* we don't want subtitles */
-        "--no-disable-screensaver", /* we don't want interfaces */
-        "--no-snapshot-preview", /* no blending in dummy vout */
-        "--ffmpeg-threads", "0"
+//        "--no-audio", /* we don't want audio (decoding) */ //        
+//        "--no-video-title-show", /* nor the filename displayed */
+//        "--no-stats", /* no stats */ //        
+//        "--no-sub-autodetect-file", /* we don't want subtitles */
+//        "--no-disable-screensaver", /* we don't want interfaces */
+//        "--no-snapshot-preview", /* no blending in dummy vout */
+//        "--ffmpeg-threads", "0"
     };
     private MediaPlayerFactory factory;
     private final VideoMediaData data;
@@ -108,13 +110,14 @@ public class VideoPreload implements Runnable, MediaPlayerEventListener {
      * Initializes the preload
      */
     private void initComponent() {
-        log.debug("VIDEO SOURCE (PRELOAD): " + data.videoName);
+        log.debug("VIDEO SOURCE (PRELOAD): " + data.videoSource);
         factory = new MediaPlayerFactory(VLC_ARGS);
         mediaPlayer = factory.newHeadlessMediaPlayer();
+        mediaPlayer.setPlaySubItems(true);
         mediaPlayer.addMediaPlayerEventListener(this);
         mediaPlayer.setVolume(0);
         if (mediaPlayer.startMedia(data.videoSource)) {
-            if (thumbcreation) {
+            if (thumbcreation && mediaPlayer.isSeekable()) {
                 log.debug("Create thumbnails for video: " + data.videoName);
                 while (vlc_thumbnail_number < VLC_THUMBNAIL_POSITION.length) {
                     mediaPlayer.setPosition(VLC_THUMBNAIL_POSITION[vlc_thumbnail_number]);
@@ -250,6 +253,7 @@ public class VideoPreload implements Runnable, MediaPlayerEventListener {
     
     @Override
     public void error(MediaPlayer mp) {
+        log.error("Error in "+mp.mrl());
     }
     
     @Override
@@ -258,6 +262,8 @@ public class VideoPreload implements Runnable, MediaPlayerEventListener {
     
     @Override
     public void mediaSubItemAdded(MediaPlayer mp, libvlc_media_t l) {
+        List<String> items = mediaPlayer.subItems();
+        log.debug(Arrays.toString(items.toArray()));
     }
     
     @Override

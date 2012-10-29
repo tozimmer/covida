@@ -324,7 +324,7 @@ public class CovidaApplication extends ApplicationImpl implements IControlableCo
     protected void loadingAnimation() {
         // Splash Screen
         preloadScreen = new Quad("Splash-Image-Quad", 512, 512);
-        preloadScreen.setZOrder(CovidaZOrder.getInstance().getPreload());
+        preloadScreen.setZOrder(CovidaZOrder.getInstance().getPreload()-50);
         // set splash screen background Texture
         Texture splashTexture = TextureManager.loadTexture(
                 getClass().getClassLoader().getResource("media/textures/loading.png"),

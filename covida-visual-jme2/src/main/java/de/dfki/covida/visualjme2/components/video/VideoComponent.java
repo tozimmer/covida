@@ -46,6 +46,7 @@ import de.dfki.covida.covidacore.components.IControlableComponent;
 import de.dfki.covida.covidacore.components.IVideoComponent;
 import de.dfki.covida.covidacore.data.Annotation;
 import de.dfki.covida.covidacore.data.AnnotationClass;
+import de.dfki.covida.covidacore.data.AnnotationData;
 import de.dfki.covida.covidacore.data.AnnotationStorage;
 import de.dfki.covida.covidacore.data.CovidaConfiguration;
 import de.dfki.covida.covidacore.data.Stroke;
@@ -70,6 +71,7 @@ import de.dfki.touchandwrite.shape.ShapeType;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.UUID;
 import uk.co.caprica.vlcj.player.MediaPlayer;
@@ -205,7 +207,12 @@ public final class VideoComponent extends JMEComponent implements
     }
 
     private void initializeAnnotationData() {
-        AnnotationStorage.getInstance().getAnnotationData(this);
+        AnnotationData annotationData = AnnotationStorage.getInstance()
+                .getAnnotationData(this);
+        if (!annotationData.uuid.equals(data.uuid)) {
+            annotationData.uuid = data.uuid;
+            annotationData.write();
+        }
     }
 
     @Override
@@ -288,6 +295,7 @@ public final class VideoComponent extends JMEComponent implements
         annotation.time_start = time;
         annotation.creator = creator;
         annotation.date = Calendar.getInstance().getTime();
+        annotation.classes = new ArrayList<>();
         // set annotation data
         infoField.setAnnotationData(annotation);
     }
@@ -1017,10 +1025,22 @@ public final class VideoComponent extends JMEComponent implements
     }
 
     public void tagAction(AnnotationClass tag) {
+        if (!video.isReady()) {
+            return;
+        }
+        if (video.getShapes().strokelist.isEmpty()) {
+            Stroke stroke = new Stroke();
+            stroke.points.add(new Point(5, 5));
+            stroke.points.add(new Point(5, getHeight() - 5));
+            stroke.points.add(new Point(getWidth() - 5, getHeight() - 5));
+            stroke.points.add(new Point(getWidth() - 5, 5));
+            stroke.points.add(new Point(5, 5));
+            video.addShape(stroke);
+            String creator = CovidaConfiguration.getLoggedUser(null);
+            setNewAnnotationData(creator);
+        }
+        video.clearDrawing();
         infoField.tagAction(tag);
-    }
-
-    public void classAction(AnnotationClass tag) {
     }
 
     public void setFieldZOrder() {

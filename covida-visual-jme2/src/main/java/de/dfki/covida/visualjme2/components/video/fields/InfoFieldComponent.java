@@ -45,6 +45,7 @@ import de.dfki.covida.covidacore.data.StrokeList;
 import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.covidacore.utils.VideoUtils;
 import de.dfki.covida.visualjme2.animations.*;
+import de.dfki.covida.visualjme2.components.ClassButton;
 import de.dfki.covida.visualjme2.components.ControlButton;
 import de.dfki.covida.visualjme2.components.JMEComponent;
 import de.dfki.covida.visualjme2.components.TextComponent;
@@ -53,6 +54,7 @@ import de.dfki.covida.visualjme2.utils.*;
 import de.dfki.touchandwrite.shape.ShapeType;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * Component which displays annotation data of VideoComponent.
@@ -113,6 +115,7 @@ public class InfoFieldComponent extends JMEComponent {
     private SpatialTransformer st;
     private ControlButton save;
     private ControlButton delete;
+    private List<ClassButton> classes;
 
     /**
      * Info field constructor
@@ -129,6 +132,7 @@ public class InfoFieldComponent extends JMEComponent {
         this.video = video;
         this.width = width;
         this.height = height;
+        classes = new ArrayList<>();
         defaultScale = new Vector3f(getLocalScale().x, getLocalScale().y, getLocalScale().z);
         defaultRotation = new Quaternion(getLocalRotation().x,
                 getLocalRotation().y, getLocalRotation().z,
@@ -545,6 +549,13 @@ public class InfoFieldComponent extends JMEComponent {
     }
 
     public void tagAction(AnnotationClass tag) {
+        if (!annotation.classes.contains(tag)) {
+            annotation.classes.add(tag);
+            Vector3f local = new Vector3f(getWidth()/2 + 32, getHeight()/2 - 128 - classes.size() * 64, 0);
+            ClassButton button = new ClassButton(tag, local, 96, 32, getZOrder() - 1);
+            attachChild(button);
+            classes.add(button);
+        }
     }
 
     private void update() {

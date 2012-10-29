@@ -128,7 +128,6 @@ public class AnnotationClasses extends FieldComponent implements
         // Open animation
         st = OpenAnimation.getController(node, ANIMATION_DURATION, defaultScale, defaultTranslation);
         GameTaskQueueManager.getManager().update(new AddControllerCallable(node, st));
-        update();
     }
 
     @Override
@@ -154,7 +153,6 @@ public class AnnotationClasses extends FieldComponent implements
     public void hwrAction(String id, String hwr) {
         if (open) {
             overlay.clear();
-            update();
         }
     }
 

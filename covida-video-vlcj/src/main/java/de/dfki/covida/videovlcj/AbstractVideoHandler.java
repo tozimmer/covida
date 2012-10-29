@@ -166,6 +166,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
         graphics = new VideoRenderer(data.width, data.height, data.videoName);
         mediaPlayer = mediaPlayerFactory.newDirectMediaPlayer(width, height,
                 (VideoRenderer) graphics);
+        mediaPlayer.setPlaySubItems(true);
         addEventListener();
         video.create();
     }

@@ -42,13 +42,14 @@ public class ClassButton extends JMEComponent implements IControlableComponent {
     private final int height;
     private Quad tagQuad;
     private final AnnotationClass tag;
-    private final static int FONT_SIZE = 28;
+    private int fontSize = 28;
     private final Quad tagTopQuad;
     private final Quad tagShineQuad;
 
     public ClassButton(AnnotationClass tag, Vector3f local,
             int width, int height, int zOrder) {
         super(tag.name + " class button", zOrder);
+        this.fontSize = (int) (fontSize * ((float) height / 64));
         this.tag = tag;
         this.node.setLocalTranslation(local);
         this.width = width;
@@ -102,7 +103,7 @@ public class ClassButton extends JMEComponent implements IControlableComponent {
         tagShineQuad.setRenderState(tagShineState);
         tagShineQuad.setRenderState(JMEUtils.initalizeBlendState());
         tagShineQuad.updateRenderState();
-        tagShineQuad.setDefaultColor(ColorRGBA.black);
+        tagShineQuad.setDefaultColor(ColorRGBA.gray);
         attachChild(tagShineQuad);
         tagShineQuad.setZOrder(getZOrder() - 4);
         TextComponent tagText = new TextComponent(this, ActionName.NONE, zOrder - 3);
@@ -113,11 +114,11 @@ public class ClassButton extends JMEComponent implements IControlableComponent {
         }
         tagTopQuad.setDefaultColor(color);
         tagText.setAlign(BitmapFont.Align.Center);
-        tagText.setSize(FONT_SIZE);
+        tagText.setSize(fontSize);
         tagText.setText(tag.name);
         tagText.setFont(1);
 //        tagText.setColor(color);
-        tagText.setLocalTranslation(0, FONT_SIZE * 0.8f, 0);
+        tagText.setLocalTranslation(0, fontSize * 0.8f, 0);
         attachChild(tagText);
     }
 
@@ -150,7 +151,7 @@ public class ClassButton extends JMEComponent implements IControlableComponent {
 //        ColorRGBA c = tagQuad.getDefaultColor();
 //        c.a = 1.f;
 //        tagQuad.setDefaultColor(c);
-        tagShineQuad.setDefaultColor(ColorRGBA.black);
+        tagShineQuad.setDefaultColor(ColorRGBA.gray);
     }
 
     @Override
@@ -172,9 +173,8 @@ public class ClassButton extends JMEComponent implements IControlableComponent {
             for (ITouchAndWriteComponent comp : components) {
                 if (((comp instanceof InfoFieldComponent)
                         || (comp instanceof VideoComponent)
-                        || (comp instanceof AnnotationClipboard)
-                        || (comp instanceof AnnotationSearchField)
-                        || (comp instanceof ControlButton))
+                        || (comp instanceof ControlButton)
+                        || (comp instanceof AnnotationSearchField))
                         && comp.inArea(x, y)) {
                     inAreacomponents.put(comp.getZOrder(), comp);
                 }
@@ -183,9 +183,10 @@ public class ClassButton extends JMEComponent implements IControlableComponent {
                 ITouchAndWriteComponent comp = inAreacomponents.get(inAreacomponents.firstKey());
                 if (comp instanceof VideoComponent) {
                     VideoComponent video = (VideoComponent) comp;
-                    video.classAction(tag);
+                    video.tagAction(tag);
                 } else if (comp instanceof InfoFieldComponent) {
                     InfoFieldComponent info = (InfoFieldComponent) comp;
+                    info.tagAction(tag);
                 } else if (comp instanceof AnnotationClipboard) {
                     AnnotationClipboard clipboard = (AnnotationClipboard) comp;
                 } else if (comp instanceof AnnotationSearchField) {
