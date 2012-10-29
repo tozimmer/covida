@@ -4,11 +4,26 @@
     xmlns:dc="http://purl.org/dc/elements/1.1/" > 
   <rdf:Description rdf:nodeID="A0">
     <dc:description>Tarbet </dc:description>
-    <dc:date>29-10-2012 20:05:11</dc:date>
+    <dc:date>29-10-2012 20:27:47</dc:date>
     <dc:creator rdf:nodeID="A1"/>
     <rdf:type rdf:nodeID="A2"/>
   </rdf:Description>
+  <rdf:Description rdf:nodeID="A3">
+    <dc:subject rdf:nodeID="A4"/>
+    <dc:source>..\covida-res\videos\Collaborative Video Annotation.mp4</dc:source>
+    <dc:title>CoVidA Demo</dc:title>
+  </rdf:Description>
   <rdf:Description rdf:nodeID="A1">
+    <vcard:CLASS>User</vcard:CLASS>
+    <vcard:NAME>Covida User</vcard:NAME>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A4">
+    <dc:description>Video </dc:description>
+    <dc:date>29-10-2012 20:29:05</dc:date>
+    <dc:creator rdf:nodeID="A5"/>
+    <rdf:type rdf:nodeID="A3"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A5">
     <vcard:CLASS>User</vcard:CLASS>
     <vcard:NAME>Covida User</vcard:NAME>
   </rdf:Description>
