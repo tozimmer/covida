@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <configuration>
     <path>media/textures/</path>
+    <device>WMINPUT</device>
     <autologon>true</autologon>
     <thumbcount>5</thumbcount>
     <defaultlogin>Covida User</defaultlogin>

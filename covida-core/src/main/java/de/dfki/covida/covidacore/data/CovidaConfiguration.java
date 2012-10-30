@@ -27,6 +27,7 @@
  */
 package de.dfki.covida.covidacore.data;
 
+import de.dfki.touchandwrite.TouchAndWriteDevice;
 import java.awt.Color;
 import java.io.File;
 import java.io.FileWriter;
@@ -71,6 +72,11 @@ public class CovidaConfiguration implements Serializable {
      */
     @XmlElement(name = "path")
     public String texturePath;
+    /**
+     * Touch and Write device 
+     */
+    @XmlElement(name = "device")
+    public TouchAndWriteDevice device;
     /**
      * Indicates if the application should be automatacaly log on with default
      * login
@@ -119,6 +125,7 @@ public class CovidaConfiguration implements Serializable {
      */
     private CovidaConfiguration() {
         texturePath = "media/textures/";
+        device = TouchAndWriteDevice.WMINPUT;
         autologon = true;
         defaultlogin = "Covida User";
         thumbcount = 5;

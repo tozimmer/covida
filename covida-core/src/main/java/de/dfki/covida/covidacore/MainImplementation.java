@@ -28,6 +28,7 @@
 package de.dfki.covida.covidacore;
 
 import com.sun.jna.NativeLibrary;
+import de.dfki.covida.covidacore.data.CovidaConfiguration;
 import de.dfki.covida.covidacore.tw.IApplication;
 import de.dfki.covida.covidacore.tw.TouchAndWriteSupport;
 import de.dfki.touchandwrite.TouchAndWriteDevice;
@@ -49,7 +50,6 @@ public class MainImplementation {
      * Logger
      */
     private static Logger log = LoggerFactory.getLogger(MainImplementation.class);
-    private TouchAndWriteDevice device;
     /**
      * Log level, used only if the -Dvlcj.log= system property has not already
      * been set.
@@ -100,7 +100,7 @@ public class MainImplementation {
         if (opt.isDebug()) {
         } else {
         }
-        device = opt.getDevice();
+        CovidaConfiguration.getInstance().device = opt.getDevice();
     }
 
     /**
@@ -109,7 +109,7 @@ public class MainImplementation {
      * @return {@link TouchAndWriteDevice}
      */
     public TouchAndWriteDevice getDevice() {
-        return device;
+        return CovidaConfiguration.getInstance().device;
     }
 
     /**
@@ -142,7 +142,7 @@ public class MainImplementation {
                 log.error("", ex);
             }
         }
-        TouchAndWriteSupport.start(application, getDevice());
+        TouchAndWriteSupport.start(application);
     }
 
     private static class ApplicationThread implements Runnable {

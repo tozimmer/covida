@@ -75,6 +75,7 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
     private final IApplication application;
     private Map<Integer, ITouchAndWriteComponent> activeTouchComponents;
     private Map<String, ITouchAndWriteComponent> activeDrawComponents;
+    private boolean penActive;
 
     /**
      * Creates an instance of the TouchAndWriteEventHandler class wich wraps the
@@ -309,6 +310,11 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
     @Override
     public void onPenEvent(String device, int x, int y, float force, PenEventDataType penEventState, long timestamp, String eventPageID) {
         SortedMap<Integer, ITouchAndWriteComponent> components = new TreeMap<>();
+        if (penEventState.equals(PenEventDataType.PEN_UP)) {
+            penActive = false;
+        }else{
+            penActive = true;
+        }
         if (componentHandler.isLogin()) {
             if (penEventState.equals(PenEventDataType.PEN_UP)) {
                 application.draw(device, x, y, true);
@@ -317,7 +323,7 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
             }
         }
         if (penEventState.equals(PenEventDataType.PEN_DOWN)) {
-
+            
             for (ITouchAndWriteComponent component : componentHandler.getComponents()) {
                 if (component.isDrawable()) {
                     if (component.inArea(x, y)) {

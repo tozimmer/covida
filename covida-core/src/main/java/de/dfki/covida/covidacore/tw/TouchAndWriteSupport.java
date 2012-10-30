@@ -27,6 +27,7 @@
  */
 package de.dfki.covida.covidacore.tw;
 
+import de.dfki.covida.covidacore.data.CovidaConfiguration;
 import de.dfki.touchandwrite.TouchAndWriteDevice;
 import de.dfki.touchandwrite.conf.TouchAndWriteConfiguration;
 import org.slf4j.Logger;
@@ -49,10 +50,11 @@ public class TouchAndWriteSupport {
      * @param application {@link IApplication}
      * @param device {@link TouchAndWriteDevice}
      */
-    public static void start(IApplication application, TouchAndWriteDevice device) {
+    public static void start(IApplication application) {
         TouchAndWriteConfiguration conf = TouchAndWriteConfiguration
                 .getDefaultWMInputConfig(application.getScreenSize(),
                 "localhost", "localhost");
+        TouchAndWriteDevice device = CovidaConfiguration.getInstance().device;
         if (device.equals(TouchAndWriteDevice.WMINPUT) || 
                 device.equals(TouchAndWriteDevice.EEE_SLATE)) {
             conf = TouchAndWriteConfiguration
@@ -64,7 +66,7 @@ public class TouchAndWriteSupport {
                     .getDefaultTUIOConfig(application.getScreenSize(),
                     "localhost", "localhost", new int[0]);
         }
-        TWServer twServer = new TWServer(device, conf);
+        TWServer twServer = new TWServer(conf);
         twServer.start();
 //        config.getEventmanagerConfig().setHost("192.168.83.100");
         TouchAndWriteEventHandler touchAndWrite = new TouchAndWriteEventHandler(

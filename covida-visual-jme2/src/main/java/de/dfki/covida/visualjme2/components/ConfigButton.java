@@ -115,13 +115,12 @@ public class ConfigButton extends JMEComponent {
         if (action.equals(ActionName.UICOLORLIST)) {
             Vector3f local = new Vector3f(0, 0, 0);
             for (ConfigButton b : buttons) {
-                local = local.add(getWidth(), 0, 0);
+                local = local.add(-getWidth(), 0, 0);
                 SpatialTransformer trans;
                 if (b.getLocalTranslation().x == 0) {
                     trans = OpenAnimation.getController(
                             b.node, 500, defaultScale, new Vector3f(local));
                 } else {
-//                    b.node.setLocalTranslation(new Vector3f(local));
                     trans = OpenAnimation.getController(
                             b.node, 500, defaultScale, new Vector3f(0, 0, 0));
                 }

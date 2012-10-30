@@ -38,6 +38,7 @@ import de.dfki.covida.visualjme2.components.fields.AnnotationClipboard;
 import de.dfki.covida.visualjme2.components.fields.AnnotationSearchField;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
 import de.dfki.covida.visualjme2.utils.CovidaZOrder;
+import de.dfki.touchandwrite.TouchAndWriteDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,87 +57,162 @@ public class CovidaApplicationPreloader implements Runnable {
     }
 
     private void createSideMenus() {
-        AnnotationClipboard clipboard = new AnnotationClipboard(
-                "media/textures/clipboard_field_color.png",
-                application.getWidth() / 2,
-                (int) (application.getHeight() / 1.5f),
-                CovidaZOrder.getInstance().getUi_cornermenus());
-        clipboard.setLocalTranslation(0, 50, 0);
-        clipboard.setDefaultPosition();
-        ControlButton clipboardButton = new ControlButton(ActionName.CLOSE,
-                clipboard, "media/textures/arrow.png",
-                "media/textures/arrow.png", 64, 64,
-                CovidaZOrder.getInstance().getUi_cornermenus());
-        GameTaskQueueManager.getManager().update(new AttachChildCallable(
-                clipboardButton.node, clipboard.node));
-        application.addComponent(clipboardButton);
-        clipboard.close();
-        AnnotationSearchField search = new AnnotationSearchField(
-                "media/textures/search_field_color.png",
-                application.getWidth() / 2,
-                (int) (application.getHeight() / 1.5f),
-                CovidaZOrder.getInstance().getUi_cornermenus());
-        search.setLocalTranslation(0, 100, 0);
-        search.setDefaultPosition();
-        ControlButton searchButton = new ControlButton(ActionName.CLOSE,
-                search, "media/textures/search.png",
-                "media/textures/search.png", 64, 64,
-                CovidaZOrder.getInstance().getUi_cornermenus());
-        GameTaskQueueManager.getManager().update(new AttachChildCallable(
-                searchButton.node, search.node));
-        application.addComponent(searchButton);
-        search.close();
-        ControlButton garbadge = new ControlButton(ActionName.GARBADGE,
-                null, "media/textures/garbadge.png",
-                "media/textures/garbadge.png", 64, 64,
-                CovidaZOrder.getInstance().getUi_cornermenus());
-        application.addComponent(garbadge);
-        ControlButton openNew = new ControlButton(ActionName.OPEN,
-                application, "media/textures/new.png",
-                "media/textures/new.png", 64, 64,
-                CovidaZOrder.getInstance().getUi_cornermenus());
-        application.addComponent(openNew);
-        ControlButton configButton = new ControlButton(ActionName.CONFIG,
-                application, "media/textures/config.png",
-                "media/textures/config.png", 64, 64,
-                CovidaZOrder.getInstance().getUi_cornermenus());
-        application.addComponent(configButton);
-        AnnotationClasses classes = new AnnotationClasses(
-                "media/textures/classes_field.png",
-                application.getWidth() / 2,
-                (int) (application.getHeight() / 1.5f),
-                CovidaZOrder.getInstance().getUi_cornermenus());
-        classes.setLocalTranslation(0, -100, 0);
-        classes.setDefaultPosition();
-        ControlButton classesButton = new ControlButton(ActionName.CLOSE,
-                classes, "media/textures/classes.png",
-                "media/textures/classes.png", 64, 64,
-                classes.getZOrder()-8);
-        GameTaskQueueManager.getManager().update(new AttachChildCallable(
-                classesButton.node, classes.node));
-        application.addComponent(classesButton);
-        classes.close();
-        
-//        AnnotationClasses classes2 = new AnnotationClasses(
-//                "media/textures/classes_field.png",
-//                application.getWidth() / 2, 
-//                (int) (application.getHeight() / 1.5f), 
-//                CovidaZOrder.getInstance().getUi_cornermenus());
-//        classes2.setLocalTranslation(0, 50, 0);
-//        classes2.setDefaultPosition();
-//        ControlButton classesButton2 = new ControlButton(ActionName.CLOSE,
-//                classes2, "media/textures/classes.png",
-//                "media/textures/classes.png", 64, 64, 
-//                CovidaZOrder.getInstance().getUi_cornermenus());
-//        GameTaskQueueManager.getManager().update(new AttachChildCallable(
-//                classesButton2.node, classes2.node));
-//        application.addComponent(classesButton2);
-//        classes2.close();  
-//        ControlButton configButton2 = new ControlButton(ActionName.CONFIG,
-//                application, "media/textures/config.png",
-//                "media/textures/config.png", 64, 64, 
-//                CovidaZOrder.getInstance().getUi_cornermenus());
-//        application.addComponent(configButton2);
+        if (CovidaConfiguration.getInstance().device
+                .equals(TouchAndWriteDevice.TW_TABLE)
+                || CovidaConfiguration.getInstance().device.equals(TouchAndWriteDevice.TW_TABLE)) {
+            AnnotationClipboard clipboard = new AnnotationClipboard(
+                    "media/textures/clipboard_field_color.png",
+                    application.getWidth() / 2,
+                    (int) (application.getHeight() / 1.5f),
+                    CovidaZOrder.getInstance().getUi_cornermenus());
+            clipboard.setLocalTranslation(0, 50, 0);
+            clipboard.setDefaultPosition();
+            clipboard.setTouchable(true);
+            ControlButton clipboardButton = new ControlButton(ActionName.CLOSE,
+                    clipboard, "media/textures/arrow.png",
+                    "media/textures/arrow.png", 96, 96,
+                    CovidaZOrder.getInstance().getUi_cornermenus());
+            GameTaskQueueManager.getManager().update(new AttachChildCallable(
+                    clipboardButton.node, clipboard.node));
+            application.addComponent(clipboardButton);
+            clipboard.close();
+            AnnotationSearchField search = new AnnotationSearchField(
+                    "media/textures/search_field_color.png",
+                    application.getWidth() / 2,
+                    (int) (application.getHeight() / 1.5f),
+                    CovidaZOrder.getInstance().getUi_cornermenus());
+            search.setLocalTranslation(0, 100, 0);
+            search.setDefaultPosition();
+            search.setTouchable(true);
+            ControlButton searchButton = new ControlButton(ActionName.CLOSE,
+                    search, "media/textures/search.png",
+                    "media/textures/search.png", 96, 96,
+                    CovidaZOrder.getInstance().getUi_cornermenus());
+            GameTaskQueueManager.getManager().update(new AttachChildCallable(
+                    searchButton.node, search.node));
+            application.addComponent(searchButton);
+            search.close();
+            ControlButton configButton = new ControlButton(ActionName.CONFIG,
+                    application, "media/textures/config.png",
+                    "media/textures/config.png", 96, 96,
+                    CovidaZOrder.getInstance().getUi_cornermenus());
+            application.addComponent(configButton);
+
+            ControlButton openNew = new ControlButton(ActionName.OPEN,
+                    application, "media/textures/new.png",
+                    "media/textures/new.png", 96, 96,
+                    CovidaZOrder.getInstance().getUi_cornermenus());
+            application.addComponent(openNew);
+            ControlButton garbadge = new ControlButton(ActionName.GARBADGE,
+                    null, "media/textures/garbadge.png",
+                    "media/textures/garbadge.png", 96, 96,
+                    CovidaZOrder.getInstance().getUi_cornermenus());
+            application.addComponent(garbadge);
+            AnnotationClasses classes = new AnnotationClasses(
+                    "media/textures/classes_field.png",
+                    application.getWidth() / 2,
+                    (int) (application.getHeight() / 1.5f),
+                    CovidaZOrder.getInstance().getUi_cornermenus());
+            classes.setLocalTranslation(0, -100, 0);
+            classes.setDefaultPosition();
+            classes.setTouchable(true);
+            ControlButton classesButton = new ControlButton(ActionName.CLOSE,
+                    classes, "media/textures/classes.png",
+                    "media/textures/classes.png", 96, 96,
+                    classes.getZOrder() - 8);
+            GameTaskQueueManager.getManager().update(new AttachChildCallable(
+                    classesButton.node, classes.node));
+            application.addComponent(classesButton);
+            classes.close();
+
+            ControlButton openNew2 = new ControlButton(ActionName.OPEN,
+                    application, "media/textures/new.png",
+                    "media/textures/new.png", 96, 96,
+                    CovidaZOrder.getInstance().getUi_cornermenus());
+            application.addComponent(openNew2);
+
+            AnnotationSearchField search2 = new AnnotationSearchField(
+                    "media/textures/search_field_color.png",
+                    application.getWidth() / 2,
+                    (int) (application.getHeight() / 1.5f),
+                    CovidaZOrder.getInstance().getUi_cornermenus());
+            search2.setLocalTranslation(0, 100, 0);
+            search2.setDefaultPosition();
+            search2.setTouchable(true);
+            ControlButton searchButton2 = new ControlButton(ActionName.CLOSE,
+                    search2, "media/textures/search.png",
+                    "media/textures/search.png", 96, 96,
+                    CovidaZOrder.getInstance().getUi_cornermenus());
+            GameTaskQueueManager.getManager().update(new AttachChildCallable(
+                    searchButton2.node, search2.node));
+            application.addComponent(searchButton2);
+            search2.close();
+
+        } else {
+            AnnotationClipboard clipboard = new AnnotationClipboard(
+                    "media/textures/clipboard_field_color.png",
+                    application.getWidth() / 2,
+                    (int) (application.getHeight() / 1.5f),
+                    CovidaZOrder.getInstance().getUi_cornermenus());
+            clipboard.setLocalTranslation(0, 50, 0);
+            clipboard.setDefaultPosition();
+            clipboard.setTouchable(true);
+            ControlButton clipboardButton = new ControlButton(ActionName.CLOSE,
+                    clipboard, "media/textures/arrow.png",
+                    "media/textures/arrow.png", 64, 64,
+                    CovidaZOrder.getInstance().getUi_cornermenus());
+            GameTaskQueueManager.getManager().update(new AttachChildCallable(
+                    clipboardButton.node, clipboard.node));
+            application.addComponent(clipboardButton);
+            clipboard.close();
+            AnnotationSearchField search = new AnnotationSearchField(
+                    "media/textures/search_field_color.png",
+                    application.getWidth() / 2,
+                    (int) (application.getHeight() / 1.5f),
+                    CovidaZOrder.getInstance().getUi_cornermenus());
+            search.setLocalTranslation(0, 100, 0);
+            search.setDefaultPosition();
+            search.setTouchable(true);
+            ControlButton searchButton = new ControlButton(ActionName.CLOSE,
+                    search, "media/textures/search.png",
+                    "media/textures/search.png", 64, 64,
+                    CovidaZOrder.getInstance().getUi_cornermenus());
+            GameTaskQueueManager.getManager().update(new AttachChildCallable(
+                    searchButton.node, search.node));
+            application.addComponent(searchButton);
+            search.close();
+            ControlButton garbadge = new ControlButton(ActionName.GARBADGE,
+                    null, "media/textures/garbadge.png",
+                    "media/textures/garbadge.png", 64, 64,
+                    CovidaZOrder.getInstance().getUi_cornermenus());
+            application.addComponent(garbadge);
+            ControlButton openNew = new ControlButton(ActionName.OPEN,
+                    application, "media/textures/new.png",
+                    "media/textures/new.png", 64, 64,
+                    CovidaZOrder.getInstance().getUi_cornermenus());
+            application.addComponent(openNew);
+            ControlButton configButton = new ControlButton(ActionName.CONFIG,
+                    application, "media/textures/config.png",
+                    "media/textures/config.png", 64, 64,
+                    CovidaZOrder.getInstance().getUi_cornermenus());
+            application.addComponent(configButton);
+            AnnotationClasses classes = new AnnotationClasses(
+                    "media/textures/classes_field.png",
+                    application.getWidth() / 2,
+                    (int) (application.getHeight() / 1.5f),
+                    CovidaZOrder.getInstance().getUi_cornermenus());
+            classes.setLocalTranslation(0, -100, 0);
+            classes.setDefaultPosition();
+            classes.setTouchable(true);
+            ControlButton classesButton = new ControlButton(ActionName.CLOSE,
+                    classes, "media/textures/classes.png",
+                    "media/textures/classes.png", 64, 64,
+                    classes.getZOrder() - 8);
+            GameTaskQueueManager.getManager().update(new AttachChildCallable(
+                    classesButton.node, classes.node));
+            application.addComponent(classesButton);
+            classes.close();
+        }
     }
 
     @Override

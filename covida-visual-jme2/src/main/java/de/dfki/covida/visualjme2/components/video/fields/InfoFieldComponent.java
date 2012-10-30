@@ -379,6 +379,16 @@ public class InfoFieldComponent extends JMEComponent {
      * @param annotation {@link Annotation} to set.
      */
     public void setAnnotationData(Annotation annotation) {
+        for (ClassButton button : classes) {
+            button.detach();
+        }
+        classes.clear();
+        if (annotation.classes == null) {
+            annotation.classes = new ArrayList<>();
+        }
+        for (AnnotationClass tag : annotation.classes) {
+            tagAction(tag);
+        }
         this.annotation = annotation;
         setTime(annotation.time_start);
         setTitle(AnnotationStorage.getInstance().getAnnotationData(video).title);
@@ -394,20 +404,7 @@ public class InfoFieldComponent extends JMEComponent {
                 drawHwrResult(part);
             }
         }
-        for (ClassButton button : classes) {
-            button.detach();
-        }
-        classes.clear();
-        if (annotation.classes == null) {
-            annotation.classes = new ArrayList<>();
-        }
-        for (AnnotationClass tag : annotation.classes) {
-            Vector3f local = new Vector3f(getWidth() / 2 + 32, getHeight() / 2 - 128 - classes.size() * 64, 0);
-            ClassButton button = new ClassButton(tag, this, local, 96, 32, getZOrder() - 1);
-            attachChild(button);
-            classes.add(button);
-            button.setTouchable(true);
-        }
+        
     }
 
     /**
@@ -416,7 +413,7 @@ public class InfoFieldComponent extends JMEComponent {
      * @param hwrResults hwr results
      */
     public void drawHwrResult(String hwrResults) {
-        update();
+        
         TextComponent descriptionTextOverlay = new TextComponent(video,
                 ActionName.COPY, getZOrder());
         descriptionTextOverlay.setLocalTranslation(0, descriptionBeginY, 0);
@@ -433,7 +430,7 @@ public class InfoFieldComponent extends JMEComponent {
                     / getCharacterLimit();
             descriptionText.get(descriptionText.size() - 1).setSize(
                     (int) ((float) getFontSize() / factor));
-        }
+        }update();
     }
 
     /**
@@ -442,6 +439,7 @@ public class InfoFieldComponent extends JMEComponent {
     public void clearDescriptionText() {
         for (int i = 0; i < descriptionText.size(); i++) {
             if (node.hasChild(descriptionText.get(i).node)) {
+                descriptionText.get(i).detach();
                 GameTaskQueueManager.getManager().update(new DetachChildCallable(node, descriptionText.get(i).node));
             } else {
                 log.debug("TextOverlay Node wasn't attached during clearDescriptionText");
@@ -567,10 +565,16 @@ public class InfoFieldComponent extends JMEComponent {
     }
 
     public void tagAction(AnnotationClass tag) {
+        if(annotation.classes == null){
+            annotation.classes = new ArrayList<>();
+        }
         if (!annotation.classes.contains(tag)) {
             annotation.classes.add(tag);
-            Vector3f local = new Vector3f(getWidth() / 2 + 32, getHeight() / 2 - 128 - classes.size() * 64, 0);
-            ClassButton button = new ClassButton(tag, this, local, 96, 32, getZOrder() - 1);
+            Vector3f local = new Vector3f(getWidth() / 2 + getWidth() / 2,
+                    getHeight() / 2 - getWidth() / 4
+                    - classes.size() * getWidth() / 5, 0);
+            ClassButton button = new ClassButton(tag, this, local,(int) (getWidth()),
+                    getWidth() / 3, getZOrder() - 1);
             attachChild(button);
             classes.add(button);
             button.setTouchable(true);
@@ -578,27 +582,31 @@ public class InfoFieldComponent extends JMEComponent {
     }
 
     private void update() {
-        if (descriptionText.isEmpty()) {
-            descriptionBeginY = (int) (textBeginY - (float) getFontSpacer());
-        }
-        descriptionBeginY = (int) (descriptionBeginY - (float) getFontSpacer() * 0.9f);
-        if ((descriptionBeginY - 3 * ((float) getFontSpacer() * 0.9f)) < -getHeight() / 2) {
-            if (!descriptionText.isEmpty()) {
-                descriptionText.get(0).detach();
-                descriptionText.remove(0);
-            }
-            descriptionBeginY = (int) (textBeginY - (float) getFontSpacer());
-
-            descriptionBeginY = (int) (descriptionBeginY - (float) getFontSpacer() * 0.9f);
-        }
+        descriptionBeginY = (int) (textBeginY - (float) getFontSpacer());
         for (TextComponent text : descriptionText) {
             descriptionBeginY = (int) (descriptionBeginY - (float) getFontSpacer() * 0.9f);
             text.setLocalTranslation(0, descriptionBeginY, 0);
             text.setDefaultPosition();
+            if ((descriptionBeginY - 3 * ((float) getFontSpacer() * 0.9f)) < -getHeight() / 2) {
+                break;
+            }
         }
+        if ((descriptionBeginY - 3 * ((float) getFontSpacer() * 0.9f)) < -getHeight() / 2) {
+                if (!descriptionText.isEmpty()) {
+                    descriptionText.get(0).detach();
+                    descriptionText.remove(0);
+                    update();
+                }
+            }
     }
 
     public void deleteTag(ClassButton aThis) {
-        if (annotation.classes.contains(aThis.getTag()));
+        if (annotation.classes.contains(aThis.getTag())) {
+            annotation.classes.remove(aThis.getTag());
+        }
+        if (classes.contains(aThis)) {
+            classes.remove(aThis);
+        }
+        aThis.detach();
     }
 }

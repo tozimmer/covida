@@ -252,7 +252,7 @@ public class AnnotationSearchField extends FieldComponent implements
                         String entry = VideoUtils.getTimeCode(annotation.time_start);
                         TextComponent textOverlay = new TextComponent(this,
                                 ActionName.LOAD, getZOrder());
-                        textOverlay.setLocalTranslation(x, getTextY(annotationList.size() + 2), 0);
+                        textOverlay.setLocalTranslation(x, getTextY(annotationList.size() + 1), 0);
                         attachChild(textOverlay);
                         textOverlay.setText(entry);
                         textOverlay.setFont(1);

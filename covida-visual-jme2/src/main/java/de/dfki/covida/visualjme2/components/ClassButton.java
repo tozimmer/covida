@@ -20,7 +20,6 @@ import de.dfki.covida.covidacore.tw.TouchAndWriteComponentHandler;
 import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.visualjme2.animations.CovidaSpatialController;
 import de.dfki.covida.visualjme2.animations.ResetAnimation;
-import de.dfki.covida.visualjme2.components.fields.AnnotationClipboard;
 import de.dfki.covida.visualjme2.components.fields.AnnotationSearchField;
 import de.dfki.covida.visualjme2.components.video.VideoComponent;
 import de.dfki.covida.visualjme2.components.video.fields.InfoFieldComponent;
@@ -46,6 +45,7 @@ public class ClassButton extends JMEComponent implements IControlableComponent {
     private final Quad tagTopQuad;
     private final Quad tagShineQuad;
     private final InfoFieldComponent field;
+    private final TextComponent tagText;
 
     public ClassButton(AnnotationClass tag, InfoFieldComponent field, Vector3f local,
             int width, int height, int zOrder) {
@@ -108,7 +108,7 @@ public class ClassButton extends JMEComponent implements IControlableComponent {
         tagShineQuad.setDefaultColor(ColorRGBA.gray);
         attachChild(tagShineQuad);
         tagShineQuad.setZOrder(getZOrder() - 4);
-        TextComponent tagText = new TextComponent(this, ActionName.NONE, zOrder - 3);
+        tagText = new TextComponent(this, ActionName.NONE, zOrder - 3);
         ColorRGBA color = ColorRGBA.randomColor();
         if (tag.color != null) {
             color = new ColorRGBA(tag.color.getRed() / 255.f, tag.color.getGreen() / 255.f,
@@ -198,7 +198,6 @@ public class ClassButton extends JMEComponent implements IControlableComponent {
                     if(control.getAction().equals(ActionName.GARBADGE)
                             && field != null){
                         field.deleteTag(this);
-                        return;
                     }
                 } else if (comp instanceof AnnotationSearchField) {
                     AnnotationSearchField search = (AnnotationSearchField) comp;
@@ -214,6 +213,15 @@ public class ClassButton extends JMEComponent implements IControlableComponent {
             GameTaskQueueManager.getManager().update(new DetachChildCallable(
                     node, tagQuad));
         }
+        if (node.hasChild(tagShineQuad)) {
+            GameTaskQueueManager.getManager().update(new DetachChildCallable(
+                    node, tagShineQuad));
+        }
+        if (node.hasChild(tagTopQuad)) {
+            GameTaskQueueManager.getManager().update(new DetachChildCallable(
+                    node, tagTopQuad));
+        }
+        tagText.detach();
     }
 
     public void attach() {
@@ -221,6 +229,13 @@ public class ClassButton extends JMEComponent implements IControlableComponent {
         if (!node.hasChild(tagQuad)) {
             attachChild(tagQuad);
         }
+        if (!node.hasChild(tagShineQuad)) {
+            attachChild(tagShineQuad);
+        }
+        if (!node.hasChild(tagTopQuad)) {
+            attachChild(tagTopQuad);
+        }
+        tagText.attach();
     }
 
     @Override
