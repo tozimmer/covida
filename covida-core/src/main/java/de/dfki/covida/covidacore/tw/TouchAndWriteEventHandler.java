@@ -76,6 +76,7 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
     private Map<Integer, ITouchAndWriteComponent> activeTouchComponents;
     private Map<String, ITouchAndWriteComponent> activeDrawComponents;
     private boolean penActive;
+    private final Timer timer;
 
     /**
      * Creates an instance of the TouchAndWriteEventHandler class wich wraps the
@@ -89,6 +90,8 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
         this.application = application;
         this.activeTouchComponents = new HashMap<>();
         this.activeDrawComponents = new HashMap<>();
+        timer = new Timer();
+        
     }
 
     /**
@@ -201,6 +204,9 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
     @Override
     public void newTouchEvent(TouchEvent event) {
         int id = event.getID();
+        if(penActive){
+            return;
+        }
         if (event.getTouchState().equals(TouchState.TOUCH_BIRTH)) {
             SortedMap<Integer, ITouchAndWriteComponent> components =
                     new TreeMap<>();
@@ -311,9 +317,11 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
     public void onPenEvent(String device, int x, int y, float force, PenEventDataType penEventState, long timestamp, String eventPageID) {
         SortedMap<Integer, ITouchAndWriteComponent> components = new TreeMap<>();
         if (penEventState.equals(PenEventDataType.PEN_UP)) {
-            penActive = false;
+//            penActive = false;
         }else{
             penActive = true;
+            timer.purge();
+            timer.schedule(new Task(), 250);
         }
         if (componentHandler.isLogin()) {
             if (penEventState.equals(PenEventDataType.PEN_UP)) {
@@ -369,6 +377,14 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
                 components.get(components.firstKey()).hwrAction(
                         event.getDeviceAddress(), topResult);
             }
+        }
+    }
+    
+    class Task extends TimerTask {
+
+        @Override
+        public void run() {
+            penActive = false;
         }
     }
 }

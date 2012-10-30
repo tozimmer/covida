@@ -3,29 +3,40 @@
     xmlns:vcard="http://www.w3.org/2001/vcard-rdf/3.0#"
     xmlns:dc="http://purl.org/dc/elements/1.1/" > 
   <rdf:Description rdf:nodeID="A0">
-    <vcard:CLASS>User</vcard:CLASS>
-    <vcard:NAME>Covida User</vcard:NAME>
+    <dc:description>Video </dc:description>
+    <dc:date>30-10-2012 08:33:18</dc:date>
+    <dc:creator rdf:nodeID="A1"/>
+    <rdf:type rdf:nodeID="A2"/>
   </rdf:Description>
   <rdf:Description rdf:nodeID="A1">
-    <dc:description>se - it - Tett </dc:description>
-    <dc:date>30-10-2012 07:44:22</dc:date>
-    <dc:creator rdf:nodeID="A0"/>
-    <rdf:type rdf:nodeID="A2"/>
-  </rdf:Description>
-  <rdf:Description rdf:nodeID="A3">
     <vcard:CLASS>User</vcard:CLASS>
     <vcard:NAME>Covida User</vcard:NAME>
   </rdf:Description>
-  <rdf:Description rdf:nodeID="A4">
-    <dc:description>Tablet </dc:description>
-    <dc:date>30-10-2012 07:34:48</dc:date>
-    <dc:creator rdf:nodeID="A3"/>
+  <rdf:Description rdf:nodeID="A3">
+    <dc:description>se - it - Tett </dc:description>
+    <dc:date>30-10-2012 07:44:22</dc:date>
+    <dc:creator rdf:nodeID="A4"/>
     <rdf:type rdf:nodeID="A2"/>
   </rdf:Description>
+  <rdf:Description rdf:nodeID="A4">
+    <vcard:CLASS>User</vcard:CLASS>
+    <vcard:NAME>Covida User</vcard:NAME>
+  </rdf:Description>
   <rdf:Description rdf:nodeID="A2">
-    <dc:subject rdf:nodeID="A1"/>
-    <dc:subject rdf:nodeID="A4"/>
+    <dc:subject rdf:nodeID="A0"/>
+    <dc:subject rdf:nodeID="A3"/>
+    <dc:subject rdf:nodeID="A5"/>
     <dc:source>..\covida-res\videos\RadSpeech DFKI(360p_H.264-AAC).mp4</dc:source>
     <dc:title>RadSpeech</dc:title>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A6">
+    <vcard:CLASS>User</vcard:CLASS>
+    <vcard:NAME>Covida User</vcard:NAME>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A5">
+    <dc:description>Tablet </dc:description>
+    <dc:date>30-10-2012 07:34:48</dc:date>
+    <dc:creator rdf:nodeID="A6"/>
+    <rdf:type rdf:nodeID="A2"/>
   </rdf:Description>
 </rdf:RDF>

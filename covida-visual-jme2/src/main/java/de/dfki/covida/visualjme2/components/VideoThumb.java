@@ -38,6 +38,7 @@ public class VideoThumb extends JMEComponent {
     private final VideoMediaData data;
     private final IApplication app;
     private int thumbPos = 0;
+    private final Timer timer;
 
     public VideoThumb(VideoMediaData data, Vector3f local,
             IApplication app, IControlButton button, int width,
@@ -92,8 +93,8 @@ public class VideoThumb extends JMEComponent {
         thumbQuad.updateRenderState();
         attachChild(thumbQuad);
         thumbQuad.setZOrder(getZOrder());
-        Timer timer = new Timer();
-        timer.schedule(new Task(), 1000, 1000);
+        timer = new Timer();
+        timer.schedule(new Task(), 500, 500);
     }
 
     @Override
@@ -139,9 +140,13 @@ public class VideoThumb extends JMEComponent {
             GameTaskQueueManager.getManager().update(new DetachChildCallable(
                     node, borderQuad));
         }
+        timer.cancel();
+        timer.purge();
     }
 
     public void attach() {
+        setTouchable(touchable);
+        timer.schedule(new Task(), 500);
         if (!node.hasChild(borderQuad)) {
             attachChild(borderQuad);
         }

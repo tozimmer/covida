@@ -379,6 +379,7 @@ public class InfoFieldComponent extends JMEComponent {
      * @param annotation {@link Annotation} to set.
      */
     public void setAnnotationData(Annotation annotation) {
+        this.annotation = annotation;
         for (ClassButton button : classes) {
             button.detach();
         }
@@ -386,10 +387,11 @@ public class InfoFieldComponent extends JMEComponent {
         if (annotation.classes == null) {
             annotation.classes = new ArrayList<>();
         }
-        for (AnnotationClass tag : annotation.classes) {
+        List<AnnotationClass> tagList = new ArrayList<>(annotation.classes);
+        annotation.classes.clear();
+        for (AnnotationClass tag : tagList) {
             tagAction(tag);
         }
-        this.annotation = annotation;
         setTime(annotation.time_start);
         setTitle(AnnotationStorage.getInstance().getAnnotationData(video).title);
         if (annotation.strokelist != null) {
@@ -565,16 +567,14 @@ public class InfoFieldComponent extends JMEComponent {
     }
 
     public void tagAction(AnnotationClass tag) {
-        if(annotation.classes == null){
-            annotation.classes = new ArrayList<>();
-        }
         if (!annotation.classes.contains(tag)) {
             annotation.classes.add(tag);
-            Vector3f local = new Vector3f(getWidth() / 2 + getWidth() / 2,
-                    getHeight() / 2 - getWidth() / 4
+            Vector3f local = new Vector3f(getWidth() / 2 + getWidth() / 4,
+                    getHeight() / 2 - (int) (getWidth() / 1.5f)
                     - classes.size() * getWidth() / 5, 0);
-            ClassButton button = new ClassButton(tag, this, local,(int) (getWidth()),
-                    getWidth() / 3, getZOrder() - 1);
+            ClassButton button = new ClassButton(tag, this, local,
+                    (int) (getWidth() / 1.25f),
+                    (int) (getWidth() / 3.5f), getZOrder() - 1);
             attachChild(button);
             classes.add(button);
             button.setTouchable(true);
@@ -608,5 +608,13 @@ public class InfoFieldComponent extends JMEComponent {
             classes.remove(aThis);
         }
         aThis.detach();
+        int i = 0;
+        for(ClassButton button : classes){
+            Vector3f local = new Vector3f(getWidth() / 2 + getWidth() / 4,
+                    getHeight() / 2 - (int) (getWidth() / 1.5f)
+                    - i * getWidth() / 5, 0);
+            button.setLocalTranslation(local);
+            i++;
+        }
     }
 }

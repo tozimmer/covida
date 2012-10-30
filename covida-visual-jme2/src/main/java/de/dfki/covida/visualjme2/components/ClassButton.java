@@ -50,7 +50,7 @@ public class ClassButton extends JMEComponent implements IControlableComponent {
     public ClassButton(AnnotationClass tag, InfoFieldComponent field, Vector3f local,
             int width, int height, int zOrder) {
         super(tag.name + " class button", zOrder);
-        this.fontSize = (int) (fontSize * ((float) height / 64));
+        this.fontSize = (int) (fontSize * ((float) height / 50));
         this.field = field;
         this.tag = tag;
         this.node.setLocalTranslation(local);
@@ -119,8 +119,7 @@ public class ClassButton extends JMEComponent implements IControlableComponent {
         tagText.setSize(fontSize);
         tagText.setText(tag.name);
         tagText.setFont(1);
-//        tagText.setColor(color);
-        tagText.setLocalTranslation(0, fontSize * 0.8f, 0);
+        tagText.setLocalTranslation(0, fontSize * 0.7f, 0);
         attachChild(tagText);
     }
 
