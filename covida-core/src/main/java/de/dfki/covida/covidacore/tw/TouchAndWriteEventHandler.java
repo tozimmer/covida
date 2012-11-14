@@ -169,11 +169,11 @@ public class TouchAndWriteEventHandler extends RemoteTouchAndWriteApplication im
      * @param event incomming Rotation gesture event
      */
     private void rotateAction(RotationGestureEventImpl event) {
-        int id = event.getFirstTouch().getID();
-        if (activeTouchComponents.containsKey(id)) {
-            ITouchAndWriteComponent component = activeTouchComponents.get(id);
-            component.rotateAction(event);
-        }
+//        int id = event.getFirstTouch().getID();
+//        if (activeTouchComponents.containsKey(id)) {
+//            ITouchAndWriteComponent component = activeTouchComponents.get(id);
+//            component.rotateAction(event);
+//        }
     }
 
     /**

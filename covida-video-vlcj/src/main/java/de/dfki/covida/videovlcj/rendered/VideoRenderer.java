@@ -43,6 +43,7 @@ import java.awt.Polygon;
 import java.awt.image.BufferedImage;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.caprica.vlcj.player.direct.RenderCallbackAdapter;
@@ -86,6 +87,12 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
     private String hwr;
     private String title;
     private boolean hwrOverlayEnabled = true;
+    private Graphics2D g2d;
+    private BufferedImage image;
+    private boolean generating;
+    private BufferedImage doubleBuffer;
+    private boolean running;
+    private final ImageRefresher refresher;
 
     /**
      * Constructor
@@ -105,6 +112,9 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
                 .getDefaultScreenDevice().getDefaultConfiguration()
                 .createCompatibleImage(width, height);
         this.frame.setAccelerationPriority(1.0f);
+        running = true;
+        refresher = new ImageRefresher();
+        refresher.start();
     }
 
     /**
@@ -192,7 +202,7 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
             int[] yPoints = new int[size];
             int i = 0;
             for (Point point : points) {
-                if (i<size) {
+                if (i < size) {
                     xPoints[i] = point.x;
                     yPoints[i] = point.y;
                 }
@@ -293,8 +303,17 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
             log.error("Frame is null.");
             return null;
         }
-        BufferedImage image = ImageUtils.deepCopy(frame);
-        Graphics2D g2d = image.createGraphics();
+        if (generating) {
+            return doubleBuffer;
+        } else {
+            return image;
+        }
+    }
+
+    public void refreshImage() {
+        generating = true;
+        image = ImageUtils.deepCopy(frame);
+        g2d = image.createGraphics();
         g2d.setColor(defaultG2DColor);
         BasicStroke bs = new BasicStroke(2);
         g2d.setStroke(bs);
@@ -331,7 +350,9 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
                 hwrOverlayEnabled = false;
             }
         }
-        return image;
+        g2d.dispose();
+        generating = false;
+        doubleBuffer = ImageUtils.deepCopy(image);
     }
 
     @Override
@@ -383,5 +404,20 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
         frame = GraphicsEnvironment.getLocalGraphicsEnvironment()
                 .getDefaultScreenDevice().getDefaultConfiguration()
                 .createCompatibleImage(width, height);
+    }
+    
+    class ImageRefresher extends Thread{
+        
+        @Override
+        public void run(){
+            while(running){
+                refreshImage();
+                try {
+                    Thread.sleep(25);
+                } catch (InterruptedException ex) {
+                    log.error("", ex);
+                }
+            }
+        }
     }
 }
