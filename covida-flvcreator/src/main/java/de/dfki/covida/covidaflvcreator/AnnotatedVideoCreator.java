@@ -31,7 +31,9 @@ import com.xuggle.mediatool.IMediaReader;
 import com.xuggle.mediatool.MediaListenerAdapter;
 import com.xuggle.mediatool.ToolFactory;
 import com.xuggle.mediatool.event.IVideoPictureEvent;
+import com.xuggle.xuggler.IRational;
 import de.dfki.covida.covidaflvcreator.utils.ContainerInfo;
+import de.dfki.covida.covidaflvcreator.utils.ImageUtils;
 import de.dfki.covida.covidaflvcreator.utils.Stroke;
 import de.dfki.covida.covidaflvcreator.utils.StrokeList;
 import java.awt.BasicStroke;
@@ -42,6 +44,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 import org.slf4j.Logger;
@@ -139,6 +142,9 @@ public class AnnotatedVideoCreator extends MediaListenerAdapter implements Runna
      * Indicates if {@link AnnotatedVideoCreator} is currently encoding
      */
     private boolean encoding;
+    List<BufferedImage> frames;
+    private IRational fps;
+    private final int border = 100;
 
     /**
      * Construct a DecodeAndCaptureFrames which reads and captures frames from a
@@ -151,6 +157,7 @@ public class AnnotatedVideoCreator extends MediaListenerAdapter implements Runna
         this.dim = ContainerInfo.getDimension(inFile);
         this.shapeToDraw = new StrokeList();
         this.request = request;
+        frames = new ArrayList<>();
     }
 
     public String getInputFile() {
@@ -308,12 +315,12 @@ public class AnnotatedVideoCreator extends MediaListenerAdapter implements Runna
                     lastPoint = point;
                 } else {
                     g2d.setColor(Color.black);
-                    g2d.drawLine(lastPoint.x + 2, lastPoint.y + 2, point.x + 2, point.y + 2);
-                    g2d.drawLine(lastPoint.x - 2, lastPoint.y + 2, point.x - 2, point.y + 2);
-                    g2d.drawLine(lastPoint.x + 2, lastPoint.y - 2, point.x + 2, point.y - 2);
-                    g2d.drawLine(lastPoint.x - 2, lastPoint.y - 2, point.x - 2, point.y - 2);
+                    g2d.drawLine(border + lastPoint.x + 2, border + lastPoint.y + 2, border + point.x + 2, border + point.y + 2);
+                    g2d.drawLine(border + lastPoint.x - 2, border + lastPoint.y + 2, border + point.x - 2, border + point.y + 2);
+                    g2d.drawLine(border + lastPoint.x + 2, border + lastPoint.y - 2, border + point.x + 2, border + point.y - 2);
+                    g2d.drawLine(border + lastPoint.x - 2, border + lastPoint.y - 2, border + point.x - 2, border + point.y - 2);
                     g2d.setColor(defaultG2DColor);
-                    g2d.drawLine(lastPoint.x, lastPoint.y, point.x, point.y);
+                    g2d.drawLine(border + lastPoint.x, border + lastPoint.y, border + point.x, border + point.y);
                     lastPoint = point;
                 }
             }
@@ -345,8 +352,20 @@ public class AnnotatedVideoCreator extends MediaListenerAdapter implements Runna
             }
         }
         if (event.getTimeStamp() > timeStart && event.getTimeStamp() < timeEnd) {
-            BufferedImage image = event.getImage();
-            Graphics2D g2d = image.createGraphics();
+            frames.add(event.getImage());
+        }
+    }
+
+    public void createVideo() {
+        int count = 0;
+        for (BufferedImage image : frames) {
+            BufferedImage bImage = new BufferedImage(image.getWidth(null) + border,
+                    image.getHeight(null) + border, BufferedImage.TYPE_3BYTE_BGR);
+            Graphics2D g2d = bImage.createGraphics();
+            g2d.setColor(Color.BLACK);
+            g2d.fillRect(0, 0, bImage.getWidth(), bImage.getHeight());
+            g2d.drawImage(image, (bImage.getWidth() - image.getWidth(null)) / 2, 
+                    (bImage.getHeight() - image.getHeight(null)) / 2, null);
             g2d.setColor(defaultG2DColor);
             BasicStroke bs = new BasicStroke(2);
             g2d.setStroke(bs);
@@ -366,18 +385,22 @@ public class AnnotatedVideoCreator extends MediaListenerAdapter implements Runna
                     textOverlayEnabled = false;
                 }
             }
-            creator.encodeImage(image, event.getTimeStamp());
+            g2d.dispose();
+            long timeStamp = (long) (1e6 / fps.getNumerator() * count);
+            creator.encodeImage(bImage, timeStamp);
+            count++;
         }
     }
 
     @Override
     public void run() {
+        fps = IRational.make(24, 1);
         if (dim != null) {
-            creator = new VideoEncoder(outFile, dim.width,
-                    dim.height);
+
+            creator = new VideoEncoder(outFile, dim.width + border,
+                    dim.height + border);
             this.encoding = true;
             IMediaReader reader = ToolFactory.makeReader(inputFile);
-
             // stipulate that we want BufferedImages created in BGR 24bit color space
             reader.setBufferedImageTypeToGenerate(BufferedImage.TYPE_3BYTE_BGR);
             // note that DecodeAndCaptureFrames is derived from
@@ -391,7 +414,6 @@ public class AnnotatedVideoCreator extends MediaListenerAdapter implements Runna
                 // happens here.  action happens in the onVideoPicture() method
                 // which is called when complete video pictures are extracted from
                 // the media source
-
                 while (reader.readPacket() == null) {
                     do {
                     } while (false);
@@ -399,6 +421,7 @@ public class AnnotatedVideoCreator extends MediaListenerAdapter implements Runna
             } else {
                 log.warn("Attach listener failed.");
             }
+            createVideo();
             creator.closeStreams();
             completed = true;
         } else {

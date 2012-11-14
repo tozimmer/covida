@@ -32,8 +32,6 @@ import de.dfki.covida.covidaflvcreator.utils.CreationRequest;
 import de.dfki.covida.covidaflvcreator.utils.Stroke;
 import de.dfki.covida.covidaflvcreator.utils.StrokeList;
 import java.awt.Point;
-import java.util.ArrayList;
-import java.util.List;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -88,11 +86,11 @@ public class ClientDemo {
         String filename = "../covida-res/videos/Collaborative Video Annotation.mp4";
 
         long timeStart = 20000000;
-        long timeEnd = 25000000;
+        long timeEnd = 35000000;
 
         String label = "Test label";
 
-        while (true) {
+//        while (true) {
             timeStart++;
             timeEnd++;
             CreationRequest request = new CreationRequest(filename, timeStart,
@@ -102,8 +100,8 @@ public class ClientDemo {
                 Thread.sleep(5000);
             } catch (InterruptedException ex) {
                 log.error("",ex);
-                break;
+//                break;
             }
-        }
+//        }
     }
 }

@@ -70,8 +70,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            
+            </plugin>            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -89,48 +88,6 @@
                         <phase>package</phase>
                     </execution>
                 </executions>                
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>2.6</version>
-                <executions>
-                    <execution>
-                        <id>copy-exe</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${basedir}/target/binaries/bin</outputDirectory>
-                            <resources>          
-                                <resource>
-                                    <directory>${basedir}</directory>
-                                    <includes>
-                                        <include>readme.txt</include>
-                                        <include>FLV Creator Client Demo Port 2345.lnk</include>
-                                        <include>FLV Creator Server Port 2345.lnk</include>
-                                    </includes>
-                                </resource>
-                            </resources>              
-                        </configuration>            
-                    </execution>
-                    <execution>
-                        <id>copy-videos</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${basedir}/target/binaries/covida-res/videos</outputDirectory>
-                            <resources>          
-                                <resource>
-                                    <directory>../covida-res/videos</directory>
-                                </resource>
-                            </resources>              
-                        </configuration>            
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -152,78 +109,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.bluestemsoftware.open.maven.plugin</groupId>
-                <artifactId>launch4j-plugin</artifactId>
-                <version>1.5.0.0</version>
-                <executions>
-                    <execution>
-                        <id>l4j</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>launch4j</goal>
-                        </goals>
-                        <configuration>
-                            <headerType>console</headerType>
-                            <outfile>target/binaries/bin/flvcreatorserver.exe</outfile>
-                            <jar>target/${project.artifactId}-${project.version}-jar-with-dependencies.jar</jar>
-                            <errTitle>flv-creator server</errTitle>
-                            <classPath>
-                                <mainClass>de.dfki.covida.covidaflvcreator.server.TCPServerStandalone</mainClass>
-                                <addDependencies>true</addDependencies>
-                            </classPath>
-                            <icon>../covida-res/icon.ico</icon>
-                            <jre>
-                                <minVersion>1.7.0</minVersion>
-                            </jre>
-                            <versionInfo>
-                                <fileVersion>1.0.0.0</fileVersion>
-                                <txtFileVersion>1.0.0.0</txtFileVersion>
-                                <fileDescription>Desc</fileDescription>
-                                <copyright>Tobias Zimmermann</copyright>
-                                <productVersion>1.0.0.0</productVersion>
-                                <txtProductVersion>1.0.0.0</txtProductVersion>
-                                <productName>flv-creator server</productName>
-                                <internalName>flv-creator server</internalName>
-                                <originalFilename>flvcreatorserver.exe</originalFilename>
-                            </versionInfo>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>l4j-client-demo</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>launch4j</goal>
-                        </goals>
-                        <configuration>
-                            <headerType>console</headerType>
-                            <outfile>target/binaries/bin/flvcreatorclientdemo.exe</outfile>
-                            <jar>target/${project.artifactId}-${project.version}-jar-with-dependencies.jar</jar>
-                            <errTitle>flv-creator client demo</errTitle>
-                            <classPath>
-                                <mainClass>de.dfki.covida.covidaflvcreator.demos.ClientDemo</mainClass>
-                                <addDependencies>true</addDependencies>
-                            </classPath>
-                            <icon>../covida-res/icon.ico</icon>
-                            <jre>
-                                <minVersion>1.7.0</minVersion>
-                            </jre>
-                            <versionInfo>
-                                <fileVersion>1.0.0.0</fileVersion>
-                                <txtFileVersion>1.0.0.0</txtFileVersion>
-                                <fileDescription>Desc</fileDescription>
-                                <copyright>Tobias Zimmermann</copyright>
-                                <productVersion>1.0.0.0</productVersion>
-                                <txtProductVersion>1.0.0.0</txtProductVersion>
-                                <productName>flv-creator client demo</productName>
-                                <internalName>flv-creator client demo</internalName>
-                                <originalFilename>flvcreatorclientdemo.exe</originalFilename>
-                            </versionInfo>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+            </plugin>  
         </plugins>
     </build>
 </project>

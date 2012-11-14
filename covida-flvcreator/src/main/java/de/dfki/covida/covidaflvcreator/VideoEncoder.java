@@ -52,7 +52,7 @@ public class VideoEncoder {
 
     public VideoEncoder(String outFile, int width, int height) {
          // Change this to change the frame rate you record at
-        frameRate = IRational.make(3, 1);
+        frameRate = IRational.make(24, 1);
 
         outContainer = IContainer.make();
 

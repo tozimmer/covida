@@ -187,21 +187,19 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
      */
     private void drawPoints(Graphics2D g2d) {
         for (Collection<Point> points : pointsToDraw) {
-            Point lastPoint = null;
+            int size = points.size();
+            int[] xPoints = new int[size];
+            int[] yPoints = new int[size];
+            int i = 0;
             for (Point point : points) {
-                if (lastPoint == null) {
-                    lastPoint = point;
-                } else {
-                    g2d.setColor(Color.black);
-                    g2d.drawLine(lastPoint.x + 2, lastPoint.y + 2, point.x + 2, point.y + 2);
-                    g2d.drawLine(lastPoint.x - 2, lastPoint.y + 2, point.x - 2, point.y + 2);
-                    g2d.drawLine(lastPoint.x + 2, lastPoint.y - 2, point.x + 2, point.y - 2);
-                    g2d.drawLine(lastPoint.x - 2, lastPoint.y - 2, point.x - 2, point.y - 2);
-                    g2d.setColor(defaultG2DColor);
-                    g2d.drawLine(lastPoint.x, lastPoint.y, point.x, point.y);
-                    lastPoint = point;
+                if (i<size) {
+                    xPoints[i] = point.x;
+                    yPoints[i] = point.y;
                 }
+                i++;
             }
+            g2d.setColor(defaultG2DColor);
+            g2d.drawPolyline(xPoints, yPoints, size);
         }
         for (Polygon polygon : shapeToDraw) {
             g2d.setColor(Color.black);

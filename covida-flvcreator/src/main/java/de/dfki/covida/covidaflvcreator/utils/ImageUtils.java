@@ -27,14 +27,191 @@
  */
 package de.dfki.covida.covidaflvcreator.utils;
 
+import java.awt.Graphics;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.HeadlessException;
+import java.awt.Image;
+import java.awt.Transparency;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.PixelGrabber;
+import java.awt.image.WritableRaster;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 /**
- * Image utils.
+ * Image utility class
  *
  * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
  */
 public class ImageUtils {
+
+    /**
+     * Creates a new instance of {@link BufferedImage} of the given
+     * {@link BufferedImage}
+     *
+     * @param bi {@link BufferedImage}
+     * @return {@link BufferedImage}
+     */
+    public static BufferedImage deepCopy(BufferedImage bi) {
+        ColorModel cm = bi.getColorModel();
+        boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
+        WritableRaster raster = bi.copyData(null);
+        return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
+    }
+
+    /**
+     * Converts a {@link BufferedImage} in an Array of {@link Byte}.
+     *
+     * @param bufferedImage {@link BufferedImage}
+     * @return Array of {@link Byte}
+     */
+    public static byte[] getImageDataFromImage(BufferedImage bufferedImage) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(1000);
+        try {
+            ImageIO.write(bufferedImage, "png", baos);
+        } catch (IOException ex) {
+            Logger.getLogger(ImageUtils.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        byte[] b = baos.toByteArray();
+        return b;
+    }
+
+    /**
+     * Converts {@link ByteBuffer} and width / height to {@link BufferedImage}
+     *
+     * @param pixelsRGB {@link ByteBuffer}
+     * @param width {@link Integer}
+     * @param height {@link Integer}
+     * @return {@link BufferedImage}
+     */
+    public static BufferedImage getBufferedImage(ByteBuffer pixelsRGB, int width, int height) {
+        /**
+         * Transform the ByteBuffer and get it as pixeldata.
+         */
+        int[] pixelInts = new int[width * height];
+        /**
+         * Convert RGB bytes to ARGB ints with no transparency. Flip image
+         * vertically by reading the rows of pixels in the byte buffer in
+         * reverse - (0,0) is at bottom left in OpenGL.
+         *
+         * Points to first byte (red) in each row.
+         */
+        int p = width * height * 4;
+        /**
+         * Index into ByteBuffer
+         */
+        int q;
+        /**
+         * Index into target int[]
+         */
+        int i = 0;
+        /**
+         * Number of bytes in each row
+         */
+        int w3 = width * 4;
+        for (int row = 0; row < height; row++) {
+            p -= w3;
+            q = p;
+            for (int col = 0; col < width; col++) {
+                int iR = pixelsRGB.get(q++);
+                int iG = pixelsRGB.get(q++);
+                int iB = pixelsRGB.get(q++);
+                int a = pixelsRGB.get(q++);
+                pixelInts[i++] = ((a & 0xFF) << 24) //a
+                        | ((iR & 0xFF) << 16) //r
+                        | ((iG & 0xFF) << 8) //g
+                        | ((iB & 0xFF));      //b
+            }
+        }
+        // Create a new BufferedImage from the pixeldata.
+        BufferedImage bufferedImage =
+                new BufferedImage(width, height,
+                BufferedImage.TYPE_INT_ARGB);
+        bufferedImage.setRGB(0, 0, width, height,
+                pixelInts, 0, height);
+
+        return bufferedImage;
+    }
+
+    // This method returns a buffered image with the contents of an image
+    public static BufferedImage toBufferedImage(Image image) {
+        if (image instanceof BufferedImage) {
+            return (BufferedImage) image;
+        }
+
+        // This code ensures that all the pixels in the image are loaded
+        image = new ImageIcon(image).getImage();
+
+        // Determine if the image has transparent pixels; for this method's
+        // implementation, see Determining If an Image Has Transparent Pixels
+        boolean hasAlpha = hasAlpha(image);
+
+        // Create a buffered image with a format that's compatible with the screen
+        BufferedImage bimage = null;
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        try {
+            // Determine the type of transparency of the new buffered image
+            int transparency = Transparency.OPAQUE;
+            if (hasAlpha) {
+                transparency = Transparency.BITMASK;
+            }
+
+            // Create the buffered image
+            GraphicsDevice gs = ge.getDefaultScreenDevice();
+            GraphicsConfiguration gc = gs.getDefaultConfiguration();
+            bimage = gc.createCompatibleImage(
+                    image.getWidth(null), image.getHeight(null), transparency);
+        } catch (HeadlessException e) {
+            // The system does not have a screen
+        }
+
+        if (bimage == null) {
+            // Create a buffered image using the default color model
+            int type = BufferedImage.TYPE_INT_RGB;
+            if (hasAlpha) {
+                type = BufferedImage.TYPE_INT_ARGB;
+            }
+            bimage = new BufferedImage(image.getWidth(null), image.getHeight(null), type);
+        }
+
+        // Copy image to buffered image
+        Graphics g = bimage.createGraphics();
+
+        // Paint the image onto the buffered image
+        g.drawImage(image, 0, 0, null);
+        g.dispose();
+
+        return bimage;
+    }
+
+    // This method returns true if the specified image has transparent pixels
+    public static boolean hasAlpha(Image image) {
+        // If buffered image, the color model is readily available
+        if (image instanceof BufferedImage) {
+            BufferedImage bimage = (BufferedImage) image;
+            return bimage.getColorModel().hasAlpha();
+        }
+
+        // Use a pixel grabber to retrieve the image's color model;
+        // grabbing a single pixel is usually sufficient
+        PixelGrabber pg = new PixelGrabber(image, 0, 0, 1, 1, false);
+        try {
+            pg.grabPixels();
+        } catch (InterruptedException e) {
+        }
+
+        // Get the image's color model
+        ColorModel cm = pg.getColorModel();
+        return cm.hasAlpha();
+    }
 
     /**
      * Convert a {@link BufferedImage} of any type, to {@link BufferedImage} of
