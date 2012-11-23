@@ -180,6 +180,7 @@ public final class VideoComponent extends JMEComponent implements
         video.initComponent();
         setDefaultPosition();
         initializeAnnotationData();
+        attachControls();
     }
 
     private void preloadAnimation() {

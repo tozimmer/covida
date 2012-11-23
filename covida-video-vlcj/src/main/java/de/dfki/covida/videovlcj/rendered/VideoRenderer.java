@@ -405,13 +405,15 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
                 .getDefaultScreenDevice().getDefaultConfiguration()
                 .createCompatibleImage(width, height);
     }
-    
-    class ImageRefresher extends Thread{
-        
+
+    class ImageRefresher extends Thread {
+
         @Override
-        public void run(){
-            while(running){
-                refreshImage();
+        public void run() {
+            while (running) {
+                if (!generating) {
+                    refreshImage();
+                }
                 try {
                     Thread.sleep(25);
                 } catch (InterruptedException ex) {

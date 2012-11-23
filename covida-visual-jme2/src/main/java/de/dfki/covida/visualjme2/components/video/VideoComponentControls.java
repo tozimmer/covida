@@ -68,19 +68,19 @@ public class VideoComponentControls extends JMEComponent implements IVideoContro
         buttonOrder.add("media/textures/video_controls_stop.png");
         buttonOrder.add("media/textures/video_controls_pause.png");
         buttonOrder.add("media/textures/video_controls_forward.png");
-        buttonOrder.add("media/textures/video_controls_soundoff.png");
+//        buttonOrder.add("media/textures/video_controls_soundoff.png");
         Map<String, ActionName> controlList = new HashMap<>();
         controlList.put("media/textures/video_controls_forward.png", ActionName.FORWARD);
         controlList.put("media/textures/video_controls_stop.png", ActionName.STOP);
         controlList.put("media/textures/video_controls_pause.png", ActionName.PLAYPAUSE);
         controlList.put("media/textures/video_controls_back.png", ActionName.BACKWARD);
-        controlList.put("media/textures/video_controls_soundoff.png", ActionName.SOUND);
+//        controlList.put("media/textures/video_controls_soundoff.png", ActionName.SOUND);
         Map<ActionName, String> controlActiveList = new HashMap<>();
         controlActiveList.put(ActionName.FORWARD, "media/textures/video_controls_forward.png");
         controlActiveList.put(ActionName.STOP, "media/textures/video_controls_stop.png");
         controlActiveList.put(ActionName.PLAYPAUSE, "media/textures/video_controls_play.png");
         controlActiveList.put(ActionName.BACKWARD, "media/textures/video_controls_back.png");
-        controlActiveList.put(ActionName.SOUND, "media/textures/video_controls_sound.png");
+//        controlActiveList.put(ActionName.SOUND, "media/textures/video_controls_sound.png");
         controls = new HashMap<>();
         int controlHeight = (int) (0.15f * controlable.getHeight());
         int controlWidth = controlable.getWidth() / 5;
@@ -130,7 +130,7 @@ public class VideoComponentControls extends JMEComponent implements IVideoContro
             attachChild(control);
         }
         if (control != null) {
-            control.node.setZOrder(getZOrder()-1);
+            control.node.setZOrder(getZOrder() - 1);
         }
         x = 0;
     }
