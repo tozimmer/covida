@@ -74,25 +74,7 @@
                                     <directory>${basedir}/bin-res</directory>
                                     <includes>
                                         <include>readme.txt</include>
-                                    </includes>
-                                </resource>
-                            </resources>              
-                        </configuration>            
-                    </execution>
-                    <execution>
-                        <id>copy-bat-files</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${basedir}/target/binaries</outputDirectory>
-                            <resources>          
-                                <resource>
-                                    <directory>${basedir}/bin-res</directory>
-                                    <includes>
-                                        <include>CoVidA EEE Slate.bat</include>
-                                        <include>CoVidA TW Table.bat</include>
+                                        <include>silent.vbs</include>
                                     </includes>
                                 </resource>
                             </resources>              
@@ -263,9 +245,9 @@
                         </goals>
                         <configuration>
                             <headerType>console</headerType>
-                            <outfile>target/binaries/bin/CoVidA.exe</outfile>
+                            <outfile>target/binaries/bin/MeVida.exe</outfile>
                             <jar>target/${project.artifactId}-${project.version}-jar-with-dependencies.jar</jar>
-                            <errTitle>CoVidA</errTitle>
+                            <errTitle>MeVida</errTitle>
                             <classPath>
                                 <mainClass>de.dfki.covida.visualjme2.Covida</mainClass>
                                 <addDependencies>true</addDependencies>
@@ -284,9 +266,9 @@
                                 <copyright>Tobias Zimmermann</copyright>
                                 <productVersion>1.0.0.0</productVersion>
                                 <txtProductVersion>1.0.0.0</txtProductVersion>
-                                <productName>CoVidA</productName>
-                                <internalName>CoVidA</internalName>
-                                <originalFilename>CoVidA.exe</originalFilename>
+                                <productName>MeVida</productName>
+                                <internalName>MeVida</internalName>
+                                <originalFilename>MeVida.exe</originalFilename>
                             </versionInfo>
                         </configuration>
                     </execution>

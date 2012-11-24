@@ -89,6 +89,7 @@ public class VideoComponentControls extends JMEComponent implements IVideoContro
                     controlable, texture, controlActiveList.get(controlList.get(texture)),
                     controlWidth, controlHeight, getZOrder());
             control.setLocalTranslation(controlWidth / 2 + (-controlable.getWidth() / 2)
+                    + (controlable.getWidth() / 10)
                     + (controls.size() * (controlable.getWidth() / 5)), -controlable.getHeight() / (1.4f), 0);
             controls.put(controlList.get(texture), control);
         }
@@ -151,12 +152,12 @@ public class VideoComponentControls extends JMEComponent implements IVideoContro
 
     @Override
     public void highlightPause() {
-        controls.get(ActionName.PLAYPAUSE).setActive(false);
+//        controls.get(ActionName.PLAYPAUSE).setActive(false);
     }
 
     @Override
     public void highlightPlay() {
-        controls.get(ActionName.PLAYPAUSE).setActive(true);
+//        controls.get(ActionName.PLAYPAUSE).setActive(true);
     }
 
     @Override

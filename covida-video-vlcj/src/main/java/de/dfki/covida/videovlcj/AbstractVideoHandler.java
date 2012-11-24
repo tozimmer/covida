@@ -365,7 +365,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
                 this.mediaPlayer.pause();
             }
         }
-        controls.highlightPlay();
+//        controls.highlightPlay();
     }
 
     /**
@@ -378,7 +378,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
         if (isReady()) {
             if (!mediaPlayer.isPlaying()) {
                 this.mediaPlayer.play();
-                controls.highlightPause();
+//                controls.highlightPause();
             }
             slider.attach();
         }
@@ -408,6 +408,8 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
             }
         }
         mediaPlayer.nextFrame();
+        mediaPlayer.pause();
+        controls.highlightPause();
     }
 
     /**

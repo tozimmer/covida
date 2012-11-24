@@ -987,8 +987,8 @@ public final class VideoComponent extends JMEComponent implements
             } else if (action.equals(ActionName.STOP)) {
                 if (video.isPlaying()) {
                     video.stop();
-                    return true;
                 }
+                return true;
             } else if (action.equals(ActionName.RESET)) {
                 reset(0);
             }

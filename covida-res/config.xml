@@ -4,7 +4,7 @@
     <device>WMINPUT</device>
     <autologon>true</autologon>
     <thumbcount>5</thumbcount>
-    <defaultlogin>Covida User</defaultlogin>
+    <defaultlogin>MeVida User</defaultlogin>
     <videos>
         <video>
             <source>..\covida-res\videos\Collaborative Video Annotation.mp4</source>
@@ -45,7 +45,7 @@
         <pen>
             <color>0xffffff</color>
             <thickness>1</thickness>
-            <userlogin>Covida User</userlogin>
+            <userlogin>MeVida User</userlogin>
         </pen>
     </penList>
     <uicolor>0xffffff</uicolor>

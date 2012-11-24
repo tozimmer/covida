@@ -1,0 +1,1 @@
+CreateObject("Wscript.Shell").Run "MeVida.exe",0,True

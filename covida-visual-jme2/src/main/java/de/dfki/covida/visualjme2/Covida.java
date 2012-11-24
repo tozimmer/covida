@@ -38,6 +38,6 @@ public class Covida {
 
     public static void main(final String[] args) {
         MainImplementation main = new MainImplementation(args);
-        main.startApplication(new CovidaApplication(main.getDevice(), "Covida"));
+        main.startApplication(new CovidaApplication(main.getDevice(), "MeVida"));
     }
 }
