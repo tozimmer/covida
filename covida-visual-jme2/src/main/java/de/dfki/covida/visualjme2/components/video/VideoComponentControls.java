@@ -152,17 +152,22 @@ public class VideoComponentControls extends JMEComponent implements IVideoContro
 
     @Override
     public void highlightPause() {
-//        controls.get(ActionName.PLAYPAUSE).setActive(false);
+        controls.get(ActionName.PLAYPAUSE).setActive(false);
     }
 
     @Override
     public void highlightPlay() {
-//        controls.get(ActionName.PLAYPAUSE).setActive(true);
+        controls.get(ActionName.PLAYPAUSE).setActive(true);
     }
 
     @Override
     public void highlightStop() {
         controls.get(ActionName.STOP).setActive(true);
+    }
+    
+    @Override
+    public void normalizeStop() {
+        controls.get(ActionName.STOP).setActive(false);
     }
 
     /**

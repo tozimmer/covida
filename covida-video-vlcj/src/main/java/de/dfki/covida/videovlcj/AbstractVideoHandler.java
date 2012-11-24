@@ -815,12 +815,14 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     @Override
     public void finished(MediaPlayer mp) {
         controls.highlightPlay();
+        
         if (mediaPlayer == null) {
             return;
         }
         if (isRepeat()) {
             mediaPlayer.playMedia(getSource());
             controls.highlightPause();
+            controls.normalizeStop();
         }
     }
 

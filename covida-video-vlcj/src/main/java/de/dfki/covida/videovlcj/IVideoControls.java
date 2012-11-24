@@ -41,4 +41,6 @@ public interface IVideoControls {
     
     public void highlightStop();
     
+    public void normalizeStop();
+    
 }

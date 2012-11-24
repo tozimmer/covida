@@ -966,6 +966,7 @@ public final class VideoComponent extends JMEComponent implements
                     return true;
                 } else {
                     resume();
+                    controls.normalizeStop();
                     return false;
                 }
             } else if (action.equals(ActionName.SOUND)) {
