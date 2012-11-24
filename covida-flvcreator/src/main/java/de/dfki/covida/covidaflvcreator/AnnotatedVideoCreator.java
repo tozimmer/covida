@@ -33,7 +33,6 @@ import com.xuggle.mediatool.ToolFactory;
 import com.xuggle.mediatool.event.IVideoPictureEvent;
 import com.xuggle.xuggler.IRational;
 import de.dfki.covida.covidaflvcreator.utils.ContainerInfo;
-import de.dfki.covida.covidaflvcreator.utils.ImageUtils;
 import de.dfki.covida.covidaflvcreator.utils.Stroke;
 import de.dfki.covida.covidaflvcreator.utils.StrokeList;
 import java.awt.BasicStroke;
@@ -57,10 +56,20 @@ import org.slf4j.LoggerFactory;
  */
 public class AnnotatedVideoCreator extends MediaListenerAdapter implements Runnable {
 
+    private final int BORDER = 50;
+    private Color BACKGROUND_COLOR = Color.DARK_GRAY;
+    private boolean SHAPE_OUTLINE_ENABLED = false;
+    private Color OUTLINE_COLOR = Color.BLACK;
+    private boolean STRING_OUTLINE_ENABLED = false;
+    private Color FONT_COLOR = Color.WHITE;
+    private Color SHAPE_COLOR = Color.GREEN;
+    private boolean CROSSHAIR_ENABLED = true;
+    private Color VIDEO_BORDER_COLOR = Color.WHITE;
+    private boolean VIDEO_BORDER_ENABLED = true;
     /**
      * Default color for the text overlay
      */
-    private Color defaultG2DColor = Color.WHITE;
+    private Color defaultG2DColor = Color.GREEN;
     /**
      * Points of the spape to render in the video
      */
@@ -144,7 +153,13 @@ public class AnnotatedVideoCreator extends MediaListenerAdapter implements Runna
     private boolean encoding;
     List<BufferedImage> frames;
     private IRational fps;
-    private final int border = 100;
+    private int count;
+    private int min_x;
+    private Point shape_center;
+    private int min_y;
+    private int max_x;
+    private int max_y;
+    
 
     /**
      * Construct a DecodeAndCaptureFrames which reads and captures frames from a
@@ -173,6 +188,30 @@ public class AnnotatedVideoCreator extends MediaListenerAdapter implements Runna
     public void setShape(StrokeList shape) {
         if (!encoding) {
             shapeToDraw = shape;
+            min_x = dim.width;
+            min_y = dim.height;
+            max_x = 0;
+            max_y = 0;
+            shape_center = new Point(0, 0);
+            for (Stroke stroke : shapeToDraw.strokes) {
+                for (Point point : stroke.points) {
+                    if (point.x < min_x) {
+                        min_x = point.x;
+                    }
+                    if (point.x > max_x) {
+                        max_x = point.x;
+                    }
+                    if (point.y < min_y) {
+                        min_y = point.y;
+                    }
+                    if (point.y > max_y) {
+                        max_y = point.y;
+                    }
+                }
+            }
+            int x = min_x + ((max_x - min_x) / 2);
+            int y = min_y + ((max_y - min_y) / 2);
+            shape_center = new Point(x, y);
         }
     }
 
@@ -250,7 +289,7 @@ public class AnnotatedVideoCreator extends MediaListenerAdapter implements Runna
                 line = "";
                 wordCount = 0;
                 x = 0;
-                y = y + (fh * 2);
+                y = y + fh;
             } else {
                 int w = fm.stringWidth(word);
                 if ((x + space + w) > dim.width) {
@@ -284,21 +323,25 @@ public class AnnotatedVideoCreator extends MediaListenerAdapter implements Runna
      */
     private void drawString(Graphics2D g2d, String line, int lineW, int y, boolean centered) {
         if (centered) {
-            g2d.setColor(Color.black);
-            g2d.drawString(line, ((dim.width - lineW) / 2) - 1, y - 1);
-            g2d.drawString(line, ((dim.width - lineW) / 2) + 1, y - 1);
-            g2d.drawString(line, ((dim.width - lineW) / 2) + 1, y + 1);
-            g2d.drawString(line, ((dim.width - lineW) / 2) - 1, y + 1);
-            g2d.setColor(defaultG2DColor);
+            if (STRING_OUTLINE_ENABLED) {
+                g2d.setColor(OUTLINE_COLOR);
+                g2d.drawString(line, ((dim.width - lineW) / 2) - 1, y - 1);
+                g2d.drawString(line, ((dim.width - lineW) / 2) + 1, y - 1);
+                g2d.drawString(line, ((dim.width - lineW) / 2) + 1, y + 1);
+                g2d.drawString(line, ((dim.width - lineW) / 2) - 1, y + 1);
+            }
+            g2d.setColor(FONT_COLOR);
             g2d.drawString(line, (dim.width - lineW) / 2, y);
         } else {
-            g2d.setColor(Color.black);
-            g2d.drawString(line, 0, y);
-            g2d.drawString(line, 0, y);
-            g2d.drawString(line, 0, y);
-            g2d.drawString(line, 0, y);
-            g2d.setColor(defaultG2DColor);
-            g2d.drawString(line, 0, y);
+            if (STRING_OUTLINE_ENABLED) {
+                g2d.setColor(OUTLINE_COLOR);
+                g2d.drawString(line, min_x + BORDER, y);
+                g2d.drawString(line, min_x + BORDER, y);
+                g2d.drawString(line, min_x + BORDER, y);
+                g2d.drawString(line, min_x + BORDER, y);
+            }
+            g2d.setColor(FONT_COLOR);
+            g2d.drawString(line, min_x + BORDER, y);
         }
     }
 
@@ -308,20 +351,28 @@ public class AnnotatedVideoCreator extends MediaListenerAdapter implements Runna
      * @param g2d {@link Graphics2D}
      */
     private void drawPoints(Graphics2D g2d) {
-        for (Stroke stroke : shapeToDraw.strokes) {
-            Point lastPoint = null;
-            for (Point point : stroke.points) {
-                if (lastPoint == null) {
-                    lastPoint = point;
-                } else {
-                    g2d.setColor(Color.black);
-                    g2d.drawLine(border + lastPoint.x + 2, border + lastPoint.y + 2, border + point.x + 2, border + point.y + 2);
-                    g2d.drawLine(border + lastPoint.x - 2, border + lastPoint.y + 2, border + point.x - 2, border + point.y + 2);
-                    g2d.drawLine(border + lastPoint.x + 2, border + lastPoint.y - 2, border + point.x + 2, border + point.y - 2);
-                    g2d.drawLine(border + lastPoint.x - 2, border + lastPoint.y - 2, border + point.x - 2, border + point.y - 2);
-                    g2d.setColor(defaultG2DColor);
-                    g2d.drawLine(border + lastPoint.x, border + lastPoint.y, border + point.x, border + point.y);
-                    lastPoint = point;
+        if (CROSSHAIR_ENABLED) {
+            g2d.setColor(SHAPE_COLOR);
+            g2d.drawLine(BORDER + 0, BORDER + shape_center.y, BORDER + dim.width, BORDER + shape_center.y);
+            g2d.drawLine(BORDER + shape_center.x, BORDER + 0, BORDER + shape_center.x, BORDER + dim.height);
+        } else {
+            for (Stroke stroke : shapeToDraw.strokes) {
+                Point lastPoint = null;
+                for (Point point : stroke.points) {
+                    if (lastPoint == null) {
+                        lastPoint = point;
+                    } else {
+                        if (SHAPE_OUTLINE_ENABLED) {
+                            g2d.setColor(OUTLINE_COLOR);
+                            g2d.drawLine(BORDER + lastPoint.x + 2, BORDER + lastPoint.y + 2, BORDER + point.x + 2, BORDER + point.y + 2);
+                            g2d.drawLine(BORDER + lastPoint.x - 2, BORDER + lastPoint.y + 2, BORDER + point.x - 2, BORDER + point.y + 2);
+                            g2d.drawLine(BORDER + lastPoint.x + 2, BORDER + lastPoint.y - 2, BORDER + point.x + 2, BORDER + point.y - 2);
+                            g2d.drawLine(BORDER + lastPoint.x - 2, BORDER + lastPoint.y - 2, BORDER + point.x - 2, BORDER + point.y - 2);
+                        }
+                        g2d.setColor(SHAPE_COLOR);
+                        g2d.drawLine(BORDER + lastPoint.x, BORDER + lastPoint.y, BORDER + point.x, BORDER + point.y);
+                        lastPoint = point;
+                    }
                 }
             }
         }
@@ -351,20 +402,22 @@ public class AnnotatedVideoCreator extends MediaListenerAdapter implements Runna
                 return;
             }
         }
-        if (event.getTimeStamp() > timeStart && event.getTimeStamp() < timeEnd) {
-            frames.add(event.getImage());
+        if (event.getTimeStamp() > timeEnd) {
+            completed = true;
+            return;
         }
-    }
-
-    public void createVideo() {
-        int count = 0;
-        for (BufferedImage image : frames) {
-            BufferedImage bImage = new BufferedImage(image.getWidth(null) + border,
-                    image.getHeight(null) + border, BufferedImage.TYPE_3BYTE_BGR);
+        if (event.getTimeStamp() > timeStart && event.getTimeStamp() < timeEnd) {
+            BufferedImage image = event.getImage();
+            BufferedImage bImage = new BufferedImage(image.getWidth(null) + BORDER * 2,
+                    image.getHeight(null) + BORDER * 2, BufferedImage.TYPE_3BYTE_BGR);
             Graphics2D g2d = bImage.createGraphics();
-            g2d.setColor(Color.BLACK);
+            g2d.setColor(BACKGROUND_COLOR);
             g2d.fillRect(0, 0, bImage.getWidth(), bImage.getHeight());
-            g2d.drawImage(image, (bImage.getWidth() - image.getWidth(null)) / 2, 
+            if (VIDEO_BORDER_ENABLED) {
+                g2d.setColor(VIDEO_BORDER_COLOR);
+                g2d.fillRect(BORDER-2, BORDER-2, (bImage.getWidth()-2*BORDER)+4, (bImage.getHeight()-2*BORDER)+4);
+            }
+            g2d.drawImage(image, (bImage.getWidth() - image.getWidth(null)) / 2,
                     (bImage.getHeight() - image.getHeight(null)) / 2, null);
             g2d.setColor(defaultG2DColor);
             BasicStroke bs = new BasicStroke(2);
@@ -379,7 +432,7 @@ public class AnnotatedVideoCreator extends MediaListenerAdapter implements Runna
             }
             if (textOverlayEnabled) {
                 if (text != null) {
-                    drawString(text, g2d, true, 0);
+                    drawString(text, g2d, false, 0);
                 } else {
                     log.warn("Can not render title overlay: tile == null");
                     textOverlayEnabled = false;
@@ -397,8 +450,8 @@ public class AnnotatedVideoCreator extends MediaListenerAdapter implements Runna
         fps = IRational.make(24, 1);
         if (dim != null) {
 
-            creator = new VideoEncoder(outFile, dim.width + border,
-                    dim.height + border);
+            creator = new VideoEncoder(outFile, dim.width + BORDER * 2,
+                    dim.height + BORDER * 2);
             this.encoding = true;
             IMediaReader reader = ToolFactory.makeReader(inputFile);
             // stipulate that we want BufferedImages created in BGR 24bit color space
@@ -414,14 +467,13 @@ public class AnnotatedVideoCreator extends MediaListenerAdapter implements Runna
                 // happens here.  action happens in the onVideoPicture() method
                 // which is called when complete video pictures are extracted from
                 // the media source
-                while (reader.readPacket() == null) {
+                while (reader.readPacket() == null && !completed) {
                     do {
                     } while (false);
                 }
             } else {
                 log.warn("Attach listener failed.");
             }
-            createVideo();
             creator.closeStreams();
             completed = true;
         } else {

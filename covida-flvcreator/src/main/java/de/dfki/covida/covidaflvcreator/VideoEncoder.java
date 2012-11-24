@@ -139,6 +139,7 @@ public class VideoEncoder {
      */
     public void closeStreams() {
         int retval = outContainer.writeTrailer();
+        outContainer.close();
         if (retval < 0) {
             throw new RuntimeException("Could not write trailer to output file");
         }

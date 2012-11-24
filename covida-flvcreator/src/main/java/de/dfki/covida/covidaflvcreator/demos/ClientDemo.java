@@ -71,24 +71,19 @@ public class ClientDemo {
 
         StrokeList shape = new StrokeList();
         Stroke stroke = new Stroke();
-        stroke.points.add(new Point(22, 177));
-        stroke.points.add(new Point(200, 22));
-        stroke.points.add(new Point(155, 43));
-        stroke.points.add(new Point(210, 77));
-        stroke.points.add(new Point(244, 17));
-        stroke.points.add(new Point(22, 7));
-        stroke.points.add(new Point(331, 177));
-        stroke.points.add(new Point(321, 173));
-        stroke.points.add(new Point(100, 177));
-        stroke.points.add(new Point(22, 177));
+        stroke.points.add(new Point(50, 100));
+        stroke.points.add(new Point(100, 100));
+        stroke.points.add(new Point(100, 150));
+        stroke.points.add(new Point(50, 150));
+        stroke.points.add(new Point(50, 100));
         shape.strokes.add(stroke);
 
         String filename = "../covida-res/videos/Collaborative Video Annotation.mp4";
 
         long timeStart = 20000000;
-        long timeEnd = 35000000;
+        long timeEnd = 25000000;
 
-        String label = "Test label";
+        String label = "Test annotation <BR> label";
 
 //        while (true) {
             timeStart++;
