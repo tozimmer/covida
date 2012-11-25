@@ -207,21 +207,11 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
                 }
                 i++;
             }
-            g2d.setColor(defaultG2DColor);
+            g2d.setColor(Color.gray);
             g2d.drawPolyline(xPoints, yPoints, size);
         }
         for (Polygon polygon : shapeToDraw) {
-            g2d.setColor(Color.black);
-            polygon.translate(+2, +2);
-            g2d.drawPolyline(polygon.xpoints, polygon.ypoints, polygon.npoints);
-            polygon.translate(-4, +0);
-            g2d.drawPolyline(polygon.xpoints, polygon.ypoints, polygon.npoints);
-            polygon.translate(+4, -4);
-            g2d.drawPolyline(polygon.xpoints, polygon.ypoints, polygon.npoints);
-            polygon.translate(-4, +0);
-            g2d.drawPolyline(polygon.xpoints, polygon.ypoints, polygon.npoints);
-            g2d.setColor(Color.yellow);
-            polygon.translate(+2, +2);
+            g2d.setColor(defaultG2DColor);
             g2d.drawPolyline(polygon.xpoints, polygon.ypoints, polygon.npoints);
         }
     }
