@@ -2,28 +2,16 @@
 <annotationclasslist>
     <annotationclasses>
         <annotationclass>
-            <name>Person</name>
+            <name>Note</name>
             <color>0x104e8b</color>
         </annotationclass>
         <annotationclass>
-            <name>Object</name>
+            <name>Finding</name>
             <color>0x6e8b3d</color>
         </annotationclass>
         <annotationclass>
-            <name>Logo</name>
+            <name>Reminder</name>
             <color>0x8b2323</color>
-        </annotationclass>
-        <annotationclass>
-            <name>Text</name>
-            <color>0xa2b5cd</color>
-        </annotationclass>
-        <annotationclass>
-            <name>Emotion</name>
-            <color>0xcd3700</color>
-        </annotationclass>
-        <annotationclass>
-            <name>Animal</name>
-            <color>0xeec900</color>
         </annotationclass>
     </annotationclasses>
 </annotationclasslist>

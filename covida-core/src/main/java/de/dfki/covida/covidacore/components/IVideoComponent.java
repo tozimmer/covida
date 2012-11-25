@@ -64,4 +64,8 @@ public interface IVideoComponent {
     public void load(Annotation annotation);
     
     public UUID getUUID();
+
+    public void close();
+    
+    public boolean isReady();
 }

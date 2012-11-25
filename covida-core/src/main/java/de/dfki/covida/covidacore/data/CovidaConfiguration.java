@@ -112,6 +112,13 @@ public class CovidaConfiguration implements Serializable {
     @XmlJavaTypeAdapter(ColorAdapter.class)
     @XmlElement(name = "uicolor")
     public Color uiColor;
+    
+    /**
+     * Maximum video height.
+     */
+    @XmlElement(name = "max_video_height")
+    public int maxVideoHeight;
+    
     /**
      * List of pen configurations as {@link List} of {@link PenData}
      */
@@ -127,9 +134,10 @@ public class CovidaConfiguration implements Serializable {
         texturePath = "media/textures/";
         device = TouchAndWriteDevice.WMINPUT;
         autologon = true;
-        defaultlogin = "Covida User";
+        defaultlogin = "MeVidA User";
         thumbcount = 5;
         uiColor = Color.decode("0xffffff");
+        maxVideoHeight = 360;
         uiColors = new ArrayList<>();
         uiColors.add(Color.decode("0xffffff"));
         uiColors.add(Color.decode("0x9A9FA5"));

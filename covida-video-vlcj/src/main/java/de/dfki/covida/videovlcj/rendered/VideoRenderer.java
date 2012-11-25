@@ -87,11 +87,11 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
     private String title;
     private boolean hwrOverlayEnabled = true;
     private Graphics2D g2d;
-    private BufferedImage image;
     private boolean generating;
     private BufferedImage doubleBuffer;
     private boolean running;
     private final ImageRefresher refresher;
+    private int[] rgb;
 
     /**
      * Constructor
@@ -305,14 +305,16 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
         if (generating) {
             return doubleBuffer;
         } else {
-            return image;
+            return frame;
         }
     }
 
     public void refreshImage() {
         generating = true;
-        image = ImageUtils.deepCopy(frame);
-        g2d = image.createGraphics();
+        if (rgb != null) {
+            frame.setRGB(0, 0, width, height, rgb, 0, width);
+        }
+        g2d = frame.createGraphics();
         g2d.setColor(defaultG2DColor);
         BasicStroke bs = new BasicStroke(2);
         g2d.setStroke(bs);
@@ -351,13 +353,12 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
         }
         g2d.dispose();
         generating = false;
-        doubleBuffer = ImageUtils.deepCopy(image);
+        doubleBuffer = ImageUtils.deepCopy(frame);
     }
 
     @Override
     public void onDisplay(int[] data) {
-        frame.setRGB(0, 0, width, height, data, 0, width);
-        data = null;
+        rgb = data.clone();
     }
 
     @Override
@@ -409,6 +410,8 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
 
         @Override
         public void run() {
+            
+            Thread.currentThread().setName("ImageRefresher");
             while (running) {
                 if (!generating) {
                     refreshImage();

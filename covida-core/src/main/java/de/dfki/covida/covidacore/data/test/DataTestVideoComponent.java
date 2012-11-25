@@ -60,4 +60,13 @@ public class DataTestVideoComponent implements IVideoComponent {
     public UUID getUUID() {
         return UUID.randomUUID();
     }
+
+    @Override
+    public void close() {
+    }
+    
+    @Override
+    public boolean isReady(){
+        return true;
+    }
 }

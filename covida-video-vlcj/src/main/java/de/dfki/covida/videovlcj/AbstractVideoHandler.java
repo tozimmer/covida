@@ -98,7 +98,6 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      * {@link MediaPlayer} instance to play the {@code source}
      */
     protected MediaPlayer mediaPlayer;
-
     protected IVideoGraphicsHandler graphics;
     /**
      * The {@link MediaPlayerFactory} to crate {@link VideoSurface} or
@@ -129,9 +128,8 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     public void initComponent() {
         if (data.width < 1 || data.height < 1) {
             preload();
-        } else {
-            create(data.width, data.height);
         }
+        create(data.width, data.height);
     }
 
     /**
@@ -815,7 +813,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     @Override
     public void finished(MediaPlayer mp) {
         controls.highlightPlay();
-        
+
         if (mediaPlayer == null) {
             return;
         }
