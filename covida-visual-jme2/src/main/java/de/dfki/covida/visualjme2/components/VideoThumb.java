@@ -63,8 +63,8 @@ public class VideoThumb extends JMEComponent {
         TextureState videoTextureState = DisplaySystem.getDisplaySystem()
                 .getRenderer().createTextureState();
         videoTextureState.setTexture(videoTexture);
-        borderQuad = new Quad((data.videoName + " thumb border quad"), width 
-                + (height*0.25f),(int) (height * 1.5));
+        borderQuad = new Quad((data.videoName + " thumb border quad"), width*1.1f,
+                (int) (height * 1.4));
         borderQuad.setRenderState(videoTextureState);
         borderQuad.setRenderState(JMEUtils.initalizeBlendState());
         borderQuad.updateRenderState();

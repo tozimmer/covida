@@ -265,7 +265,7 @@ public class AnnotationStorage {
     }
 
     public void sendAnnotation(AnnotationData data, Annotation annotation) {
-        client.annotateVideo(data.title, annotation.time_start, null,
+        client.annotateVideo(data.videoSource, data.title, annotation.time_start, null,
                 annotation.description.split(" "));
     }
 

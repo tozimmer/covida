@@ -251,9 +251,14 @@ public class ControlButton extends JMEComponent
         if (action.equals(ActionName.OPEN) && controlable instanceof IApplication) {
             if (videoThumbs.isEmpty()) {
                 Vector3f local = new Vector3f(0, 0, 0);
+                float prevRation = 0.f;
                 for (VideoMediaData data : CovidaConfiguration.getInstance().videos) {
                     float ration = (float) data.width / (float) data.height;
-                    local = local.add(0, ((float) height * 1.7f) / ration + 25, 0);
+                    if (prevRation == 0.f) {
+                        prevRation = ration;
+                    }
+                    local = local.add(0, (((float) height * 1.7f)
+                            / ((ration + prevRation) / 2.f)) + 25, 0);
                     IApplication app = (IApplication) controlable;
                     VideoThumb thumb = new VideoThumb(data, local, app, this,
                             (int) (width * 1.5f),
@@ -261,6 +266,7 @@ public class ControlButton extends JMEComponent
                             getZOrder());
                     attachChild(thumb);
                     videoThumbs.add(thumb);
+
                 }
                 controlQuad.setDefaultColor(ColorRGBA.orange);
             } else {

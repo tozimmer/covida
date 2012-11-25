@@ -50,7 +50,6 @@ public class VideoSlider extends JMEComponent implements ISlider {
 
     private Quad sliderQuad;
     private VideoComponent video;
-    private boolean toPause;
     private final Node sliderNode;
 
     public VideoSlider(VideoComponent video, int zOrder) {

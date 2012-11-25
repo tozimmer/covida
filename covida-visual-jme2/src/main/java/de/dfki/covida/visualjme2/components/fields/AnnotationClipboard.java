@@ -71,13 +71,13 @@ public class AnnotationClipboard extends FieldComponent implements
         initTextures();
         textBeginY = (int) (quad.getWidth() / 2.2f - FONT_SIZE);
         int x = (int) (getWidth() / 4.f);
-        TextComponent caption = new TextComponent(this, ActionName.NONE, 
-                getZOrder());
-        attachChild(caption);
-        caption.setLocalTranslation(x, getTextY(0) - FONT_SIZE / 4.f, 0);
-        caption.setSize((int) (FONT_SIZE * 1.5f));
-        caption.setText("Clipboard:");
-        caption.setFont(2);
+//        TextComponent caption = new TextComponent(this, ActionName.NONE, 
+//                getZOrder());
+//        attachChild(caption);
+//        caption.setLocalTranslation(x, getTextY(0) - FONT_SIZE / 4.f, 0);
+//        caption.setSize((int) (FONT_SIZE * 1.5f));
+//        caption.setText("Clipboard:");
+//        caption.setFont(2);
         update();
     }
 

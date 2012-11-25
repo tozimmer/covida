@@ -51,7 +51,7 @@ public class ERmedClient {
     public void sendAnnotation(AnnotationData data, Annotation annotation) {
         if (AppProperties.getInstance().getProperty("ermedactivated")
                 .equals("true") && client != null) {
-            client.annotateVideo(data.videoSource, annotation.time_start,
+            client.annotateVideo(data.videoSource, data.title, annotation.time_start,
                     encode(annotation.strokelist),
                     annotation.description.split(" "));
         }

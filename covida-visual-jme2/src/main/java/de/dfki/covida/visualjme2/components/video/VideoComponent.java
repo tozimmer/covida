@@ -383,7 +383,7 @@ public final class VideoComponent extends JMEComponent implements
         attachChild(controls);
         slider = new VideoSlider(this, getZOrder() - 2);
         slider.node.setLocalTranslation(
-                new Vector3f(-15, -22 - getHeight() / 2, 0));
+                new Vector3f(0, -22 - getHeight() / 2, 0));
         slider.setDefaultPosition();
         attachChild(slider);
     }
