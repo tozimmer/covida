@@ -29,6 +29,7 @@ package de.dfki.covida.covidacore;
 
 import com.sun.jna.NativeLibrary;
 import de.dfki.covida.covidacore.data.CovidaConfiguration;
+import de.dfki.covida.covidacore.data.ermed.ERmedClient;
 import de.dfki.covida.covidacore.tw.IApplication;
 import de.dfki.covida.covidacore.tw.TouchAndWriteSupport;
 import de.dfki.touchandwrite.TouchAndWriteDevice;
@@ -67,6 +68,8 @@ public class MainImplementation {
     private static final String DUMP_NATIVE_MEMORY = "false";
 
     public MainImplementation(String[] args) {
+        log.debug("Register on ERMed Proxy");
+        ERmedClient.getInstance();
         Thread.currentThread().setName("Covida Visual");
         if (null == System.getProperty("vlcj.log")) {
             System.setProperty("vlcj.log", VLCJ_LOG_LEVEL);
