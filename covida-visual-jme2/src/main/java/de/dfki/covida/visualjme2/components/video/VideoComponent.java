@@ -33,11 +33,9 @@ import com.jme.image.Texture.WrapMode;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
-import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Spatial;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.state.BlendState;
-import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.GameTaskQueueManager;
@@ -115,10 +113,6 @@ public final class VideoComponent extends JMEComponent implements
      */
     private Quad overlay;
     /**
-     * Overlay for the video title
-     */
-    private TextComponent textOverlay;
-    /**
      * {@link AbstractVideoHandler} which plays and renders the video.
      */
     private AbstractVideoHandler video;
@@ -171,6 +165,12 @@ public final class VideoComponent extends JMEComponent implements
     public VideoComponent(VideoMediaData data, int zOrder) {
         super("Video Component " + data.videoName, zOrder);
         log.debug("Create video id:" + getId());
+        int maxHeight = CovidaConfiguration.getInstance().maxVideoHeight;
+        if (data.height > maxHeight) {
+            float scale = (float) data.height / (float) maxHeight;
+            data.height = (int) ((float) data.height / scale);
+            data.width = (int) ((float) data.width / scale);
+        }
         this.data = data;
     }
 
@@ -427,13 +427,6 @@ public final class VideoComponent extends JMEComponent implements
      * Creates overlays
      */
     private void createOverlays() {
-        textOverlay = new TextComponent(this, ActionName.NONE,
-                getZOrder() - 2);
-        textOverlay.setColor(ColorRGBA.gray);
-        textOverlay.setLocalTranslation(0, getHeight() / (1.50f) - getFontSize()
-                / 2.f, 0);
-        attachChild(textOverlay);
-        textOverlay.setSize(getFontSize());
         initalizeOverlayQuads(JMEUtils.initalizeBlendState());
         stDrag = DragAnimation.getController(overlayDrag);
         attachChild(overlay);
@@ -462,18 +455,20 @@ public final class VideoComponent extends JMEComponent implements
         overlaySelectState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
         overlaySelectState.setTexture(overlaySelectTexture);
         overlay = new Quad("Overlay-Default-Image-Quad",
-                getWidth() + 100, getHeight() + 100);
+                getWidth() + (getHeight() * 0.265f), getHeight() * 1.265f);
         overlay.setZOrder(getZOrder() - 1);
         overlay.setRenderState(overlayDefaultState);
         overlay.setRenderState(alpha);
         overlay.updateRenderState();
-        Texture overlayDragTexture = TextureManager.loadTexture(getClass().getClassLoader().getResource("media/textures/overlay_drag.png"),
+        Texture overlayDragTexture = TextureManager.loadTexture(getClass()
+                .getClassLoader().getResource("media/textures/overlay_drag.png"),
                 Texture.MinificationFilter.BilinearNearestMipMap,
                 Texture.MagnificationFilter.Bilinear);
         overlayDragTexture.setWrap(Texture.WrapMode.Clamp);
         overlayDragState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
         overlayDragState.setTexture(overlayDragTexture);
-        Texture overlayBlankTexture = TextureManager.loadTexture(getClass().getClassLoader().getResource("media/textures/bg_info_blank.png"),
+        Texture overlayBlankTexture = TextureManager.loadTexture(getClass()
+                .getClassLoader().getResource("media/textures/bg_info_blank.png"),
                 Texture.MinificationFilter.BilinearNearestMipMap,
                 Texture.MagnificationFilter.Bilinear);
         overlayDragTexture.setWrap(Texture.WrapMode.Clamp);
@@ -661,16 +656,15 @@ public final class VideoComponent extends JMEComponent implements
      * Method which selects and deselects the component
      */
     public void toggleSelected() {
-        if (!overlay.getRenderState(RenderState.StateType.Texture).equals(overlaySelectState)) {
-            overlay.setRenderState(overlaySelectState);
-            overlay.updateRenderState();
-            attachControls();
-            textOverlay.setText(video.getTitle());
-        } else {
+        if (video.isPlaying()) {
+            pause();
             overlay.setRenderState(overlayDefaultState);
             overlay.updateRenderState();
-            detachMenu();
-            textOverlay.setText("");
+        } else {
+            resume();
+            controls.normalizeStop();
+            overlay.setRenderState(overlaySelectState);
+            overlay.updateRenderState();
         }
     }
 
@@ -728,6 +722,7 @@ public final class VideoComponent extends JMEComponent implements
      *
      * @return true if video is ready to play.
      */
+    @Override
     public boolean isReady() {
         return video.isReady();
     }
@@ -799,6 +794,7 @@ public final class VideoComponent extends JMEComponent implements
     public void draw(int x, int y) {
         if (video.isReady()) {
             video.pause();
+            controls.highlightPlay();
             Vector3f local = getLocal(x, y);
             int localX = (int) local.x;
             int localY = (int) local.y;
@@ -859,10 +855,10 @@ public final class VideoComponent extends JMEComponent implements
      */
     @Override
     public int getWidth() {
-        if (video.isReady()) {
+        if (video != null && video.isReady()) {
             return video.getWidth();
         }
-        return 0;
+        return data.width;
     }
 
     /**
@@ -871,10 +867,10 @@ public final class VideoComponent extends JMEComponent implements
      */
     @Override
     public final int getHeight() {
-        if (video.isReady()) {
+        if (video != null && video.isReady()) {
             return video.getHeight();
         }
-        return 0;
+        return data.height;
     }
 
     @Override

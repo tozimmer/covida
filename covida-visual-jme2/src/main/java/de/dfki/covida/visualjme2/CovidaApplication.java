@@ -31,11 +31,11 @@ import com.acarter.scenemonitor.SceneMonitor;
 import com.jme.animation.SpatialTransformer;
 import com.jme.image.Image;
 import com.jme.image.Texture;
+import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
-import com.jme.math.Vector2f;
+import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Spatial;
-import com.jme.scene.TexCoords;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
@@ -130,20 +130,24 @@ public class CovidaApplication extends ApplicationImpl implements IControlableCo
         }
         background.setDefaultColor(color);
         // set background Texture
-        Texture backgroundTexture = TextureManager.loadTexture(
-                getClass().getClassLoader().getResource("media/textures/1280x800.jpg"),
-                Texture.MinificationFilter.BilinearNoMipMaps,
-                Texture.MagnificationFilter.Bilinear);
-        backgroundTexture.setWrap(Texture.WrapMode.Clamp);
-        Vector2f[] texCoords = new Vector2f[4];
-        texCoords[0] = new Vector2f(0, 0);
-        texCoords[3] = new Vector2f(1, 0);
-        texCoords[1] = new Vector2f(0, 1);
-        texCoords[2] = new Vector2f(1, 1);
-        background.setTextureCoords(TexCoords.makeNew(texCoords));
-        TextureState backgroundTextureState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
-        backgroundTextureState.setTexture(backgroundTexture);
-        background.setRenderState(backgroundTextureState);
+//        Texture backgroundTexture = TextureManager.loadTexture(
+//                getClass().getClassLoader().getResource("media/textures/1280x800.png"),
+//                Texture.MinificationFilter.Trilinear,
+//                Texture.MagnificationFilter.Bilinear);
+//        backgroundTexture.setWrap(Texture.WrapMode.Clamp);
+//        backgroundTexture.setBlendColor(ColorRGBA.white);
+//        backgroundTexture.setAnisotropicFilterPercent(0.5f);
+//        Vector2f[] texCoords = new Vector2f[4];
+//        texCoords[0] = new Vector2f(0, 0);
+//        texCoords[3] = new Vector2f(1, 0);
+//        texCoords[1] = new Vector2f(0, 1);
+//        texCoords[2] = new Vector2f(1, 1);
+//        background.setTextureCoords(TexCoords.makeNew(texCoords));
+//        TextureState backgroundTextureState = DisplaySystem.getDisplaySystem()
+//                .getRenderer().createTextureState();
+//        backgroundTextureState.setTexture(backgroundTexture);
+//        background.setRenderState(backgroundTextureState);
+        background.setSolidColor(new ColorRGBA(0.62f, 0.62f, 0.62f, 1.f));
         background.updateRenderState();
         background.setZOrder(CovidaZOrder.getInstance().getPreload());
         GameTaskQueueManager.getManager().update(new AttachChildCallable(CovidaRootNode.node, background));
@@ -204,6 +208,7 @@ public class CovidaApplication extends ApplicationImpl implements IControlableCo
                         getHeight() / 2, configuration.defaultlogin);
             }
             background.setZOrder(CovidaZOrder.getInstance().getBackground());
+            logo.setZOrder(CovidaZOrder.getInstance().getBackground());
         }
     }
 
@@ -257,10 +262,11 @@ public class CovidaApplication extends ApplicationImpl implements IControlableCo
     public void addComponent(ITouchAndWriteComponent component) {
         if (component instanceof VideoComponent) {
             VideoComponent video = (VideoComponent) component;
-            int x = (int) (display.getWidth() / 2.f);
-            int y = (int) (display.getHeight() / 2.f);
-            video.setVolume(0);
-            video.setLocalTranslation(x, y, 0);
+            if (video.getTitle().equals("ERmed-Cavallaro")) {
+                video.setVolume(100);
+            } else {
+                video.setVolume(0);
+            }
             video.setDefaultPosition();
         } else if (component instanceof ControlButton) {
             ControlButton button = (ControlButton) component;
@@ -324,7 +330,7 @@ public class CovidaApplication extends ApplicationImpl implements IControlableCo
     protected void loadingAnimation() {
         // Splash Screen
         preloadScreen = new Quad("Splash-Image-Quad", 512, 512);
-        preloadScreen.setZOrder(CovidaZOrder.getInstance().getPreload()-50);
+        preloadScreen.setZOrder(CovidaZOrder.getInstance().getPreload() - 50);
         // set splash screen background Texture
         Texture splashTexture = TextureManager.loadTexture(
                 getClass().getClassLoader().getResource("media/textures/loading.png"),
@@ -469,15 +475,15 @@ public class CovidaApplication extends ApplicationImpl implements IControlableCo
     public void clearDrawings() {
         loginOverlay.clear();
     }
-    
+
     @Override
     public void changeColor(ColorRGBA color) {
-        for(ITouchAndWriteComponent comp : TouchAndWriteComponentHandler.getInstance().getComponents()){
-            if(comp instanceof ControlButton){
+        for (ITouchAndWriteComponent comp : TouchAndWriteComponentHandler.getInstance().getComponents()) {
+            if (comp instanceof ControlButton) {
                 ControlButton button = (ControlButton) comp;
                 button.setColor(color);
             }
-            if(comp instanceof ConfigButton){
+            if (comp instanceof ConfigButton) {
                 ConfigButton button = (ConfigButton) comp;
                 button.setColor(color);
             }

@@ -253,7 +253,7 @@ public class ControlButton extends JMEComponent
                 Vector3f local = new Vector3f(0, 0, 0);
                 for (VideoMediaData data : CovidaConfiguration.getInstance().videos) {
                     float ration = (float) data.width / (float) data.height;
-                    local = local.add(0, ((float) height * 1.5f) / ration + 25, 0);
+                    local = local.add(0, ((float) height * 1.7f) / ration + 25, 0);
                     IApplication app = (IApplication) controlable;
                     VideoThumb thumb = new VideoThumb(data, local, app, this,
                             (int) (width * 1.5f),

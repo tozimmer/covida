@@ -154,6 +154,8 @@ public class TextComponent extends JMEComponent implements IControlButton {
         }
         txt.setText("");
         txt.clearTextureBuffers();
+        txt.clearBuffers();
+        txt.clearControllers();
     }
 
     public void attach() {

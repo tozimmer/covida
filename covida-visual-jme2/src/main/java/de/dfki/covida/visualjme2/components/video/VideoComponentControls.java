@@ -64,41 +64,41 @@ public class VideoComponentControls extends JMEComponent implements IVideoContro
 
     private void initalizeControls() {
         List<String> buttonOrder = new ArrayList<>();
-        buttonOrder.add("media/textures/video_controls_back.png");
-        buttonOrder.add("media/textures/video_controls_stop.png");
-        buttonOrder.add("media/textures/video_controls_pause.png");
-        buttonOrder.add("media/textures/video_controls_forward.png");
+//        buttonOrder.add("media/textures/video_controls_back.png");
+//        buttonOrder.add("media/textures/video_controls_stop.png");
+//        buttonOrder.add("media/textures/video_controls_pause.png");
+//        buttonOrder.add("media/textures/video_controls_forward.png");
 //        buttonOrder.add("media/textures/video_controls_soundoff.png");
         Map<String, ActionName> controlList = new HashMap<>();
-        controlList.put("media/textures/video_controls_forward.png", ActionName.FORWARD);
-        controlList.put("media/textures/video_controls_stop.png", ActionName.STOP);
-        controlList.put("media/textures/video_controls_pause.png", ActionName.PLAYPAUSE);
-        controlList.put("media/textures/video_controls_back.png", ActionName.BACKWARD);
+//        controlList.put("media/textures/video_controls_forward.png", ActionName.FORWARD);
+//        controlList.put("media/textures/video_controls_stop.png", ActionName.STOP);
+//        controlList.put("media/textures/video_controls_pause.png", ActionName.PLAYPAUSE);
+//        controlList.put("media/textures/video_controls_back.png", ActionName.BACKWARD);
 //        controlList.put("media/textures/video_controls_soundoff.png", ActionName.SOUND);
         Map<ActionName, String> controlActiveList = new HashMap<>();
-        controlActiveList.put(ActionName.FORWARD, "media/textures/video_controls_forward.png");
-        controlActiveList.put(ActionName.STOP, "media/textures/video_controls_stop.png");
-        controlActiveList.put(ActionName.PLAYPAUSE, "media/textures/video_controls_play.png");
-        controlActiveList.put(ActionName.BACKWARD, "media/textures/video_controls_back.png");
+//        controlActiveList.put(ActionName.FORWARD, "media/textures/video_controls_forward.png");
+//        controlActiveList.put(ActionName.STOP, "media/textures/video_controls_stop.png");
+//        controlActiveList.put(ActionName.PLAYPAUSE, "media/textures/video_controls_play.png");
+//        controlActiveList.put(ActionName.BACKWARD, "media/textures/video_controls_back.png");
 //        controlActiveList.put(ActionName.SOUND, "media/textures/video_controls_sound.png");
         controls = new HashMap<>();
         int controlHeight = (int) (0.15f * controlable.getHeight());
         int controlWidth = controlable.getWidth() / 5;
-        for (String texture : buttonOrder) {
-            ControlButton control = new ControlButton(controlList.get(texture),
-                    controlable, texture, controlActiveList.get(controlList.get(texture)),
-                    controlWidth, controlHeight, getZOrder());
-            control.setLocalTranslation(controlWidth / 2 + (-controlable.getWidth() / 2)
-                    + (controlable.getWidth() / 10)
-                    + (controls.size() * (controlable.getWidth() / 5)), -controlable.getHeight() / (1.4f), 0);
-            controls.put(controlList.get(texture), control);
-        }
+//        for (String texture : buttonOrder) {
+//            ControlButton control = new ControlButton(controlList.get(texture),
+//                    controlable, texture, controlActiveList.get(controlList.get(texture)),
+//                    controlWidth, controlHeight, getZOrder());
+//            control.setLocalTranslation(controlWidth / 2 + (-controlable.getWidth() / 2)
+//                    + (controlable.getWidth() / 10)
+//                    + (controls.size() * (controlable.getWidth() / 5)), -controlable.getHeight() / (1.4f), 0);
+//            controls.put(controlList.get(texture), control);
+//        }
         controlWidth = (int) (0.15f * controlable.getHeight());
         controlList = new HashMap<>();
-        controlList.put("media/textures/video_controls_changemedia.png", ActionName.RESET);
+//        controlList.put("media/textures/video_controls_changemedia.png", ActionName.RESET);
         controlList.put("media/textures/video_controls_close.png", ActionName.CLOSE);
         controlActiveList = new HashMap<>();
-        controlActiveList.put(ActionName.RESET, "media/textures/video_controls_changemedia.png");
+//        controlActiveList.put(ActionName.RESET, "media/textures/video_controls_changemedia.png");
         controlActiveList.put(ActionName.CLOSE, "media/textures/video_controls_close.png");
         int start = controlable.getWidth() / 2 - controlWidth / 2;
         for (String texture : controlList.keySet()) {
@@ -152,22 +152,22 @@ public class VideoComponentControls extends JMEComponent implements IVideoContro
 
     @Override
     public void highlightPause() {
-        controls.get(ActionName.PLAYPAUSE).setActive(false);
+
     }
 
     @Override
     public void highlightPlay() {
-        controls.get(ActionName.PLAYPAUSE).setActive(true);
+
     }
 
     @Override
     public void highlightStop() {
-        controls.get(ActionName.STOP).setActive(true);
+
     }
     
     @Override
     public void normalizeStop() {
-        controls.get(ActionName.STOP).setActive(false);
+
     }
 
     /**

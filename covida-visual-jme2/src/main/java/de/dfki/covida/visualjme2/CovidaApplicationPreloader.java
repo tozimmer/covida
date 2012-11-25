@@ -28,8 +28,10 @@
 package de.dfki.covida.visualjme2;
 
 import com.jme.util.GameTaskQueueManager;
+import de.dfki.covida.covidacore.components.IVideoComponent;
 import de.dfki.covida.covidacore.data.CovidaConfiguration;
 import de.dfki.covida.covidacore.data.VideoMediaData;
+import de.dfki.covida.covidacore.tw.TouchAndWriteComponentHandler;
 import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.videovlcj.preload.VideoPreload;
 import de.dfki.covida.visualjme2.components.ControlButton;
@@ -39,6 +41,8 @@ import de.dfki.covida.visualjme2.components.fields.AnnotationSearchField;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
 import de.dfki.covida.visualjme2.utils.CovidaZOrder;
 import de.dfki.touchandwrite.TouchAndWriteDevice;
+import java.util.List;
+import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -220,6 +224,14 @@ public class CovidaApplicationPreloader implements Runnable {
         Thread.currentThread().setName(this.getClass().getName() + " Thread");
         preloadVideos();
         createSideMenus();
+        List<VideoMediaData> videos = CovidaConfiguration.getInstance().videos;
+        if(videos.size() > 0){
+            application.addVideo(videos.get(0));
+            TouchAndWriteComponentHandler handler 
+                    = TouchAndWriteComponentHandler.getInstance();
+            IVideoComponent video = handler.getVideos().iterator().next();
+            video.close();
+        }
         try {
             Thread.sleep(500);
         } catch (InterruptedException ex) {

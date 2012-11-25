@@ -43,6 +43,7 @@ public class TouchAndWriteSupport {
      * Logger
      */
     private static Logger log = LoggerFactory.getLogger(TouchAndWriteConfiguration.class);
+    private static boolean training = false;
 
     /**
      * Starts the {@link TouchAndWriteSupport}
@@ -65,6 +66,9 @@ public class TouchAndWriteSupport {
             conf = TouchAndWriteConfiguration
                     .getDefaultTUIOConfig(application.getScreenSize(),
                     "localhost", "localhost", new int[0]);
+        }
+        if(training){
+            conf.setStoreevents(true);
         }
         TWServer twServer = new TWServer(conf);
         twServer.start();
