@@ -225,14 +225,11 @@ public class DrawingOverlay extends Node {
      */
     @Override
     public void draw(Renderer r) {
-        if(update){
-            update = false;
-        }
-        if (draw && g2d != null && texture.getTextureId() > 0) {
+        if (update && g2d != null && texture.getTextureId() > 0) {
             g2d.update(texture, false);
         }
         super.draw(r);
-        draw = update;
+        update = false;
     }
 
     /**
