@@ -294,17 +294,7 @@ public class ControlButton extends JMEComponent
                 configButton.rotate(180, Vector3f.UNIT_Z);
                 attachChild(configButton);
                 configButtons.add(configButton);
-                controlQuad.setDefaultColor(ColorRGBA.orange);
-                local = local.add(0, getHeight(), 0);
-                app = (IApplication) controlable;
-                ConfigButton colorButton = new ConfigButton(
-                        ActionName.UICOLORLIST, "media/textures/drop.png",
-                        new Vector3f(local), app, this, getWidth(), getWidth(),
-                        getZOrder());
-                attachChild(colorButton);
-                colorButton.rotate(180, Vector3f.UNIT_Z);
-                configButtons.add(colorButton);
-                controlQuad.setDefaultColor(ColorRGBA.orange);
+                controlQuad.setDefaultColor(ColorRGBA.orange);               
             } else {
                 for (ConfigButton button : configButtons) {
                     button.detach();

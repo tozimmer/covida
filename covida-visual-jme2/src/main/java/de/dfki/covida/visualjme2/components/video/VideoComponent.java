@@ -30,6 +30,7 @@ package de.dfki.covida.visualjme2.components.video;
 import com.jme.animation.SpatialTransformer;
 import com.jme.image.Texture;
 import com.jme.image.Texture.WrapMode;
+import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
@@ -178,9 +179,22 @@ public final class VideoComponent extends JMEComponent implements
         preloadAnimation();
         video = new RenderedVideoHandler(data, this);
         video.initComponent();
-        setDefaultPosition();
         initializeAnnotationData();
         attachControls();
+        if (getTitle().equals("ERmed-Cavallaro")) {
+            Quaternion q = new Quaternion();
+            q.fromAngleAxis(FastMath.DEG_TO_RAD * (180), new Vector3f(0, 0, 1));
+            setLocalRotation(q);
+            controls.setLocalRotation(q);
+            slider.setLocalRotation(q);
+            slider.node.setLocalTranslation(
+                new Vector3f(0, 22 + getHeight() / 2, 0));
+            listField.setLocalRotation(q);
+            listField.setDefaultPosition();
+            infoField.setLocalRotation(q);
+            infoField.setDefaultPosition();
+        }
+        setDefaultPosition();
     }
 
     private void preloadAnimation() {

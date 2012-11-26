@@ -115,6 +115,21 @@
                         </configuration>            
                     </execution>
                     <execution>
+                        <id>copy-licenses</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/binaries/bin/licenses</outputDirectory>
+                            <resources>          
+                                <resource>
+                                    <directory>../covida-res/licenses</directory>
+                                </resource>
+                            </resources>              
+                        </configuration>            
+                    </execution>
+                    <execution>
                         <id>copy-native-libs</id>
                         <phase>validate</phase>
                         <goals>

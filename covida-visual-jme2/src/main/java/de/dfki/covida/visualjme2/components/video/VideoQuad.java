@@ -101,11 +101,9 @@ public class VideoQuad extends Quad {
         setRenderState(ts);
         updateRenderState();
         Quaternion q = new Quaternion();
-        if (!video.getTitle().equals("ERmed-Cavallaro")) {
-            // Rotation need because of ImageGraphics
-            q.fromAngles(0f, (float) Math.toRadians(180),
-                    (float) Math.toRadians(180));
-        }
+        // Rotation need because of ImageGraphics
+        q.fromAngles(0f, (float) Math.toRadians(180),
+                (float) Math.toRadians(180));
         rotatePoints(q);
     }
 

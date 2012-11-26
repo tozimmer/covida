@@ -70,6 +70,13 @@ public class TouchAndWriteSupport {
         if(training){
             conf.setStoreevents(true);
         }
+        
+        conf.setTouchLogDelay(0);
+        
+        conf.getEventmanagerConfig().setMaximumframerate(25);
+        conf.getEventmanagerConfig().setIntervalCheck(750);
+        conf.getEventmanagerConfig().setAnalyzerDelay(1000);
+        
         TWServer twServer = new TWServer(conf);
         twServer.start();
 //        config.getEventmanagerConfig().setHost("192.168.83.100");

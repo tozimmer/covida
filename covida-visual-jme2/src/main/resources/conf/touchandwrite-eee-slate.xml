@@ -8,12 +8,12 @@
     </tuioconfiguration>
     <eventmanagerconfig>
         <inprocess>true</inprocess>
-        <maximumframerate>50</maximumframerate>
+        <maximumframerate>25</maximumframerate>
         <eventport>6666</eventport>
         <controlport>6667</controlport>
         <moveDelta>0.001</moveDelta>
         <continousPenStreaming>false</continousPenStreaming>
-        <intervalCheck>1000</intervalCheck>
+        <intervalCheck>800</intervalCheck>
         <analyzerDelay>500</analyzerDelay>
         <channeltype>tcp</channeltype>
     </eventmanagerconfig>

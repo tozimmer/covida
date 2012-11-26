@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
  */
-public class TWServer {
+public class TWServer extends Thread{
     private final TouchAndWriteServer twserver;
     /**
      * Logger
@@ -60,14 +60,18 @@ public class TWServer {
     /**
      * Starts the {@link TouchAndWriteServer} instance as new {@link Thread}
      */
+    @Override
     public void start(){
         log.debug("Start Touch & Write server thread.");
+        Thread.currentThread().setName("Touch & Write server control");
+        Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
         Thread twServerThread = new Thread(twserver, "Touch & Write Server");
+        twServerThread.setName("Touch & Write Server");
         twServerThread.start();
         // Inprocess mode
         while (!twserver.running) {
             try {
-                Thread.sleep(100);
+                Thread.sleep(200);
             } catch (InterruptedException e) {
                 log.error("" + e);
             }

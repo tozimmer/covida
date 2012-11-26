@@ -112,7 +112,7 @@ public abstract class FieldComponent extends JMEComponent {
     /**
      * HWR TextOverlays
      */
-    protected ArrayList<TextComponent> hwr;
+    protected List<TextComponent> hwr;
     protected Map<Integer, Vector2f> lastTouch = new HashMap<>();
     protected float yDrag = 0;
     protected float xDrag = 0;

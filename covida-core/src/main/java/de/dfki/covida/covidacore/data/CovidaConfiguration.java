@@ -101,6 +101,12 @@ public class CovidaConfiguration implements Serializable {
     @XmlElementWrapper(name = "videos")
     public List<VideoMediaData> videos = new ArrayList<>();
     /**
+     * Paths to the video resources as {@link List} of {@link VideoMediaData}.
+     */
+    @XmlElement(name = "clipboard_entries")
+    @XmlElementWrapper(name = "entry")
+    public List<String> clipboardEntries = new ArrayList<>();
+    /**
      * List of pen configurations as {@link List} of {@link PenData}
      */
     @XmlElement(name = "pen")
@@ -134,7 +140,7 @@ public class CovidaConfiguration implements Serializable {
         texturePath = "media/textures/";
         device = TouchAndWriteDevice.WMINPUT;
         autologon = true;
-        defaultlogin = "MeVidA User";
+        defaultlogin = "MediVA User";
         thumbcount = 5;
         uiColor = Color.decode("0xffffff");
         maxVideoHeight = 360;
@@ -146,8 +152,8 @@ public class CovidaConfiguration implements Serializable {
         uiColors.add(Color.decode("0xffccff"));
 
         VideoMediaData data = new VideoMediaData();
-        data.videoName = "CoVidA Demo";
-        data.videoSource = "..\\covida-res\\videos\\Collaborative Video Annotation.mp4";
+        data.videoName = "Scan";
+        data.videoSource = "..\\covida-res\\videos\\scan1.avi";
         data.time_start = 0;
         data.time_end = 0;
         data.repeat = true;
@@ -156,14 +162,28 @@ public class CovidaConfiguration implements Serializable {
         videos.add(data);
 
         data = new VideoMediaData();
-        data.videoName = "RadSpeech";
-        data.videoSource = "..\\covida-res\\videos\\RadSpeech DFKI(360p_H.264-AAC).mp4";
+        data.videoName = "Planar Video";
+        data.videoSource = "..\\covida-res\\videos\\planar-video.avi";
         data.time_start = 0;
         data.time_end = 0;
         data.repeat = true;
         data.width = -1;
         data.height = -1;
         videos.add(data);
+        
+        data = new VideoMediaData();
+        data.videoName = "ERmed-Cavallaro";
+        data.videoSource = "..\\covida-res\\videos\\ERmed-Cavallaro.avi";
+        data.time_start = 0;
+        data.time_end = 0;
+        data.repeat = true;
+        data.width = -1;
+        data.height = -1;
+        videos.add(data);
+        
+        clipboardEntries.add("Radlex");
+        clipboardEntries.add("Finding");
+        clipboardEntries.add("Annotation");
 
         pens.add(PenData.getDefaultConfig(null));
     }

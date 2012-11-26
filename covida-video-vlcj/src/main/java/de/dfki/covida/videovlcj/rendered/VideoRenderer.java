@@ -348,7 +348,8 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
 
     @Override
     public void onDisplay(int[] data) {
-        rgb = data.clone();
+        rgb = data;
+        data = null;
     }
 
     @Override
@@ -400,7 +401,7 @@ public class VideoRenderer extends RenderCallbackAdapter implements IVideoGraphi
 
         @Override
         public void run() {
-            
+            Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
             Thread.currentThread().setName("ImageRefresher");
             while (running) {
                 if (!generating) {

@@ -107,6 +107,8 @@ public class DrawingOverlay extends Node {
      * Drawing board.
      */
     private Quad board;
+    private boolean draw;
+    private boolean update;
 
     /**
      * Creates a new instane of {@link DrawingOverlay}
@@ -190,6 +192,7 @@ public class DrawingOverlay extends Node {
         g2d.fillRect(0, 0, height, width);
         g2d.setComposite(SOLID);
         g2d.update();
+        update = false;
     }
 
     /**
@@ -212,6 +215,7 @@ public class DrawingOverlay extends Node {
             lastX.put(id, x);
             lastY.put(id, y);
         }
+        update = true;
     }
 
     /**
@@ -221,10 +225,14 @@ public class DrawingOverlay extends Node {
      */
     @Override
     public void draw(Renderer r) {
-        if (g2d != null && texture.getTextureId() > 0) {
+        if(update){
+            update = false;
+        }
+        if (draw && g2d != null && texture.getTextureId() > 0) {
             g2d.update(texture, false);
         }
         super.draw(r);
+        draw = update;
     }
 
     /**

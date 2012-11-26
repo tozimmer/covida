@@ -33,6 +33,7 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.shape.Quad;
 import com.jme.util.GameTaskQueueManager;
 import de.dfki.covida.covidacore.components.IControlableComponent;
+import de.dfki.covida.covidacore.data.CovidaConfiguration;
 import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.visualjme2.animations.CloseAnimation;
 import de.dfki.covida.visualjme2.animations.OpenAnimation;
@@ -52,6 +53,8 @@ import java.util.ArrayList;
 public class AnnotationClipboard extends FieldComponent implements
         IControlableComponent {
 
+    int x = (int) (+width / 8.0f);
+    
     /**
      * Creates a new instance of {@link AnnotationClipboard}
      *
@@ -69,21 +72,15 @@ public class AnnotationClipboard extends FieldComponent implements
         super.setAlwaysOnTop(true);
         setLocalScale(new Vector3f(1, 1, 1));
         initTextures();
-        textBeginY = (int) (quad.getWidth() / 2.2f - FONT_SIZE);
-        int x = (int) (getWidth() / 4.f);
-//        TextComponent caption = new TextComponent(this, ActionName.NONE, 
-//                getZOrder());
-//        attachChild(caption);
-//        caption.setLocalTranslation(x, getTextY(0) - FONT_SIZE / 4.f, 0);
-//        caption.setSize((int) (FONT_SIZE * 1.5f));
-//        caption.setText("Clipboard:");
-//        caption.setFont(2);
+        textBeginY = (int) (quad.getHeight() / 2f);
+        for(String string : CovidaConfiguration.getInstance().clipboardEntries){
+            hwrAction("-1", string);
+        }
         update();
     }
 
     @Override
     public final void update() {
-        int x = (int) (+width / 4.0f);
         for(TextComponent text : hwr){
             text.setLocalTranslation(x, getTextY(2 + hwr.lastIndexOf(text)), yDrag);
         }
@@ -154,11 +151,10 @@ public class AnnotationClipboard extends FieldComponent implements
     @Override
     public void hwrAction(String id, String string) {
         if (open) {
-            int x = (int) (+width / 4.0f);
             overlay.clear();
             TextComponent textOverlay = new TextComponent(this, ActionName.COPY,
                     getZOrder());
-            textOverlay.setLocalTranslation(x, getTextY(2 + hwr.size()), 0);
+            textOverlay.setLocalTranslation(0, getTextY(2 + hwr.size()), 0);
             textOverlay.setDefaultPosition();
             textOverlay.setTouchable(true);
             attachChild(textOverlay);

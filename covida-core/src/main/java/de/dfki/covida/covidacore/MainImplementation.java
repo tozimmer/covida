@@ -66,15 +66,19 @@ public class MainImplementation {
      * Set to true to dump out native JNA memory structures.
      */
     private static final String DUMP_NATIVE_MEMORY = "false";
-
+    
     public MainImplementation(String[] args) {
         log.debug("Register on ERMed Proxy");
-        ERmedClient.getInstance();
+        try {
+            ERmedClient.getInstance();
+        } catch (Exception ex) {
+            log.error("", ex);
+        }
         Thread.currentThread().setName("Covida Visual");
         if (null == System.getProperty("vlcj.log")) {
             System.setProperty("vlcj.log", VLCJ_LOG_LEVEL);
         }
-
+        
         try {
             File folder = new File(VLC_SEARCH_PATH);
             if (!folder.exists() || !folder.isDirectory()) {
@@ -87,19 +91,19 @@ public class MainImplementation {
             throw new RuntimeException(e + "Please set vlc directory.");
         }
         System.setProperty("jna.dump_memory", DUMP_NATIVE_MEMORY);
-
+        
         setLoggin(false);
-
+        
         final CovidaCMDOptions opt = new CovidaCMDOptions();
         CmdLineParser parser = new CmdLineParser(opt);
-
+        
         try {
             parser.parseArgument(args);
         } catch (CmdLineException e) {
             log.error("TouchAndWrite [options...] arguments... " + e);
             throw new RuntimeException();
         }
-
+        
         if (opt.isDebug()) {
         } else {
         }
@@ -147,15 +151,15 @@ public class MainImplementation {
         }
         TouchAndWriteSupport.start(application);
     }
-
+    
     private static class ApplicationThread implements Runnable {
-
+        
         private final IApplication application;
-
+        
         private ApplicationThread(IApplication application) {
             this.application = application;
         }
-
+        
         @Override
         public void run() {
             application.start();

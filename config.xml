@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<configuration>
+    <path>media/textures/</path>
+    <device>WMINPUT</device>
+    <autologon>true</autologon>
+    <thumbcount>4</thumbcount>
+    <defaultlogin>MeVidA User</defaultlogin>
+    <videos>
+        <video>
+            <source>..\covida-res\videos\planar-video.avi</source>
+            <name>Planar</name>
+            <time_start>0</time_start>
+            <time_end>0</time_end>
+			<width>-1</width>
+			<height>-1</height>
+            <repeat>true</repeat>
+        </video>
+        <video>
+            <source>..\covida-res\videos\scan1.avi</source>
+            <name>Scan</name>
+            <time_start>0</time_start>
+            <time_end>0</time_end>
+			<width>-1</width>
+			<height>-1</height>
+            <repeat>true</repeat>
+        </video>
+        <video>
+            <source>..\covida-res\videos\ERmed-Cavallaro.avi</source>
+            <name>ERmed-Cavallaro</name>
+            <time_start>0</time_start>
+            <time_end>0</time_end>
+			<width>-1</width>
+			<height>-1</height>
+            <repeat>true</repeat>
+        </video>
+        <video>
+            <source>..\covida-res\videos\sagittal-video.avi</source>
+            <name>Sagittal</name>
+            <time_start>0</time_start>
+            <time_end>0</time_end>
+			<width>-1</width>
+			<height>-1</height>
+            <repeat>true</repeat>
+        </video>
+    </videos>
+    <penList>
+        <pen>
+            <color>0xffffff</color>
+            <thickness>1</thickness>
+            <userlogin>MeVidA User</userlogin>
+        </pen>
+    </penList>
+    <uicolor>0xffffff</uicolor>
+    <max_video_height>480</max_video_height>
+    <uicolors>
+        <uicolor>0xffffff</uicolor>
+    </uicolors>
+</configuration>
