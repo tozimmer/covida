@@ -193,6 +193,9 @@ public final class VideoComponent extends JMEComponent implements
             listField.setDefaultPosition();
             infoField.setLocalRotation(q);
             infoField.setDefaultPosition();
+            setLocalScale(1.5f);
+        }else if(getTitle().equals("Scan")){
+            setLocalScale(1.5f);
         }
         setDefaultPosition();
     }

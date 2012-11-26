@@ -18,7 +18,7 @@
             </area>
             <modeconfig>
                 <gesturerecognition>
-                    <enabled>true</enabled>
+                    <enabled>false</enabled>
                 </gesturerecognition>
                 <hwrconfiguration>
                     <dict>

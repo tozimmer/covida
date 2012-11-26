@@ -53,7 +53,7 @@ import java.util.ArrayList;
 public class AnnotationClipboard extends FieldComponent implements
         IControlableComponent {
 
-    int x = (int) (+width / 8.0f);
+    private int x;
     
     /**
      * Creates a new instance of {@link AnnotationClipboard}
@@ -67,6 +67,7 @@ public class AnnotationClipboard extends FieldComponent implements
         this.width = width;
         this.height = height;
         this.image = resource;
+        this.x = (int) (+width / 6.0f);
         setDrawable(true);
         hwr = new ArrayList<>();
         super.setAlwaysOnTop(true);
@@ -154,7 +155,7 @@ public class AnnotationClipboard extends FieldComponent implements
             overlay.clear();
             TextComponent textOverlay = new TextComponent(this, ActionName.COPY,
                     getZOrder());
-            textOverlay.setLocalTranslation(0, getTextY(2 + hwr.size()), 0);
+            textOverlay.setLocalTranslation(x, getTextY(2 + hwr.size()), 0);
             textOverlay.setDefaultPosition();
             textOverlay.setTouchable(true);
             attachChild(textOverlay);
