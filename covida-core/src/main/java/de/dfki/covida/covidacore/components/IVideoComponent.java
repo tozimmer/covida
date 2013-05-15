@@ -35,21 +35,8 @@ import java.util.UUID;
  *
  * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
  */
-public interface IVideoComponent {
+public interface IVideoComponent extends IMediaComponent {
 
-    /**
-     * Returns video source location as {@link String}
-     *
-     * @return video resource location as {@link String}
-     */
-    public String getSource();
-
-    /**
-     * Returns video title
-     *
-     * @return video title as {@link String}
-     */
-    public String getTitle();
 
     /**
      * Initiates the creation of the video player and e.g. control elements etc.
@@ -57,15 +44,13 @@ public interface IVideoComponent {
     public void create();
 
     /**
-     * Loads the {@link Annotation}
-     *
-     * @param annotation {@link Annotation}
+     * Closes a video.
      */
-    public void load(Annotation annotation);
-    
-    public UUID getUUID();
-
     public void close();
     
+    /**
+     * Checks if the video is ready.
+     * @return 
+     */
     public boolean isReady();
 }
