@@ -1,0 +1,73 @@
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>de.dfki.covida</groupId>
+    <artifactId>covida-native-interface</artifactId>
+    <version>1.0</version>
+    <packaging>jnilib</packaging>
+
+    <name>CoVida native interface</name>
+    <url>http://maven.apache.org</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <organization>
+        <name>Deutsches Forschungszentrum f?r K?nstliche Intelligenz (DFKI) GmbH</name>
+        <url>http://www.dfki.de</url>
+    </organization>
+    <build>
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <testSourceDirectory>src/main/test</testSourceDirectory>
+        <outputDirectory>target/classes</outputDirectory>
+        <testOutputDirectory>target/test</testOutputDirectory>
+
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>native-maven-plugin</artifactId>
+                <extensions>true</extensions>
+                <version>1.0-alpha-7</version>
+
+                <configuration>
+                    <compilerProvider>msvc</compilerProvider>
+                    <compilerStartOptions>
+                        <compilerStartOption> /EHsc /W4</compilerStartOption>
+                        <compilerStartOption>-D_WIN32_WINNT=0x0500</compilerStartOption>
+                    </compilerStartOptions>
+
+                    <sources>
+                        <source>
+                            <directory>src/main/native</directory>
+                            <includes>
+                                <include>**/*.cpp</include>
+                                <include>**/*.c</include>
+                            </includes>
+                        </source>
+                        <source>
+                            <directory>src/main/native/include</directory>
+                            <deployable>true</deployable>
+                        </source>
+                    </sources>
+
+                    <linkerProvider>msvc</linkerProvider>
+                    <linkerSecondaryOutputExtensions>lib</linkerSecondaryOutputExtensions>
+                    <linkerStartOptions>
+                        <linkerStartOption> /INCREMENTAL:NO /DLL </linkerStartOption>
+                    </linkerStartOptions>
+                </configuration>
+
+            </plugin>
+        </plugins>
+    </build>
+    <developers>
+        <developer>
+            <id>m_weber</id>
+            <name>Markus Weber</name>
+            <email>Markus.Weber@dfki.de</email>
+        </developer>
+    </developers>
+
+</project>
