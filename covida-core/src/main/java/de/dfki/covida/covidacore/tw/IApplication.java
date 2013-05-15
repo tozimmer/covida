@@ -27,6 +27,7 @@
  */
 package de.dfki.covida.covidacore.tw;
 
+import de.dfki.covida.covidacore.data.ImageMediaData;
 import de.dfki.covida.covidacore.data.VideoMediaData;
 import java.awt.Dimension;
 
@@ -65,6 +66,8 @@ public interface IApplication {
     public void clearDrawings();
     
     public void addVideo(VideoMediaData data);
+    
+    public void addImage(ImageMediaData data);
 
     public void close();
 }
