@@ -17,6 +17,7 @@ public class CovidaConfigurationTest {
      */
     public static void main(String[] args) {
         CovidaConfiguration conf = CovidaConfiguration.getInstance();
+        conf.loadMediaData();
         conf.save();
         conf = CovidaConfiguration.load();
     }

@@ -69,4 +69,9 @@ public class DataTestVideoComponent implements IVideoComponent {
     public boolean isReady(){
         return true;
     }
+
+    @Override
+    public void clearAnnotation() {
+
+    }
 }

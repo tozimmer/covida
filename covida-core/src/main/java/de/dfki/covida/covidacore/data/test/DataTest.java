@@ -98,7 +98,7 @@ public class DataTest {
             annotation.time_start = (long) 455322 + i*10000;
             annotation.creator = "covida";
             annotation.date = Calendar.getInstance().getTime();
-            data.save(annotation);
+            data.save(new File("test.avi"),annotation);
         }
         data.write();
 
