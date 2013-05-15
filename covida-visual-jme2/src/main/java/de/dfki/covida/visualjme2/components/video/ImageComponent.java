@@ -90,8 +90,9 @@ public class ImageComponent extends JMEComponent implements
         IImageComponent, IControlableComponent {
 
     /**
-     * Upscale factor to change quality of the image as {@link Float} Note that 1.f represents full quality and that the
-     * {@code UPSCALE_FACTOR} must be greater 0.f .
+     * Upscale factor to change quality of the image as {@link Float} Note that
+     * 1.f represents full quality and that the {@code UPSCALE_FACTOR} must be
+     * greater 0.f .
      */
     private static final float UPSCALE_FACTOR = 1.f;
     /**
@@ -131,7 +132,8 @@ public class ImageComponent extends JMEComponent implements
      */
     private TextureState overlayDragState;
     /**
-     * Overlay state for not dragging image components (not dragging texture state)
+     * Overlay state for not dragging image components (not dragging texture
+     * state)
      */
     private TextureState overlayDragBlankState;
     /**
@@ -156,6 +158,7 @@ public class ImageComponent extends JMEComponent implements
         super("Image Component " + data.imageName, zOrder);
         log.debug("Create image [id] : " + getId() + " [name] : " + data.imageName);
         final int maxHeight = CovidaConfiguration.getInstance().maxVideoHeight;
+
         try {
             image = ImageIO.read(new File(data.imageSource));
         } catch (IOException ex) {
@@ -250,6 +253,8 @@ public class ImageComponent extends JMEComponent implements
         annotation.creator = creator;
         annotation.date = Calendar.getInstance().getTime();
         annotation.classes = new ArrayList<>();
+        annotation.time_start = 0L;
+        annotation.time_end = 0L;
         // set annotation data
         infoField.setAnnotationData(annotation);
     }
@@ -422,7 +427,8 @@ public class ImageComponent extends JMEComponent implements
     /**
      * Sets the local scale of the node from this instance of VideoComponent
      *
-     * @param scale Video scale as {@link Float} Note that 1.f is the standard scale
+     * @param scale Video scale as {@link Float} Note that 1.f is the standard
+     * scale
      */
     public void rescale(float scale) {
         this.setLocalScale(scale);
@@ -502,7 +508,6 @@ public class ImageComponent extends JMEComponent implements
 
     @Override
     public void draw(int x, int y) {
-
         Vector3f local = getLocal(x, y);
         int localX = (int) local.x;
         int localY = (int) local.y;
@@ -513,7 +518,11 @@ public class ImageComponent extends JMEComponent implements
         imageQuad.draw(new Point(localX, localY));
     }
 
-
+    @Override
+    public void drawEnd(int x, int y) {
+        draw(x, y);
+        imageQuad.endDrawStroke();
+    }
 
     /**
      * Method for calculation of image width

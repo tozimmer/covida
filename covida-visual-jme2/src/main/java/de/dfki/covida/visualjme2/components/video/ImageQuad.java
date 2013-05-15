@@ -30,6 +30,7 @@ package de.dfki.covida.visualjme2.components.video;
 import com.jme.image.Texture;
 import com.jme.image.Texture2D;
 import com.jme.math.Quaternion;
+import com.jme.math.Vector2f;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Spatial;
 import com.jme.scene.shape.Quad;
@@ -38,8 +39,11 @@ import com.jme.system.DisplaySystem;
 import com.jmex.awt.swingui.ImageGraphics;
 import de.dfki.covida.covidacore.data.ImageMediaData;
 import de.dfki.covida.covidacore.data.Stroke;
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Polygon;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -75,7 +79,9 @@ public class ImageQuad extends Quad {
     private Texture2D texture;
     private BufferedImage image;
     private Collection<Collection<Point>> pointsToDraw;
+    private Color defaultG2DColor = Color.WHITE;
     private List<Stroke> drawedPoints;
+    private float scale;
     /*
      * (non-Javadoc)
      *
@@ -89,6 +95,7 @@ public class ImageQuad extends Quad {
         ts.setCorrectionType(TextureState.CorrectionType.Perspective);
         ts.setEnabled(true);
         this.image = image;
+        scale = image.getHeight() / (float) data.height;
         this.pointsToDraw = new ConcurrentLinkedQueue<>();
         this.drawedPoints = new ArrayList<>();
         texture = new Texture2D();
@@ -138,6 +145,7 @@ public class ImageQuad extends Quad {
      * @param point {@link Point}
      */
     public void draw(Point point) {
+
         if (drawedPoints.isEmpty()) {
             Stroke stroke = new Stroke();
             drawedPoints.add(stroke);
@@ -161,15 +169,40 @@ public class ImageQuad extends Quad {
         pointsToDraw.add(newStroke);
     }
 
+    /**
+     * Draws {@code pointsToDraw} on {@link Graphics2D}
+     *
+     * @param g2d {@link Graphics2D}
+     */
+    private void drawPoints(Graphics2D g2d) {
+        BasicStroke bs = new BasicStroke(2);
+        g2d.setStroke(bs);
+        for (Collection<Point> points : pointsToDraw) {
+            int size = points.size();
+            int[] xPoints = new int[size];
+            int[] yPoints = new int[size];
+            int i = 0;
+            for (Point point : points) {
+                if (i < size) {
+                    xPoints[i] = (int) (point.x * scale);
+                    yPoints[i] = (int) (point.y * scale);
+                }
+                i++;
+            }
+            g2d.setColor(Color.red);
+            g2d.drawPolyline(xPoints, yPoints, size);
+        }
+    }
+
     @Override
     public void draw(Renderer r) {
         if (g2d == null) {
             log.error("Draw failed");
             return;
         }
-
         if (image != null) {
             g2d.drawImage(image, null, 0, 0);
+            drawPoints(g2d);
         }
         g2d.update();
         if (texture.getTextureId() > 0) {
