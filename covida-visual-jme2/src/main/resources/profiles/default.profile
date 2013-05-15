@@ -16,7 +16,7 @@
                     <value>800</value>
                 </y>
             </area>
-            <modeconfig>
+            <modeconfig><!--
                 <gesturerecognition>
                     <enabled>false</enabled>
                 </gesturerecognition>
@@ -30,7 +30,7 @@
                     <orientationCorrection>true</orientationCorrection>
                     <disableMultipleLines>false</disableMultipleLines>
                     <wordCandidateListSize>10</wordCandidateListSize>
-                </hwrconfiguration>
+                </hwrconfiguration> -->
                 <shapedetection>
                     <combineStrokes>false</combineStrokes>
                     <enabled>true</enabled>
