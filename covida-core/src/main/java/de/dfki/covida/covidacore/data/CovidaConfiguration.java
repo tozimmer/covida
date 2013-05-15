@@ -31,6 +31,7 @@ import de.dfki.touchandwrite.TouchAndWriteDevice;
 import java.awt.Color;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -54,7 +55,6 @@ import org.slf4j.LoggerFactory;
  */
 @XmlRootElement(name = "configuration")
 public class CovidaConfiguration implements Serializable {
-
     /**
      * serialVersionUID
      */
@@ -63,6 +63,56 @@ public class CovidaConfiguration implements Serializable {
      * Logger
      */
     private static final Logger log = LoggerFactory.getLogger(CovidaConfiguration.class);
+    /**
+     * Path to images.
+     */
+    public static final File IMAGES_PATH = new File("..\\covida-res\\images\\");
+    /**
+     * Path to videos.
+     */
+    public static final File VIDEOS_PATH = new File("..\\covida-res\\videos\\");
+
+    /**
+     * File type filter.
+     */
+    private class TypeFileFilter implements FilenameFilter {
+
+        /**
+         * Allowed files types.
+         */
+        final String FILETYPES[];
+
+        /**
+         * Constructs a filter which files are allowed.
+         *
+         * @param types
+         */
+        public TypeFileFilter(String types[]) {
+            FILETYPES = types;
+        }
+        // Accept all directories and all gif, jpg, tiff, or png files.
+
+        @Override
+        public boolean accept(File f, String name) {
+            final String extension = getExtension(name);
+            if (extension != null) {
+                for (final String type : FILETYPES) {
+                    if (type.equals(extension)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+    }
+    /**
+     * Accepted video types.
+     */
+    private final TypeFileFilter VIDEO_TYPES = new TypeFileFilter(new String[]{"avi", "mpg", "mpeg"});
+    /**
+     * Accepted image types.
+     */
+    private final TypeFileFilter IMAGE_TYPES = new TypeFileFilter(new String[]{"png", "jpeg", "jpg"});
     /**
      * Instance of {@link CovidaConfiguration}
      */
@@ -73,13 +123,12 @@ public class CovidaConfiguration implements Serializable {
     @XmlElement(name = "path")
     public String texturePath;
     /**
-     * Touch and Write device 
+     * Touch and Write device
      */
     @XmlElement(name = "device")
     public TouchAndWriteDevice device;
     /**
-     * Indicates if the application should be automatacaly log on with default
-     * login
+     * Indicates if the application should be automatically log on with default login
      *
      * @see #defaultlogin
      */
@@ -101,6 +150,12 @@ public class CovidaConfiguration implements Serializable {
     @XmlElementWrapper(name = "videos")
     public List<VideoMediaData> videos = new ArrayList<>();
     /**
+     * Paths to the video resources as {@link List} of {@link ImageMediaData}.
+     */
+    @XmlElement(name = "image")
+    @XmlElementWrapper(name = "images")
+    public List<ImageMediaData> images = new ArrayList<>();
+    /**
      * Paths to the video resources as {@link List} of {@link VideoMediaData}.
      */
     @XmlElement(name = "clipboard_entries")
@@ -118,13 +173,11 @@ public class CovidaConfiguration implements Serializable {
     @XmlJavaTypeAdapter(ColorAdapter.class)
     @XmlElement(name = "uicolor")
     public Color uiColor;
-    
     /**
      * Maximum video height.
      */
     @XmlElement(name = "max_video_height")
     public int maxVideoHeight;
-    
     /**
      * List of pen configurations as {@link List} of {@link PenData}
      */
@@ -150,42 +203,22 @@ public class CovidaConfiguration implements Serializable {
         uiColors.add(Color.decode("0xddffff"));
         uiColors.add(Color.decode("0xcccccc"));
         uiColors.add(Color.decode("0xffccff"));
-
-        VideoMediaData data = new VideoMediaData();
-        data.videoName = "Scan";
-        data.videoSource = "..\\covida-res\\videos\\scan1.avi";
-        data.time_start = 0;
-        data.time_end = 0;
-        data.repeat = true;
-        data.width = -1;
-        data.height = -1;
-        videos.add(data);
-
-        data = new VideoMediaData();
-        data.videoName = "Planar Video";
-        data.videoSource = "..\\covida-res\\videos\\planar-video.avi";
-        data.time_start = 0;
-        data.time_end = 0;
-        data.repeat = true;
-        data.width = -1;
-        data.height = -1;
-        videos.add(data);
-        
-        data = new VideoMediaData();
-        data.videoName = "ERmed-Cavallaro";
-        data.videoSource = "..\\covida-res\\videos\\ERmed-Cavallaro.avi";
-        data.time_start = 0;
-        data.time_end = 0;
-        data.repeat = true;
-        data.width = -1;
-        data.height = -1;
-        videos.add(data);
-        
         clipboardEntries.add("Radlex");
         clipboardEntries.add("Finding");
         clipboardEntries.add("Annotation");
-
         pens.add(PenData.getDefaultConfig(null));
+    }
+
+    /**
+     * Loads media data.
+     */
+    public void loadMediaData() {
+        if (videos.isEmpty()) {
+            videos = loadVideos(VIDEOS_PATH);
+        }
+        if (images.isEmpty()) {
+            images = loadImages(IMAGES_PATH);
+        }
     }
 
     /**
@@ -256,7 +289,7 @@ public class CovidaConfiguration implements Serializable {
             if (data.uuid == null) {
                 data.uuid = UUID.randomUUID();
             }
-            if(data.thumbs == null){
+            if (data.thumbs == null) {
                 data.thumbs = new ArrayList<>();
             }
         }
@@ -345,5 +378,62 @@ public class CovidaConfiguration implements Serializable {
             pens.add(pen);
         }
         save();
+    }
+
+    /**
+     * Loads the videos from a directory.
+     *
+     * @param path
+     * @param filetypes
+     * @return
+     */
+    private List<VideoMediaData> loadVideos(File path) {
+        List<VideoMediaData> collection = new ArrayList<>();
+        for (File mf : path.listFiles(VIDEO_TYPES)) {
+            VideoMediaData data = new VideoMediaData();
+            data.videoName = mf.getName();
+            data.videoSource = mf.getAbsolutePath();
+            data.time_start = 0;
+            data.time_end = 0;
+            data.repeat = true;
+            data.width = -1;
+            data.height = -1;
+            data.thumbs = new ArrayList<>();
+            data.uuid = UUID.randomUUID();
+            collection.add(data);
+        }
+        return collection;
+    }
+
+    /**
+     * Loads the images from a directory.
+     *
+     * @param path
+     * @param filetypes
+     * @return
+     */
+    private List<ImageMediaData> loadImages(File path) {
+        List<ImageMediaData> collection = new ArrayList<>();
+        for (File mf : path.listFiles(IMAGE_TYPES)) {
+            ImageMediaData data = new ImageMediaData();
+            data.imageName = mf.getName();
+            data.imageSource = mf.getAbsolutePath();
+            data.width = -1;
+            data.height = -1;
+            data.uuid = UUID.randomUUID();
+            collection.add(data);
+        }
+        return collection;
+    }
+    /*
+     * Get the extension of a file.
+     */
+
+    private String getExtension(String name) {
+        int i = name.lastIndexOf('.');
+        if (i > 0 && i < name.length() - 1) {
+            return name.substring(i + 1).toLowerCase();
+        }
+        return name;
     }
 }
