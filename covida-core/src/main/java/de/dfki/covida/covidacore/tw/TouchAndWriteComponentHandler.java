@@ -27,6 +27,7 @@
  */
 package de.dfki.covida.covidacore.tw;
 
+import de.dfki.covida.covidacore.components.IImageComponent;
 import de.dfki.covida.covidacore.components.IVideoComponent;
 import java.util.Collection;
 import java.util.UUID;
@@ -48,6 +49,7 @@ public class TouchAndWriteComponentHandler {
      */
     private Collection<ITouchAndWriteComponent> components;
     private Collection<IVideoComponent> videos;
+    private Collection<IImageComponent> images;
     private boolean login;
 
     /**
@@ -56,6 +58,7 @@ public class TouchAndWriteComponentHandler {
     private TouchAndWriteComponentHandler() {
         components = new ConcurrentLinkedQueue<>();
         videos = new ConcurrentLinkedQueue<>();
+        images = new ConcurrentLinkedQueue<>();
     }
 
     /**
@@ -80,9 +83,10 @@ public class TouchAndWriteComponentHandler {
             components.add(component);
             if (component instanceof IVideoComponent) {
                 videos.add((IVideoComponent) component);
+            } else if(component instanceof IImageComponent) {
+                images.add((IImageComponent) component);
             }
         }
-
     }
     
     public void setLogin(boolean login){
@@ -105,7 +109,9 @@ public class TouchAndWriteComponentHandler {
     public Collection<IVideoComponent> getVideos() {
         return videos;
     }
-
+    public Collection<IImageComponent> getImages() {
+        return images;
+    }
     public void removeComponent(ITouchAndWriteComponent component) {
         if(component instanceof IVideoComponent){
             videos.remove((IVideoComponent) component);
