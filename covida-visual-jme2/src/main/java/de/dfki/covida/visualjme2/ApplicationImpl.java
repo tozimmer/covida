@@ -28,6 +28,7 @@
 package de.dfki.covida.visualjme2;
 
 import com.jme.renderer.ColorRGBA;
+import de.dfki.covida.covidacore.data.ImageMediaData;
 import de.dfki.covida.covidacore.data.VideoMediaData;
 import de.dfki.touchandwrite.TouchAndWriteDevice;
 import java.awt.Dimension;
@@ -102,6 +103,11 @@ public class ApplicationImpl extends AbstractApplication {
 
     @Override
     public void addVideo(VideoMediaData data) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+    @Override
+    public void addImage(ImageMediaData data) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

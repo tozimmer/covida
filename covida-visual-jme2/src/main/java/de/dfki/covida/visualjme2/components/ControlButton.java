@@ -42,6 +42,7 @@ import com.jme.util.TextureManager;
 import de.dfki.covida.covidacore.components.IControlButton;
 import de.dfki.covida.covidacore.components.IControlableComponent;
 import de.dfki.covida.covidacore.data.CovidaConfiguration;
+import de.dfki.covida.covidacore.data.ImageMediaData;
 import de.dfki.covida.covidacore.data.VideoMediaData;
 import de.dfki.covida.covidacore.tw.IApplication;
 import de.dfki.covida.covidacore.utils.ActionName;
@@ -70,7 +71,7 @@ public class ControlButton extends JMEComponent
     private boolean enabled;
     private final ActionName action;
     private final static float ANIMATIONTIME = 0.25f;
-    private List<VideoThumb> videoThumbs;
+    private List<IThumb> thumbs;
     private List<ConfigButton> configButtons;
 
     /**
@@ -86,7 +87,7 @@ public class ControlButton extends JMEComponent
     public ControlButton(ActionName actionName, IControlableComponent controlable,
             String texScr, String activeTexSrc, int width, int height, int zOrder) {
         super(actionName.toString(), zOrder);
-        videoThumbs = new ArrayList<>();
+        thumbs = new ArrayList<>();
         configButtons = new ArrayList<>();
         this.action = actionName;
         this.width = width;
@@ -249,9 +250,25 @@ public class ControlButton extends JMEComponent
     @Override
     public void toggle() {
         if (action.equals(ActionName.OPEN) && controlable instanceof IApplication) {
-            if (videoThumbs.isEmpty()) {
+            if (thumbs.isEmpty()) {
                 Vector3f local = new Vector3f(0, 0, 0);
                 float prevRation = 0.f;
+                for (ImageMediaData data : CovidaConfiguration.getInstance().images) {
+                    float ration = (float) data.width / (float) data.height;
+                    if (prevRation == 0.f) {
+                        prevRation = ration;
+                    }
+                    local = local.add(0, (((float) height * 1.7f)
+                            / ((ration + prevRation) / 2.f)) + 25, 0);
+                    IApplication app = (IApplication) controlable;
+                    ImageThumb thumb = new ImageThumb(data, local, app, this,
+                            (int) (width * 1.5f),
+                            (int) (((float) height * 1.5f) / ration),
+                            getZOrder());
+                    attachChild(thumb);
+                    thumbs.add(thumb);
+                }
+                
                 for (VideoMediaData data : CovidaConfiguration.getInstance().videos) {
                     float ration = (float) data.width / (float) data.height;
                     if (prevRation == 0.f) {
@@ -265,15 +282,15 @@ public class ControlButton extends JMEComponent
                             (int) (((float) height * 1.5f) / ration),
                             getZOrder());
                     attachChild(thumb);
-                    videoThumbs.add(thumb);
+                    thumbs.add(thumb);
 
                 }
                 controlQuad.setDefaultColor(ColorRGBA.orange);
             } else {
-                for (VideoThumb thumb : videoThumbs) {
+                for (IThumb thumb : thumbs) {
                     thumb.detach();
                 }
-                videoThumbs.clear();
+                thumbs.clear();
                 ColorRGBA color = ColorRGBA.white;
                 Color c = CovidaConfiguration.getInstance().uiColor;
                 if (CovidaConfiguration.getInstance().uiColor != null) {

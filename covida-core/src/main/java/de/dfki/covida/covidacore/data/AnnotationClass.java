@@ -5,6 +5,7 @@
 package de.dfki.covida.covidacore.data;
 
 import java.awt.Color;
+import de.dfki.covida.covidacore.data.ColorAdapter;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;

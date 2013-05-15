@@ -27,6 +27,8 @@
  */
 package de.dfki.covida.covidacore.data;
 
+import de.dfki.covida.covidacore.components.IMediaComponent;
+import de.dfki.covida.nativealgorithm.NativeInterface;
 import de.dfki.covida.covidacore.components.IVideoComponent;
 import de.dfki.covida.covidacore.data.ermed.ERmedClient;
 import java.awt.Point;
@@ -394,7 +396,7 @@ public class AnnotationData implements Serializable {
      * @param component {@link IVideoComponent}
      * @return {@link AnnotationData}
      */
-    public static AnnotationData load(IVideoComponent component) {
+    public static AnnotationData load(IMediaComponent component) {
         File file = new File(component.getSource() + ".xml");
         AnnotationData instance;
         try {
@@ -431,7 +433,7 @@ public class AnnotationData implements Serializable {
      *
      * @param annotation {@link Annotation}
      */
-    public void save(Annotation annotation) {
+    public void save(File video_src, Annotation annotation) {
         for (Annotation entry : annotations) {
             if (entry.uuid.equals(annotation.uuid)) {
                 annotations.remove(entry);
@@ -445,6 +447,7 @@ public class AnnotationData implements Serializable {
             annotation.description = "";
         }
         annotations.add(annotation);
+        NativeInterface.getInstance().newAnnotation(video_src, annotation);
         ERmedClient.getInstance().sendAnnotation(this, annotation);
     }
 

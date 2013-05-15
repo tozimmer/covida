@@ -38,10 +38,13 @@ import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
+import de.dfki.covida.covidacore.components.IControlableComponent;
+import de.dfki.covida.covidacore.components.IMediaComponent;
 import de.dfki.covida.covidacore.data.Annotation;
 import de.dfki.covida.covidacore.data.AnnotationClass;
 import de.dfki.covida.covidacore.data.AnnotationStorage;
 import de.dfki.covida.covidacore.data.StrokeList;
+import de.dfki.covida.covidacore.tw.ITouchAndWriteComponent;
 import de.dfki.covida.covidacore.utils.ActionName;
 import de.dfki.covida.covidacore.utils.VideoUtils;
 import de.dfki.covida.visualjme2.animations.*;
@@ -49,9 +52,11 @@ import de.dfki.covida.visualjme2.components.ClassButton;
 import de.dfki.covida.visualjme2.components.ControlButton;
 import de.dfki.covida.visualjme2.components.JMEComponent;
 import de.dfki.covida.visualjme2.components.TextComponent;
+import de.dfki.covida.visualjme2.components.video.ImageComponent;
 import de.dfki.covida.visualjme2.components.video.VideoComponent;
 import de.dfki.covida.visualjme2.utils.*;
 import de.dfki.touchandwrite.shape.ShapeType;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -99,7 +104,15 @@ public class InfoFieldComponent extends JMEComponent {
      * Temporary variables
      */
     private Annotation annotation;
-    private VideoComponent video;
+    private IMediaComponent media;
+    /**
+     * Controllable component
+     */
+    private IControlableComponent control;
+    /**
+     * Touch&Write component
+     */
+    private ITouchAndWriteComponent twcomponent;
     private ListFieldComponent listField;
     private ArrayList<TextComponent> descriptionText;
     private TextureState tsSpacer;
@@ -121,7 +134,7 @@ public class InfoFieldComponent extends JMEComponent {
      * Info field constructor
      *
      * @param resource background source location
-     * @param video {@link VideoComponent}
+     * @param media {@link VideoComponent}
      * @param listField {@link ListFieldComponent}
      * @param width width of list field
      * @param height height of list field
@@ -129,7 +142,37 @@ public class InfoFieldComponent extends JMEComponent {
     public InfoFieldComponent(String resource, VideoComponent video,
             ListFieldComponent listField, int width, int height, int zOrder) {
         super("DisplayFieldComponent", zOrder);
-        this.video = video;
+        this.media = video;
+        this.control = video;
+        this.twcomponent = video;
+        this.width = width;
+        this.height = height;
+        classes = new ArrayList<>();
+        defaultScale = new Vector3f(getLocalScale().x, getLocalScale().y, getLocalScale().z);
+        defaultRotation = new Quaternion(getLocalRotation().x,
+                getLocalRotation().y, getLocalRotation().z,
+                getLocalRotation().w);
+        defaultTranslation = new Vector3f(getLocalTranslation().x,
+                getLocalTranslation().y, getLocalTranslation().z);
+        image = resource;
+        this.listField = listField;
+    }
+
+    /**
+     * Info field constructor
+     *
+     * @param resource background source location
+     * @param image {@link ImageComponent}
+     * @param listField {@link ListFieldComponent}
+     * @param width width of list field
+     * @param height height of list field
+     */
+    public InfoFieldComponent(String resource, ImageComponent image_comp,
+            ListFieldComponent listField, int width, int height, int zOrder) {
+        super("DisplayFieldComponent", zOrder);
+        this.media = image_comp;
+        this.control = image_comp;
+        this.twcomponent = image_comp;
         this.width = width;
         this.height = height;
         classes = new ArrayList<>();
@@ -233,9 +276,9 @@ public class InfoFieldComponent extends JMEComponent {
     }
 
     /**
-     * Sets title of the video
+     * Sets title of the media
      *
-     * @param title video title as {@link String}
+     * @param title media title as {@link String}
      */
     private void setTitle(String title) {
         if (titleTextOverlay != null && title != null) {
@@ -249,7 +292,7 @@ public class InfoFieldComponent extends JMEComponent {
     }
 
     /**
-     * Sets video time position.
+     * Sets media time position.
      *
      * @param time position as {@link Long}
      */
@@ -290,10 +333,10 @@ public class InfoFieldComponent extends JMEComponent {
         }
         annotation.description = descriptions.toString();
         annotation.date = Calendar.getInstance().getTime();
-        AnnotationStorage.getInstance().getAnnotationData(video).save(annotation);
+        AnnotationStorage.getInstance().getAnnotationData(media).save(new File(this.media.getSource()), annotation);
         clearDescriptionText();
-        AnnotationStorage.getInstance().getAnnotationData(video).write();
-        AnnotationStorage.getInstance().getAnnotationData(video).export();
+        AnnotationStorage.getInstance().getAnnotationData(media).write();
+        AnnotationStorage.getInstance().getAnnotationData(media).export();
         AnnotationStorage.getInstance().generateRDF();
     }
 
@@ -322,21 +365,21 @@ public class InfoFieldComponent extends JMEComponent {
         initTextures();
         textBeginY = (int) (quad.getHeight() / 2 + FONT_SIZE);
         initalizeListOverlayQuads(JMEUtils.initalizeBlendState());
-        titleTextOverlay = new TextComponent(video, ActionName.NONE,
+        titleTextOverlay = new TextComponent(control, ActionName.NONE,
                 getZOrder());
         titleTextOverlay.setFont(1);
         titleTextOverlay.setSize(getFontSize());
         attachChild(titleTextOverlay);
         titleTextOverlay.setLocalTranslation(0, textBeginY, 0);
         textBeginY = (int) (textBeginY - FONT_SIZE);
-        timeOverlay = new TextComponent(video, ActionName.NONE,
+        timeOverlay = new TextComponent(control, ActionName.NONE,
                 getZOrder());
         timeOverlay.setLocalTranslation(0, textBeginY, 0);
         attachChild(timeOverlay);
         timeOverlay.setFont(1);
         timeOverlay.setSize(getFontSize());
         timeOverlay.setText("Time:");
-        timeTextOverlay = new TextComponent(video, ActionName.NONE,
+        timeTextOverlay = new TextComponent(control, ActionName.NONE,
                 getZOrder());
         textBeginY = (int) (textBeginY - FONT_SIZE);
         timeTextOverlay.setLocalTranslation(0, textBeginY, 0);
@@ -344,7 +387,7 @@ public class InfoFieldComponent extends JMEComponent {
         timeTextOverlay.setFont(1);
         timeTextOverlay.setSize(getFontSize());
         textBeginY = (int) (textBeginY - FONT_SIZE);
-        descriptionOverlay = new TextComponent(video, ActionName.NONE,
+        descriptionOverlay = new TextComponent(control, ActionName.NONE,
                 getZOrder());
         descriptionOverlay.setLocalTranslation(0, textBeginY, 0);
         attachChild(descriptionOverlay);
@@ -356,16 +399,16 @@ public class InfoFieldComponent extends JMEComponent {
                 - getTextSpacer() / 2);
         addSpacer(0, y, (int) (quad.getWidth() / 1.1f), getTextSpacer());
         descriptionText = new ArrayList<>();
-        if (AnnotationStorage.getInstance().getAnnotationData(video).size() > 0) {
+        if (AnnotationStorage.getInstance().getAnnotationData(media).size() > 0) {
             listField.drawEntries();
         }
-        save = new ControlButton(ActionName.SAVE, video,
+        save = new ControlButton(ActionName.SAVE, control,
                 "media/textures/video_controls_save.png",
                 "media/textures/video_controls_save.png", 64, 64,
                 getZOrder());
         save.setLocalTranslation(-getWidth() / 2 + 32, -getHeight() / 2 + 32, 0);
         attachChild(save);
-        delete = new ControlButton(ActionName.DELETE, video,
+        delete = new ControlButton(ActionName.DELETE, control,
                 "media/textures/video_control_delete.png",
                 "media/textures/video_control_delete.png", 64, 64,
                 getZOrder());
@@ -393,7 +436,7 @@ public class InfoFieldComponent extends JMEComponent {
             tagAction(tag);
         }
         setTime(annotation.time_start);
-        setTitle(AnnotationStorage.getInstance().getAnnotationData(video).title);
+        setTitle(AnnotationStorage.getInstance().getAnnotationData(media).title);
         if (annotation.strokelist != null) {
             setShapePoints(annotation.strokelist);
         } else {
@@ -406,7 +449,7 @@ public class InfoFieldComponent extends JMEComponent {
                 drawHwrResult(part);
             }
         }
-        
+
     }
 
     /**
@@ -415,8 +458,8 @@ public class InfoFieldComponent extends JMEComponent {
      * @param hwrResults hwr results
      */
     public void drawHwrResult(String hwrResults) {
-        
-        TextComponent descriptionTextOverlay = new TextComponent(video,
+
+        TextComponent descriptionTextOverlay = new TextComponent(control,
                 ActionName.COPY, getZOrder());
         descriptionTextOverlay.setLocalTranslation(0, descriptionBeginY, 0);
         descriptionTextOverlay.setDefaultPosition();
@@ -432,7 +475,8 @@ public class InfoFieldComponent extends JMEComponent {
                     / getCharacterLimit();
             descriptionText.get(descriptionText.size() - 1).setSize(
                     (int) ((float) getFontSize() / factor));
-        }update();
+        }
+        update();
     }
 
     /**
@@ -509,12 +553,30 @@ public class InfoFieldComponent extends JMEComponent {
     }
 
     /**
-     * Returns the {@link VideoComponent}.
+     * Returns the {@link IMediaComponent}.
      *
-     * @return {@link VideoComponent}
+     * @return {@link IMediaComponent}
      */
-    public VideoComponent getVideo() {
-        return video;
+    public IMediaComponent getVideo() {
+        return media;
+    }
+
+    /**
+     * Returns the {@link IControlableComponent}.
+     *
+     * @return {@link IControlableComponent}
+     */
+    public IControlableComponent getControl() {
+        return control;
+    }
+
+    /**
+     * Returns the {@link IControlableComponent}.
+     *
+     * @return {@link IControlableComponent}
+     */
+    public ITouchAndWriteComponent getTWComponent() {
+        return this.twcomponent;
     }
 
     /**
@@ -544,7 +606,7 @@ public class InfoFieldComponent extends JMEComponent {
         for (TextComponent text : descriptionText) {
             text.setTouchable(false);
         }
-        video.clearAnnotation();
+        media.clearAnnotation();
         listField.drawEntries();
         for (ClassButton button : classes) {
             button.detach();
@@ -556,7 +618,7 @@ public class InfoFieldComponent extends JMEComponent {
         // Delete animation (Info Field)
         st = CloseAnimation.getController(node, ANIMATION_DURATION, CloseAnimationType.INFO_FIELD);
         GameTaskQueueManager.getManager().update(new AddControllerCallable(node, st));
-        AnnotationStorage.getInstance().getAnnotationData(video).remove(annotation);
+        AnnotationStorage.getInstance().getAnnotationData(media).remove(annotation);
         close();
     }
 
@@ -592,12 +654,12 @@ public class InfoFieldComponent extends JMEComponent {
             }
         }
         if ((descriptionBeginY - 3 * ((float) getFontSpacer() * 0.9f)) < -getHeight() / 2) {
-                if (!descriptionText.isEmpty()) {
-                    descriptionText.get(0).detach();
-                    descriptionText.remove(0);
-                    update();
-                }
+            if (!descriptionText.isEmpty()) {
+                descriptionText.get(0).detach();
+                descriptionText.remove(0);
+                update();
             }
+        }
     }
 
     public void deleteTag(ClassButton aThis) {
@@ -609,7 +671,7 @@ public class InfoFieldComponent extends JMEComponent {
         }
         aThis.detach();
         int i = 0;
-        for(ClassButton button : classes){
+        for (ClassButton button : classes) {
             Vector3f local = new Vector3f(getWidth() / 2 + getWidth() / 4,
                     getHeight() / 2 - (int) (getWidth() / 1.5f)
                     - i * getWidth() / 5, 0);

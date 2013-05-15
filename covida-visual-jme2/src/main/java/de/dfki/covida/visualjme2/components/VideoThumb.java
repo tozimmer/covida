@@ -25,9 +25,9 @@ import java.util.TimerTask;
 
 /**
  *
- * @author Tobias
+ * @author Tobias Zimmermann
  */
-public class VideoThumb extends JMEComponent {
+public class VideoThumb extends JMEComponent implements IThumb {
 
     private final int width;
     private final int height;
@@ -63,7 +63,7 @@ public class VideoThumb extends JMEComponent {
         TextureState videoTextureState = DisplaySystem.getDisplaySystem()
                 .getRenderer().createTextureState();
         videoTextureState.setTexture(videoTexture);
-        borderQuad = new Quad((data.videoName + " thumb border quad"), width*1.1f,
+        borderQuad = new Quad((data.videoName + " thumb border quad"), width * 1.1f,
                 (int) (height * 1.4));
         borderQuad.setRenderState(videoTextureState);
         borderQuad.setRenderState(JMEUtils.initalizeBlendState());
@@ -129,7 +129,8 @@ public class VideoThumb extends JMEComponent {
         app.addVideo(data);
     }
 
-    void detach() {
+    @Override
+    public void detach() {
         setTouchable(false);
         setDrawable(false);
         if (node.hasChild(thumbQuad)) {

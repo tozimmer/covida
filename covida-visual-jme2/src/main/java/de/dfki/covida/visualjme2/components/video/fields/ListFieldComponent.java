@@ -36,6 +36,8 @@ import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.GameTaskQueueManager;
 import com.jme.util.TextureManager;
+import de.dfki.covida.covidacore.components.IControlableComponent;
+import de.dfki.covida.covidacore.components.IMediaComponent;
 import de.dfki.covida.covidacore.data.Annotation;
 import de.dfki.covida.covidacore.data.AnnotationData;
 import de.dfki.covida.covidacore.data.AnnotationStorage;
@@ -47,6 +49,7 @@ import de.dfki.covida.visualjme2.animations.OpenAnimation;
 import de.dfki.covida.visualjme2.animations.ResetAnimation;
 import de.dfki.covida.visualjme2.components.JMEComponent;
 import de.dfki.covida.visualjme2.components.TextComponent;
+import de.dfki.covida.visualjme2.components.video.ImageComponent;
 import de.dfki.covida.visualjme2.components.video.VideoComponent;
 import de.dfki.covida.visualjme2.utils.AddControllerCallable;
 import de.dfki.covida.visualjme2.utils.JMEUtils;
@@ -100,7 +103,11 @@ public class ListFieldComponent extends JMEComponent {
     /**
      * Video
      */
-    private VideoComponent video;
+    private IMediaComponent media;
+    /**
+     * Video
+     */
+    private IControlableComponent control;
     /**
      * {@link List} of {@link TextComponent}s
      */
@@ -127,14 +134,40 @@ public class ListFieldComponent extends JMEComponent {
      * List field component constructer.
      *
      * @param resource Background image resource as {@link String}
-     * @param video {@link VideoComponent}
+     * @param media {@link VideoComponent}
      * @param width List field width as {@link Integer}
      * @param height List field height as {@link Integer}
      */
-    public ListFieldComponent(String resource, VideoComponent video, int width, 
+    public ListFieldComponent(String resource, VideoComponent video, int width,
             int height, int zOrder) {
         super("DisplayFieldComponent", zOrder);
-        this.video = video;
+        this.media = video;
+        this.control = video;
+        this.width = width;
+        this.height = height;
+        defaultScale = new Vector3f(getLocalScale().x, getLocalScale().y, getLocalScale().z);
+        defaultRotation = new Quaternion(getLocalRotation().x,
+                getLocalRotation().y, getLocalRotation().z,
+                getLocalRotation().w);
+        defaultTranslation = new Vector3f(getLocalTranslation().x,
+                getLocalTranslation().y, getLocalTranslation().z);
+        image = resource;
+        entries = new ArrayList<>();
+    }
+
+    /**
+     * List field component constructer.
+     *
+     * @param resource Background image resource as {@link String}
+     * @param media {@link ImageComponent}
+     * @param width List field width as {@link Integer}
+     * @param height List field height as {@link Integer}
+     */
+    public ListFieldComponent(String resource, ImageComponent image_comp, int width,
+            int height, int zOrder) {
+        super("DisplayFieldComponent", zOrder);
+        this.media = image_comp;
+        this.control = image_comp;
         this.width = width;
         this.height = height;
         defaultScale = new Vector3f(getLocalScale().x, getLocalScale().y, getLocalScale().z);
@@ -172,7 +205,7 @@ public class ListFieldComponent extends JMEComponent {
         initTextures();
         int x = (int) (0);
         float y = getTextY(0);
-        TextComponent to = new TextComponent(video, ActionName.NONE, getZOrder());
+        TextComponent to = new TextComponent(control, ActionName.NONE, getZOrder());
         to.setLocalTranslation(x, y, 0);
         attachChild(to);
         to.setSize(getFontSize());
@@ -242,9 +275,9 @@ public class ListFieldComponent extends JMEComponent {
      */
     public void drawEntries() {
         if (isOpen()) {
-            data = AnnotationStorage.getInstance().getAnnotationData(video);
+            data = AnnotationStorage.getInstance().getAnnotationData(media);
             int k = data.getAnnotations().size();
-            while(getTextY(k+1)< - getHeight()/2){
+            while (getTextY(k + 1) < -getHeight() / 2) {
                 k--;
             }
             int start = data.getAnnotations().size() - k;
@@ -254,7 +287,7 @@ public class ListFieldComponent extends JMEComponent {
             }
             entries = new ArrayList<>();
             for (int i = start; i < data.getAnnotations().size(); i++) {
-                TextComponent entryTextOverlay = new TextComponent(video, 
+                TextComponent entryTextOverlay = new TextComponent(control,
                         ActionName.LOAD, getZOrder());
                 entryTextOverlay.setLocalTranslation(0, getTextY(i - start + 1), 0);
                 Annotation annotation = data.getAnnotations().get(i);
@@ -267,7 +300,7 @@ public class ListFieldComponent extends JMEComponent {
                 entryTextOverlay.fadeIn((float) ANIMATION_DURATION / 125.f);
                 attachChild(entryTextOverlay);
                 entries.add(entryTextOverlay);
-                entryTextOverlay = new TextComponent(video, ActionName.LOAD, 
+                entryTextOverlay = new TextComponent(control, ActionName.LOAD,
                         getZOrder());
                 entryTextOverlay.setLocalTranslation(0, getTextY(i - start + 1) - getFontSize() / 1.5f, 0);
                 String[] split = annotation.description.split(" ");
@@ -307,12 +340,12 @@ public class ListFieldComponent extends JMEComponent {
     }
 
     /**
-     * Returns the {@link VideoComponent}
+     * Returns the {@link IMediaComponent}
      *
-     * @return {@link VideoComponent}
+     * @return {@link IMediaComponent}
      */
-    public VideoComponent getVideo() {
-        return video;
+    public IMediaComponent getVideo() {
+        return media;
     }
 
     /**

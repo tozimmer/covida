@@ -28,8 +28,10 @@
 package de.dfki.covida.visualjme2;
 
 import com.jme.util.GameTaskQueueManager;
+import de.dfki.covida.covidacore.components.IImageComponent;
 import de.dfki.covida.covidacore.components.IVideoComponent;
 import de.dfki.covida.covidacore.data.CovidaConfiguration;
+import de.dfki.covida.covidacore.data.ImageMediaData;
 import de.dfki.covida.covidacore.data.VideoMediaData;
 import de.dfki.covida.covidacore.tw.TouchAndWriteComponentHandler;
 import de.dfki.covida.covidacore.utils.ActionName;
@@ -41,8 +43,8 @@ import de.dfki.covida.visualjme2.components.fields.AnnotationSearchField;
 import de.dfki.covida.visualjme2.utils.AttachChildCallable;
 import de.dfki.covida.visualjme2.utils.CovidaZOrder;
 import de.dfki.touchandwrite.TouchAndWriteDevice;
+import java.util.Collection;
 import java.util.List;
-import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -224,13 +226,23 @@ public class CovidaApplicationPreloader implements Runnable {
         Thread.currentThread().setName(this.getClass().getName() + " Thread");
         preloadVideos();
         createSideMenus();
+        CovidaConfiguration.getInstance().loadMediaData();
         List<VideoMediaData> videos = CovidaConfiguration.getInstance().videos;
-        if(videos.size() > 0){
+        if (videos.size() > 0) {
             application.addVideo(videos.get(0));
-            TouchAndWriteComponentHandler handler 
-                    = TouchAndWriteComponentHandler.getInstance();
-            IVideoComponent video = handler.getVideos().iterator().next();
-            video.close();
+            TouchAndWriteComponentHandler handler = TouchAndWriteComponentHandler.getInstance();
+            Collection<IVideoComponent> col = handler.getVideos();
+            if(col != null && col.iterator().hasNext()) {
+                IVideoComponent video = col.iterator().next();
+                video.close();
+            }
+        }
+        List<ImageMediaData> images = CovidaConfiguration.getInstance().images;
+        if (images.size() > 0) {
+            application.addImage(images.get(0));
+            TouchAndWriteComponentHandler handler = TouchAndWriteComponentHandler.getInstance();
+            IImageComponent img_comp = handler.getImages().iterator().next();
+            img_comp.close();
         }
         try {
             Thread.sleep(500);

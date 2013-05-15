@@ -50,8 +50,7 @@ import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.embedded.videosurface.VideoSurface;
 
 /**
- * Component to create a {@link MediaPlayer} and {@link VideoRenderer} to play
- * videos.
+ * Component to create a {@link MediaPlayer} and {@link VideoRenderer} to play videos.
  *
  * @author Tobias Zimmermann <Tobias.Zimmermann@dfki.de>
  */
@@ -90,8 +89,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
      */
     protected IVideoControls controls;
     /**
-     * Current recognized handwriting Note that this {@link String} must be set
-     * by the visual component of covida
+     * Current recognized handwriting Note that this {@link String} must be set by the visual component of covida
      */
     protected String hwr;
     /**
@@ -100,8 +98,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     protected MediaPlayer mediaPlayer;
     protected IVideoGraphicsHandler graphics;
     /**
-     * The {@link MediaPlayerFactory} to crate {@link VideoSurface} or
-     * {@link MediaPlayer}
+     * The {@link MediaPlayerFactory} to crate {@link VideoSurface} or {@link MediaPlayer}
      */
     protected MediaPlayerFactory mediaPlayerFactory;
     /**
@@ -135,8 +132,8 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     /**
      * Creates a {@link VideoPreload} instance to determine video dimensions.
      *
-     * Note that the {@link VideoPreload} instance will call
-     * {@link #create(int, int)} method if dimension is determined.
+     * Note that the {@link VideoPreload} instance will call {@link #create(int, int)} method if dimension is
+     * determined.
      */
     private void preload() {
         preload = new VideoPreload(data, this);
@@ -161,12 +158,14 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
             args = VLC_ARGS;
         }
         this.mediaPlayerFactory = new MediaPlayerFactory(args);
-        graphics = new VideoRenderer(data.width, data.height, data.videoName);
-        mediaPlayer = mediaPlayerFactory.newDirectMediaPlayer(width, height,
-                (VideoRenderer) graphics);
-        mediaPlayer.setPlaySubItems(true);
-        addEventListener();
-        video.create();
+        if (width > 0 || height > 0) {
+            graphics = new VideoRenderer(data.width, data.height, data.videoName);
+            mediaPlayer = mediaPlayerFactory.newDirectMediaPlayer(width, height,
+                    (VideoRenderer) graphics);
+            mediaPlayer.setPlaySubItems(true);
+            addEventListener();
+            video.create();
+        }
     }
 
     /**
@@ -193,8 +192,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     /**
      * Returns the current time postion in milliseconds.
      *
-     * Note that only the part from {@code timeStart} to {@code timeEnd} is
-     * considered.
+     * Note that only the part from {@code timeStart} to {@code timeEnd} is considered.
      *
      * @see #setTimeRange(long, long)
      *
@@ -382,8 +380,8 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     /**
      * Sets the time position of the video in percentage.
      *
-     * Note that only the part from {@code timeStart} to {@code timeEnd} is
-     * considered if {@code isTimeRanged} is {@code true}.
+     * Note that only the part from {@code timeStart} to {@code timeEnd} is considered if {@code isTimeRanged} is
+     * {@code true}.
      *
      * @see #setTimeRange(long, long)
      *
@@ -410,8 +408,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     /**
      * Sets the time position of the video in percentage.
      *
-     * Note that only the part from {@code timeStart} to {@code timeEnd} is
-     * considered.
+     * Note that only the part from {@code timeStart} to {@code timeEnd} is considered.
      *
      * @see #setTimeRange(long, long)
      *
@@ -470,8 +467,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     /**
      * Returns the max time position of the video in ms.
      *
-     * Note that only the part from {@code timeStart} to {@code timeEnd} is
-     * considered.
+     * Note that only the part from {@code timeStart} to {@code timeEnd} is considered.
      *
      * @see #setTimeRange(long, long)
      *
@@ -506,8 +502,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     }
 
     /**
-     * Sets a time range for the video. Only the part from start to long (time
-     * in ms) is played.
+     * Sets a time range for the video. Only the part from start to long (time in ms) is played.
      *
      * @param start start time in ms
      * @param end end time in ms
@@ -820,7 +815,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
             mediaPlayer.playMedia(getSource());
             controls.highlightPause();
             controls.normalizeStop();
-        }else{
+        } else {
             mediaPlayer.prepareMedia(getSource());
             controls.highlightPause();
             stop();
@@ -855,8 +850,7 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     abstract public void saveAnnotatedFrame();
 
     /**
-     * Adds the {@link Point} to the {@link List} which should be draw on the
-     * video.
+     * Adds the {@link Point} to the {@link List} which should be draw on the video.
      *
      * @param point {@link Point}
      */
@@ -867,9 +861,8 @@ public abstract class AbstractVideoHandler implements MediaPlayerEventListener {
     /**
      * Renturns the video as {@link BufferedImage}
      *
-     * Note that this method only works of its a {@link RenderedVideoHandler}
-     * otherwise this method returns a snapshot of the video as
-     * {@link BufferedImage}
+     * Note that this method only works of its a {@link RenderedVideoHandler} otherwise this method returns a snapshot
+     * of the video as {@link BufferedImage}
      *
      * @return {@link BufferedImage}
      */

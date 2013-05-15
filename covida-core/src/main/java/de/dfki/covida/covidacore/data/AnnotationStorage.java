@@ -32,6 +32,7 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.DC;
 import com.hp.hpl.jena.vocabulary.VCARD;
+import de.dfki.covida.covidacore.components.IMediaComponent;
 import de.dfki.covida.covidacore.components.IVideoComponent;
 import de.dfki.covida.covidacore.tw.TouchAndWriteComponentHandler;
 import de.dfki.covida.covidacore.utils.AnnotationSearch;
@@ -98,7 +99,7 @@ public class AnnotationStorage {
      * @param component {@link IVideoComponent}
      * @return {@link AnnotationData}
      */
-    public AnnotationData getAnnotationData(IVideoComponent component) {
+    public AnnotationData getAnnotationData(IMediaComponent component) {
         if (!dataList.containsKey(component.getUUID())) {
             addNewComponent(component);
         }
@@ -110,7 +111,7 @@ public class AnnotationStorage {
      *
      * @param component {@link IVideoComponent} to add
      */
-    private void addNewComponent(IVideoComponent component) {
+    private void addNewComponent(IMediaComponent component) {
         if (!dataList.containsKey(component.getUUID())) {
             AnnotationData data = AnnotationData.load(component);
             dataList.put(component.getUUID(), data);
@@ -254,7 +255,7 @@ public class AnnotationStorage {
         }
         File file = new File("../covida-res/rdf.xml");
         log.debug("Write rdf to: " + file);
-        FileWriter w = null;
+        FileWriter w;
         try {
             w = new FileWriter(file);
             model.write(w);
