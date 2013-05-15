@@ -48,7 +48,9 @@ public class DetachChildCallable implements Callable {
 
     @Override
     public Void call() throws Exception {
-        node.detachChild(spatial);
+        if(node != null) {
+            node.detachChild(spatial);
+        } 
         return null;
     }
 }
