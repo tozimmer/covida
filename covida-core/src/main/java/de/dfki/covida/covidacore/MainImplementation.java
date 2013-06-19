@@ -72,7 +72,7 @@ public class MainImplementation {
         try {
             ERmedClient.getInstance();
         } catch (Exception ex) {
-            log.error("", ex);
+            log.warn("ERmedClient couldn't be initialized.");
         }
         Thread.currentThread().setName("Covida Visual");
         if (null == System.getProperty("vlcj.log")) {

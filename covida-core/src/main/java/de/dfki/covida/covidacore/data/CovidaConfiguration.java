@@ -213,11 +213,19 @@ public class CovidaConfiguration implements Serializable {
      * Loads media data.
      */
     public void loadMediaData() {
-        if (videos.isEmpty()) {
-            videos = loadVideos(VIDEOS_PATH);
+        try{
+            if (videos.isEmpty() && VIDEOS_PATH != null) {
+                videos = loadVideos(VIDEOS_PATH);
+            }
+        }catch(Exception e){
+            log.warn("Video loading faile.");
         }
-        if (images.isEmpty()) {
-            images = loadImages(IMAGES_PATH);
+        try{
+            if (images.isEmpty() && IMAGES_PATH != null) {
+                images = loadImages(IMAGES_PATH);
+            }
+        }catch(Exception e){
+            log.warn("Image loading faile.");
         }
     }
 
