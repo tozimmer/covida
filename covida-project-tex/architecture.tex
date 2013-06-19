@@ -1,15 +1,15 @@
 \section{Architecture}
 
 The CoVidA application architecture is structured as shown in Figure \ref{fig:uml}.
-All core functionallities are bundled in the covidacore package.
+All core functionallities are bundled in the covida-core package.
 All visual components are handled from the visual package, which is exchangeable.
-In this setup the visualjme2 package is used to render the covida application.
-The video package is also exchangeable and currently is the videovlcj package used which has the vlcj as foundation.
+In this setup the covida-visual-jme2 package is used to render the covida application.
+The video package is also exchangeable and currently is the covida-video-vlcj package used which has the vlcj as foundation.
 
 \begin{figure}[!ht]
 \captionsetup{type=figure} 
  \centering
- \includegraphics[width=.85\columnwidth]{diagram.1}
+ \includegraphics[width=.85\columnwidth]{architecture}
  \caption{Covida Architecture.}
  \label{fig:uml}
 \end{figure}

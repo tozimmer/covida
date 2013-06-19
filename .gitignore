@@ -3,6 +3,7 @@
 *.log
 Thumbs.db
 **/log
+properties.cfg
 nb-configuration.xml
 /covida-core/target/
 /covida-flvcreator/target/
