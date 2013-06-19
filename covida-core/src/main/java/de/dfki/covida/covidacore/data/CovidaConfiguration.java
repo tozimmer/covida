@@ -195,7 +195,7 @@ public class CovidaConfiguration implements Serializable {
         autologon = true;
         defaultlogin = "MediVA User";
         thumbcount = 5;
-        uiColor = Color.decode("0xffffff");
+        uiColor = Color.decode("0x000000");
         maxVideoHeight = 360;
         uiColors = new ArrayList<>();
         uiColors.add(Color.decode("0xffffff"));

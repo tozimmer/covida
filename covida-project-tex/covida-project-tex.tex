@@ -1,0 +1,69 @@
+
+
+% -------------------------------------------------------------------------------
+% Preamble
+% -------------------------------------------------------------------------------
+\documentclass[paper=a4, fontsize=11pt,twoside, bibliography=totoc]{scrartcl}		% KOMA article
+
+\ifx\pdftexversion\undefined
+\usepackage[dvips]{graphicx}
+\else
+\usepackage[pdftex]{graphicx}
+\DeclareGraphicsRule{*}{mps}{*}{}
+\fi
+
+\usepackage[a4paper,pdftex]{geometry}										% A4paper margins
+\setlength{\oddsidemargin}{5mm}												% Remove 'twosided' indentation
+\setlength{\evensidemargin}{5mm}
+
+\usepackage{xspace} % Define commands that don't eat spaces.
+\usepackage[english]{babel}
+\usepackage[protrusion=true,expansion=true]{microtype}	
+\usepackage{amsmath,amsfonts,amsthm,amssymb}
+\usepackage{graphicx}
+
+
+
+%% Captions (Schrift, Aussehen) ==========================================
+
+%%% Doc: ftp://tug.ctan.org/pub/tex-archive/macros/latex/contrib/caption/caption.pdf
+\usepackage{caption}
+% Aussehen der Captions
+\captionsetup{
+   margin = 10pt,
+   font = {small,rm},
+   labelfont = {small,bf},
+   format = plain, % oder 'hang'
+   indention = 0em,   % Einruecken der Beschriftung
+   labelsep = colon, %period, space, quad, newline
+   justification = RaggedRight, % justified, centering
+   singlelinecheck = true, % false (true=bei einer Zeile immer zentrieren)
+   position = bottom %top
+}
+%%% Bugfix Workaround
+\DeclareCaptionOption{parskip}[]{}
+\DeclareCaptionOption{parindent}[]{}
+
+% ------------------------------------------------------------------------------
+% Definitions
+% ------------------------------------------------------------------------------
+\newcommand{\HRule}[1]{\rule{\linewidth}{#1}} 	% Horizontal rule
+
+\newcommand{\wms}{\emph{Elevated WMS}\xspace}
+\newcommand{\sud}{\emph{Sudplan3D}\xspace}
+
+\makeatletter							% Title
+\def\printtitle{%						
+    {\centering \@title\par}}
+\makeatother									
+
+\makeatletter							% Author
+\def\printauthor{%					
+    {\centering \large \@author}}				
+\makeatother							
+\begin{document}
+\include{intro}
+\include{architecture}
+\include{implementation}
+\include{conclusion}
+\end{document}
